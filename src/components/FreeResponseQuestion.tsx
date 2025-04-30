@@ -2,7 +2,7 @@
 "use client";
 
 import type React from 'react';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -17,10 +17,11 @@ import { cn } from '@/lib/utils';
 
 interface FreeResponseQuestionProps {
   question: string;
-  expectedAnswer: string; // Or criteria for validation
+  expectedAnswer: string;
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
+  isAnswerSubmitted: boolean; // New prop
 }
 
 const formSchema = z.object({
@@ -35,6 +36,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
+  isAnswerSubmitted, // Use the new prop
 }) => {
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
@@ -47,7 +49,14 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+   // Reset state when the question changes (primarily handled by key prop in parent, but good practice)
+   useEffect(() => {
+     form.reset();
+     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+     setShowHint(false);
+   }, [question, form]);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setValidationResult({ isValid: false, feedback: '', attemptMade: false }); // Reset previous result
     setShowHint(false); // Hide previous hints
     startTransition(async () => {
@@ -95,6 +104,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                       rows={4}
                       {...field}
                       aria-describedby={validationResult.attemptMade ? "feedback-alert" : undefined}
+                      disabled={isAnswerSubmitted || isPending} // Disable textarea after submission
                     />
                   </FormControl>
                   <FormMessage />
@@ -108,16 +118,18 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 variant={validationResult.isValid ? 'default' : 'destructive'}
                 className={cn(
                   "transition-opacity duration-300 ease-in-out",
-                  validationResult.isValid ? "border-green-500" : "border-destructive"
+                  validationResult.isValid ? "border-green-500 bg-green-50" : "border-destructive bg-red-50" // Added background colors for better distinction
                 )}
               >
                 {validationResult.isValid ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
                 ) : (
                   <XCircle className="h-4 w-4 text-destructive" />
                 )}
-                <AlertTitle>{validationResult.isValid ? 'Correct!' : 'Incorrect'}</AlertTitle>
-                <AlertDescription>
+                <AlertTitle className={cn(validationResult.isValid ? "text-green-800" : "text-red-800")}> {/* Adjusted title color */}
+                    {validationResult.isValid ? 'Correct!' : 'Incorrect'}
+                </AlertTitle>
+                <AlertDescription className={cn(validationResult.isValid ? "text-green-700" : "text-red-700")}> {/* Adjusted description color */}
                   {validationResult.feedback}
                 </AlertDescription>
                  {!validationResult.isValid && validationResult.feedback && (
@@ -127,6 +139,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                     size="sm"
                     onClick={toggleHint}
                     className="mt-2 text-accent-foreground hover:bg-accent/80"
+                    disabled={isPending}
                   >
                     <Lightbulb className="mr-2 h-4 w-4" />
                     {showHint ? 'Hide Hint' : 'Show Hint'}
@@ -141,11 +154,17 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               </Alert>
             )}
 
-            <Button type="submit" disabled={isPending} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+            <Button
+              type="submit"
+              disabled={isPending || isAnswerSubmitted} // Disable button if pending or already submitted
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 disabled:opacity-50"
+            >
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validating...
                 </>
+              ) : isAnswerSubmitted ? (
+                 'Answer Submitted' // Change button text after submission
               ) : (
                 'Submit Answer'
               )}
@@ -153,9 +172,9 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           </form>
         </Form>
       </CardContent>
-       <CardFooter className="flex justify-between text-xs text-muted-foreground">
+       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
            <p>Correct: +{pointsForCorrect} points</p>
-           <p>Incorrect: -{pointsForIncorrect} points</p>
+           <p>Incorrect: -{pointsForIncorrect} points (min 0)</p>
        </CardFooter>
     </Card>
   );
