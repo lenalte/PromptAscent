@@ -85,4 +85,3 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
     </Card>
   );
 };
-```

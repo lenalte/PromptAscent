@@ -43,4 +43,3 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
     </Card>
   );
 };
-```
