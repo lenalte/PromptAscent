@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google'; // Corrected import path if needed
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"; // Import Toaster
+import { PointsProvider } from '@/context/PointsContext'; // Import PointsProvider
 
 // Assuming Geist and Geist_Mono setup is correct
 const geistSans = Geist({
@@ -28,8 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        {children}
-        <Toaster /> {/* Add Toaster here */}
+        <PointsProvider> {/* Wrap children with PointsProvider */}
+          {children}
+          <Toaster /> {/* Add Toaster here */}
+        </PointsProvider>
       </body>
     </html>
   );

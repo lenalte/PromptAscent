@@ -7,12 +7,12 @@ import { lessons } from '@/data/lessons'; // Import lesson data
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, ArrowRight } from 'lucide-react';
-import { PointsDisplay } from '@/components/PointsDisplay'; // Keep for potential future global points
+import { PointsDisplay } from '@/components/PointsDisplay';
 import { Separator } from '@/components/ui/separator';
+import { useGlobalPoints } from '@/context/PointsContext'; // Import the global points hook
 
 export default function Home() {
-  // Maybe keep a global point system later, but for now, points are per lesson.
-  // const { points } = usePoints(0); // Example if global points needed
+  const { totalPoints } = useGlobalPoints(); // Get total points from global context
 
   return (
     <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
@@ -20,7 +20,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-primary flex items-center">
            <BookOpen className="mr-3 h-8 w-8" /> Prompt Ascent
         </h1>
-        {/* <PointsDisplay points={points} />  Optional: Display global points if implemented */}
+         <PointsDisplay points={totalPoints} /> {/* Display global total points */}
       </div>
 
        <Separator className="my-6 w-full max-w-4xl" />
@@ -28,7 +28,7 @@ export default function Home() {
        <div className="w-full max-w-4xl text-center mb-8">
          <h2 className="text-2xl font-semibold mb-2">Welcome!</h2>
          <p className="text-muted-foreground">
-           Choose a lesson below to start learning and practicing prompt engineering.
+           Choose a lesson below to start learning and practicing prompt engineering. Your total score is shown above.
          </p>
        </div>
 
@@ -52,4 +52,3 @@ export default function Home() {
     </main>
   );
 }
-
