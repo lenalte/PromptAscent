@@ -87,28 +87,8 @@ export default function LessonPage() {
   }, [currentItem, addPoints, deductPoints, completedItemsMap]);
 
 
-  // Callback specifically for Informational Snippets when 'Next' is clicked
-  const handleSnippetAcknowledged = useCallback(() => {
-    if (!currentItem || currentItem.type !== 'informationalSnippet') return;
-
-    const itemId = currentItem.id;
-    // Award points only if this item hasn't been marked as fully completed yet
-    if (!completedItemsMap.has(itemId)) {
-        addPoints(currentItem.pointsAwarded);
-        setItemsCompletedCount(prev => prev + 1); // Increment completion count
-        setCompletedItemsMap(prevMap => new Map(prevMap).set(itemId, true)); // Mark as completed
-    }
-    // Snippets are always considered "correct" once acknowledged for moving forward
-    setLastAnswerCorrectness(true);
-    setIsCurrentAttemptSubmitted(true); // Mark as submitted to enable 'Next' logic
-
-    // Directly trigger moving to the next item after acknowledging
-     handleNextItem(); // Call handleNextItem directly
-
-  }, [currentItem, addPoints, completedItemsMap, handleNextItem]); // Added handleNextItem to dependency array
-
-
-  // Callback when the "Next" button (or final submit) is clicked for *any* item type
+   // Callback when the "Next" button (or final submit) is clicked for *any* item type
+   // Define handleNextItem before handleSnippetAcknowledged
     const handleNextItem = useCallback(() => {
         // Ensure an item exists and an answer/acknowledgement has been made
         if (!currentItem || lastAnswerCorrectness === null) return;
@@ -131,6 +111,27 @@ export default function LessonPage() {
         // Reset for the next item is handled by the useEffect watching currentItem
 
   }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]);
+
+
+  // Callback specifically for Informational Snippets when 'Next' is clicked
+  const handleSnippetAcknowledged = useCallback(() => {
+    if (!currentItem || currentItem.type !== 'informationalSnippet') return;
+
+    const itemId = currentItem.id;
+    // Award points only if this item hasn't been marked as fully completed yet
+    if (!completedItemsMap.has(itemId)) {
+        addPoints(currentItem.pointsAwarded);
+        setItemsCompletedCount(prev => prev + 1); // Increment completion count
+        setCompletedItemsMap(prevMap => new Map(prevMap).set(itemId, true)); // Mark as completed
+    }
+    // Snippets are always considered "correct" once acknowledged for moving forward
+    setLastAnswerCorrectness(true);
+    setIsCurrentAttemptSubmitted(true); // Mark as submitted to enable 'Next' logic
+
+    // Directly trigger moving to the next item after acknowledging
+     handleNextItem(); // Call handleNextItem directly
+
+  }, [currentItem, addPoints, completedItemsMap, handleNextItem]); // handleNextItem is now defined above
 
 
   // Derived states for completion
@@ -282,3 +283,4 @@ export default function LessonPage() {
     </main>
   );
 }
+
