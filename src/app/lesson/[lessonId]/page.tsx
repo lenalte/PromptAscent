@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { usePoints } from '@/hooks/usePoints';
 import { getLessonById, type Lesson, type LessonItem } from '@/data/lessons'; // Import lesson data and types
-import { BrainCircuit, PencilRuler, CheckCircle, ListChecks, Info, BookOpen, HomeIcon } from 'lucide-react';
+import { BrainCircuit, PencilRuler, CheckCircle, ListChecks, Info, BookOpen, HomeIcon, Loader2 } from 'lucide-react'; // Added Loader2
 
 export default function LessonPage() {
   const params = useParams();
@@ -105,34 +105,31 @@ export default function LessonPage() {
     // Directly trigger moving to the next item after acknowledging
      handleNextItem(); // Call handleNextItem directly
 
-  }, [currentItem, addPoints, completedItemsMap]);
+  }, [currentItem, addPoints, completedItemsMap, handleNextItem]); // Added handleNextItem to dependency array
 
 
   // Callback when the "Next" button (or final submit) is clicked for *any* item type
     const handleNextItem = useCallback(() => {
-        if (!currentItem || lastAnswerCorrectness === null) return; // Must have submitted an answer/acknowledged
+        // Ensure an item exists and an answer/acknowledgement has been made
+        if (!currentItem || lastAnswerCorrectness === null) return;
 
-        const wasCorrectOrAcknowledged = lastAnswerCorrectness; // True for correct answers or acknowledged snippets
+        const wasCorrectOrAcknowledged = lastAnswerCorrectness;
         const itemJustProcessed = currentItem;
 
         let nextQueue = lessonQueue.slice(1); // Get remaining items
 
-        // If it was a question, it was incorrect, AND this item hasn't been marked as completed before,
+        // If it was a question, it was incorrect, AND this item hasn't been marked as fully completed before,
         // move it to the end of the queue. Snippets are never moved back.
         if (itemJustProcessed.type !== 'informationalSnippet' && !wasCorrectOrAcknowledged && !completedItemsMap.has(itemJustProcessed.id)) {
-        nextQueue.push(itemJustProcessed); // Add the incorrect item to the end
+            nextQueue.push(itemJustProcessed); // Add the incorrect item to the end
         }
 
         setLessonQueue(nextQueue); // Update the queue state
 
         // Set the next item, or null if the queue is empty
-        if (nextQueue.length > 0) {
-            setCurrentItem(nextQueue[0]);
-            // State reset is handled by the useEffect watching currentItem
-        } else {
-            setCurrentItem(null); // No more items in the current queue run
-             // State reset is handled by the useEffect watching currentItem
-        }
+        setCurrentItem(nextQueue[0] || null);
+        // Reset for the next item is handled by the useEffect watching currentItem
+
   }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]);
 
 
@@ -285,4 +282,3 @@ export default function LessonPage() {
     </main>
   );
 }
-```
