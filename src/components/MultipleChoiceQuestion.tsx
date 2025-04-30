@@ -210,4 +210,3 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     </Card>
   );
 };
-```

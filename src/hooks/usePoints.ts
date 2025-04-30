@@ -26,4 +26,3 @@ export function usePoints(initialPoints = 0) {
 
   return { points, addPoints, deductPoints, setPoints: resetPoints }; // Export setPoints as resetPoints
 }
-```
