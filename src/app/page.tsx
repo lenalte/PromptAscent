@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
 import { PromptEvaluator } from '@/components/PromptEvaluator';
 import { PointsDisplay } from '@/components/PointsDisplay';
+import { LessonCompleteScreen } from '@/components/LessonCompleteScreen'; // Import the new component
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePoints } from '@/hooks/usePoints';
@@ -133,6 +134,8 @@ export default function Home() {
   // This signals to the button to show "Lesson Complete" and disable.
   const isFinalCorrectlyAnsweredQuestion = currentLesson !== null && questionsToAsk.length === 1 && answeredCorrectlyMap.has(currentLesson.id);
 
+  const isLessonComplete = allUniqueQuestionsAnswered && currentLesson === null;
+
 
   return (
     <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
@@ -145,7 +148,7 @@ export default function Home() {
 
       <Tabs defaultValue="lesson" className="w-full max-w-4xl">
         <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="lesson">
+          <TabsTrigger value="lesson" disabled={isLessonComplete}> {/* Disable tab when lesson complete */}
             <BrainCircuit className="mr-2 h-4 w-4" />
             Lesson Questions ({questionsCompletedCount}/{totalInitialQuestions})
           </TabsTrigger>
@@ -154,7 +157,9 @@ export default function Home() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="lesson">
-          {currentLesson ? (
+          {isLessonComplete ? (
+            <LessonCompleteScreen points={points} /> // Show completion screen
+          ) : currentLesson ? (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold">{currentLesson.title}</h2>
               <FreeResponseQuestion
@@ -170,13 +175,9 @@ export default function Home() {
               />
             </div>
           ) : (
-             <div className="mt-6 p-4 border rounded-lg bg-green-50 border-green-200 text-green-700 text-center">
-               <CheckCircle className="inline-block mr-2 h-5 w-5" />
-               { allUniqueQuestionsAnswered ? ( // Check if all unique questions are done
-                "Congratulations! You've completed all the lesson questions."
-               ) : (
-                "Loading questions..." // Should ideally not show if logic is correct
-               )}
+             <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
+               {/* Optional: Loading state or initial message */}
+               Loading questions...
              </div>
           )}
         </TabsContent>
