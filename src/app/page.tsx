@@ -1,6 +1,7 @@
 
 "use client";
 
+import type React from 'react'; // Import type React
 import { useState, useEffect, useCallback } from 'react';
 import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
 import { MultipleChoiceQuestion } from '@/components/MultipleChoiceQuestion'; // Import the new component
@@ -138,36 +139,46 @@ export default function Home() {
 
     let nextQuestions = questionsToAsk.slice(1);
 
+    // If the answer was incorrect AND this question hasn't been marked as correctly answered before,
+    // move it to the end of the queue.
     if (!wasCorrect && !answeredCorrectlyMap.has(lessonJustAnswered.id)) {
       nextQuestions.push(lessonJustAnswered);
     }
 
     setQuestionsToAsk(nextQuestions);
 
+    // Set the next question, or null if the queue is empty
     if (nextQuestions.length > 0) {
-      setCurrentLesson(nextQuestions[0]);
+        setCurrentLesson(nextQuestions[0]);
+        setIsCurrentAttemptSubmitted(false); // Reset for the new question
+        setLastAnswerCorrectness(null);    // Reset for the new question
     } else {
-      setCurrentLesson(null);
-      setIsCurrentAttemptSubmitted(false);
-      setLastAnswerCorrectness(null);
+        setCurrentLesson(null); // No more questions
+        setIsCurrentAttemptSubmitted(false);
+        setLastAnswerCorrectness(null);
     }
   }, [currentLesson, lastAnswerCorrectness, questionsToAsk, answeredCorrectlyMap]);
 
+
   const allUniqueQuestionsAnswered = answeredCorrectlyMap.size === totalInitialQuestions;
+  // Check if the current question is the last one *in the current queue* AND it has been answered correctly
   const isFinalCorrectlyAnsweredQuestion = currentLesson !== null && questionsToAsk.length === 1 && answeredCorrectlyMap.has(currentLesson.id);
+  // Lesson is complete when all unique questions have been answered correctly and there's no current question displayed
   const isLessonComplete = allUniqueQuestionsAnswered && currentLesson === null;
 
 
   const renderQuestionComponent = () => {
     if (!currentLesson) return null; // Should be handled by isLessonComplete check, but safety first
 
-    const commonProps = {
-        key: currentLesson.id, // Force re-render on question change
+    // Extract key from commonProps to pass it directly
+    const { id: key, ...restCommonProps } = {
+        id: currentLesson.id, // Use lesson ID as key
         question: currentLesson.question,
         pointsForCorrect: currentLesson.pointsForCorrect,
         pointsForIncorrect: currentLesson.pointsForIncorrect,
         onAnswerSubmit: handleAnswerSubmit,
         isAnswerSubmitted: isCurrentAttemptSubmitted,
+        // isLastQuestion now signifies the very final step after all unique questions are correct
         isLastQuestion: isFinalCorrectlyAnsweredQuestion,
         onNextQuestion: handleNextQuestion,
     };
@@ -176,14 +187,16 @@ export default function Home() {
       case 'freeResponse':
         return (
           <FreeResponseQuestion
-            {...commonProps}
+            key={key} // Pass key directly
+            {...restCommonProps} // Spread the rest of the props
             expectedAnswer={currentLesson.expectedAnswer}
           />
         );
       case 'multipleChoice':
         return (
            <MultipleChoiceQuestion
-            {...commonProps}
+            key={key} // Pass key directly
+            {...restCommonProps} // Spread the rest of the props
             options={currentLesson.options}
             correctOptionIndex={currentLesson.correctOptionIndex}
           />
