@@ -7,9 +7,9 @@ import { PromptEvaluator } from '@/components/PromptEvaluator';
 import { PointsDisplay } from '@/components/PointsDisplay';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from '@/components/ui/button'; // Import Button
+// Removed Button import as it's no longer used directly here for "Next"
 import { usePoints } from '@/hooks/usePoints';
-import { BrainCircuit, PencilRuler, CheckCircle, ArrowRight } from 'lucide-react'; // Import icons
+import { BrainCircuit, PencilRuler, CheckCircle } from 'lucide-react'; // Removed ArrowRight icon
 
 // Define the structure for a lesson
 interface Lesson {
@@ -104,14 +104,10 @@ export default function Home() {
                 pointsForIncorrect={currentLesson.pointsForIncorrect}
                 onAnswerSubmit={handleAnswerSubmit}
                 isAnswerSubmitted={isCurrentQuestionAnswered} // Pass answered status
+                isLastQuestion={isLastQuestion} // Pass last question status
+                onNextQuestion={handleNextQuestion} // Pass next question handler
               />
-              {isCurrentQuestionAnswered && !isLastQuestion && (
-                <div className="flex justify-end mt-4">
-                  <Button onClick={handleNextQuestion} className="bg-secondary hover:bg-secondary/90">
-                    Next Question <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+              {/* Removed the separate Next Question button */}
               {isCurrentQuestionAnswered && isLastQuestion && (
                 <div className="mt-6 p-4 border rounded-lg bg-green-50 border-green-200 text-green-700 text-center">
                   <CheckCircle className="inline-block mr-2 h-5 w-5" />
@@ -120,6 +116,7 @@ export default function Home() {
               )}
             </div>
           ) : (
+             // This state might be unreachable if FreeResponseQuestion handles the last question state internally
              <div className="mt-6 p-4 border rounded-lg bg-green-50 border-green-200 text-green-700 text-center">
                <CheckCircle className="inline-block mr-2 h-5 w-5" />
                Congratulations! You've finished all the lesson questions.
@@ -133,4 +130,3 @@ export default function Home() {
     </main>
   );
 }
-

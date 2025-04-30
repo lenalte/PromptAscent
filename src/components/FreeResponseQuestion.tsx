@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, Loader2, Lightbulb } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Lightbulb, ArrowRight } from 'lucide-react'; // Added ArrowRight
 import { cn } from '@/lib/utils';
 
 interface FreeResponseQuestionProps {
@@ -21,7 +21,9 @@ interface FreeResponseQuestionProps {
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isAnswerSubmitted: boolean; // New prop
+  isAnswerSubmitted: boolean;
+  isLastQuestion: boolean; // New prop
+  onNextQuestion: () => void; // New prop
 }
 
 const formSchema = z.object({
@@ -36,7 +38,9 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isAnswerSubmitted, // Use the new prop
+  isAnswerSubmitted,
+  isLastQuestion, // Use the new prop
+  onNextQuestion, // Use the new prop
 }) => {
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
@@ -49,12 +53,21 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-   // Reset state when the question changes (primarily handled by key prop in parent, but good practice)
+   // Reset form and validation state when the question changes
    useEffect(() => {
-     form.reset();
+     form.reset({ userAnswer: '' }); // Explicitly reset userAnswer
      setValidationResult({ isValid: false, feedback: '', attemptMade: false });
      setShowHint(false);
-   }, [question, form]);
+   }, [question, form]); // Depend on question and form instance
+
+  const handleButtonClick = () => {
+      if (!isAnswerSubmitted) {
+          form.handleSubmit(onSubmit)();
+      } else if (!isLastQuestion) {
+          onNextQuestion();
+      }
+      // If it's the last question and submitted, the button will be disabled
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setValidationResult({ isValid: false, feedback: '', attemptMade: false }); // Reset previous result
@@ -68,10 +81,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         });
         setValidationResult({ ...result, attemptMade: true });
         onAnswerSubmit(result.isValid);
-        if (!result.isValid) {
-          // Optionally reset the form field on incorrect answer for retry
-          // form.resetField("userAnswer");
-        }
+        // Don't reset form field here, user might want to see their answer
       } catch (error) {
         console.error('Validation error:', error);
         setValidationResult({ isValid: false, feedback: 'Error validating answer. Please try again.', attemptMade: true });
@@ -82,6 +92,19 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   const toggleHint = () => setShowHint(prev => !prev);
 
+  const getButtonText = () => {
+    if (isPending) return 'Validating...';
+    if (!isAnswerSubmitted) return 'Submit Answer';
+    if (!isLastQuestion) return 'Next Question';
+    return 'Answer Submitted'; // Text for last question after submission
+  };
+
+  const getButtonIcon = () => {
+    if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
+    if (isAnswerSubmitted && !isLastQuestion) return <ArrowRight className="ml-2 h-4 w-4" />;
+    return null;
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
       <CardHeader>
@@ -90,7 +113,8 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Removed the form element, handle submission via button click */}
+          <div className="space-y-6">
             <FormField
               control={form.control}
               name="userAnswer"
@@ -104,7 +128,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                       rows={4}
                       {...field}
                       aria-describedby={validationResult.attemptMade ? "feedback-alert" : undefined}
-                      disabled={isAnswerSubmitted || isPending} // Disable textarea after submission
+                      disabled={isAnswerSubmitted || isPending} // Disable textarea after submission or during validation
                     />
                   </FormControl>
                   <FormMessage />
@@ -118,7 +142,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 variant={validationResult.isValid ? 'default' : 'destructive'}
                 className={cn(
                   "transition-opacity duration-300 ease-in-out",
-                  validationResult.isValid ? "border-green-500 bg-green-50" : "border-destructive bg-red-50" // Added background colors for better distinction
+                  validationResult.isValid ? "border-green-500 bg-green-50" : "border-destructive bg-red-50"
                 )}
               >
                 {validationResult.isValid ? (
@@ -126,10 +150,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 ) : (
                   <XCircle className="h-4 w-4 text-destructive" />
                 )}
-                <AlertTitle className={cn(validationResult.isValid ? "text-green-800" : "text-red-800")}> {/* Adjusted title color */}
+                <AlertTitle className={cn(validationResult.isValid ? "text-green-800" : "text-red-800")}>
                     {validationResult.isValid ? 'Correct!' : 'Incorrect'}
                 </AlertTitle>
-                <AlertDescription className={cn(validationResult.isValid ? "text-green-700" : "text-red-700")}> {/* Adjusted description color */}
+                <AlertDescription className={cn(validationResult.isValid ? "text-green-700" : "text-red-700")}>
                   {validationResult.feedback}
                 </AlertDescription>
                  {!validationResult.isValid && validationResult.feedback && (
@@ -147,7 +171,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                  )}
                  {showHint && !validationResult.isValid && (
                    <p className="text-sm text-muted-foreground mt-2 p-2 border rounded bg-muted">
-                     {/* Displaying feedback again as hint, or use a separate hint field if available */}
                      Hint: {validationResult.feedback}
                    </p>
                  )}
@@ -155,21 +178,18 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             )}
 
             <Button
-              type="submit"
-              disabled={isPending || isAnswerSubmitted} // Disable button if pending or already submitted
-              className="w-full sm:w-auto bg-primary hover:bg-primary/90 disabled:opacity-50"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validating...
-                </>
-              ) : isAnswerSubmitted ? (
-                 'Answer Submitted' // Change button text after submission
-              ) : (
-                'Submit Answer'
+              type="button" // Change type to button
+              onClick={handleButtonClick} // Use the new handler
+              disabled={isPending || (isAnswerSubmitted && isLastQuestion)} // Disable if pending or last question submitted
+              className={cn(
+                "w-full sm:w-auto disabled:opacity-50",
+                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90"
               )}
+            >
+              {getButtonIcon()}
+              {getButtonText()}
             </Button>
-          </form>
+          </div>
         </Form>
       </CardContent>
        <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
