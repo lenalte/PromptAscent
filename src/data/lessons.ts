@@ -150,4 +150,3 @@ export const lessons: Lesson[] = [
 export function getLessonById(id: string): Lesson | undefined {
   return lessons.find(lesson => lesson.id === id);
 }
-```
