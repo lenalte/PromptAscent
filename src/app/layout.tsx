@@ -1,9 +1,10 @@
 
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google'; // Corrected import path if needed
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
+// Assuming Geist and Geist_Mono setup is correct
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Prompt Ascent', // Update title
-  description: 'Learn and evaluate prompt engineering skills.', // Update description
+  title: 'Prompt Ascent - Learn Prompt Engineering', // More descriptive title
+  description: 'Interactive lessons and tools to master prompt engineering skills with AI feedback.', // Updated description
 };
 
 export default function RootLayout({
@@ -26,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         {children}
         <Toaster /> {/* Add Toaster here */}
       </body>

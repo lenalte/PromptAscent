@@ -11,23 +11,27 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react'; // Added Loader2
+import { CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MultipleChoiceQuestionProps {
   question: string;
   options: string[];
   correctOptionIndex: number;
-  pointsForCorrect: number; // Renamed from pointsAwarded in page.tsx for clarity here
+  pointsForCorrect: number;
   pointsForIncorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void; // Called when the choice is submitted
-  isAnswerSubmitted: boolean; // Whether the current attempt on this component instance has been submitted.
-  isLastQuestion: boolean; // True ONLY if this is the final question instance AND it was previously answered correctly.
-  onNextQuestion: () => void; // Called when the "Next" button is clicked
+  onAnswerSubmit: (isCorrect: boolean) => void;
+  isAnswerSubmitted: boolean;
+  isLastQuestion: boolean; // Directly use the prop passed from parent
+  onNextQuestion: () => void;
+  title: string; // Added title prop
+  id: number; // Added id prop
+  pointsAwarded: number; // Keep for consistency
+  onNext: () => void; // Keep for consistency
 }
 
 const formSchema = z.object({
-  selectedOption: z.string({ required_error: 'Please select an option.' }), // Ensure an option is selected
+  selectedOption: z.string({ required_error: 'Please select an option.' }),
 });
 
 export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
@@ -37,82 +41,82 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isAnswerSubmitted, // Tracks the submission state *for this specific render/attempt*
-  isLastQuestion,
+  isAnswerSubmitted,
+  isLastQuestion, // Use the passed prop directly
   onNextQuestion,
+  // title, id, pointsAwarded, onNext might not be used directly here
 }) => {
-  // Internal state for correctness *of the current attempt*
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // For potential async operations if needed
+  const [isLoading, setIsLoading] = useState(false); // Kept for potential future use
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      selectedOption: undefined, // Start with no selection
+      selectedOption: undefined,
     },
   });
 
-  // Reset internal component state when the `question` prop changes.
+   // Reset internal component state when the `question` prop changes.
    useEffect(() => {
-     form.reset({ selectedOption: undefined }); // Clear the selection
-     setIsCorrect(null); // Clear correctness state for the new attempt
+     form.reset({ selectedOption: undefined });
+     setIsCorrect(null);
      setIsLoading(false);
-   }, [question, form]); // Re-run when the question text changes
-
+   }, [question, form]); // Depend on question text
 
   // Handles the primary button click
   const handleButtonClick = () => {
-      if (!isAnswerSubmitted) { // If the current attempt hasn't been submitted yet
-          form.handleSubmit(onSubmit)(); // Trigger validation and submission
-      } else { // If the current attempt *has* been submitted
-          if (!isLastQuestion) {
-            onNextQuestion();
-          }
-          // If it IS the last question, the button will be disabled (logic below)
+      if (!isAnswerSubmitted) {
+          form.handleSubmit(onSubmit)();
+      } else {
+           // Use onNextQuestion (mapped from onNext in parent)
+          onNextQuestion();
       }
   };
 
-  // Function called by react-hook-form on successful form validation (option selected)
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true); // Indicate processing start (optional, instant for MC)
-    const selectedIndex = parseInt(values.selectedOption, 10); // Radio value is the index as string
+    setIsLoading(true);
+    const selectedIndex = parseInt(values.selectedOption, 10);
     const correct = selectedIndex === correctOptionIndex;
 
     setIsCorrect(correct);
-    onAnswerSubmit(correct); // Inform parent
+    onAnswerSubmit(correct);
 
-    setIsLoading(false); // Indicate processing end
+    setIsLoading(false);
   };
 
-  // Determine button text based on the state
-   const getButtonText = () => {
+   // Determine button text
+    const getButtonText = () => {
      if (isLoading) return 'Checking...';
      if (!isAnswerSubmitted) return 'Submit Answer';
-     if (!isLastQuestion) return 'Next Question';
-     return 'Lesson Complete';
+     // If submitted AND it's the last completed item in the queue
+     if (isLastQuestion) return 'Lesson Complete';
+     // If submitted but not the last item
+     return 'Next Question';
    };
 
-   // Determine which icon to show on the button
+   // Determine button icon
    const getButtonIcon = () => {
      if (isLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
+      // Show arrow only if submitted *and* it's not the final completed item in the queue
      if (isAnswerSubmitted && !isLastQuestion) return <ArrowRight className="ml-2 h-4 w-4" />;
-     return null;
+     return null; // No icon for Submit or Lesson Complete states
    };
 
    // Determine if the button should be disabled
-   const isButtonDisabled = isLoading || (isLastQuestion && isAnswerSubmitted);
-    // Also disable if form is invalid (no selection) and hasn't been submitted yet
+   const isButtonDisabled = isLoading || (isLastQuestion && isAnswerSubmitted); // Disable on loading or if it's the final completed item and submitted
    const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
+
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
-      <CardHeader>
+      {/* Title is handled by the parent page */}
+       <CardHeader>
         <CardTitle>Question</CardTitle>
         <CardDescription>{question}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <div className="space-y-6"> {/* Wrap form content in a div for consistent spacing */}
+          <div className="space-y-6">
             <FormField
               control={form.control}
               name="selectedOption"
@@ -122,17 +126,17 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      value={field.value} // Use controlled value
+                      value={field.value}
                       className="flex flex-col space-y-2"
-                      disabled={isAnswerSubmitted || isLoading} // Disable after submitting or during load
+                      disabled={isAnswerSubmitted || isLoading}
                       aria-describedby={isAnswerSubmitted ? "feedback-alert" : undefined}
                     >
                       {options.map((option, index) => (
                         <FormItem key={index} className={cn(
                           "flex items-center space-x-3 space-y-0 p-3 rounded-md border transition-colors",
-                          isAnswerSubmitted && index === correctOptionIndex && "border-green-500 bg-green-50", // Highlight correct on submit
-                          isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "border-destructive bg-red-50", // Highlight incorrect selection
-                          !isAnswerSubmitted && "hover:bg-muted/50" // Hover effect before submit
+                          isAnswerSubmitted && index === correctOptionIndex && "border-green-500 bg-green-50",
+                          isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "border-destructive bg-red-50",
+                          !isAnswerSubmitted && "hover:bg-muted/50"
                           )}
                           >
                           <FormControl>
@@ -145,19 +149,17 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                            )}>
                             {option}
                           </FormLabel>
-                           {/* Show check/x icons after submission */}
                            {isAnswerSubmitted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600" />}
                            {isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && <XCircle className="h-5 w-5 text-destructive" />}
                         </FormItem>
                       ))}
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage /> {/* Show error if no option selected */}
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Display overall feedback after submission */}
             {isAnswerSubmitted && isCorrect !== null && (
               <Alert
                 id="feedback-alert"
@@ -184,14 +186,17 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             )}
 
             <Button
-              type="button" // Changed to button to prevent default form submission, onClick handles logic
+              type="button"
               onClick={handleButtonClick}
               disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
                className={cn(
                  "w-full sm:w-auto disabled:opacity-50",
-                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90"
+                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
+                  // Special style if it's the final completed item button
+                 isLastQuestion && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
                )}
             >
+               {/* Icon is handled by getButtonIcon */}
               {getButtonIcon()}
               {getButtonText()}
             </Button>
@@ -205,4 +210,4 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     </Card>
   );
 };
-
+```

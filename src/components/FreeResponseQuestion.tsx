@@ -18,12 +18,16 @@ import { cn } from '@/lib/utils';
 interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
-  pointsForCorrect: number; // Renamed from pointsAwarded in page.tsx for clarity here
+  pointsForCorrect: number;
   pointsForIncorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void; // Called when the validation completes
-  isAnswerSubmitted: boolean; // Whether the *current attempt* on this component instance has been submitted.
-  isLastQuestion: boolean; // True ONLY if this is the final question instance AND it was previously answered correctly.
-  onNextQuestion: () => void; // Called when the "Next" button is clicked
+  onAnswerSubmit: (isCorrect: boolean) => void;
+  isAnswerSubmitted: boolean;
+  isLastQuestion: boolean; // Directly use the prop passed from parent (page.tsx maps isLastItem -> isLastQuestion)
+  onNextQuestion: () => void;
+  title: string; // Added title prop for context if needed, although CardTitle is used separately
+  id: number; // Added id prop
+  pointsAwarded: number; // Keep for consistency, though pointsForCorrect is used internally
+  onNext: () => void; // Keep for consistency, though onNextQuestion is used internally
 }
 
 const formSchema = z.object({
@@ -38,12 +42,12 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isAnswerSubmitted, // Tracks the submission state *for this specific render/attempt*
-  isLastQuestion,     // True only for the final state after all questions are correctly answered
+  isAnswerSubmitted,
+  isLastQuestion, // Use the passed prop directly
   onNextQuestion,
+  // title, id, pointsAwarded, onNext are passed but maybe not used directly if parent handles display
 }) => {
   const [isPending, startTransition] = useTransition();
-  // Internal state for validation feedback *of the current attempt*
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
   const [showHint, setShowHint] = useState(false);
 
@@ -54,29 +58,24 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-   // Reset internal component state when the `question` prop changes.
+   // Reset internal component state when the `question` prop changes (new item).
    useEffect(() => {
-     form.reset({ userAnswer: '' }); // Clear the input field
-     setValidationResult({ isValid: false, feedback: '', attemptMade: false }); // Clear validation results for the new attempt
-     setShowHint(false); // Hide any previous hints
-   }, [question, form]); // Re-run when the question text changes
+     form.reset({ userAnswer: '' });
+     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+     setShowHint(false);
+   }, [question, form]); // Depend on question text
 
   // Handles the primary button click
   const handleButtonClick = () => {
-      if (!isAnswerSubmitted) { // If the current attempt hasn't been submitted yet
-          form.handleSubmit(onSubmit)(); // Trigger validation and submission
-      } else { // If the current attempt *has* been submitted
-          // Only trigger 'Next Question' if it's NOT the absolute final question state
-          if (!isLastQuestion) {
-            onNextQuestion();
-          }
-          // If it IS the last question, the button will be disabled (logic below), so nothing happens here.
+      if (!isAnswerSubmitted) {
+          form.handleSubmit(onSubmit)();
+      } else {
+          // Use onNextQuestion (mapped from onNext in parent)
+          onNextQuestion();
       }
   };
 
-  // Function called by react-hook-form on successful form validation (just checks non-empty)
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Reset validation feedback specifically for this new submission attempt
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     setShowHint(false);
     startTransition(async () => {
@@ -86,49 +85,45 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           expectedAnswer,
           userAnswer: values.userAnswer,
         });
-        // Update internal validation state to display feedback
         setValidationResult({ ...result, attemptMade: true });
-        // Inform the parent component (page.tsx) about the correctness
         onAnswerSubmit(result.isValid);
       } catch (error) {
         console.error('Validation error:', error);
         setValidationResult({ isValid: false, feedback: 'Error validating answer. Please try again.', attemptMade: true });
-        onAnswerSubmit(false); // Treat errors as incorrect
+        onAnswerSubmit(false);
       }
     });
   };
 
-  // Toggles the visibility of the hint
   const toggleHint = () => setShowHint(prev => !prev);
 
-  // Determine button text based on the state of the current attempt and overall lesson progress
-  const getButtonText = () => {
+  // Determine button text
+   const getButtonText = () => {
     if (isPending) return 'Validating...';
-    if (!isAnswerSubmitted) return 'Submit Answer'; // Not yet submitted this attempt
-    if (!isLastQuestion) return 'Next Question'; // Submitted this attempt, more questions to come
-    return 'Lesson Complete'; // Submitted this attempt, and it's the final one
+    if (!isAnswerSubmitted) return 'Submit Answer';
+    // If submitted AND it's the last completed item in the queue
+    if (isLastQuestion) return 'Lesson Complete';
+    // If submitted but not the last item
+    return 'Next Question';
   };
 
-  // Determine which icon to show on the button
+  // Determine button icon
   const getButtonIcon = () => {
     if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-    // Show arrow only if submitted *and* it's not the final question
+    // Show arrow only if submitted *and* it's not the final completed item in the queue
     if (isAnswerSubmitted && !isLastQuestion) return <ArrowRight className="ml-2 h-4 w-4" />;
-    return null;
+    return null; // No icon for Submit or Lesson Complete states
   };
 
+
   // Determine if the button should be disabled
-  // Disabled if:
-  // 1. Validation is in progress (pending).
-  // 2. Or, if this is the designated "last question" (meaning all unique questions are correct)
-  //    AND the current attempt on *this* component instance has been submitted.
-  const isButtonDisabled = isPending || (isLastQuestion && isAnswerSubmitted);
-   // Also disable if form is invalid (e.g., empty) and hasn't been submitted yet
+   const isButtonDisabled = isPending || (isLastQuestion && isAnswerSubmitted); // Disable on pending or if it's the final completed item and submitted
    const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
+      {/* Title is handled by the parent page */}
       <CardHeader>
         <CardTitle>Question</CardTitle>
         <CardDescription>{question}</CardDescription>
@@ -149,7 +144,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                       rows={4}
                       {...field}
                       aria-describedby={validationResult.attemptMade ? "feedback-alert" : undefined}
-                      // Disable textarea during validation or after submitting *this attempt*
                       disabled={isPending || isAnswerSubmitted}
                     />
                   </FormControl>
@@ -158,7 +152,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {/* Display validation result only after *this attempt* is made */}
             {validationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
@@ -179,7 +172,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 <AlertDescription className={cn(validationResult.isValid ? "text-green-700" : "text-red-700")}>
                   {validationResult.feedback}
                 </AlertDescription>
-                 {/* Show hint button only if incorrect *in this attempt* and feedback exists */}
                  {!validationResult.isValid && validationResult.feedback && (
                   <Button
                     type="button"
@@ -193,7 +185,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                     {showHint ? 'Hide Hint' : 'Show Hint'}
                   </Button>
                  )}
-                 {/* Show hint text if toggled and incorrect *in this attempt* */}
                  {showHint && !validationResult.isValid && (
                    <p className="text-sm text-muted-foreground mt-2 p-2 border rounded bg-muted">
                      Hint: {validationResult.feedback}
@@ -205,12 +196,15 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted} // Use the calculated disabled state
+              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
-                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90"
+                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
+                 // Special style if it's the final completed item button
+                 isLastQuestion && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
               )}
             >
+               {/* Icon is handled by getButtonIcon */}
               {getButtonIcon()}
               {getButtonText()}
             </Button>
@@ -224,4 +218,3 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     </Card>
   );
 };
-
