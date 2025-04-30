@@ -1,15 +1,14 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
 import { PromptEvaluator } from '@/components/PromptEvaluator';
 import { PointsDisplay } from '@/components/PointsDisplay';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// Removed Button import as it's no longer used directly here for "Next"
 import { usePoints } from '@/hooks/usePoints';
-import { BrainCircuit, PencilRuler, CheckCircle } from 'lucide-react'; // Removed ArrowRight icon
+import { BrainCircuit, PencilRuler, CheckCircle } from 'lucide-react';
 
 // Define the structure for a lesson
 interface Lesson {
@@ -22,7 +21,7 @@ interface Lesson {
 }
 
 // Example array of lessons - replace with actual lesson data
-const lessons: Lesson[] = [
+const initialLessons: Lesson[] = [
   {
     id: 1,
     title: "Introduction to Prompt Engineering",
@@ -51,28 +50,89 @@ const lessons: Lesson[] = [
 
 export default function Home() {
   const { points, addPoints, deductPoints } = usePoints(0);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isCurrentQuestionAnswered, setIsCurrentQuestionAnswered] = useState(false);
+  const [questionsToAsk, setQuestionsToAsk] = useState<Lesson[]>([...initialLessons]);
+  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
+  // State for the *current attempt* on the displayed question component
+  const [isCurrentAttemptSubmitted, setIsCurrentAttemptSubmitted] = useState(false);
+  const [lastAnswerCorrectness, setLastAnswerCorrectness] = useState<boolean | null>(null);
+  // Tracks which unique questions (by ID) have been answered correctly at least once
+  const [answeredCorrectlyMap, setAnsweredCorrectlyMap] = useState<Map<number, boolean>>(new Map());
+  const [totalInitialQuestions, setTotalInitialQuestions] = useState(initialLessons.length);
+  // Tracks the count of *unique* questions answered correctly
+  const [questionsCompletedCount, setQuestionsCompletedCount] = useState(0);
 
-  const currentLesson = lessons[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === lessons.length - 1;
 
-  const handleAnswerSubmit = (isCorrect: boolean) => {
+  // Initialize first question
+  useEffect(() => {
+    if (questionsToAsk.length > 0 && !currentLesson) {
+      setCurrentLesson(questionsToAsk[0]);
+      setTotalInitialQuestions(initialLessons.length); // Store the initial total count
+    }
+     // Reset attempt state when the current lesson changes
+     setIsCurrentAttemptSubmitted(false);
+     setLastAnswerCorrectness(null);
+  }, [questionsToAsk, currentLesson]); // Depend only on these
+
+  // Callback from FreeResponseQuestion when *an attempt* is submitted
+  const handleAnswerSubmit = useCallback((isCorrect: boolean) => {
+    if (!currentLesson) return;
+
+    const lessonId = currentLesson.id;
+
     if (isCorrect) {
-      addPoints(currentLesson.pointsForCorrect);
+      // Only add points and update completion count if it's the *first time* this question is answered correctly
+      if (!answeredCorrectlyMap.has(lessonId)) {
+        addPoints(currentLesson.pointsForCorrect);
+        setQuestionsCompletedCount(prev => prev + 1);
+        setAnsweredCorrectlyMap(prevMap => new Map(prevMap).set(lessonId, true));
+      }
+      // If answered correctly again (after being wrong previously), still mark as correct for next step
+      setLastAnswerCorrectness(true);
     } else {
-      // Only deduct if points > 0 or handle negative points if desired
-      deductPoints(currentLesson.pointsForIncorrect);
+      // Only deduct points if it hasn't been answered correctly before
+      if (!answeredCorrectlyMap.has(lessonId)) {
+        deductPoints(currentLesson.pointsForIncorrect);
+      }
+      setLastAnswerCorrectness(false);
     }
-    setIsCurrentQuestionAnswered(true); // Mark current question as answered
-  };
+    setIsCurrentAttemptSubmitted(true); // Mark the current attempt as submitted
+  }, [currentLesson, addPoints, deductPoints, answeredCorrectlyMap]);
 
-  const handleNextQuestion = () => {
-    if (!isLastQuestion) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setIsCurrentQuestionAnswered(false); // Reset answered status for the new question
+  // Callback from FreeResponseQuestion when the "Next" button (or final submit) is clicked
+  const handleNextQuestion = useCallback(() => {
+    if (!currentLesson || lastAnswerCorrectness === null) return;
+
+    const wasCorrect = lastAnswerCorrectness;
+    const lessonJustAnswered = currentLesson;
+
+    // Remove the current question from the front
+    let nextQuestions = questionsToAsk.slice(1);
+
+    // If incorrect AND it hasn't been answered correctly before, add it back to the end
+    if (!wasCorrect && !answeredCorrectlyMap.has(lessonJustAnswered.id)) {
+      nextQuestions.push(lessonJustAnswered);
     }
-  };
+
+    setQuestionsToAsk(nextQuestions);
+
+    // Move to the next question or finish
+    if (nextQuestions.length > 0) {
+      setCurrentLesson(nextQuestions[0]);
+      // State reset is now handled by the useEffect watching currentLesson
+    } else {
+      setCurrentLesson(null); // No more questions
+       // Explicitly reset attempt state when finishing
+      setIsCurrentAttemptSubmitted(false);
+      setLastAnswerCorrectness(null);
+    }
+  }, [currentLesson, lastAnswerCorrectness, questionsToAsk, answeredCorrectlyMap]);
+
+  // Determines if all *unique* questions have been answered correctly
+  const allUniqueQuestionsAnswered = answeredCorrectlyMap.size === totalInitialQuestions;
+  // Determines if the currently displayed question is the last one in the queue *and* it has already been answered correctly
+  // This signals to the button to show "Lesson Complete" and disable.
+  const isFinalCorrectlyAnsweredQuestion = currentLesson !== null && questionsToAsk.length === 1 && answeredCorrectlyMap.has(currentLesson.id);
+
 
   return (
     <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
@@ -86,40 +146,37 @@ export default function Home() {
       <Tabs defaultValue="lesson" className="w-full max-w-4xl">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="lesson">
-            <BrainCircuit className="mr-2 h-4 w-4" /> Lesson Questions ({currentQuestionIndex + 1}/{lessons.length})
+            <BrainCircuit className="mr-2 h-4 w-4" />
+            Lesson Questions ({questionsCompletedCount}/{totalInitialQuestions})
           </TabsTrigger>
           <TabsTrigger value="evaluator">
             <PencilRuler className="mr-2 h-4 w-4" /> Prompt Evaluator
           </TabsTrigger>
         </TabsList>
         <TabsContent value="lesson">
-          {currentQuestionIndex < lessons.length ? (
+          {currentLesson ? (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold">{currentLesson.title}</h2>
               <FreeResponseQuestion
-                key={currentLesson.id} // Use key to force re-render and reset state
+                key={currentLesson.id} // Use key to force re-render and reset internal state when question changes
                 question={currentLesson.question}
                 expectedAnswer={currentLesson.expectedAnswer}
                 pointsForCorrect={currentLesson.pointsForCorrect}
                 pointsForIncorrect={currentLesson.pointsForIncorrect}
                 onAnswerSubmit={handleAnswerSubmit}
-                isAnswerSubmitted={isCurrentQuestionAnswered} // Pass answered status
-                isLastQuestion={isLastQuestion} // Pass last question status
+                isAnswerSubmitted={isCurrentAttemptSubmitted} // Pass the submission status of the current attempt
+                isLastQuestion={isFinalCorrectlyAnsweredQuestion} // Pass whether this is the final, correctly answered question
                 onNextQuestion={handleNextQuestion} // Pass next question handler
               />
-              {/* Removed the separate Next Question button */}
-              {isCurrentQuestionAnswered && isLastQuestion && (
-                <div className="mt-6 p-4 border rounded-lg bg-green-50 border-green-200 text-green-700 text-center">
-                  <CheckCircle className="inline-block mr-2 h-5 w-5" />
-                  You have completed all the questions! Check out the Prompt Evaluator.
-                </div>
-              )}
             </div>
           ) : (
-             // This state might be unreachable if FreeResponseQuestion handles the last question state internally
              <div className="mt-6 p-4 border rounded-lg bg-green-50 border-green-200 text-green-700 text-center">
                <CheckCircle className="inline-block mr-2 h-5 w-5" />
-               Congratulations! You've finished all the lesson questions.
+               { allUniqueQuestionsAnswered ? ( // Check if all unique questions are done
+                "Congratulations! You've completed all the lesson questions."
+               ) : (
+                "Loading questions..." // Should ideally not show if logic is correct
+               )}
              </div>
           )}
         </TabsContent>
