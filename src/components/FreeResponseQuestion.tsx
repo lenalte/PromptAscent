@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -17,12 +18,12 @@ import { cn } from '@/lib/utils';
 interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
-  pointsForCorrect: number;
+  pointsForCorrect: number; // Renamed from pointsAwarded in page.tsx for clarity here
   pointsForIncorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void;
+  onAnswerSubmit: (isCorrect: boolean) => void; // Called when the validation completes
   isAnswerSubmitted: boolean; // Whether the *current attempt* on this component instance has been submitted.
   isLastQuestion: boolean; // True ONLY if this is the final question instance AND it was previously answered correctly.
-  onNextQuestion: () => void;
+  onNextQuestion: () => void; // Called when the "Next" button is clicked
 }
 
 const formSchema = z.object({
@@ -54,7 +55,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   });
 
    // Reset internal component state when the `question` prop changes.
-   // This is crucial for when a question reappears after being answered incorrectly.
    useEffect(() => {
      form.reset({ userAnswer: '' }); // Clear the input field
      setValidationResult({ isValid: false, feedback: '', attemptMade: false }); // Clear validation results for the new attempt
@@ -75,7 +75,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   };
 
   // Function called by react-hook-form on successful form validation (just checks non-empty)
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     // Reset validation feedback specifically for this new submission attempt
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     setShowHint(false);
@@ -123,6 +123,9 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   // 2. Or, if this is the designated "last question" (meaning all unique questions are correct)
   //    AND the current attempt on *this* component instance has been submitted.
   const isButtonDisabled = isPending || (isLastQuestion && isAnswerSubmitted);
+   // Also disable if form is invalid (e.g., empty) and hasn't been submitted yet
+   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
+
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
@@ -202,7 +205,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isButtonDisabled} // Use the calculated disabled state
+              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted} // Use the calculated disabled state
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90"
@@ -221,3 +224,4 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     </Card>
   );
 };
+

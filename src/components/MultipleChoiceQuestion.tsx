@@ -18,12 +18,12 @@ interface MultipleChoiceQuestionProps {
   question: string;
   options: string[];
   correctOptionIndex: number;
-  pointsForCorrect: number;
+  pointsForCorrect: number; // Renamed from pointsAwarded in page.tsx for clarity here
   pointsForIncorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void;
+  onAnswerSubmit: (isCorrect: boolean) => void; // Called when the choice is submitted
   isAnswerSubmitted: boolean; // Whether the current attempt on this component instance has been submitted.
   isLastQuestion: boolean; // True ONLY if this is the final question instance AND it was previously answered correctly.
-  onNextQuestion: () => void;
+  onNextQuestion: () => void; // Called when the "Next" button is clicked
 }
 
 const formSchema = z.object({
@@ -101,6 +101,8 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
    // Determine if the button should be disabled
    const isButtonDisabled = isLoading || (isLastQuestion && isAnswerSubmitted);
+    // Also disable if form is invalid (no selection) and hasn't been submitted yet
+   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
@@ -110,7 +112,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-6"> {/* Wrap form content in a div for consistent spacing */}
             <FormField
               control={form.control}
               name="selectedOption"
@@ -184,7 +186,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             <Button
               type="button" // Changed to button to prevent default form submission, onClick handles logic
               onClick={handleButtonClick}
-              disabled={isButtonDisabled}
+              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
                className={cn(
                  "w-full sm:w-auto disabled:opacity-50",
                  !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90"
@@ -193,7 +195,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               {getButtonIcon()}
               {getButtonText()}
             </Button>
-          </form>
+          </div>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
@@ -203,3 +205,4 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     </Card>
   );
 };
+
