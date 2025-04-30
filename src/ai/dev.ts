@@ -1,1 +1,2 @@
-// Flows will be imported for their side effects in this file.
+import '@/ai/flows/validate-user-answer.ts';
+import '@/ai/flows/evaluate-prompt.ts';
