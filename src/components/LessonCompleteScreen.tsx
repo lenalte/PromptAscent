@@ -21,8 +21,8 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
   useEffect(() => {
     // We only add points once when the component mounts.
     // This assumes the component only mounts upon successful lesson completion.
-    // Check if points > 0 to avoid adding 0 points unnecessarily.
-    if (points > 0) {
+    // Check if points > 0 to avoid adding 0 points unnecessarily or if points could be negative.
+    if (points > 0) { // Only add if points are positive
        addTotalPoints(points);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

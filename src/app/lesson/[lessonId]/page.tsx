@@ -63,14 +63,6 @@ export default function LessonPage() {
         }
     }, [lessonId, setPoints]); // Depend on lessonId and setPoints from usePoints
 
-    // Reset attempt state when the current item changes within the same lesson
-    useEffect(() => {
-        if (currentItem) { // Only reset if there's a current item (avoids reset on initial load potentially)
-            setIsCurrentAttemptSubmitted(false);
-            setLastAnswerCorrectness(null);
-        }
-    }, [currentItem]);
-
 
     // Callback from Question components when *an attempt* is submitted
     const handleAnswerSubmit = useCallback((isCorrect: boolean) => {
@@ -100,16 +92,19 @@ export default function LessonPage() {
     // Callback when the "Next" button (or final submit) is clicked for *any* item type
     // Define handleNextItem before handleSnippetAcknowledged
     const handleNextItem = useCallback(() => {
-        // Ensure an item exists and an answer/acknowledgement has been made
-        if (!currentItem || lastAnswerCorrectness === null) return;
+        // Ensure an item exists and an answer/acknowledgement has been made for it
+        // For snippets, lastAnswerCorrectness is set to true by handleSnippetAcknowledged before this is called.
+        // For questions, lastAnswerCorrectness is set by handleAnswerSubmit.
+        if (!currentItem || (currentItem.type !== 'informationalSnippet' && lastAnswerCorrectness === null) ) return;
 
-        const wasCorrectOrAcknowledged = lastAnswerCorrectness;
+
+        const wasCorrectOrAcknowledged = lastAnswerCorrectness; // For questions, this is correctness. For snippets, it's true.
         const itemJustProcessed = currentItem;
 
         let nextQueue = lessonQueue.slice(1); // Get remaining items
 
-        // If it was a question, it was incorrect, AND this item hasn't been marked as fully completed before,
-        // move it to the end of the queue. Snippets are never moved back.
+        // If it was a question type, it was incorrect, AND this item hasn't been marked as fully completed before,
+        // move it to the end of the queue. Snippets are never moved back as they are considered 'acknowledged'.
         if (itemJustProcessed.type !== 'informationalSnippet' && !wasCorrectOrAcknowledged && !completedItemsMap.has(itemJustProcessed.id)) {
             nextQueue.push(itemJustProcessed); // Add the incorrect item to the end
         }
@@ -118,7 +113,8 @@ export default function LessonPage() {
 
         // Set the next item, or null if the queue is empty
         setCurrentItem(nextQueue[0] || null);
-        // Reset for the next item is handled by the useEffect watching currentItem
+        // Reset for the next item (isCurrentAttemptSubmitted, lastAnswerCorrectness)
+        // is handled by the useEffect watching currentItem
 
     }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]);
 
@@ -134,21 +130,30 @@ export default function LessonPage() {
             setItemsCompletedCount(prev => prev + 1); // Increment completion count
             setCompletedItemsMap(prevMap => new Map(prevMap).set(itemId, true)); // Mark as completed
         }
-        // Snippets are always considered "correct" once acknowledged for moving forward
+        // Snippets are always considered "correct" for progression once acknowledged
         setLastAnswerCorrectness(true);
         setIsCurrentAttemptSubmitted(true); // Mark as submitted to enable 'Next' logic
 
         // Directly trigger moving to the next item after acknowledging
-        handleNextItem(); // Call handleNextItem directly
+        handleNextItem();
 
-    }, [currentItem, addPoints, completedItemsMap, handleNextItem]); // handleNextItem is now defined above
+    }, [currentItem, addPoints, completedItemsMap, handleNextItem]);
+
+
+    // Reset attempt state when the current item changes within the same lesson
+    useEffect(() => {
+        if (currentItem) { // Only reset if there's a current item
+            setIsCurrentAttemptSubmitted(false);
+            setLastAnswerCorrectness(null);
+        }
+    }, [currentItem]);
 
 
     // Derived states for completion
-    const allUniqueItemsCompleted = completedItemsMap.size === totalLessonItems && totalLessonItems > 0;
+    const allUniqueItemsCompleted = totalLessonItems > 0 && completedItemsMap.size === totalLessonItems;
     // Check if the current item is the last one *in the current queue* AND it has been completed (correct/acknowledged)
     const isFinalCompletedItemInQueue = currentItem !== null && lessonQueue.length === 1 && completedItemsMap.has(currentItem.id);
-    // Lesson is complete when all unique items have been completed and there's no current item displayed
+    // Lesson is complete when all unique items have been completed and there's no current item displayed (queue is empty)
     const isLessonComplete = allUniqueItemsCompleted && currentItem === null;
 
 
@@ -161,7 +166,8 @@ export default function LessonPage() {
             title: currentItem.title,
             pointsAwarded: currentItem.pointsAwarded,
             isAnswerSubmitted: isCurrentAttemptSubmitted,
-            // isLastItem signifies the very final step after all unique items are completed in the QUEUE
+            // isLastItem signifies if the current item is the last in the lesson queue *and* it's been completed.
+            // This is used by child components to change button text to "Lesson Complete".
             isLastItem: isFinalCompletedItemInQueue,
             onNext: handleNextItem, // Universal 'Next' handler
         };
@@ -181,8 +187,8 @@ export default function LessonPage() {
                         onAnswerSubmit={handleAnswerSubmit}
                         // Map props specifically needed by the component
                         pointsForCorrect={currentItem.pointsAwarded}
-                        isLastQuestion={isFinalCompletedItemInQueue}
-                        onNextQuestion={handleNextItem}
+                        isLastQuestion={isFinalCompletedItemInQueue} // Prop name specific to component
+                        onNextQuestion={handleNextItem} // Prop name specific to component
                     />
                 );
             case 'multipleChoice':
@@ -197,8 +203,8 @@ export default function LessonPage() {
                         onAnswerSubmit={handleAnswerSubmit}
                         // Map props specifically needed by the component
                         pointsForCorrect={currentItem.pointsAwarded}
-                        isLastQuestion={isFinalCompletedItemInQueue}
-                        onNextQuestion={handleNextItem}
+                        isLastQuestion={isFinalCompletedItemInQueue} // Prop name specific to component
+                        onNextQuestion={handleNextItem} // Prop name specific to component
                     />
                 );
             case 'informationalSnippet':
@@ -207,9 +213,9 @@ export default function LessonPage() {
                         key={key} // Pass key directly
                         {...restCommonProps} // Spread the rest
                         content={currentItem.content}
-                        onAcknowledged={handleSnippetAcknowledged}
+                        onAcknowledged={handleSnippetAcknowledged} // Snippets have specific acknowledgement logic
                         // Map props specifically needed by the component
-                        isLastSnippet={isFinalCompletedItemInQueue}
+                        isLastSnippet={isFinalCompletedItemInQueue} // Prop name specific to component
                     />
                 );
             case 'promptingTask':
@@ -222,8 +228,8 @@ export default function LessonPage() {
                         pointsForIncorrect={currentItem.pointsForIncorrect}
                         onAnswerSubmit={handleAnswerSubmit}
                         pointsForCorrect={currentItem.pointsAwarded}
-                        isLastTask={isFinalCompletedItemInQueue}
-                        onNextTask={handleNextItem}
+                        isLastTask={isFinalCompletedItemInQueue} // Prop name specific to component
+                        onNextTask={handleNextItem} // Prop name specific to component
                     />
                 );
             default:
@@ -253,7 +259,6 @@ export default function LessonPage() {
 
 
     if (!lesson) {
-        // Optional: Add a loading state here
         return (
             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -278,7 +283,7 @@ export default function LessonPage() {
 
             <Separator className="my-6 w-full max-w-4xl" />
 
-            <div className="w-full max-w-4xl"> {/* Removed Tabs, directly rendering lesson content */}
+            <div className="w-full max-w-4xl">
                 {isLessonComplete ? (
                     <LessonCompleteScreen points={points} lessonTitle={lesson.title} />
                 ) : currentItem ? (
@@ -290,7 +295,6 @@ export default function LessonPage() {
                         {renderLessonItemComponent()}
                     </div>
                 ) : (
-                    // This state might occur briefly between loading or if lesson has no items
                     <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
                         {totalLessonItems === 0 ? "This lesson has no content yet." : "Loading lesson content..."}
                     </div>
