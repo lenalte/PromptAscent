@@ -100,7 +100,31 @@ export const lessons: Lesson[] = [
         evaluationGuidance: "Evaluate the student's prompt based on: \n1. Clarity of Role: Does it clearly instruct the AI to act as a travel agent? \n2. Task Definition: Does it clearly state the task of generating a 3-day itinerary with morning, afternoon, and evening activities for each day? \n3. Output Structure: Does it guide the AI to produce a well-structured output? \n4. Generality: The prompt should be a general instruction for the AI, not a request for an itinerary for a *specific* city. It should prepare the AI to receive a city name from a user.",
         pointsAwarded: 15,
         pointsForIncorrect: 3,
-    }
+      },
+      {
+        id: 6,
+        type: 'freeResponse',
+        title: "Reflecting on Combinations",
+        question: "When combining prompting techniques, what is a key benefit of placing the main instruction *after* providing context or examples?",
+        expectedAnswer: "Placing the main instruction after context or examples helps prevent the LLM from continuing to generate more context or examples, and instead focuses it on executing the specific task or answering the question posed by the instruction.",
+        pointsAwarded: 10,
+        pointsForIncorrect: 2,
+      },
+      {
+        id: 7,
+        type: 'multipleChoice',
+        title: "Iterative Refinement",
+        question: "The text mentions that 'Almost all prompts you write will combine multiple strategies.' What is the recommended approach when developing such combined prompts?",
+        options: [
+          "Use only one strategy per prompt to avoid confusing the AI.",
+          "Always include a role, an instruction, context, and few-shot examples in every prompt.",
+          "Experiment with different combinations and iteratively refine them to achieve the desired results.",
+          "Focus solely on instruction prompting as it is the most powerful technique."
+        ],
+        correctOptionIndex: 2,
+        pointsAwarded: 8,
+        pointsForIncorrect: 1,
+      }
     ],
   },
   {
@@ -250,7 +274,7 @@ export const lessons: Lesson[] = [
         type: 'freeResponse',
         title: "Caution with PII Removal",
         question: "What are the two important cautions mentioned in the text regarding the use of AI for PII removal?",
-        expectedAnswer: "The text cautions that AI for PII removal should be used with extraordinary caution as it may make mistakes. Additionally, it notes that sending PII to third-party services (like OpenAI for ChatGPT) means these services may record and use your prompts.",
+        expectedAnswer: "The text cautions that AI for PII removal should be used with extraordinary caution as it may make mistakes. Additionally, it notes that sending PII to third-party services (like OpenAI for ChatGPT) means these services may record and use your prompts for their own needs.",
         pointsAwarded: 12,
         pointsForIncorrect: 3,
       },
@@ -597,3 +621,4 @@ export const lessons: Lesson[] = [
 export function getLessonById(id: string): Lesson | undefined {
   return lessons.find(lesson => lesson.id === id);
 }
+
