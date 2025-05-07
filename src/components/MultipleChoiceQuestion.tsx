@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react';
@@ -11,7 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, Loader2, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MultipleChoiceQuestionProps {
@@ -22,12 +21,13 @@ interface MultipleChoiceQuestionProps {
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastQuestion: boolean; // Directly use the prop passed from parent
+  isLastItem: boolean; 
   onNextQuestion: () => void;
-  title: string; // Added title prop
-  id: number; // Added id prop
-  pointsAwarded: number; // Keep for consistency
-  onNext: () => void; // Keep for consistency
+  title: string; 
+  id: number; 
+  pointsAwarded: number; 
+  onNext: () => void; 
+  lessonPoints: number; // Total points for the lesson so far
 }
 
 const formSchema = z.object({
@@ -42,8 +42,9 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
-  isLastQuestion, // Use the passed prop directly
+  isLastItem, 
   onNextQuestion,
+  lessonPoints,
   // title, id, pointsAwarded, onNext might not be used directly here
 }) => {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -88,22 +89,20 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     const getButtonText = () => {
      if (isLoading) return 'Checking...';
      if (!isAnswerSubmitted) return 'Submit Answer';
-     // If submitted AND it's the last completed item in the queue
-     if (isLastQuestion) return 'Lesson Complete';
-     // If submitted but not the last item
+     if (isLastItem) return `View Score (${lessonPoints} Points)`;
      return 'Next Question';
    };
 
    // Determine button icon
    const getButtonIcon = () => {
      if (isLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-      // Show arrow only if submitted *and* it's not the final completed item in the queue
-     if (isAnswerSubmitted && !isLastQuestion) return <ArrowRight className="ml-2 h-4 w-4" />;
-     return null; // No icon for Submit or Lesson Complete states
+     if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
+     if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
+     return null; 
    };
 
    // Determine if the button should be disabled
-   const isButtonDisabled = isLoading || (isLastQuestion && isAnswerSubmitted); // Disable on loading or if it's the final completed item and submitted
+   const isButtonDisabled = isLoading || (isAnswerSubmitted && isLastItem && isCorrect === null);
    const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
@@ -192,11 +191,9 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                className={cn(
                  "w-full sm:w-auto disabled:opacity-50",
                  !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                  // Special style if it's the final completed item button
-                 isLastQuestion && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
+                 isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
                )}
             >
-               {/* Icon is handled by getButtonIcon */}
               {getButtonIcon()}
               {getButtonText()}
             </Button>

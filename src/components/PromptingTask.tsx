@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react';
@@ -13,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, Loader2, Lightbulb, ArrowRight, FilePenLine } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Lightbulb, ArrowRight, FilePenLine, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PromptingTaskProps {
@@ -23,12 +22,13 @@ interface PromptingTaskProps {
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastTask: boolean;
+  isLastItem: boolean; // Renamed from isLastTask
   onNextTask: () => void;
   title: string;
   id: number;
   pointsAwarded: number; // Alias for pointsForCorrect
   onNext: () => void; // Alias for onNextTask
+  lessonPoints: number; // Total points for the lesson so far
 }
 
 const formSchema = z.object({
@@ -44,9 +44,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
-  isLastTask,
+  isLastItem, // Use renamed prop
   onNextTask,
-  title, // Passed for CardTitle, though parent also displays item title
+  title, 
+  lessonPoints,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResultWithAttempt>({
@@ -103,17 +104,17 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   const getButtonText = () => {
     if (isPending) return 'Evaluating...';
     if (!isAnswerSubmitted) return 'Submit Prompt';
-    return isLastTask ? 'Lesson Complete' : 'Next Task';
+    return isLastItem ? `View Score (${lessonPoints} Points)` : 'Next Task';
   };
 
   const getButtonIcon = () => {
     if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-    if (isAnswerSubmitted && !isLastTask) return <ArrowRight className="ml-2 h-4 w-4" />;
-    if (isAnswerSubmitted && isLastTask) return <CheckCircle2 className="ml-2 h-4 w-4" />;
+    if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
+    if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
     return null;
   };
 
-  const isButtonDisabled = isPending || (isLastTask && isAnswerSubmitted);
+  const isButtonDisabled = isPending || (isAnswerSubmitted && isLastItem && !evaluationResult.attemptMade);
   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
   return (
@@ -189,7 +190,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "bg-secondary hover:bg-secondary/90 text-secondary-foreground",
-                isLastTask && isAnswerSubmitted && "bg-green-600 hover:bg-green-700 text-white"
+                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700 text-white"
               )}
             >
               {getButtonIcon()}
@@ -205,4 +206,3 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     </Card>
   );
 };
-

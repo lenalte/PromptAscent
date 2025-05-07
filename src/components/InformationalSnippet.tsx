@@ -1,10 +1,9 @@
-
 "use client";
 
 import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, CheckCircle, Info } from 'lucide-react'; // Added Info icon
+import { ArrowRight, CheckCircle, Info, Trophy } from 'lucide-react'; // Added Info icon and Trophy
 import { cn } from '@/lib/utils';
 
 interface InformationalSnippetProps {
@@ -12,11 +11,12 @@ interface InformationalSnippetProps {
   content: string;
   pointsAwarded: number;
   onAcknowledged: () => void;
-  isLastSnippet: boolean; // Directly use the prop passed from parent (page.tsx maps isLastItem -> isLastSnippet)
+  isLastItem: boolean; // Renamed from isLastSnippet for consistency
   // Add other props passed from parent if needed for consistency, though may not be used directly
   id: number;
   isAnswerSubmitted: boolean; // Passed from parent, might indicate if 'Next' was clicked
   onNext: () => void; // Passed from parent, equivalent to onAcknowledged here
+  lessonPoints: number; // Total points for the lesson so far
 }
 
 export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
@@ -24,7 +24,8 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   content,
   pointsAwarded,
   onAcknowledged,
-  isLastSnippet, // Use the passed prop directly
+  isLastItem, 
+  lessonPoints,
   // id, isAnswerSubmitted, onNext might not be used if parent handles logic
 }) => {
 
@@ -35,18 +36,15 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
 
   // Determine button text
   const getButtonText = () => {
-    // If it's the last completed item in the queue
-    return isLastSnippet ? 'Lesson Complete' : 'Next';
+    return isLastItem ? `View Score (${lessonPoints} Points)` : 'Next';
   };
 
   // Determine button icon
   const getButtonIcon = () => {
-    // No icon needed if it's the last snippet leading to completion screen
-    if (!isLastSnippet) {
-        return <ArrowRight className="ml-2 h-4 w-4" />;
+    if (isLastItem) {
+        return <Trophy className="mr-2 h-4 w-4" />;
     }
-     // Optional: Check icon for the final complete button
-     return <CheckCircle className="ml-2 h-4 w-4" />;
+    return <ArrowRight className="ml-2 h-4 w-4" />;
   };
 
    // Determine if the button should be disabled (never for snippets until completion)
@@ -71,12 +69,11 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
              disabled={isButtonDisabled}
              className={cn(
                  "w-full sm:w-auto bg-secondary hover:bg-secondary/90",
-                 // Special style if it's the final completion button
-                 isLastSnippet && "bg-green-600 hover:bg-green-700"
+                 isLastItem && "bg-green-600 hover:bg-green-700"
              )}
            >
-             {getButtonText()}
              {getButtonIcon()}
+             {getButtonText()}
            </Button>
       </CardContent>
        <CardFooter className="flex justify-start text-xs text-blue-600 pt-4">

@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react'; // Import type React
@@ -27,8 +26,8 @@ import { usePoints }
 from '@/hooks/usePoints';
 import { getLessonById, type Lesson, type LessonItem }
 from '@/data/lessons'; // Import lesson data and types
-import { BrainCircuit, PencilRuler, CheckCircle, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine }
-from 'lucide-react'; // Added Loader2 and FilePenLine
+import { BrainCircuit, PencilRuler, CheckCircle, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine, Trophy }
+from 'lucide-react'; // Added Loader2, FilePenLine, Trophy
 
 export default function LessonPage() {
     const params = useParams();
@@ -169,9 +168,10 @@ export default function LessonPage() {
             pointsAwarded: currentItem.pointsAwarded,
             isAnswerSubmitted: isCurrentAttemptSubmitted,
             // isLastItem signifies if the current item is the last in the lesson queue *and* it's been completed.
-            // This is used by child components to change button text to "Lesson Complete".
+            // This is used by child components to change button text to "Lesson Complete" or "View Score".
             isLastItem: isFinalCompletedItemInQueue,
             onNext: handleNextItem, // Universal 'Next' handler
+            lessonPoints: points, // Pass current total lesson points
         };
 
         // Remove 'id' for spreading, pass 'key' separately
@@ -189,7 +189,8 @@ export default function LessonPage() {
                         onAnswerSubmit={handleAnswerSubmit}
                         // Map props specifically needed by the component
                         pointsForCorrect={currentItem.pointsAwarded}
-                        isLastQuestion={isFinalCompletedItemInQueue} // Prop name specific to component
+                        // Use 'isLastItem' from common props, child will map to its specific prop name if different
+                        // isLastQuestion={isFinalCompletedItemInQueue} // Prop name specific to component
                         onNextQuestion={handleNextItem} // Prop name specific to component
                     />
                 );
@@ -203,10 +204,8 @@ export default function LessonPage() {
                         correctOptionIndex={currentItem.correctOptionIndex}
                         pointsForIncorrect={currentItem.pointsForIncorrect}
                         onAnswerSubmit={handleAnswerSubmit}
-                        // Map props specifically needed by the component
                         pointsForCorrect={currentItem.pointsAwarded}
-                        isLastQuestion={isFinalCompletedItemInQueue} // Prop name specific to component
-                        onNextQuestion={handleNextItem} // Prop name specific to component
+                        onNextQuestion={handleNextItem} 
                     />
                 );
             case 'informationalSnippet':
@@ -216,8 +215,6 @@ export default function LessonPage() {
                         {...restCommonProps} // Spread the rest
                         content={currentItem.content}
                         onAcknowledged={handleSnippetAcknowledged} // Snippets have specific acknowledgement logic
-                        // Map props specifically needed by the component
-                        isLastSnippet={isFinalCompletedItemInQueue} // Prop name specific to component
                     />
                 );
             case 'promptingTask':
@@ -230,8 +227,7 @@ export default function LessonPage() {
                         pointsForIncorrect={currentItem.pointsForIncorrect}
                         onAnswerSubmit={handleAnswerSubmit}
                         pointsForCorrect={currentItem.pointsAwarded}
-                        isLastTask={isFinalCompletedItemInQueue} // Prop name specific to component
-                        onNextTask={handleNextItem} // Prop name specific to component
+                        onNextTask={handleNextItem} 
                     />
                 );
             default:
@@ -311,6 +307,8 @@ export default function LessonPage() {
                         {renderLessonItemComponent()}
                     </div>
                 ) : (
+                    // This case should ideally not be reached if lesson is loaded and not empty
+                    // and not yet complete. It might briefly show if lesson items are loading.
                     <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
                         {totalLessonItems === 0 ? "This lesson has no content yet." : "Loading lesson content..."}
                     </div>
