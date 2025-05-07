@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react'; // Import type React
@@ -21,6 +22,7 @@ import { Separator }
 from '@/components/ui/separator';
 import { Button }
 from '@/components/ui/button';
+import { Progress } from "@/components/ui/progress"; // Import Progress component
 import { usePoints }
 from '@/hooks/usePoints';
 import { getLessonById, type Lesson, type LessonItem }
@@ -257,6 +259,8 @@ export default function LessonPage() {
         }
     }
 
+    const progressPercentage = totalLessonItems > 0 ? (itemsCompletedCount / totalLessonItems) * 100 : 0;
+
 
     if (!lesson) {
         return (
@@ -282,6 +286,18 @@ export default function LessonPage() {
             </div>
 
             <Separator className="my-6 w-full max-w-4xl" />
+
+            {totalLessonItems > 0 && !isLessonComplete && (
+                <div className="w-full max-w-4xl mb-6">
+                    <div className="flex justify-between items-center mb-1">
+                        <p className="text-sm text-muted-foreground">Lesson Progress</p>
+                        <p className="text-sm font-medium text-primary">
+                            {itemsCompletedCount} / {totalLessonItems} items
+                        </p>
+                    </div>
+                    <Progress value={progressPercentage} className="w-full h-2 [&>*]:bg-primary" />
+                </div>
+            )}
 
             <div className="w-full max-w-4xl">
                 {isLessonComplete ? (
