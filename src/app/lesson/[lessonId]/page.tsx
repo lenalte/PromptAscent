@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react'; // Import type React
@@ -172,65 +171,66 @@ export default function LessonPage() {
 
         switch (currentItem.type) {
             case 'freeResponse':
-                return ( <
-                    FreeResponseQuestion key = { key } // Pass key directly
-                    {...restCommonProps
-                    } // Spread the rest
-                    question = { currentItem.question }
-                    expectedAnswer = { currentItem.expectedAnswer }
-                    pointsForIncorrect = { currentItem.pointsForIncorrect }
-                    onAnswerSubmit = { handleAnswerSubmit }
-                    // Map props specifically needed by the component
-                    pointsForCorrect = { currentItem.pointsAwarded }
-                    isLastQuestion = { isFinalCompletedItemInQueue }
-                    onNextQuestion = { handleNextItem }
+                return (
+                    <FreeResponseQuestion
+                        key={key} // Pass key directly
+                        {...restCommonProps} // Spread the rest
+                        question={currentItem.question}
+                        expectedAnswer={currentItem.expectedAnswer}
+                        pointsForIncorrect={currentItem.pointsForIncorrect}
+                        onAnswerSubmit={handleAnswerSubmit}
+                        // Map props specifically needed by the component
+                        pointsForCorrect={currentItem.pointsAwarded}
+                        isLastQuestion={isFinalCompletedItemInQueue}
+                        onNextQuestion={handleNextItem}
                     />
                 );
             case 'multipleChoice':
-                return ( <
-                    MultipleChoiceQuestion key = { key } // Pass key directly
-                    {...restCommonProps
-                    } // Spread the rest
-                    question = { currentItem.question }
-                    options = { currentItem.options }
-                    correctOptionIndex = { currentItem.correctOptionIndex }
-                    pointsForIncorrect = { currentItem.pointsForIncorrect }
-                    onAnswerSubmit = { handleAnswerSubmit }
-                    // Map props specifically needed by the component
-                    pointsForCorrect = { currentItem.pointsAwarded }
-                    isLastQuestion = { isFinalCompletedItemInQueue }
-                    onNextQuestion = { handleNextItem }
+                return (
+                    <MultipleChoiceQuestion
+                        key={key} // Pass key directly
+                        {...restCommonProps} // Spread the rest
+                        question={currentItem.question}
+                        options={currentItem.options}
+                        correctOptionIndex={currentItem.correctOptionIndex}
+                        pointsForIncorrect={currentItem.pointsForIncorrect}
+                        onAnswerSubmit={handleAnswerSubmit}
+                        // Map props specifically needed by the component
+                        pointsForCorrect={currentItem.pointsAwarded}
+                        isLastQuestion={isFinalCompletedItemInQueue}
+                        onNextQuestion={handleNextItem}
                     />
                 );
             case 'informationalSnippet':
-                return ( <
-                    InformationalSnippet key = { key } // Pass key directly
-                    {...restCommonProps
-                    } // Spread the rest
-                    content = { currentItem.content }
-                    onAcknowledged = { handleSnippetAcknowledged }
-                    // Map props specifically needed by the component
-                    isLastSnippet = { isFinalCompletedItemInQueue }
+                return (
+                    <InformationalSnippet
+                        key={key} // Pass key directly
+                        {...restCommonProps} // Spread the rest
+                        content={currentItem.content}
+                        onAcknowledged={handleSnippetAcknowledged}
+                        // Map props specifically needed by the component
+                        isLastSnippet={isFinalCompletedItemInQueue}
                     />
                 );
             case 'promptingTask':
-                return ( <
-                    PromptingTask key = { key } {...restCommonProps
-                    }
-                    taskDescription = { currentItem.taskDescription }
-                    evaluationGuidance = { currentItem.evaluationGuidance }
-                    pointsForIncorrect = { currentItem.pointsForIncorrect }
-                    onAnswerSubmit = { handleAnswerSubmit }
-                    pointsForCorrect = { currentItem.pointsAwarded }
-                    isLastTask = { isFinalCompletedItemInQueue }
-                    onNextTask = { handleNextItem }
+                return (
+                    <PromptingTask
+                        key={key}
+                        {...restCommonProps}
+                        taskDescription={currentItem.taskDescription}
+                        evaluationGuidance={currentItem.evaluationGuidance}
+                        pointsForIncorrect={currentItem.pointsForIncorrect}
+                        onAnswerSubmit={handleAnswerSubmit}
+                        pointsForCorrect={currentItem.pointsAwarded}
+                        isLastTask={isFinalCompletedItemInQueue}
+                        onNextTask={handleNextItem}
                     />
                 );
             default:
                 // Handle potential future types or errors with exhaustive check simulation
                 const _exhaustiveCheck: never = currentItem;
                 console.error("Unknown lesson item type:", _exhaustiveCheck);
-                return <div > Error: Unknown lesson item type. < /div>;
+                return <div> Error: Unknown lesson item type. </div>;
         }
     };
 
@@ -239,82 +239,63 @@ export default function LessonPage() {
         if (!currentItem) return null;
         switch (currentItem.type) {
             case 'freeResponse':
-                return <PencilRuler className = "h-5 w-5 text-muted-foreground" / > ;
+                return <PencilRuler className="h-5 w-5 text-muted-foreground" />;
             case 'multipleChoice':
-                return <ListChecks className = "h-5 w-5 text-muted-foreground" / > ;
+                return <ListChecks className="h-5 w-5 text-muted-foreground" />;
             case 'informationalSnippet':
-                return <Info className = "h-5 w-5 text-muted-foreground" / > ;
+                return <Info className="h-5 w-5 text-muted-foreground" />;
             case 'promptingTask':
                 return <FilePenLine className="h-5 w-5 text-muted-foreground" />;
             default:
-                return <BookOpen className = "h-5 w-5 text-muted-foreground" / > ; // Default icon
+                return <BookOpen className="h-5 w-5 text-muted-foreground" />; // Default icon
         }
     }
 
 
     if (!lesson) {
         // Optional: Add a loading state here
-        return ( <
-            div className = "container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center" >
-            <
-            Loader2 className = "h-16 w-16 animate-spin text-primary" / >
-            <
-            p className = "mt-4 text-muted-foreground" > Loading Lesson... < /p> <
-            /div>
+        return (
+            <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
+                <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                <p className="mt-4 text-muted-foreground">Loading Lesson...</p>
+            </div>
         );
     }
 
-    return ( <
-        main className = "container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8" >
-        <
-        div className = "w-full max-w-4xl flex justify-between items-center" >
-        <
-        div className = "flex items-center space-x-4" >
-        <
-        Link href = "/"
-        passHref legacyBehavior >
-        <
-        Button variant = "outline"
-        size = "icon"
-        aria - label = "Back to Lessons" >
-        <
-        HomeIcon className = "h-5 w-5" / >
-        <
-        /Button> <
-        /Link> <
-        h1 className = "text-3xl font-bold text-primary" > { lesson.title } < /h1> <
-        /div> <
-        PointsDisplay points = { points }
-        /> <
-        /div>
+    return (
+        <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
+            <div className="w-full max-w-4xl flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                    <Link href="/" passHref legacyBehavior>
+                        <Button variant="outline" size="icon" aria-label="Back to Lessons">
+                            <HomeIcon className="h-5 w-5" />
+                        </Button>
+                    </Link>
+                    <h1 className="text-3xl font-bold text-primary">{lesson.title}</h1>
+                </div>
+                <PointsDisplay points={points} />
+            </div>
 
-        <
-        Separator className = "my-6 w-full max-w-4xl" / >
+            <Separator className="my-6 w-full max-w-4xl" />
 
-        <
-        div className = "w-full max-w-4xl" > { /* Removed Tabs, directly rendering lesson content */ } {
-            isLessonComplete ? ( <
-                LessonCompleteScreen points = { points }
-                lessonTitle = { lesson.title }
-                />
-            ) : currentItem ? ( <
-                div className = "space-y-6" >
-                <
-                div className = "flex items-center justify-between" >
-                <
-                h2 className = "text-2xl font-semibold" > { currentItem.title } < /h2> { getCurrentItemIcon() } <
-                /div> { renderLessonItemComponent() } <
-                /div>
-            ) : (
-                // This state might occur briefly between loading or if lesson has no items
-                <
-                div className = "mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center" > {
-                    totalLessonItems === 0 ? "This lesson has no content yet." : "Loading lesson content..."
-                } <
-                /div>
-            )
-        } <
-        /div> <
-        /main>
+            <div className="w-full max-w-4xl"> {/* Removed Tabs, directly rendering lesson content */}
+                {isLessonComplete ? (
+                    <LessonCompleteScreen points={points} lessonTitle={lesson.title} />
+                ) : currentItem ? (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold">{currentItem.title}</h2>
+                            {getCurrentItemIcon()}
+                        </div>
+                        {renderLessonItemComponent()}
+                    </div>
+                ) : (
+                    // This state might occur briefly between loading or if lesson has no items
+                    <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
+                        {totalLessonItems === 0 ? "This lesson has no content yet." : "Loading lesson content..."}
+                    </div>
+                )}
+            </div>
+        </main>
     );
 }
