@@ -26,8 +26,19 @@ export interface InformationalSnippetLessonItem extends BaseLessonItem {
   // No pointsForIncorrect for snippets
 }
 
+export interface PromptingTaskLessonItem extends BaseLessonItem {
+  type: 'promptingTask';
+  taskDescription: string; // Detailed description of what the user's prompt should achieve
+  evaluationGuidance: string; // Specific guidance for the AI evaluating the user's prompt for THIS task
+  pointsForIncorrect: number;
+}
+
 // Union type for all lesson items
-export type LessonItem = FreeResponseLessonItem | MultipleChoiceLessonItem | InformationalSnippetLessonItem;
+export type LessonItem =
+  | FreeResponseLessonItem
+  | MultipleChoiceLessonItem
+  | InformationalSnippetLessonItem
+  | PromptingTaskLessonItem; // Added PromptingTaskLessonItem
 
 export interface Lesson {
   id: string; // Unique identifier for the lesson (e.g., 'basics-1')
@@ -81,6 +92,15 @@ export const lessons: Lesson[] = [
         content: "As you continue to experiment with and refine your prompts, always consider how different techniques can be combined to achieve your desired results. Effective prompt engineering often involves iterative testing.",
         pointsAwarded: 2,
       },
+      {
+        id: 5,
+        type: 'promptingTask',
+        title: "Craft a Travel Itinerary Prompt",
+        taskDescription: "Your goal is to write a prompt that instructs an AI to act as a specialized travel agent. When a user (hypothetically) provides a city name, your prompt should guide the AI to generate a concise 3-day travel itinerary for that city. The itinerary for each day must include distinct suggestions for a morning activity, an afternoon activity, and an evening activity. The AI's output should be clearly structured.",
+        evaluationGuidance: "Evaluate the student's prompt based on: \n1. Clarity of Role: Does it clearly instruct the AI to act as a travel agent? \n2. Task Definition: Does it clearly state the task of generating a 3-day itinerary with morning, afternoon, and evening activities for each day? \n3. Output Structure: Does it guide the AI to produce a well-structured output? \n4. Generality: The prompt should be a general instruction for the AI, not a request for an itinerary for a *specific* city. It should prepare the AI to receive a city name from a user.",
+        pointsAwarded: 15,
+        pointsForIncorrect: 3,
+    }
     ],
   },
   {
