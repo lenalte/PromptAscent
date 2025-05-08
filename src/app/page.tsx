@@ -18,7 +18,7 @@ export default function Home() {
     <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
       <div className="w-full max-w-4xl flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primary flex items-center">
-           <BookOpen className="mr-3 h-8 w-8" /> Prompt Ascent
+           <BookOpen className="mr-3 h-8 w-8" /> The Promptening
         </h1>
          <PointsDisplay points={totalPoints} /> {/* Display global total points */}
       </div>
@@ -52,3 +52,4 @@ export default function Home() {
     </main>
   );
 }
+

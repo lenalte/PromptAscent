@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Prompt Ascent - Learn Prompt Engineering', // More descriptive title
+  title: 'The Promptening - Learn Prompt Engineering', // More descriptive title
   description: 'Interactive lessons and tools to master prompt engineering skills with AI feedback.', // Updated description
 };
 
@@ -37,3 +37,4 @@ export default function RootLayout({
     </html>
   );
 }
+

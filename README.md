@@ -1,4 +1,4 @@
-# Prompt Ascent
+# The Promptening
 
 This Next.js application helps users learn and practice prompt engineering skills.
 
@@ -40,3 +40,4 @@ To learn more about the technologies used, take a look at the following resource
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Genkit Documentation](https://firebase.google.com/docs/genkit) - learn about Genkit flows and AI integration.
 - [Shadcn/ui Documentation](https://ui.shadcn.com/docs) - learn about the UI components used.
+
