@@ -14,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, XCircle, Loader2, Lightbulb, ArrowRight, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// props
 interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
@@ -21,12 +22,12 @@ interface FreeResponseQuestionProps {
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastItem: boolean; 
+  isLastItem: boolean;
   onNextQuestion: () => void;
-  title: string; 
-  id: number; 
-  pointsAwarded: number; 
-  onNext: () => void; 
+  title: string;
+  id: number;
+  pointsAwarded: number;
+  onNext: () => void;
   lessonPoints: number; // Total points for the lesson so far
 }
 
@@ -43,7 +44,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
-  isLastItem, 
+  isLastItem,
   onNextQuestion,
   lessonPoints,
   // title, id, pointsAwarded, onNext are passed but maybe not used directly if parent handles display
@@ -59,21 +60,21 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-   // Reset internal component state when the `question` prop changes (new item).
-   useEffect(() => {
-     form.reset({ userAnswer: '' });
-     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
-     setShowHint(false);
-   }, [question, form]); // Depend on question text
+  // Reset internal component state when the `question` prop changes (new item).
+  useEffect(() => {
+    form.reset({ userAnswer: '' });
+    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+    setShowHint(false);
+  }, [question, form]); // Depend on question text
 
   // Handles the primary button click
   const handleButtonClick = () => {
-      if (!isAnswerSubmitted) {
-          form.handleSubmit(onSubmit)();
-      } else {
-          // Use onNextQuestion (mapped from onNext in parent)
-          onNextQuestion();
-      }
+    if (!isAnswerSubmitted) {
+      form.handleSubmit(onSubmit)();
+    } else {
+      // Use onNextQuestion (mapped from onNext in parent)
+      onNextQuestion();
+    }
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -99,7 +100,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const toggleHint = () => setShowHint(prev => !prev);
 
   // Determine button text
-   const getButtonText = () => {
+  const getButtonText = () => {
     if (isPending) return 'Validating...';
     if (!isAnswerSubmitted) return 'Submit Answer';
     if (isLastItem) return `View Score (${lessonPoints} Points)`;
@@ -111,13 +112,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
     if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
     if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
-    return null; 
+    return null;
   };
 
 
   // Determine if the button should be disabled
-   const isButtonDisabled = isPending || (isAnswerSubmitted && isLastItem && !validationResult.attemptMade); 
-   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
+  const isButtonDisabled = isPending || (isAnswerSubmitted && isLastItem && !validationResult.attemptMade);
+  const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
   return (
@@ -166,12 +167,12 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                   <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <AlertTitle className={cn(validationResult.isValid ? "text-green-800" : "text-red-800")}>
-                    {validationResult.isValid ? 'Correct!' : 'Incorrect'}
+                  {validationResult.isValid ? 'Correct!' : 'Incorrect'}
                 </AlertTitle>
                 <AlertDescription className={cn(validationResult.isValid ? "text-green-700" : "text-red-700")}>
                   {validationResult.feedback}
                 </AlertDescription>
-                 {!validationResult.isValid && validationResult.feedback && (
+                {!validationResult.isValid && validationResult.feedback && (
                   <Button
                     type="button"
                     variant="ghost"
@@ -183,12 +184,12 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                     <Lightbulb className="mr-2 h-4 w-4" />
                     {showHint ? 'Hide Hint' : 'Show Hint'}
                   </Button>
-                 )}
-                 {showHint && !validationResult.isValid && (
-                   <p className="text-sm text-muted-foreground mt-2 p-2 border rounded bg-muted">
-                     Hint: {validationResult.feedback}
-                   </p>
-                 )}
+                )}
+                {showHint && !validationResult.isValid && (
+                  <p className="text-sm text-muted-foreground mt-2 p-2 border rounded bg-muted">
+                    Hint: {validationResult.feedback}
+                  </p>
+                )}
               </Alert>
             )}
 
@@ -199,7 +200,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                 isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
+                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
               )}
             >
               {getButtonIcon()}
@@ -208,10 +209,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           </div>
         </Form>
       </CardContent>
-       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
-           <p>Correct: +{pointsForCorrect} points</p>
-           <p>Incorrect: -{pointsForIncorrect} points (min 0)</p>
-       </CardFooter>
+      <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
+        <p>Correct: +{pointsForCorrect} points</p>
+        <p>Incorrect: -{pointsForIncorrect} points (min 0)</p>
+      </CardFooter>
     </Card>
   );
 };
