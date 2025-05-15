@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { useGlobalPoints } from '@/context/PointsContext'; // Import the global points hook
 import ProgressBar from '@/components/ui/progressbar'; // Import the ProgressBar component
 import Sidebar from '@/components/ui/sidebarnew'; // Import the Sidebar component
-/* import LevelsAndPoints from '@/components/LevelsAndPoints'; */
+import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 
 export default function Home() {
   const { totalPoints } = useGlobalPoints(); // Get total points from global context
@@ -22,6 +22,7 @@ export default function Home() {
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-0 font-[family-name:var(--font-jetbrains-mono)]">
       <header>
         <ProgressBar progress={50} sidebarWidth={collapsed ? 80 : 256} />
+        <LevelAndInformationBar sidebarWidth={collapsed ? 80 : 256} points={totalPoints} />
         <div
           className='flex justify-between pt-20'
         /* style={{
