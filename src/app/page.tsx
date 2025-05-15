@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { useGlobalPoints } from '@/context/PointsContext'; // Import the global points hook
 import ProgressBar from '@/components/ui/progressbar'; // Import the ProgressBar component
 import Sidebar from '@/components/ui/sidebarnew'; // Import the Sidebar component
+/* import LevelsAndPoints from '@/components/LevelsAndPoints'; */
 
 export default function Home() {
   const { totalPoints } = useGlobalPoints(); // Get total points from global context
@@ -21,6 +22,15 @@ export default function Home() {
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-0 font-[family-name:var(--font-jetbrains-mono)]">
       <header>
         <ProgressBar progress={50} sidebarWidth={collapsed ? 80 : 256} />
+        <div
+          className='flex justify-between pt-20'
+        /* style={{
+          marginLeft: collapsed ? '80px' : '256px', // Adjust the main content margin based on the sidebar state
+          transition: 'margin-left 0.3s ease-in-out', // Smooth transition for margin
+        }} */
+        >
+          {/* <LevelsAndPoints level={1} points={totalPoints} sidebarWidth={collapsed ? 80 : 256} /> */}
+        </div>
       </header>
 
       <div className='flex flex-1'>
@@ -35,9 +45,9 @@ export default function Home() {
         >
 
           <div className="w-full max-w-4xl flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-foreground flex items-center">
-              <BookOpen className="mr-3 h-8 w-8" /> The Promptening
-            </h1>
+            <p className="text-primary-foreground">
+              Level
+            </p>
             <PointsDisplay points={totalPoints} /> {/* Display global total points */}
           </div>
 
