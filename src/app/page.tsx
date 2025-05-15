@@ -38,21 +38,22 @@ export default function Home() {
         <Sidebar onToggle={setCollabsed} />
 
         <main
-          className="flex-1 p-8 pb-20 gap-16 sm:p-0 grid grid-rows-[20px_1fr_20px] items-center justify-items-center"
+          className="flex-1 p-8 pb-2 gap-8 sm:p-0"
           style={{
-            marginLeft: collapsed ? '80px' : '256px', // Adjust the main content margin based on the sidebar state
+            marginLeft: collapsed ? '80px' : '276px', // Adjust the main content margin based on the sidebar state
+            marginRight: '20px',
             transition: 'margin-left 0.3s ease-in-out', // Smooth transition for margin
           }}
         >
 
-          <div className="w-full max-w-4xl text-center mb-8">
+          <div className="w-full max-w-4xl text-left mb-8 mt-20">
             <h2 className="text-2xl font-semibold mb-2">Welcome!</h2>
             <p className="text-muted-foreground">
               Choose a lesson below to start learning and practicing prompt engineering. Your total score is shown above.
             </p>
           </div>
 
-          <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="w-full max-w-10xl grid grid-cols-1 md:grid-cols-2 gap-6">
             {lessons.map((lesson) => (
               <Card key={lesson.id} className="shadow-lg hover:shadow-xl transition-shadow duration-200">
                 <CardHeader>
