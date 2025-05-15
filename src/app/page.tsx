@@ -45,15 +45,6 @@ export default function Home() {
           }}
         >
 
-          <div className="w-full max-w-4xl flex justify-between items-center">
-            <p className="text-primary-foreground">
-              Level
-            </p>
-            <PointsDisplay points={totalPoints} /> {/* Display global total points */}
-          </div>
-
-          <Separator className="my-6 w-full max-w-4xl" />
-
           <div className="w-full max-w-4xl text-center mb-8">
             <h2 className="text-2xl font-semibold mb-2">Welcome!</h2>
             <p className="text-muted-foreground">
