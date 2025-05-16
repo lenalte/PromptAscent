@@ -13,6 +13,7 @@ import { useGlobalPoints } from '@/context/PointsContext'; // Import the global 
 import ProgressBar from '@/components/ui/progressbar'; // Import the ProgressBar component
 import Sidebar from '@/components/ui/sidebarnew'; // Import the Sidebar component
 import LevelAndInformationBar from '@/components/LevelAndInformationBar';
+import BirdsBackground from '@/components/BirdsBackground';
 
 export default function Home() {
   const { totalPoints } = useGlobalPoints(); // Get total points from global context

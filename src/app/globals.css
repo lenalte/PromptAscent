@@ -8,8 +8,8 @@ body {
 
 @layer base {
   :root {
-    --background: 0, 94%, 19%;
-    /* Light Yellow */
+    --background: 0, 94%, 19%*;
+    /* Dark Red 0, 94%, 19%*/
     --foreground: 64, 100%, 80%;
     /* Dark Warm Gray/Brown */
 
