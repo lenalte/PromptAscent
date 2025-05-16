@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from 'next/font/google'; // Corrected import path i
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 import { PointsProvider } from '@/context/PointsContext'; // Import PointsProvider
+import { JetBrains_Mono } from 'next/font/google';
+
 
 // Assuming Geist and Geist_Mono setup is correct
 const geistSans = Geist({
@@ -13,6 +15,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: '--font-jetbrains-mono',
   subsets: ['latin'],
 });
 
@@ -28,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
         <PointsProvider> {/* Wrap children with PointsProvider */}
           {children}
           <Toaster /> {/* Add Toaster here */}
