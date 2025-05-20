@@ -1,0 +1,68 @@
+[
+  {
+    "id": "intro-prompt-engineering",
+    "title": "Introduction to Prompt Engineering",
+    "description": "Learn the fundamentals of prompt engineering, why it's crucial, and how to craft effective prompts to improve outputs from Generative AI models like ChatGPT.",
+    "contentFileName": "intro-prompt-engineering.md"
+  },
+  {
+    "id": "lp-combining-techniques",
+    "title": "Learn Prompting: Combining Techniques",
+    "description": "Understand how to combine prompting techniques for more powerful results.",
+    "contentFileName": "lp-combining-techniques.md"
+  },
+  {
+    "id": "lp-showing-examples",
+    "title": "Learn Prompting: Showing Examples (Few-Shot)",
+    "description": "Learn about zero, one, and few-shot prompting and how to use examples to structure AI outputs.",
+    "contentFileName": "lp-showing-examples.md"
+  },
+  {
+    "id": "lp-formalizing-prompts",
+    "title": "Learn Prompting: Formalizing Prompts",
+    "description": "Understand the common parts of a prompt and their typical arrangement.",
+    "contentFileName": "lp-formalizing-prompts.md"
+  },
+  {
+    "id": "lp-giving-instructions",
+    "title": "Learn Prompting: Giving Instructions",
+    "description": "Understand how to instruct Generative AIs for simple and complex tasks.",
+    "contentFileName": "lp-giving-instructions.md"
+  },
+  {
+    "id": "lp-pitfalls-of-llms",
+    "title": "Learn Prompting: Pitfalls of LLMs",
+    "description": "Understand common biases and problems associated with Large Language Models.",
+    "contentFileName": "lp-pitfalls-of-llms.md"
+  },
+  {
+    "id": "lp-priming-chatbots",
+    "title": "Learn Prompting: Priming Chatbots",
+    "description": "Learn to control conversation style and structure using priming prompts.",
+    "contentFileName": "lp-priming-chatbots.md"
+  },
+  {
+    "id": "lp-prompt-engineering-intro",
+    "title": "Learn Prompting: What is Prompt Engineering?",
+    "description": "Learn about the iterative process of refining prompts to improve AI outputs.",
+    "contentFileName": "lp-prompt-engineering-intro.md"
+  },
+  {
+    "id": "lp-prompting-with-chatgpt",
+    "title": "Learn Prompting: Prompting With ChatGPT",
+    "description": "Understand basic prompting with ChatGPT, its setup, and initial examples.",
+    "contentFileName": "lp-prompting-with-chatgpt.md"
+  },
+  {
+    "id": "lp-assigning-roles",
+    "title": "Learn Prompting: Assigning Roles",
+    "description": "Learn how role prompting can style text and improve AI accuracy.",
+    "contentFileName": "lp-assigning-roles.md"
+  },
+  {
+    "id": "lp-understanding-ai-minds",
+    "title": "Learn Prompting: Understanding AI Minds",
+    "description": "Grasp fundamental concepts about different AI types and how LLMs work.",
+    "contentFileName": "lp-understanding-ai-minds.md"
+  }
+]
