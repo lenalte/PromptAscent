@@ -1,41 +1,43 @@
 
-import { z } from 'genkit'; // Corrected import path
+import { z } from 'genkit';
 
 export const BaseLessonItemSchema = z.object({
-  id: z.number().int().positive().describe('Unique integer ID for the item within this lesson, starting from 1.'),
+  id: z.number().int().min(1).describe('Unique integer ID for the item within this lesson, starting from 1.'),
   title: z.string().describe('Meaningful title for the lesson item.'),
   pointsAwarded: z.number().int().nonnegative().describe('Points awarded for successful completion of this item.'),
 });
 
 export const FreeResponseLessonItemSchema = BaseLessonItemSchema.extend({
-  type: z.literal('freeResponse'),
+  type: z.enum(['freeResponse']).describe("The type of the lesson item."),
   question: z.string().describe('The free response question for the user.'),
   expectedAnswer: z.string().describe('A concise example or description of the expected answer, used for AI validation guidance and to inform the user if they get it wrong.'),
-  pointsForIncorrect: z.literal(0).describe('Points deducted for a wrong answer (always 0 for this type as per rules).'),
+  pointsForIncorrect: z.number().int().min(0).max(0).describe('Points deducted for a wrong answer (always 0 for this type as per rules).'),
 });
 export type FreeResponseLessonItem = z.infer<typeof FreeResponseLessonItemSchema>;
 
 export const MultipleChoiceLessonItemSchema = BaseLessonItemSchema.extend({
-  type: z.literal('multipleChoice'),
+  type: z.enum(['multipleChoice']).describe("The type of the lesson item."),
   question: z.string().describe('The multiple choice question for the user.'),
   options: z.array(z.string()).min(2).max(5).describe('An array of 2 to 5 string options for the multiple choice question.'),
   correctOptionIndex: z.number().int().nonnegative().describe('The 0-based index of the correct option in the options array.'),
-  pointsForIncorrect: z.literal(0).describe('Points deducted for a wrong answer (always 0 for this type as per rules).'),
+  pointsForIncorrect: z.number().int().min(0).max(0).describe('Points deducted for a wrong answer (always 0 for this type as per rules).'),
 });
 export type MultipleChoiceLessonItem = z.infer<typeof MultipleChoiceLessonItemSchema>;
 
 export const InformationalSnippetLessonItemSchema = BaseLessonItemSchema.extend({
-  type: z.literal('informationalSnippet'),
+  type: z.enum(['informationalSnippet']).describe("The type of the lesson item."),
   content: z.string().describe('The informational content/text for the snippet. This should be a key takeaway or explanation derived from the lesson text.'),
-  // pointsAwarded is 1 by rule, pointsForIncorrect is not applicable
+  // pointsAwarded is 1 by rule, pointsForIncorrect is not applicable for this type as per original rules,
+  // but to ensure schema consistency if a general pointsForIncorrect was implied, we might add it here set to 0.
+  // For now, matching the original schema where it was omitted.
 });
 export type InformationalSnippetLessonItem = z.infer<typeof InformationalSnippetLessonItemSchema>;
 
 export const PromptingTaskLessonItemSchema = BaseLessonItemSchema.extend({
-  type: z.literal('promptingTask'),
+  type: z.enum(['promptingTask']).describe("The type of the lesson item."),
   taskDescription: z.string().describe('A detailed description of what the user\'s prompt should achieve. This should guide the user to apply techniques from the lesson content.'),
   evaluationGuidance: z.string().describe('Specific, numbered criteria (3-5 points) for the AI to evaluate the user\'s submitted prompt for THIS task. These criteria should relate to the application of concepts from the lesson text.'),
-  pointsForIncorrect: z.literal(0).describe('Points deducted for an ineffective prompt (always 0 for this type as per rules).'),
+  pointsForIncorrect: z.number().int().min(0).max(0).describe('Points deducted for an ineffective prompt (always 0 for this type as per rules).'),
 });
 export type PromptingTaskLessonItem = z.infer<typeof PromptingTaskLessonItemSchema>;
 
