@@ -44,6 +44,18 @@ const BirdsBackground = () => {
             }
         };
 
+        // CSS-Variablen aus dem DOM lesen
+        const getCssVariableColor = (variableName: string) => {
+            const computedStyle = getComputedStyle(document.documentElement);
+            const hslValue = computedStyle.getPropertyValue(variableName).trim();
+
+            // Wenn der Wert im Format "H S% L%" ist
+            if (hslValue) {
+                return `hsl(${hslValue})`;
+            }
+            return '#000000'; // Fallback
+        };
+
         // Den Sketch initialisieren, nachdem p5.js geladen wurde
         const initializeSketch = () => {
             // p5 ist jetzt geladen, Sketch erstellen
@@ -53,6 +65,10 @@ const BirdsBackground = () => {
                 const k = 0;
                 const birdsNumber = 15;
                 const birds: any[] = [];
+
+                // Farben aus CSS-Variablen
+                let backgroundColor: string;
+                let birdColor: string;
 
                 // Bird class type definition
                 interface BirdType {
@@ -68,7 +84,10 @@ const BirdsBackground = () => {
 
                 p.setup = function () {
                     const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-                    p.background(255);
+                    /* p.background(255); */
+                    // Farben aus CSS-Variablen holen
+                    backgroundColor = getCssVariableColor('--background');
+                    birdColor = getCssVariableColor('--foreground');
 
                     // Canvas dem Container hinzufügen
                     if (containerRef.current) {
@@ -83,10 +102,14 @@ const BirdsBackground = () => {
 
                 p.windowResized = function () {
                     p.resizeCanvas(window.innerWidth, window.innerHeight);
+
+                    // Farben bei Größenänderung aktualisieren (falls sich das Theme ändert)
+                    backgroundColor = getCssVariableColor('--background');
+                    birdColor = getCssVariableColor('--foreground');
                 };
 
                 p.draw = function () {
-                    p.background(255);
+                    p.background(backgroundColor);
 
                     // Alle Vögel zeichnen
                     for (let i = 0; i < birds.length; i++) {
@@ -162,7 +185,7 @@ const BirdsBackground = () => {
 
                         // Vogel zeichnen
                         p.noStroke();
-                        p.fill(0);
+                        p.fill(birdColor);
 
                         // Pixel-Vogelkörper
                         p.rect(this.pos.x, this.pos.y, 10, 10);
