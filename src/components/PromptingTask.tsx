@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -17,16 +18,16 @@ import { cn } from '@/lib/utils';
 
 interface PromptingTaskProps {
   taskDescription: string;
-  evaluationGuidance: string; // Specific guidance for AI evaluation of THIS task
-  pointsForCorrect: number;
+  evaluationGuidance: string;
+  pointsForCorrect: number; // This is the same as pointsAwarded for this item type
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastItem: boolean; // Renamed from isLastTask
+  isLastItem: boolean;
   onNextTask: () => void;
   title: string;
-  id: number;
-  pointsAwarded: number; // Alias for pointsForCorrect
+  id: number; // Unique ID of the task item
+  // pointsAwarded is aliased as pointsForCorrect
   onNext: () => void; // Alias for onNextTask
   lessonPoints: number; // Total points for the lesson so far
 }
@@ -44,9 +45,9 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
-  isLastItem, // Use renamed prop
+  isLastItem,
   onNextTask,
-  title, 
+  title,
   lessonPoints,
 }) => {
   const [isPending, startTransition] = useTransition();
@@ -83,7 +84,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       try {
         const result = await evaluatePrompt({
           prompt: values.userPrompt,
-          context: taskDescription, // The task description serves as context for evaluation
+          context: taskDescription,
           evaluationGuidance: evaluationGuidance,
         });
         setEvaluationResult({ ...result, attemptMade: true });
@@ -123,7 +124,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         <CardTitle className="text-purple-800 flex items-center">
             <FilePenLine className="mr-2 h-5 w-5" /> Prompting Task
         </CardTitle>
-        <CardDescription className="text-purple-700 pt-2">{taskDescription}</CardDescription>
+        <CardDescription className="text-purple-700 pt-2 whitespace-pre-line">{taskDescription}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -171,17 +172,22 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 </AlertTitle>
                 <AlertDescription className={cn("space-y-2", evaluationResult.isCorrect ? "text-green-700" : "text-red-700")}>
                   <div>Score: {evaluationResult.score}/100</div>
-                  <Progress 
-                    value={evaluationResult.score} 
+                  <Progress
+                    value={evaluationResult.score}
                     className={cn(
                         "w-full h-2",
                         evaluationResult.score >= 70 ? "[&>*]:bg-green-500" : evaluationResult.score >= 40 ? "[&>*]:bg-yellow-500" : "[&>*]:bg-red-500"
                     )}
                   />
-                  <p className="pt-2">Explanation: {evaluationResult.explanation}</p>
+                  <p className="pt-2 whitespace-pre-line">Explanation: {evaluationResult.explanation}</p>
                 </AlertDescription>
               </Alert>
             )}
+             <div className="text-sm text-purple-700 mt-4 p-3 border border-purple-200 rounded-md bg-purple-100/50">
+                <h4 className="font-semibold mb-1 text-purple-800">Evaluation Guidance:</h4>
+                <p className="whitespace-pre-line">{evaluationGuidance}</p>
+            </div>
+
 
             <Button
               type="button"
@@ -201,7 +207,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-purple-600 pt-4">
         <p>Effective: +{pointsForCorrect} points</p>
-        <p>Needs Improvement: -{pointsForIncorrect} points (min 0)</p>
+        <p>Needs Improvement: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}`: "0"} points (min 0)</p>
       </CardFooter>
     </Card>
   );

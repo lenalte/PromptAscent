@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -25,9 +26,9 @@ interface FreeResponseQuestionProps {
   isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
-  id: number;
-  pointsAwarded: number;
-  onNext: () => void;
+  id: number; // Unique ID of the question item
+  // pointsAwarded is aliased as pointsForCorrect
+  onNext: () => void; // Alias for onNextQuestion
   lessonPoints: number; // Total points for the lesson so far
 }
 
@@ -40,14 +41,14 @@ type ValidationResult = ValidateUserAnswerOutput & { attemptMade: boolean };
 export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   question,
   expectedAnswer,
-  pointsForCorrect,
+  pointsForCorrect, // This is the same as pointsAwarded for this item type
   pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
   isLastItem,
   onNextQuestion,
   lessonPoints,
-  // title, id, pointsAwarded, onNext are passed but maybe not used directly if parent handles display
+  // title, id are part of common props from parent
 }) => {
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
@@ -65,14 +66,12 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     form.reset({ userAnswer: '' });
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     setShowHint(false);
-  }, [question, form]); // Depend on question text
+  }, [question, form]);
 
-  // Handles the primary button click
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
       form.handleSubmit(onSubmit)();
     } else {
-      // Use onNextQuestion (mapped from onNext in parent)
       onNextQuestion();
     }
   };
@@ -99,7 +98,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   const toggleHint = () => setShowHint(prev => !prev);
 
-  // Determine button text
   const getButtonText = () => {
     if (isPending) return 'Validating...';
     if (!isAnswerSubmitted) return 'Submit Answer';
@@ -107,7 +105,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     return 'Next Question';
   };
 
-  // Determine button icon
   const getButtonIcon = () => {
     if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
     if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
@@ -115,15 +112,12 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     return null;
   };
 
-
-  // Determine if the button should be disabled
   const isButtonDisabled = isPending || (isAnswerSubmitted && isLastItem && !validationResult.attemptMade);
   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
-      {/* Title is handled by the parent page */}
       <CardHeader>
         <CardTitle>Question</CardTitle>
         <CardDescription>{question}</CardDescription>
@@ -171,8 +165,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 </AlertTitle>
                 <AlertDescription className={cn(validationResult.isValid ? "text-green-700" : "text-red-700")}>
                   {validationResult.feedback}
+                  {!validationResult.isValid && expectedAnswer && (
+                    <p className="mt-2">
+                      Expected answer guidance: <span className="font-semibold">{expectedAnswer}</span>
+                    </p>
+                  )}
                 </AlertDescription>
-                {!validationResult.isValid && validationResult.feedback && (
+                {!validationResult.isValid && validationResult.feedback && !expectedAnswer && ( // Only show hint button if no explicit expectedAnswer shown
                   <Button
                     type="button"
                     variant="ghost"
@@ -211,7 +210,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
         <p>Correct: +{pointsForCorrect} points</p>
-        <p>Incorrect: -{pointsForIncorrect} points (min 0)</p>
+        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
       </CardFooter>
     </Card>
   );

@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -21,12 +22,12 @@ interface MultipleChoiceQuestionProps {
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastItem: boolean; 
+  isLastItem: boolean;
   onNextQuestion: () => void;
-  title: string; 
-  id: number; 
-  pointsAwarded: number; 
-  onNext: () => void; 
+  title: string;
+  id: number; // Unique ID of the question item
+  // pointsAwarded is aliased as pointsForCorrect
+  onNext: () => void; // Alias for onNextQuestion
   lessonPoints: number; // Total points for the lesson so far
 }
 
@@ -38,17 +39,17 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   question,
   options,
   correctOptionIndex,
-  pointsForCorrect,
+  pointsForCorrect, // This is the same as pointsAwarded for this item type
   pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
-  isLastItem, 
+  isLastItem,
   onNextQuestion,
   lessonPoints,
-  // title, id, pointsAwarded, onNext might not be used directly here
+  // title, id are part of common props from parent
 }) => {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // Kept for potential future use
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,25 +58,22 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     },
   });
 
-   // Reset internal component state when the `question` prop changes.
    useEffect(() => {
      form.reset({ selectedOption: undefined });
      setIsCorrect(null);
      setIsLoading(false);
-   }, [question, form]); // Depend on question text
+   }, [question, form]);
 
-  // Handles the primary button click
   const handleButtonClick = () => {
       if (!isAnswerSubmitted) {
           form.handleSubmit(onSubmit)();
       } else {
-           // Use onNextQuestion (mapped from onNext in parent)
           onNextQuestion();
       }
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+    setIsLoading(true); // Potentially for a brief visual feedback
     const selectedIndex = parseInt(values.selectedOption, 10);
     const correct = selectedIndex === correctOptionIndex;
 
@@ -85,30 +83,26 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     setIsLoading(false);
   };
 
-   // Determine button text
     const getButtonText = () => {
-     if (isLoading) return 'Checking...';
+     if (isLoading) return 'Checking...'; // Though isLoading is brief here
      if (!isAnswerSubmitted) return 'Submit Answer';
      if (isLastItem) return `View Score (${lessonPoints} Points)`;
      return 'Next Question';
    };
 
-   // Determine button icon
    const getButtonIcon = () => {
      if (isLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
      if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
      if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
-     return null; 
+     return null;
    };
 
-   // Determine if the button should be disabled
    const isButtonDisabled = isLoading || (isAnswerSubmitted && isLastItem && isCorrect === null);
    const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
-      {/* Title is handled by the parent page */}
        <CardHeader>
         <CardTitle>Question</CardTitle>
         <CardDescription>{question}</CardDescription>
@@ -202,7 +196,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
            <p>Correct: +{pointsForCorrect} points</p>
-           <p>Incorrect: -{pointsForIncorrect} points (min 0)</p>
+           <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
       </CardFooter>
     </Card>
   );
