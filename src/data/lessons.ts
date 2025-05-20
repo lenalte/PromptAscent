@@ -35,7 +35,7 @@ async function getLessonManifest(): Promise<LessonManifestEntry[]> {
     return manifest;
   } catch (error) {
     console.error("Failed to read or parse lesson manifest:", error);
-    return [];
+    throw new Error(`Failed to load lesson manifest: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -58,7 +58,8 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
 
   if (!lessonEntry) {
     console.warn(`Lesson with ID "${lessonId}" not found in manifest.`);
-    return undefined;
+    // Throw an error if lesson entry is not found, so it can be caught by the page
+    throw new Error(`Lesson with ID "${lessonId}" not found in manifest.`);
   }
 
   try {
@@ -74,8 +75,10 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     });
     
     // Validate or further process `generatedLesson` if necessary
-    if (!generatedLesson || !generatedLesson.items) {
-        throw new Error("AI failed to return valid lesson items.");
+    if (!generatedLesson || !generatedLesson.items || generatedLesson.items.length === 0) {
+        // If items array is empty, it's also a form of failure for this use case.
+        console.error(`AI failed to return valid lesson items for lesson ${lessonId}. Output:`, generatedLesson);
+        throw new Error("AI failed to return valid and non-empty lesson items.");
     }
 
     if (process.env.NODE_ENV === 'development') {
@@ -85,21 +88,10 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
 
   } catch (error) {
     console.error(`Error processing lesson "${lessonId}":`, error);
-    // Fallback or error handling:
-    // Option 1: Return lesson metadata without items
-    // return { 
-    //   id: lessonEntry.id, 
-    //   title: lessonEntry.title, 
-    //   description: lessonEntry.description, 
-    //   items: [{
-    //     id: 1,
-    //     type: 'informationalSnippet',
-    //     title: 'Error Loading Lesson Content',
-    //     content: `There was an error loading or processing the content for this lesson. Details: ${error instanceof Error ? error.message : String(error)}`,
-    //     pointsAwarded: 0,
-    //   }]
-    // };
-    // Option 2: Return undefined to let the page handle "not found" or error display
-    return undefined;
+    // Re-throw the error so the page component can catch it and display a specific message.
+    if (error instanceof Error) {
+        throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
+    }
+    throw new Error(`Failed to process lesson "${lessonId}" due to an unknown error.`);
   }
 }
