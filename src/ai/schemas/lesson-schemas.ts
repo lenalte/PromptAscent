@@ -2,7 +2,8 @@
 import { z } from 'genkit';
 
 export const BaseLessonItemSchema = z.object({
-  id: z.number().int().min(1).describe('Unique integer ID for the item within this lesson, starting from 1.'),
+  /* id: z.number().int().min(1).describe('Unique integer ID for the item within this lesson, starting from 1.'), */
+  id: z.union([z.number().int().min(1), z.string()]).describe('Unique integer or string ID for the item within this lesson, starting from 1. String IDs are used for retries.'),
   title: z.string().describe('Meaningful title for the lesson item.'),
   pointsAwarded: z.number().int().nonnegative().describe('Points awarded for successful completion of this item.'),
 });
