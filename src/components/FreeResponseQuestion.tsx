@@ -26,7 +26,7 @@ interface FreeResponseQuestionProps {
   isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
-  id: number; // Unique ID of the question item
+  id: number | string; // Unique ID of the question item
   // pointsAwarded is aliased as pointsForCorrect
   onNext: () => void; // Alias for onNextQuestion
   lessonPoints: number; // Total points for the lesson so far
@@ -202,8 +202,14 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
               )}
             >
-              {getButtonIcon()}
-              {getButtonText()}
+              <span className="flex items-center">
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {!isPending && isAnswerSubmitted && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
+                {getButtonText()}
+                {!isPending && isAnswerSubmitted && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
+              </span>
+              {/* {getButtonIcon()}
+              {getButtonText()} */}
             </Button>
           </div>
         </Form>

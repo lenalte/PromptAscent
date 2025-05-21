@@ -1,9 +1,8 @@
-
-"use client"; // Keep as client component due to extensive state and effects
+"use client";
 
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, notFound, useRouter } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
 import { MultipleChoiceQuestion } from '@/components/MultipleChoiceQuestion';
@@ -15,13 +14,11 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Progress } from "@/components/ui/progress";
 import { usePoints } from '@/hooks/usePoints';
-// Updated import: getGeneratedLessonById and Lesson/LessonItem types
 import { getGeneratedLessonById, type Lesson, type LessonItem } from '@/data/lessons';
-import { BrainCircuit, PencilRuler, CheckCircle, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine, Trophy } from 'lucide-react';
+import { BrainCircuit, PencilRuler, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine, Trophy } from 'lucide-react';
 
 export default function LessonPage() {
     const params = useParams();
-    const router = useRouter();
     const lessonId = params.lessonId as string;
 
     const [lesson, setLesson] = useState<Lesson | null>(null);
@@ -31,11 +28,10 @@ export default function LessonPage() {
     const [currentItem, setCurrentItem] = useState<LessonItem | null>(null);
     const [isCurrentAttemptSubmitted, setIsCurrentAttemptSubmitted] = useState(false);
     const [lastAnswerCorrectness, setLastAnswerCorrectness] = useState<boolean | null>(null);
-    const [completedItemsMap, setCompletedItemsMap] = useState<Map<number, boolean>>(new Map());
+    const [completedItemsMap, setCompletedItemsMap] = useState<Map<number | string, boolean>>(new Map());
     const [totalLessonItems, setTotalLessonItems] = useState(0);
     const [itemsCompletedCount, setItemsCompletedCount] = useState(0);
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
-
 
     useEffect(() => {
         async function loadLessonData() {
@@ -43,11 +39,10 @@ export default function LessonPage() {
             setIsLoadingLesson(true);
             setErrorLoadingLesson(null);
             try {
-                // Use the new function that calls the AI flow
                 const loadedLesson = await getGeneratedLessonById(lessonId);
                 if (!loadedLesson) {
                     setErrorLoadingLesson("Lesson not found or failed to load.");
-                    notFound(); // Or handle error differently
+                    notFound();
                 } else {
                     setLesson(loadedLesson);
                     const initialItems = [...(loadedLesson.items || [])];
@@ -68,7 +63,7 @@ export default function LessonPage() {
             }
         }
         loadLessonData();
-    }, [lessonId, setPoints]); // Depend on lessonId and setPoints
+    }, [lessonId, setPoints]);
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean) => {
         if (!currentItem || currentItem.type === 'informationalSnippet') return;
@@ -89,17 +84,52 @@ export default function LessonPage() {
         setIsCurrentAttemptSubmitted(true);
     }, [currentItem, addPoints, deductPoints, completedItemsMap]);
 
-    const handleNextItem = useCallback(() => {
-        if (!currentItem || (currentItem.type !== 'informationalSnippet' && lastAnswerCorrectness === null) ) return;
+    /* const handleNextItem = useCallback(() => {
+        if (!currentItem || (currentItem.type !== 'informationalSnippet' && lastAnswerCorrectness === null)) return;
         const wasCorrectOrAcknowledged = lastAnswerCorrectness;
         const itemJustProcessed = currentItem;
         let nextQueue = lessonQueue.slice(1);
-        if (itemJustProcessed.type !== 'informationalSnippet' && !wasCorrectOrAcknowledged && !completedItemsMap.has(itemJustProcessed.id)) {
-            nextQueue.push(itemJustProcessed);
+
+        if (
+            itemJustProcessed.type !== 'informationalSnippet' &&
+            !wasCorrectOrAcknowledged &&
+            !completedItemsMap.has(itemJustProcessed.id)
+        ) {
+            // Erzeuge eine neue ID für den Retry-Fall (damit React nicht verwirrt wird)
+            const retryId = typeof itemJustProcessed.id === 'string'
+                ? `${itemJustProcessed.id}-retry-${Date.now()}`
+                : `${itemJustProcessed.id}-retry-${Date.now()}`;
+            nextQueue.push({ ...itemJustProcessed, id: retryId });
+        }
+        setLessonQueue(nextQueue);
+        setCurrentItem(nextQueue[0] || null);
+    }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]); */
+
+    const handleNextItem = useCallback(() => {
+        if (!currentItem || (currentItem.type !== 'informationalSnippet' && lastAnswerCorrectness === null)) return;
+        const wasCorrectOrAcknowledged = lastAnswerCorrectness;
+        const itemJustProcessed = currentItem;
+        let nextQueue = lessonQueue.slice(1);
+
+        if (
+            itemJustProcessed.type !== 'informationalSnippet' &&
+            !wasCorrectOrAcknowledged &&
+            !completedItemsMap.has(itemJustProcessed.id)
+        ) {
+            // Eindeutig machen:
+            // Nimm die ursprüngliche ID (egal ob Zahl oder String) und hänge einen Timestamp an
+            const baseId = String(
+                typeof itemJustProcessed.id === 'string'
+                    ? itemJustProcessed.id.split('-retry-')[0] // Entferne evtl. alte Retry-Suffixe
+                    : itemJustProcessed.id
+            );
+            const retryId = `${baseId}-retry-${Date.now()}`;
+            nextQueue.push({ ...itemJustProcessed, id: retryId });
         }
         setLessonQueue(nextQueue);
         setCurrentItem(nextQueue[0] || null);
     }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]);
+
 
     const handleSnippetAcknowledged = useCallback(() => {
         if (!currentItem || currentItem.type !== 'informationalSnippet') return;
@@ -136,7 +166,8 @@ export default function LessonPage() {
             onNext: handleNextItem,
             lessonPoints: points,
         };
-        const { id: key, ...restCommonProps } = commonPropsBase;
+        const key = currentItem.id;
+        const restCommonProps = commonPropsBase;
 
         switch (currentItem.type) {
             case 'freeResponse':
@@ -148,7 +179,7 @@ export default function LessonPage() {
                         expectedAnswer={currentItem.expectedAnswer}
                         pointsForIncorrect={currentItem.pointsForIncorrect}
                         onAnswerSubmit={handleAnswerSubmit}
-                        pointsForCorrect={currentItem.pointsAwarded} // Alias for pointsAwarded
+                        pointsForCorrect={currentItem.pointsAwarded}
                         onNextQuestion={handleNextItem}
                     />
                 );
@@ -162,7 +193,7 @@ export default function LessonPage() {
                         correctOptionIndex={currentItem.correctOptionIndex}
                         pointsForIncorrect={currentItem.pointsForIncorrect}
                         onAnswerSubmit={handleAnswerSubmit}
-                        pointsForCorrect={currentItem.pointsAwarded} // Alias for pointsAwarded
+                        pointsForCorrect={currentItem.pointsAwarded}
                         onNextQuestion={handleNextItem}
                     />
                 );
@@ -184,7 +215,7 @@ export default function LessonPage() {
                         evaluationGuidance={currentItem.evaluationGuidance}
                         pointsForIncorrect={currentItem.pointsForIncorrect}
                         onAnswerSubmit={handleAnswerSubmit}
-                        pointsForCorrect={currentItem.pointsAwarded} // Alias for pointsAwarded
+                        pointsForCorrect={currentItem.pointsAwarded}
                         onNextTask={handleNextItem}
                     />
                 );
@@ -204,7 +235,7 @@ export default function LessonPage() {
             case 'promptingTask': return <FilePenLine className="h-5 w-5 text-muted-foreground" />;
             default: return <BookOpen className="h-5 w-5 text-muted-foreground" />;
         }
-    }
+    };
 
     const progressPercentage = totalLessonItems > 0 ? (itemsCompletedCount / totalLessonItems) * 100 : 0;
 
@@ -231,16 +262,15 @@ export default function LessonPage() {
             </div>
         );
     }
-    
-    if (!lesson) { // Should be covered by errorLoadingLesson or isLoadingLesson
+
+    if (!lesson) {
         return (
-             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
+            <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
                 <p className="mt-4 text-muted-foreground">Preparing Lesson...</p>
             </div>
         );
     }
-
 
     return (
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">

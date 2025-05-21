@@ -25,7 +25,7 @@ interface MultipleChoiceQuestionProps {
   isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
-  id: number; // Unique ID of the question item
+  id: number | string; // Unique ID of the question item
   // pointsAwarded is aliased as pointsForCorrect
   onNext: () => void; // Alias for onNextQuestion
   lessonPoints: number; // Total points for the lesson so far
@@ -58,18 +58,18 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     },
   });
 
-   useEffect(() => {
-     form.reset({ selectedOption: undefined });
-     setIsCorrect(null);
-     setIsLoading(false);
-   }, [question, form]);
+  useEffect(() => {
+    form.reset({ selectedOption: undefined });
+    setIsCorrect(null);
+    setIsLoading(false);
+  }, [question, form]);
 
   const handleButtonClick = () => {
-      if (!isAnswerSubmitted) {
-          form.handleSubmit(onSubmit)();
-      } else {
-          onNextQuestion();
-      }
+    if (!isAnswerSubmitted) {
+      form.handleSubmit(onSubmit)();
+    } else {
+      onNextQuestion();
+    }
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -83,27 +83,27 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     setIsLoading(false);
   };
 
-    const getButtonText = () => {
-     if (isLoading) return 'Checking...'; // Though isLoading is brief here
-     if (!isAnswerSubmitted) return 'Submit Answer';
-     if (isLastItem) return `View Score (${lessonPoints} Points)`;
-     return 'Next Question';
-   };
+  const getButtonText = () => {
+    if (isLoading) return 'Checking...'; // Though isLoading is brief here
+    if (!isAnswerSubmitted) return 'Submit Answer';
+    if (isLastItem) return `View Score (${lessonPoints} Points)`;
+    return 'Next Question';
+  };
 
-   const getButtonIcon = () => {
-     if (isLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-     if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
-     if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
-     return null;
-   };
+  const getButtonIcon = () => {
+    if (isLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
+    if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
+    if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
+    return null;
+  };
 
-   const isButtonDisabled = isLoading || (isAnswerSubmitted && isLastItem && isCorrect === null);
-   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
+  const isButtonDisabled = isLoading || (isAnswerSubmitted && isLastItem && isCorrect === null);
+  const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
-       <CardHeader>
+      <CardHeader>
         <CardTitle>Question</CardTitle>
         <CardDescription>{question}</CardDescription>
       </CardHeader>
@@ -130,20 +130,20 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                           isAnswerSubmitted && index === correctOptionIndex && "border-green-500 bg-green-50",
                           isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "border-destructive bg-red-50",
                           !isAnswerSubmitted && "hover:bg-muted/50"
-                          )}
-                          >
+                        )}
+                        >
                           <FormControl>
-                            <RadioGroupItem value={index.toString()} disabled={isAnswerSubmitted || isLoading}/>
+                            <RadioGroupItem value={index.toString()} disabled={isAnswerSubmitted || isLoading} />
                           </FormControl>
                           <FormLabel className={cn(
                             "font-normal cursor-pointer flex-1",
-                             isAnswerSubmitted && index === correctOptionIndex && "text-green-800",
-                             isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "text-red-800"
-                           )}>
+                            isAnswerSubmitted && index === correctOptionIndex && "text-green-800",
+                            isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "text-red-800"
+                          )}>
                             {option}
                           </FormLabel>
-                           {isAnswerSubmitted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600" />}
-                           {isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && <XCircle className="h-5 w-5 text-destructive" />}
+                          {isAnswerSubmitted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600" />}
+                          {isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && <XCircle className="h-5 w-5 text-destructive" />}
                         </FormItem>
                       ))}
                     </RadioGroup>
@@ -182,11 +182,11 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               type="button"
               onClick={handleButtonClick}
               disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
-               className={cn(
-                 "w-full sm:w-auto disabled:opacity-50",
-                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                 isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
-               )}
+              className={cn(
+                "w-full sm:w-auto disabled:opacity-50",
+                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
+                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
+              )}
             >
               {getButtonIcon()}
               {getButtonText()}
@@ -195,8 +195,8 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
-           <p>Correct: +{pointsForCorrect} points</p>
-           <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
+        <p>Correct: +{pointsForCorrect} points</p>
+        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
       </CardFooter>
     </Card>
   );

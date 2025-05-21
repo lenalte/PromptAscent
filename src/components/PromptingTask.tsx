@@ -26,7 +26,7 @@ interface PromptingTaskProps {
   isLastItem: boolean;
   onNextTask: () => void;
   title: string;
-  id: number; // Unique ID of the task item
+  id: number | string; // Unique ID of the task item
   // pointsAwarded is aliased as pointsForCorrect
   onNext: () => void; // Alias for onNextTask
   lessonPoints: number; // Total points for the lesson so far
@@ -122,7 +122,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50">
       <CardHeader>
         <CardTitle className="text-purple-800 flex items-center">
-            <FilePenLine className="mr-2 h-5 w-5" /> Prompting Task
+          <FilePenLine className="mr-2 h-5 w-5" /> Prompting Task
         </CardTitle>
         <CardDescription className="text-purple-700 pt-2 whitespace-pre-line">{taskDescription}</CardDescription>
       </CardHeader>
@@ -175,17 +175,17 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                   <Progress
                     value={evaluationResult.score}
                     className={cn(
-                        "w-full h-2",
-                        evaluationResult.score >= 70 ? "[&>*]:bg-green-500" : evaluationResult.score >= 40 ? "[&>*]:bg-yellow-500" : "[&>*]:bg-red-500"
+                      "w-full h-2",
+                      evaluationResult.score >= 70 ? "[&>*]:bg-green-500" : evaluationResult.score >= 40 ? "[&>*]:bg-yellow-500" : "[&>*]:bg-red-500"
                     )}
                   />
                   <p className="pt-2 whitespace-pre-line">Explanation: {evaluationResult.explanation}</p>
                 </AlertDescription>
               </Alert>
             )}
-             <div className="text-sm text-purple-700 mt-4 p-3 border border-purple-200 rounded-md bg-purple-100/50">
-                <h4 className="font-semibold mb-1 text-purple-800">Evaluation Guidance:</h4>
-                <p className="whitespace-pre-line">{evaluationGuidance}</p>
+            <div className="text-sm text-purple-700 mt-4 p-3 border border-purple-200 rounded-md bg-purple-100/50">
+              <h4 className="font-semibold mb-1 text-purple-800">Evaluation Guidance:</h4>
+              <p className="whitespace-pre-line">{evaluationGuidance}</p>
             </div>
 
 
@@ -207,7 +207,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-purple-600 pt-4">
         <p>Effective: +{pointsForCorrect} points</p>
-        <p>Needs Improvement: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}`: "0"} points (min 0)</p>
+        <p>Needs Improvement: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
       </CardFooter>
     </Card>
   );
