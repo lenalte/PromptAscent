@@ -1,22 +1,24 @@
+
 import React from 'react';
 import Image from "next/image";
 
 
 const LevelAndInformationBar: React.FC<{ sidebarWidth: number; points: number }> = ({ sidebarWidth, points }) => {
+    // sidebarWidth is removed from style calculation if this bar is always full-width relative to its container
     return (
         <>
             {/* Icons and Information Bar */}
             <div
-                className="fixed left-0 w-full flex justify-between items-center z-1000"
-                style={{ top: 'calc(15px + 8px)', width: `calc(100% - ${sidebarWidth}px)`, left: `${sidebarWidth}px` }}
+                className="w-full flex justify-between items-center z-50 pl-4 pr-4" // Ensure z-index is high enough, pl and pr for padding
+                style={{ top: 'calc(15px + 8px)' }} // top position relative to ProgressBar
             >
                 {/* Level Text on the Left */}
-                <div className="pl-4">
+                <div>
                     <span>Level 1</span>
                 </div>
 
                 {/* Icons Container */}
-                <div className="flex pr-4 space-x-8">
+                <div className="flex space-x-8">
 
                     <div className="flex items-center gap-2">
                         <div className="flex items-center">

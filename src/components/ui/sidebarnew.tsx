@@ -1,27 +1,56 @@
 
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3 } from 'lucide-react'; // Added UserCircle and BarChart3
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
-    onToggle: (collapsed: boolean) => void;
+    initialContentOpen?: boolean;
+    onContentToggle: (isOpen: boolean) => void;
 }
 
-type LessonListing = Omit<Lesson, 'items'>; // This includes the description
+type LessonListing = Omit<Lesson, 'items'>;
 
-const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
-    const [collapsed, setCollapsed] = useState<boolean>(false);
+// Profil SVG Icon (aus vorheriger Version extrahiert)
+const ProfilIcon = () => (
+    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground shrink-0" viewBox="0 0 790.000000 790.000000"
+        preserveAspectRatio="xMidYMid meet">
+        <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
+            fill="currentColor" stroke="none">
+            <path d="M2900 7630 l0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -1040 0 -1040 270 0 270 0 0 -270 0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -785 0 -785 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -775 0 -775 1580 0 1580 0 0 775 0 775 265 0 265 0 0 270 0 270 265 0 265 0 0 785 0 785 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 270 0 270 0 0 1040 0 1040 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 -1040 0 -1040 0 0 -270z m2080 -540 l0 -270 265 0 265 0 0 -1040 0 -1040 -265 0 -265 0 0 -270 0 -270 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -785 0 -785 -260 0 -260 0 0 265 0 265 -270 0 -270 0 0 -1040 0 -1040 -260 0 -260 0 0 525 0 525 -525 0 -525 0 0 -525 0 -525 -255 0 -255 0 0 1040 0 1040 -270 0 -270 0 0 -265 0 -265 -260 0 -260 0 0 785 0 785 265 0 265 0 0 270 0 270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 1040 0 1040 265 0 265 0 0 270 0 270 1040 0 1040 0 0 -270z"/>
+            <path d="M2900 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
+            <path d="M4450 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
+        </g>
+    </svg>
+);
+
+// Placeholder Leaderboard Icon
+const LeaderboardIcon = () => (
+    <BarChart3 className="h-8 w-8 text-foreground shrink-0" />
+);
+
+
+const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentToggle }) => {
+    const [isContentOpen, setIsContentOpen] = useState(initialContentOpen);
+    const [activeCategory, setActiveCategory] = useState<string | null>(initialContentOpen ? 'profil' : null);
+
     const [lessons, setLessons] = useState<LessonListing[]>([]);
     const [isLoadingLessons, setIsLoadingLessons] = useState(true);
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
+    useEffect(() => {
+        // If content area is opened, and no category is active, default to profil
+        if (isContentOpen && !activeCategory) {
+            setActiveCategory('profil');
+        }
+    }, [isContentOpen, activeCategory]);
 
     useEffect(() => {
         async function fetchLessonsData() {
+            if (activeCategory !== 'profil') return; // Only load lessons if profil is active
             setIsLoadingLessons(true);
             try {
                 const availableLessons = await getAvailableLessons();
@@ -31,103 +60,118 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
             }
             setIsLoadingLessons(false);
         }
-        fetchLessonsData();
-    }, []);
+        if (activeCategory === 'profil') {
+            fetchLessonsData();
+        }
+    }, [activeCategory]);
 
-    const toggleSidebarCollapse = () => {
-        const newCollapsedState = !collapsed;
-        setCollapsed(newCollapsedState);
-        onToggle(newCollapsedState);
+    const handleCategoryClick = (category: string) => {
+        if (activeCategory === category && isContentOpen) {
+            setIsContentOpen(false);
+            onContentToggle(false);
+            // setActiveCategory(null); // Optionally clear active category
+        } else {
+            setActiveCategory(category);
+            setIsContentOpen(true);
+            onContentToggle(true);
+        }
     };
 
     const toggleLessonDescription = (lessonId: string, event: React.MouseEvent) => {
-        event.preventDefault(); // Prevent link navigation when clicking chevron
+        event.preventDefault();
         event.stopPropagation();
         setExpandedLessonId(prevId => prevId === lessonId ? null : lessonId);
     };
 
-
     return (
-        <aside
-            id="default-sidebar"
-            className={`fixed top-0 left-0 z-40 h-screen transition-all ${collapsed ? 'w-20' : 'w-64'} sidebar-background`}
-            aria-label="Sidebar"
-        >
-            <div className={`h-full px-1 py-4 dark:bg-gray-800 sidebar-background flex flex-col overflow-y-auto`}> {/* Added overflow-y-auto */}
-                <ul className="space-y-2 font-medium">
-                    {/*Profil Option - Main Toggle */}
-                    <li>
-                        <button
-                            type="button"
-                            className={`w-full flex items-center p-4 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}
-                            onClick={toggleSidebarCollapse}
-                            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                        >
-                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-foreground shrink-0" viewBox="0 0 790.000000 790.000000"
-                                preserveAspectRatio="xMidYMid meet">
-                                <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
-                                    fill="currentColor" stroke="none">
-                                    <path d="M2900 7630 l0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -1040 0 -1040 270 0 270 0 0 -270 0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -785 0 -785 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -775 0 -775 1580 0 1580 0 0 775 0 775 265 0 265 0 0 270 0 270 265 0 265 0 0 785 0 785 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 270 0 270 0 0 1040 0 1040 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 -1040 0 -1040 0 0 -270z m2080 -540 l0 -270 265 0 265 0 0 -1040 0 -1040 -265 0 -265 0 0 -270 0 -270 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -785 0 -785 -260 0 -260 0 0 265 0 265 -270 0 -270 0 0 -1040 0 -1040 -260 0 -260 0 0 525 0 525 -525 0 -525 0 0 -525 0 -525 -255 0 -255 0 0 1040 0 1040 -270 0 -270 0 0 -265 0 -265 -260 0 -260 0 0 785 0 785 265 0 265 0 0 270 0 270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 1040 0 1040 265 0 265 0 0 270 0 270 1040 0 1040 0 0 -270z"/>
-                                    <path d="M2900 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
-                                    <path d="M4450 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
-                                </g>
-                            </svg>
-                            <span className={cn("ms-3 text-foreground whitespace-nowrap", collapsed ? 'hidden' : '')}>Profil</span>
-                        </button>
-                    </li>
-                </ul>
-
-                {/* Lessons Section - Shown only if sidebar is not collapsed */}
-                {!collapsed && (
-                    <div className="mt-4"> {/* Removed pt-4 border-t border-[var(--sidebar-border)] */}
-                        {isLoadingLessons && (
-                            <div className={`flex items-center p-4 rounded-lg text-foreground`}>
-                                <Loader2 className="h-5 w-5 animate-spin shrink-0" />
-                                <span className="ms-3">Loading lessons...</span>
-                            </div>
-                        )}
-                        {!isLoadingLessons && lessons.length > 0 && (
-                            <ul className="space-y-1 font-medium">
-                                {lessons.map((lesson) => (
-                                    <li key={lesson.id}>
-                                        <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
-                                            <a className={`flex flex-col p-3 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
-                                                <div className="flex items-center justify-between w-full">
-                                                    <div className="flex items-center">
-                                                        <BookOpen className="h-5 w-5 text-foreground shrink-0" />
-                                                        <span className="ms-3 text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
-                                                    </div>
-                                                    {lesson.description && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={(e) => toggleLessonDescription(lesson.id, e)}
-                                                            className="p-1 -mr-1 hover:bg-opacity-50 rounded"
-                                                            aria-label={expandedLessonId === lesson.id ? "Collapse description" : "Expand description"}
-                                                        >
-                                                            {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
-                                                        </button>
-                                                    )}
-                                                </div>
-                                                {expandedLessonId === lesson.id && lesson.description && (
-                                                    <p className="mt-2 ml-[calc(1.25rem+0.75rem)] text-xs text-foreground/80 whitespace-normal break-words">
-                                                        {lesson.description}
-                                                    </p>
-                                                )}
-                                            </a>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                        {!isLoadingLessons && lessons.length === 0 && (
-                             <div className="p-4 text-sm text-foreground/70">
-                                No lessons available.
-                            </div>
-                        )}
-                    </div>
-                )}
+        <div className="flex h-screen fixed top-0 left-0 z-40">
+            {/* Fixed Icon Bar */}
+            <div className="w-20 sidebar-background flex flex-col items-center py-4 space-y-6 shadow-md">
+                <button
+                    type="button"
+                    onClick={() => handleCategoryClick('profil')}
+                    className={cn(
+                        "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                        activeCategory === 'profil' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                    )}
+                    aria-label="Profil und Lektionen"
+                >
+                    <ProfilIcon />
+                </button>
+                <button
+                    type="button"
+                    onClick={() => handleCategoryClick('leaderboard')}
+                    className={cn(
+                        "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                        activeCategory === 'leaderboard' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                    )}
+                    aria-label="Leaderboard"
+                >
+                    <LeaderboardIcon />
+                </button>
             </div>
-        </aside>
+
+            {/* Collapsible Content Area */}
+            {isContentOpen && (
+                <div className="w-64 sidebar-background h-full px-3 py-4 overflow-y-auto shadow-lg transition-all duration-300 ease-in-out">
+                    {activeCategory === 'profil' && (
+                        <div>
+                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1">Profil & Lektionen</h2>
+                            {isLoadingLessons && (
+                                <div className={`flex items-center p-2 rounded-lg text-foreground`}>
+                                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                    <span className="ms-3 text-sm">Lade Lektionen...</span>
+                                </div>
+                            )}
+                            {!isLoadingLessons && lessons.length > 0 && (
+                                <ul className="space-y-1 font-medium">
+                                    {lessons.map((lesson) => (
+                                        <li key={lesson.id}>
+                                            <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
+                                                <a className={`flex flex-col p-2 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <div className="flex items-center overflow-hidden"> {/* Container for text to enable wrapping */}
+                                                            <BookOpen className="h-5 w-5 text-foreground shrink-0 mr-3" />
+                                                            <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
+                                                        </div>
+                                                        {lesson.description && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => toggleLessonDescription(lesson.id, e)}
+                                                                className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0"
+                                                                aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
+                                                            >
+                                                                {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    {expandedLessonId === lesson.id && lesson.description && (
+                                                        <p className="mt-2 ml-[calc(1.25rem+0.75rem)] text-xs text-foreground/80 whitespace-normal break-words">
+                                                            {lesson.description}
+                                                        </p>
+                                                    )}
+                                                </a>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            {!isLoadingLessons && lessons.length === 0 && activeCategory === 'profil' && (
+                                <div className="p-2 text-sm text-foreground/70">
+                                    Keine Lektionen verfügbar.
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    {activeCategory === 'leaderboard' && (
+                        <div>
+                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1">Leaderboard</h2>
+                            <p className="text-foreground/80 p-2 text-sm">Leaderboard-Inhalt kommt bald!</p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
     );
 };
 
