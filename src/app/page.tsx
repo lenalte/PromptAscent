@@ -1,12 +1,12 @@
 
-"use client"; // Keep as client component for now due to existing client-side logic
+"use client"; 
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getAvailableLessons, type Lesson } from '@/data/lessons'; // Import updated functions/types
+import { getAvailableLessons, type Lesson } from '@/data/lessons'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BookOpen } from 'lucide-react'; // Added BookOpen
+import { ArrowRight, BookOpen } from 'lucide-react'; 
 import { PointsDisplay } from '@/components/PointsDisplay';
 import { Separator } from '@/components/ui/separator';
 import { useGlobalPoints } from '@/context/PointsContext';
@@ -15,12 +15,12 @@ import Sidebar from '@/components/ui/sidebarnew';
 import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 import BirdsBackground from '@/components/BirdsBackground';
 
-// Define a type for the lessons displayed on the home page (without items)
+
 type LessonListing = Omit<Lesson, 'items'>;
 
 export default function Home() {
   const { totalPoints } = useGlobalPoints();
-  const [collapsed, setCollapsed] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(false); // Sidebar collapsed state
   const [lessonList, setLessonList] = useState<LessonListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,12 +32,16 @@ export default function Home() {
         setLessonList(availableLessons);
       } catch (error) {
         console.error("Failed to fetch lessons:", error);
-        // Optionally, set an error state to display to the user
       }
       setIsLoading(false);
     }
     fetchLessons();
   }, []);
+
+  // This function will be passed to the Sidebar to update the collapsed state in Home
+  const handleToggleSidebar = (newCollapsedState: boolean) => {
+    setCollapsed(newCollapsedState);
+  };
 
   return (
     <>
@@ -53,12 +57,13 @@ export default function Home() {
         </header>
 
         <div className='flex flex-1 w-full'>
-          <Sidebar onToggle={setCollapsed} />
+          {/* Pass onToggle which is setCollapsed to allow Sidebar to control Home's collapsed state */}
+          <Sidebar onToggle={handleToggleSidebar} />
 
           <main
             className="flex-1 p-8 pb-2 gap-8 sm:p-0"
             style={{
-              marginLeft: collapsed ? '80px' : '276px',
+              marginLeft: collapsed ? '80px' : '276px', // Adjusted margin for sidebar
               marginRight: '20px',
               transition: 'margin-left 0.3s ease-in-out',
             }}
@@ -106,3 +111,5 @@ export default function Home() {
     </>
   );
 }
+
+    
