@@ -4,20 +4,20 @@
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'; // Added BookOpen and Loader2
-import { Separator } from "@/components/ui/separator"; // Added Separator
+import { BookOpen, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 interface SidebarProps {
     onToggle: (collapsed: boolean) => void;
 }
 
-type LessonListing = Omit<Lesson, 'items'>;
+type LessonListing = Omit<Lesson, 'items'>; // This includes the description
 
 const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const [lessons, setLessons] = useState<LessonListing[]>([]);
     const [isLoadingLessons, setIsLoadingLessons] = useState(true);
-    const [showLessons, setShowLessons] = useState(true); // State to toggle lesson list visibility
+    const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
             try {
                 const availableLessons = await getAvailableLessons();
                 setLessons(availableLessons);
-            } catch (error) {
+            } catch (error) { // Added curly braces here
                 console.error("Failed to fetch lessons for sidebar:", error);
             }
             setIsLoadingLessons(false);
@@ -37,13 +37,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
     const toggleSidebarCollapse = () => {
         const newCollapsedState = !collapsed;
         setCollapsed(newCollapsedState);
-        onToggle(newCollapsedState); 
+        onToggle(newCollapsedState);
     };
 
-    const toggleLessonVisibility = (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent navigation if it's a link
-        e.stopPropagation(); // Stop event from bubbling up to parent link
-        setShowLessons(!showLessons);
+    const toggleLessonDescription = (lessonId: string, event: React.MouseEvent) => {
+        event.preventDefault(); // Prevent link navigation when clicking chevron
+        event.stopPropagation();
+        setExpandedLessonId(prevId => prevId === lessonId ? null : lessonId);
     };
 
 
@@ -53,16 +53,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
             className={`fixed top-0 left-0 z-40 h-screen transition-all ${collapsed ? 'w-20' : 'w-64'} sidebar-background`}
             aria-label="Sidebar"
         >
-            <div className={`h-full px-1 py-4 overflow-y-auto dark:bg-gray-800 sidebar-background`}>
+            <div className={`h-full px-1 py-4 dark:bg-gray-800 sidebar-background flex flex-col`}>
                 <ul className="space-y-2 font-medium">
-                    {/*Profil Option*/}
+                    {/*Profil Option - Main Toggle */}
                     <li>
-                        <a
-                            href="#"
-                            className={`flex items-center p-4 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}
-                            onClick={toggleSidebarCollapse} // Changed to toggleSidebarCollapse
+                        <button
+                            type="button"
+                            className={`w-full flex items-center p-4 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}
+                            onClick={toggleSidebarCollapse}
+                            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                         >
-                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-foreground" viewBox="0 0 790.000000 790.000000"
+                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-foreground shrink-0" viewBox="0 0 790.000000 790.000000"
                                 preserveAspectRatio="xMidYMid meet">
                                 <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
                                     fill="currentColor" stroke="none">
@@ -71,78 +72,63 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
                                     <path d="M4450 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
                                 </g>
                             </svg>
-                            <span className={`ms-3 ${collapsed ? 'hidden' : ''} text-foreground`}>Profil</span>
-                        </a>
+                            <span className={cn("ms-3 text-foreground whitespace-nowrap", collapsed ? 'hidden' : '')}>Profil</span>
+                        </button>
                     </li>
+                </ul>
 
-                    {/*Leaderboard Option*/}
-                    <li>
-                        <a
-                            href="#" // This could be a link to a leaderboard page
-                            className={`flex items-center p-4 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}
-                        >
-                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-foreground" viewBox="0 0 790.000000 790.000000"
-                                preserveAspectRatio="xMidYMid meet">
-                                <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
-                                    fill="currentColor" stroke="none">
-                                    <path d="M1450 7240 l0 -310 -495 0 -495 0 0 -1045 0 -1045 230 0 230 0 0 -225 0 -225 265 0 265 0 0 -230 0 -230 223 -2 222 -3 3 -222 2 -223 240 0 240 0 0 -200 0 -200 255 0 255 0 0 -225 0 -225 215 0 215 0 0 -470 0 -470 -375 0 -375 0 0 -225 0 -225 -185 0 -185 0 0 -445 0 -445 1765 0 1765 0 0 445 0 445 -182 2 -183 3 -3 223 -2 222 -390 0 -390 0 0 470 0 470 215 0 215 0 0 215 0 215 255 0 255 0 0 210 0 210 260 0 260 0 0 225 0 225 205 0 205 0 0 230 0 230 265 0 265 0 0 225 0 225 230 0 230 0 0 1045 0 1045 -495 0 -495 0 0 310 0 310 -2500 0 -2500 0 0 -310z m4538 -1502 l-3 -1363 -102 -3 -103 -3 0 -219 0 -220 -167 -2 -168 -3 -3 -207 -2 -208 -215 0 -215 0 0 -215 0 -215 -1060 0 -1060 0 0 225 0 225 -200 0 -200 0 0 200 0 200 -185 0 -185 0 0 220 0 219 -102 3 -103 3 -3 1363 -2 1362 2040 0 2040 0 -2 -1362z m-4538 -78 l0 -820 -160 0 -160 0 0 220 0 219 -102 3 -103 3 -3 598 -2 597 265 0 265 0 0 -820z m5528 223 l-3 -598 -102 -3 -103 -3 0 -219 0 -220 -160 0 -160 0 0 820 0 820 265 0 265 0 -2 -597z m-2858 -3723 l0 -470 -170 0 -170 0 0 470 0 470 170 0 170 0 0 -470z m920 -1140 l0 -220 -1075 0 -1075 0 0 220 0 220 1075 0 1075 0 0 -220z"/>
-                                </g>
-                            </svg>
-                            <span className={`flex-1 ms-3 whitespace-nowrap ${collapsed ? 'hidden' : ''} text-foreground`}>Leaderboard</span>
-                        </a>
-                    </li>
-
-                    {/* Lessons Section */}
-                    {!collapsed && (
-                        <li className="px-4 pt-4 pb-2">
-                            <div 
-                                className="flex items-center justify-between cursor-pointer"
-                                onClick={toggleLessonVisibility}
-                                role="button"
-                                aria-expanded={showLessons}
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleLessonVisibility(e as any); }}
-                            >
-                                <span className="text-sm font-semibold text-foreground/70">LESSONS</span>
-                                {showLessons ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
+                {/* Lessons Section - Shown only if sidebar is not collapsed */}
+                {!collapsed && (
+                    <div className="mt-4 pt-4 border-t border-[var(--sidebar-border)]">
+                        {isLoadingLessons && (
+                            <div className={`flex items-center p-4 rounded-lg text-foreground`}>
+                                <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                <span className="ms-3">Loading lessons...</span>
                             </div>
-                        </li>
-                    )}
-
-                    {isLoadingLessons && (
-                        <li>
-                            <div className={`flex items-center p-4 rounded-lg text-foreground ${collapsed ? 'justify-center' : ''}`}>
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                                {!collapsed && <span className="ms-3">Loading lessons...</span>}
-                            </div>
-                        </li>
-                    )}
-
-                    {!isLoadingLessons && showLessons && lessons.map((lesson) => (
-                        <li key={lesson.id}>
-                            <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
-                                <a className={`flex items-center p-4 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
-                                    <BookOpen className="h-6 w-6 text-foreground" />
-                                    {!collapsed && (
-                                        <span className="ms-3 flex-1 whitespace-nowrap text-sm">{lesson.title}</span>
-                                    )}
-                                </a>
-                            </Link>
-                        </li>
-                    ))}
-                    {!isLoadingLessons && lessons.length === 0 && !collapsed && (
-                         <li>
-                            <div className="p-4 text-sm text-foreground/70">
+                        )}
+                        {!isLoadingLessons && lessons.length > 0 && (
+                            <ul className="space-y-1 font-medium">
+                                {lessons.map((lesson) => (
+                                    <li key={lesson.id}>
+                                        <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
+                                            <a className={`flex flex-col p-3 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
+                                                <div className="flex items-center justify-between w-full">
+                                                    <div className="flex items-center">
+                                                        <BookOpen className="h-5 w-5 text-foreground shrink-0" />
+                                                        <span className="ms-3 text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
+                                                    </div>
+                                                    {lesson.description && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => toggleLessonDescription(lesson.id, e)}
+                                                            className="p-1 -mr-1 hover:bg-opacity-50 rounded"
+                                                            aria-label={expandedLessonId === lesson.id ? "Collapse description" : "Expand description"}
+                                                        >
+                                                            {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                {expandedLessonId === lesson.id && lesson.description && (
+                                                    <p className="mt-2 ml-[calc(1.25rem+0.75rem)] text-xs text-foreground/80 whitespace-normal break-words">
+                                                        {lesson.description}
+                                                    </p>
+                                                )}
+                                            </a>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        {!isLoadingLessons && lessons.length === 0 && (
+                             <div className="p-4 text-sm text-foreground/70">
                                 No lessons available.
                             </div>
-                        </li>
-                    )}
-                </ul>
+                        )}
+                    </div>
+                )}
             </div>
         </aside>
     );
 };
 
 export default Sidebar;
-
-    
