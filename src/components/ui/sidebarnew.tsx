@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
             try {
                 const availableLessons = await getAvailableLessons();
                 setLessons(availableLessons);
-            } catch (error) { // Added curly braces here
+            } catch (error) {
                 console.error("Failed to fetch lessons for sidebar:", error);
             }
             setIsLoadingLessons(false);
@@ -53,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
             className={`fixed top-0 left-0 z-40 h-screen transition-all ${collapsed ? 'w-20' : 'w-64'} sidebar-background`}
             aria-label="Sidebar"
         >
-            <div className={`h-full px-1 py-4 dark:bg-gray-800 sidebar-background flex flex-col`}>
+            <div className={`h-full px-1 py-4 dark:bg-gray-800 sidebar-background flex flex-col overflow-y-auto`}> {/* Added overflow-y-auto */}
                 <ul className="space-y-2 font-medium">
                     {/*Profil Option - Main Toggle */}
                     <li>
@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
 
                 {/* Lessons Section - Shown only if sidebar is not collapsed */}
                 {!collapsed && (
-                    <div className="mt-4 pt-4 border-t border-[var(--sidebar-border)]">
+                    <div className="mt-4"> {/* Removed pt-4 border-t border-[var(--sidebar-border)] */}
                         {isLoadingLessons && (
                             <div className={`flex items-center p-4 rounded-lg text-foreground`}>
                                 <Loader2 className="h-5 w-5 animate-spin shrink-0" />
