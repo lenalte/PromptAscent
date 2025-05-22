@@ -10,7 +10,7 @@ import { ArrowRight, BookOpen } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useGlobalPoints } from '@/context/PointsContext';
 import ProgressBar from '@/components/ui/progressbar';
-import Sidebar from '@/components/ui/sidebarnew'; // Updated import
+import Sidebar from '@/components/ui/sidebarnew';
 import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 import BirdsBackground from '@/components/BirdsBackground';
 
@@ -59,10 +59,10 @@ export default function Home() {
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md"> {/* Added sticky and background for header */}
           <ProgressBar progress={50} sidebarWidth={0} /> {/* sidebarWidth is 0 because ProgressBar is inside the margin-adjusted div */}
-          <LevelAndInformationBar sidebarWidth={0} points={totalPoints} /> {/* Same for LevelAndInformationBar */}
+          <LevelAndInformationBar className="mt-2" sidebarWidth={0} points={totalPoints} /> {/* Same for LevelAndInformationBar, added mt-2 */}
         </header>
 
-        <main className="flex-1 p-8 pt-28"> {/* Added pt-28 to account for fixed header height */}
+        <main className="flex-1 p-8 pt-30"> {/* Adjusted pt-28 to pt-30 */}
           <div className="w-full max-w-4xl text-left mb-8">
             <h2 className="text-2xl font-semibold mb-2">Welcome to The Promptening!</h2>
             <p className="text-muted-foreground">
