@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
 
             {/* Collapsible Content Area */}
             {isContentOpen && (
-                <div className="w-64 sidebar-background h-full px-3 py-4 overflow-y-auto transition-all duration-300 ease-in-out">
+                <div className="w-64 sidebar-background h-full pr-3 pl-2 py-4 overflow-y-auto transition-all duration-300 ease-in-out">
                     {activeCategory === 'profil' && (
                         <div>
                             <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4">Profil &amp; Lektionen</h2>
