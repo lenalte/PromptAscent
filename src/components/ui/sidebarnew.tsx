@@ -80,11 +80,9 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
     };
 
     // Calculate left offset for the dotted line and padding for description
-    // Assumes: <a> has p-2 (0.5rem), icon wrapper <span> has p-1.5 (0.375rem) & mr-3 (0.75rem), icon is w-5 (1.25rem)
-    // 1rem = 16px for tailwind defaults
     const iconContainerLeftPadding = 0.5; // rem, from a's p-2
     const iconSpanPadding = 0.375; // rem, from span's p-1.5
-    const iconWidth = 1.25; // rem, from w-5
+    const iconWidth = 1.25; // rem, from w-5 (BookOpen icon)
     const iconSpanMarginRight = 0.75; // rem, from mr-3
 
     const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2); // Center of icon
@@ -94,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
     return (
         <div className="flex h-screen fixed top-0 left-0 z-40">
             {/* Fixed Icon Bar */}
-            <div className="w-20 sidebar-background flex flex-col items-center py-4 space-y-6">
+            <div className="w-16 sidebar-background flex flex-col items-center py-4 space-y-6"> {/* Changed w-20 to w-16 */}
                 <button
                     type="button"
                     onClick={() => handleCategoryClick('profil')}
@@ -133,26 +131,25 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                             )}
                             {!isLoadingLessons && lessons.length > 0 && (
                                 <div className="relative"> {/* Container for UL and the line */}
-                                    {/* Dotted Line Element - adjust top/bottom/left to align with icons */}
+                                    {/* Dotted Line Element */}
                                     <div
                                         className="absolute w-px bg-repeat-y opacity-70"
                                         style={{
-                                            left: `${lineLeftOffsetRem}rem`, // Center of icons
-                                            top: '1.25rem', // Start slightly below the first icon's top
-                                            bottom: '1.25rem', // End slightly above the last icon's bottom
+                                            left: `${lineLeftOffsetRem}rem`,
+                                            top: '1.25rem', 
+                                            bottom: '1.25rem',
                                             backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
-                                            backgroundSize: '1px 8px', // Creates a dotted effect (1px line, 4px space)
-                                            zIndex: 0, // Ensure line is behind list items
+                                            backgroundSize: '1px 8px', 
+                                            zIndex: 0, 
                                         }}
                                     ></div>
-                                    <ul className="space-y-1 font-medium relative z-10"> {/* Ensure ul is above the line */}
+                                    <ul className="space-y-1 font-medium relative z-10">
                                         {lessons.map((lesson) => (
-                                            <li key={lesson.id} className="relative"> {/* Each li is relative for z-index context if needed */}
+                                            <li key={lesson.id} className="relative">
                                                 <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
                                                     <a className={`flex flex-col p-2 rounded-lg hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
                                                         <div className="flex items-center justify-between w-full">
                                                             <div className="flex items-center overflow-hidden">
-                                                                {/* Span around icon to give it a background and make it circular to "cover" the line */}
                                                                 <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
                                                                     <BookOpen className="h-5 w-5 text-foreground shrink-0" />
                                                                 </span>
@@ -170,7 +167,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                                                             )}
                                                         </div>
                                                         {expandedLessonId === lesson.id && lesson.description && (
-                                                            <p 
+                                                            <p
                                                               className="mt-2 text-xs text-foreground/80 whitespace-normal break-words"
                                                               style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
                                                             >

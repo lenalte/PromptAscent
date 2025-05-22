@@ -41,7 +41,7 @@ export default function Home() {
     setIsSidebarContentAreaOpen(isOpen);
   }, []);
 
-  const ICON_BAR_WIDTH_PX = 80; // Corresponds to w-20
+  const ICON_BAR_WIDTH_PX = 64; // Corresponds to w-16 (4rem)
   const CONTENT_AREA_WIDTH_PX = 256; // Corresponds to w-64
 
   const currentSidebarTotalWidth = isSidebarContentAreaOpen
