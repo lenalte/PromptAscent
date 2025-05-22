@@ -1,13 +1,13 @@
 
-"use client"; 
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getAvailableLessons, type Lesson } from '@/data/lessons'; 
+import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BookOpen } from 'lucide-react'; 
-import { PointsDisplay } from '@/components/PointsDisplay';
+import { ArrowRight, BookOpen } from 'lucide-react';
+import { PointsDisplay } from '@/components/PointsDisplay'; // This component is not used on the home page for lesson points
 import { Separator } from '@/components/ui/separator';
 import { useGlobalPoints } from '@/context/PointsContext';
 import ProgressBar from '@/components/ui/progressbar';
@@ -20,7 +20,7 @@ type LessonListing = Omit<Lesson, 'items'>;
 
 export default function Home() {
   const { totalPoints } = useGlobalPoints();
-  const [collapsed, setCollapsed] = React.useState(false); // Sidebar collapsed state
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [lessonList, setLessonList] = useState<LessonListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,9 +38,8 @@ export default function Home() {
     fetchLessons();
   }, []);
 
-  // This function will be passed to the Sidebar to update the collapsed state in Home
   const handleToggleSidebar = (newCollapsedState: boolean) => {
-    setCollapsed(newCollapsedState);
+    setSidebarCollapsed(newCollapsedState);
   };
 
   return (
@@ -48,8 +47,8 @@ export default function Home() {
       <BirdsBackground />
       <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-0 font-[family-name:var(--font-jetbrains-mono)]">
         <header>
-          <ProgressBar progress={50} sidebarWidth={collapsed ? 80 : 256} />
-          <LevelAndInformationBar sidebarWidth={collapsed ? 80 : 256} points={totalPoints} />
+          <ProgressBar progress={50} sidebarWidth={sidebarCollapsed ? 80 : 256} />
+          <LevelAndInformationBar sidebarWidth={sidebarCollapsed ? 80 : 256} points={totalPoints} />
           <div
             className='flex justify-between pt-20'
           >
@@ -57,13 +56,12 @@ export default function Home() {
         </header>
 
         <div className='flex flex-1 w-full'>
-          {/* Pass onToggle which is setCollapsed to allow Sidebar to control Home's collapsed state */}
           <Sidebar onToggle={handleToggleSidebar} />
 
           <main
             className="flex-1 p-8 pb-2 gap-8 sm:p-0"
             style={{
-              marginLeft: collapsed ? '80px' : '276px', // Adjusted margin for sidebar
+              marginLeft: sidebarCollapsed ? '80px' : '276px', // Adjusted margin for sidebar (80px for w-20, 256px for w-64, plus padding/margin)
               marginRight: '20px',
               transition: 'margin-left 0.3s ease-in-out',
             }}
@@ -111,5 +109,3 @@ export default function Home() {
     </>
   );
 }
-
-    
