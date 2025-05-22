@@ -20,7 +20,7 @@ const ProfilIcon = () => (
         preserveAspectRatio="xMidYMid meet">
         <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
             fill="currentColor" stroke="none">
-            <path d="M2900 7630 l0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -1040 0 -1040 270 0 270 0 0 -270 0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -785 0 -785 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -775 0 -775 1580 0 1580 0 0 775 0 775 265 0 265 0 0 270 0 270 265 0 265 0 0 785 0 785 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 270 0 270 0 0 1040 0 1040 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 -1040 0 -1040 0 0 -270z m2080 -540 l0 -270 265 0 265 0 0 -1040 0 -1040 -265 0 -265 0 0 -270 0 -270 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -785 0 -785 -260 0 -260 0 0 265 0 265 -270 0 -270 0 0 -1040 0 -1040 -260 0 -260 0 0 525 0 525 -525 0 -525 0 0 -525 0 -525 -255 0 -255 0 0 1040 0 1040 -270 0 -270 0 0 -265 0 -265 -260 0 -260 0 0 785 0 785 265 0 265 0 0 270 0 270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 1040 0 1040 265 0 265 0 0 270 0 270 1040 0 1040 0 0 -270z"/>
+            <path d="M2900 7630 l0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -1040 0 -1040 270 0 270 0 0 -270 0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -785 0 -785 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -775 0 -775 1580 0 1580 0 0 775 0 775 265 0 265 0 0 270 0 270 265 0 265 0 0 785 0 785 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 -1040 0 -1040 0 0 -270z m2080 -540 l0 -270 265 0 265 0 0 -1040 0 -1040 -265 0 -265 0 0 -270 0 -270 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -785 0 -785 -260 0 -260 0 0 265 0 265 -270 0 -270 0 0 -1040 0 -1040 -260 0 -260 0 0 525 0 525 -525 0 -525 0 0 -525 0 -525 -255 0 -255 0 0 1040 0 1040 -270 0 -270 0 0 -265 0 -265 -260 0 -260 0 0 785 0 785 265 0 265 0 0 270 0 270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 1040 0 1040 265 0 265 0 0 270 0 270 1040 0 1040 0 0 -270z"/>
             <path d="M2900 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
             <path d="M4450 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
         </g>
@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
     return (
         <div className="flex h-screen fixed top-0 left-0 z-40">
             {/* Fixed Icon Bar */}
-            <div className="w-20 sidebar-background flex flex-col items-center py-4 space-y-6 shadow-md">
+            <div className="w-20 sidebar-background flex flex-col items-center py-4 space-y-6">
                 <button
                     type="button"
                     onClick={() => handleCategoryClick('profil')}
@@ -113,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                 <div className="w-64 sidebar-background h-full px-3 py-4 overflow-y-auto transition-all duration-300 ease-in-out">
                     {activeCategory === 'profil' && (
                         <div>
-                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1">Profil & Lektionen</h2>
+                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4">Profil &amp; Lektionen</h2>
                             {isLoadingLessons && (
                                 <div className={`flex items-center p-2 rounded-lg text-foreground`}>
                                     <Loader2 className="h-5 w-5 animate-spin shrink-0" />
@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                     )}
                     {activeCategory === 'leaderboard' && (
                         <div>
-                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1">Leaderboard</h2>
+                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4">Leaderboard</h2>
                             <p className="text-foreground/80 p-2 text-sm">Leaderboard-Inhalt kommt bald!</p>
                         </div>
                     )}
