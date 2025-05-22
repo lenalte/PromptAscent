@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
         if (isContentOpen && !activeCategory) {
             setActiveCategory('profil');
         }
-        onContentToggle(isContentOpen); // Notify parent about content area state
+        onContentToggle(isContentOpen);
     }, [isContentOpen, activeCategory, onContentToggle]);
 
     useEffect(() => {
@@ -67,7 +67,6 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
     const handleCategoryClick = (category: string) => {
         if (activeCategory === category && isContentOpen) {
             setIsContentOpen(false);
-            // setActiveCategory(null); // Keep active category to reopen it later
         } else {
             setActiveCategory(category);
             setIsContentOpen(true);
@@ -79,6 +78,18 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
         event.stopPropagation();
         setExpandedLessonId(prevId => prevId === lessonId ? null : lessonId);
     };
+
+    // Calculate left offset for the dotted line and padding for description
+    // Assumes: <a> has p-2 (0.5rem), icon wrapper <span> has p-1.5 (0.375rem) & mr-3 (0.75rem), icon is w-5 (1.25rem)
+    // 1rem = 16px for tailwind defaults
+    const iconContainerLeftPadding = 0.5; // rem, from a's p-2
+    const iconSpanPadding = 0.375; // rem, from span's p-1.5
+    const iconWidth = 1.25; // rem, from w-5
+    const iconSpanMarginRight = 0.75; // rem, from mr-3
+
+    const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2); // Center of icon
+    const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
+
 
     return (
         <div className="flex h-screen fixed top-0 left-0 z-40">
@@ -121,39 +132,59 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                                 </div>
                             )}
                             {!isLoadingLessons && lessons.length > 0 && (
-                                <ul className="space-y-1 font-medium">
-                                    {lessons.map((lesson) => (
-                                        <li key={lesson.id}>
-                                            <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
-                                                <a className={`flex flex-col p-2 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
-                                                    <div className="flex items-center justify-between w-full">
-                                                        <div className="flex items-center overflow-hidden">
-                                                            <BookOpen className="h-5 w-5 text-foreground shrink-0 mr-3" />
-                                                            <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
+                                <div className="relative"> {/* Container for UL and the line */}
+                                    {/* Dotted Line Element - adjust top/bottom/left to align with icons */}
+                                    <div
+                                        className="absolute w-px bg-repeat-y opacity-70"
+                                        style={{
+                                            left: `${lineLeftOffsetRem}rem`, // Center of icons
+                                            top: '1.25rem', // Start slightly below the first icon's top
+                                            bottom: '1.25rem', // End slightly above the last icon's bottom
+                                            backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
+                                            backgroundSize: '1px 8px', // Creates a dotted effect (1px line, 4px space)
+                                            zIndex: 0, // Ensure line is behind list items
+                                        }}
+                                    ></div>
+                                    <ul className="space-y-1 font-medium relative z-10"> {/* Ensure ul is above the line */}
+                                        {lessons.map((lesson) => (
+                                            <li key={lesson.id} className="relative"> {/* Each li is relative for z-index context if needed */}
+                                                <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
+                                                    <a className={`flex flex-col p-2 rounded-lg hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
+                                                        <div className="flex items-center justify-between w-full">
+                                                            <div className="flex items-center overflow-hidden">
+                                                                {/* Span around icon to give it a background and make it circular to "cover" the line */}
+                                                                <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
+                                                                    <BookOpen className="h-5 w-5 text-foreground shrink-0" />
+                                                                </span>
+                                                                <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
+                                                            </div>
+                                                            {lesson.description && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => toggleLessonDescription(lesson.id, e)}
+                                                                    className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0"
+                                                                    aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
+                                                                >
+                                                                    {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
+                                                                </button>
+                                                            )}
                                                         </div>
-                                                        {lesson.description && (
-                                                            <button
-                                                                type="button"
-                                                                onClick={(e) => toggleLessonDescription(lesson.id, e)}
-                                                                className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0"
-                                                                aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
+                                                        {expandedLessonId === lesson.id && lesson.description && (
+                                                            <p 
+                                                              className="mt-2 text-xs text-foreground/80 whitespace-normal break-words"
+                                                              style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
                                                             >
-                                                                {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
-                                                            </button>
+                                                                {lesson.description}
+                                                            </p>
                                                         )}
-                                                    </div>
-                                                    {expandedLessonId === lesson.id && lesson.description && (
-                                                        <p className="mt-2 ml-[calc(1.25rem+0.75rem)] text-xs text-foreground/80 whitespace-normal break-words">
-                                                            {lesson.description}
-                                                        </p>
-                                                    )}
-                                                </a>
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
+                                                    </a>
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             )}
-                            {!isLoadingLessons && lessons.length === 0 && activeCategory === 'profil' && (
+                            {!isLoadingLessons && lessons.length === 0 && (
                                 <div className="p-2 text-sm text-foreground/70">
                                     Keine Lektionen verfügbar.
                                 </div>
