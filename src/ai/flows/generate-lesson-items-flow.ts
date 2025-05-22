@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/ai-instance';
-import { z } from 'genkit'; // Corrected import path
+import { z } from 'genkit';
 import {
   LessonSchema,
   type Lesson,
@@ -83,13 +83,19 @@ Item Types and specific fields:
     *   'pointsAwarded': 10
     *   'pointsForIncorrect': 0
 
+**CRITICAL Content Sequencing Rule:**
+-   For any 'freeResponse' question, 'multipleChoice' question, or 'promptingTask', the concepts, facts, or techniques being tested or applied MUST have been explicitly introduced in one or more 'informationalSnippet' items that appear EARLIER in the generated 'items' array for THIS lesson.
+-   Structure the lesson items logically: introduce information with an 'informationalSnippet', then later test understanding or application of THAT specific information with a 'freeResponse', 'multipleChoice', or 'promptingTask'.
+-   Do NOT ask questions or set tasks about topics the user has not yet encountered through an 'informationalSnippet' in the current lesson's generated item sequence.
+-   For example, a valid sequence could be: Snippet A -> Snippet B -> Question about A -> Multiple Choice about B -> Snippet C -> Prompting Task using concepts from A, B, and C.
+-   All content for items (questions, options, descriptions, snippet content, task details etc.) must be derived from or directly reference the provided raw lesson text. Do not invent new concepts not present in the text.
+
 General Guidelines:
 -   Generate a variety of item types. Aim for at least 5-10 items per lesson if content allows.
--   All content for items (questions, options, descriptions, etc.) must be derived from or directly reference the provided raw lesson text. Do not invent new concepts not present in the text.
 -   Ensure the generated JSON is valid and strictly adheres to the Lesson schema structure, including all required fields for each item type.
 -   The final output should be a single JSON object: { "id": "{{{lessonId}}}", "title": "{{{lessonTitle}}}", "description": "{{{lessonDescription}}}", "items": [...] }.
 -   For multiple choice options, ensure one is clearly correct based on the text and others are plausible distractors.
--   For prompting tasks, the task description should clearly state what the user needs to do, and evaluation guidance should provide clear, actionable criteria.
+-   For prompting tasks, the taskDescription should clearly state what the user needs to do, and evaluationGuidance should provide clear, actionable criteria.
 
 Produce ONLY the JSON object. Do not include any other text before or after the JSON.
 `,
