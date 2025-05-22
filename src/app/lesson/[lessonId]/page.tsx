@@ -45,8 +45,7 @@ export default function LessonPage() {
     // Tracks completion based on originalItem.id to ensure each unique item is counted once for progress
     const [completedOriginalItemsMap, setCompletedOriginalItemsMap] = useState<Map<number | string, boolean>>(new Map());
     const [totalUniqueLessonItems, setTotalUniqueLessonItems] = useState(0);
-    // itemsCompletedCount will be derived from completedOriginalItemsMap.size
-
+    
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
 
     useEffect(() => {
@@ -58,7 +57,7 @@ export default function LessonPage() {
                 const loadedLesson = await getGeneratedLessonById(lessonId);
                 if (!loadedLesson) {
                     setErrorLoadingLesson("Lesson not found or failed to load.");
-                    notFound(); // Or handle more gracefully
+                    notFound(); 
                 } else {
                     setLesson(loadedLesson);
                     const initialQueuedItems: QueuedLessonItem[] = (loadedLesson.items || []).map((item, index) => ({
@@ -73,7 +72,6 @@ export default function LessonPage() {
                     setCurrentItem(initialQueuedItems[0] || null);
                     setTotalUniqueLessonItems(initialQueuedItems.length);
                     
-                    // Reset lesson-specific state
                     setPoints(0);
                     setIsCurrentAttemptSubmitted(false);
                     setLastAnswerCorrectness(null);
@@ -96,70 +94,73 @@ export default function LessonPage() {
         setIsCurrentAttemptSubmitted(true);
 
         if (isCorrect) {
-            // Add points for this attempt
             addPoints(currentItem.currentPointsToAward);
-            // Mark the original item as completed if it hasn't been already
             if (!completedOriginalItemsMap.has(currentItem.originalItemId)) {
                 setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(currentItem.originalItemId, true));
             }
-        } else {
-            // For incorrect answers, pointsForIncorrect is already 0 for these item types.
-            // Point deduction for retries is handled by reducing currentPointsToAward for next attempt.
-            // If there were direct penalties for incorrect answers, they would be handled by `deductPoints` here.
         }
     }, [currentItem, addPoints, completedOriginalItemsMap]);
     
     const handleNextItem = useCallback(() => {
         if (!currentItem) return;
-        // Ensure informational snippets or correctly answered/fully attempted items proceed
-        if (currentItem.type === 'informationalSnippet' || lastAnswerCorrectness === true || (lastAnswerCorrectness === false && currentItem.currentAttemptNumber >= 3)) {
-            // Proceed to next item logic for informational snippets or non-retriable items
-        } else if (lastAnswerCorrectness === null && currentItem.type !== 'informationalSnippet') {
-            // Item not submitted yet, do nothing
+
+        // This initial guard prevents proceeding if a question hasn't been submitted.
+        // It's a safeguard, as button logic should typically handle "Submit" vs "Next" state.
+        if (lastAnswerCorrectness === null && currentItem.type !== 'informationalSnippet') {
             return;
         }
 
-
         const itemJustProcessed = currentItem;
-        let nextQueue = lessonQueue.slice(1);
+        let nextQueue = lessonQueue.slice(1); // Default action: remove current item from head
 
-        // Handle retry logic for incorrect non-snippet items
+        // Handle logic for incorrect non-snippet items (questions/tasks)
         if (
             itemJustProcessed.type !== 'informationalSnippet' &&
-            lastAnswerCorrectness === false && // Was incorrect
-            !completedOriginalItemsMap.has(itemJustProcessed.originalItemId) && // Original item not yet completed
-            itemJustProcessed.currentAttemptNumber < 3 // Max 2 retries (3 attempts total)
+            lastAnswerCorrectness === false // Item was answered incorrectly
         ) {
-            const nextAttemptNumber = itemJustProcessed.currentAttemptNumber + 1;
-            // Find the original item from the base lesson to get its originalPointsAwarded
-            const originalBaseItem = lesson?.items.find(i => i.id === itemJustProcessed.originalItemId);
-            
-            if (originalBaseItem) {
-                const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
-
-                const retryItem: QueuedLessonItem = {
-                    ...(originalBaseItem as BaseLessonItem), // Cast to ensure all base props are there
-                    key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}`,
-                    originalItemId: itemJustProcessed.originalItemId,
-                    originalPointsAwarded: originalBaseItem.pointsAwarded, // Preserve original
-                    currentAttemptNumber: nextAttemptNumber,
-                    currentPointsToAward: newPointsToAward,
-                    // Ensure all properties from BaseLessonItem are spread. If originalBaseItem is BaseLessonItem, this is fine.
-                    // If itemJustProcessed had other dynamic props not in BaseLessonItem, they'd be lost.
-                    // But for retry, we should use fresh data from originalBaseItem.
-                     // Explicitly carry over type specific properties
-                    ...(itemJustProcessed.type === 'freeResponse' && { question: itemJustProcessed.question, expectedAnswer: itemJustProcessed.expectedAnswer }),
-                    ...(itemJustProcessed.type === 'multipleChoice' && { question: itemJustProcessed.question, options: itemJustProcessed.options, correctOptionIndex: itemJustProcessed.correctOptionIndex }),
-                    ...(itemJustProcessed.type === 'promptingTask' && { taskDescription: itemJustProcessed.taskDescription, evaluationGuidance: itemJustProcessed.evaluationGuidance }),
-                };
-                nextQueue.push(retryItem);
+            // Check if this item's original version isn't already marked as completed
+            // (e.g., if it was somehow attempted again after a correct answer, though current flow doesn't support this)
+            if (!completedOriginalItemsMap.has(itemJustProcessed.originalItemId)) {
+                if (itemJustProcessed.currentAttemptNumber < 3) {
+                    // Item needs to be retried: re-queue it with updated attempt info
+                    const nextAttemptNumber = itemJustProcessed.currentAttemptNumber + 1;
+                    const originalBaseItem = lesson?.items.find(i => i.id === itemJustProcessed.originalItemId);
+                    
+                    if (originalBaseItem) {
+                        const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
+                        const retryItem: QueuedLessonItem = {
+                            ...(originalBaseItem as BaseLessonItem), // Base properties
+                            key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}`,
+                            originalItemId: itemJustProcessed.originalItemId,
+                            originalPointsAwarded: originalBaseItem.pointsAwarded,
+                            currentAttemptNumber: nextAttemptNumber,
+                            currentPointsToAward: newPointsToAward,
+                            // Type-specific properties
+                            ...(itemJustProcessed.type === 'freeResponse' && { question: itemJustProcessed.question, expectedAnswer: itemJustProcessed.expectedAnswer }),
+                            ...(itemJustProcessed.type === 'multipleChoice' && { question: itemJustProcessed.question, options: itemJustProcessed.options, correctOptionIndex: itemJustProcessed.correctOptionIndex }),
+                            ...(itemJustProcessed.type === 'promptingTask' && { taskDescription: itemJustProcessed.taskDescription, evaluationGuidance: itemJustProcessed.evaluationGuidance }),
+                        };
+                        nextQueue.push(retryItem); // Add to the end of the queue
+                    }
+                } else {
+                    // Max attempts (3) reached for this incorrect item.
+                    // Mark its original ID as "completed" for progress tracking.
+                    setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(itemJustProcessed.originalItemId, true));
+                }
             }
+            // If itemJustProcessed.originalItemId was already in completedOriginalItemsMap, it means it was successfully completed before,
+            // so we don't re-queue or change its completion status based on a subsequent incorrect attempt.
+            // The item is simply removed from the queue (by lessonQueue.slice(1)) and not re-added.
         }
+        // For items that were correct or are informational snippets:
+        // - Correct items are marked in completedOriginalItemsMap by handleAnswerSubmit.
+        // - Snippets are marked by handleSnippetAcknowledged.
+        // - They are then simply removed from the front of the queue by lessonQueue.slice(1).
 
         setLessonQueue(nextQueue);
         setCurrentItem(nextQueue[0] || null);
-        setIsCurrentAttemptSubmitted(false); // Reset for the new item
-        setLastAnswerCorrectness(null);     // Reset for the new item
+        setIsCurrentAttemptSubmitted(false); 
+        setLastAnswerCorrectness(null);     
 
     }, [currentItem, lastAnswerCorrectness, lessonQueue, completedOriginalItemsMap, lesson]);
 
@@ -167,15 +168,14 @@ export default function LessonPage() {
     const handleSnippetAcknowledged = useCallback(() => {
         if (!currentItem || currentItem.type !== 'informationalSnippet') return;
 
-        // Award points for the snippet if not already completed
         if (!completedOriginalItemsMap.has(currentItem.originalItemId)) {
-            addPoints(currentItem.currentPointsToAward); // Snippets award their full points on first view
+            addPoints(currentItem.currentPointsToAward); 
             setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(currentItem.originalItemId, true));
         }
         
-        setLastAnswerCorrectness(true); // Mark as 'correct' for flow purposes
+        setLastAnswerCorrectness(true); 
         setIsCurrentAttemptSubmitted(true);
-        handleNextItem(); // Move to the next item
+        handleNextItem(); 
     }, [currentItem, addPoints, completedOriginalItemsMap, handleNextItem]);
 
     useEffect(() => {
@@ -183,7 +183,7 @@ export default function LessonPage() {
             setIsCurrentAttemptSubmitted(false);
             setLastAnswerCorrectness(null);
         }
-    }, [currentItem?.key]); // Depend on item's unique key to reset on new item/attempt
+    }, [currentItem?.key]); 
 
     const itemsCompletedCount = completedOriginalItemsMap.size;
     const allUniqueItemsCompleted = totalUniqueLessonItems > 0 && itemsCompletedCount === totalUniqueLessonItems;
@@ -196,16 +196,13 @@ export default function LessonPage() {
         const isLastItemInQueueAndCompleted = lessonQueue.length === 1 && completedOriginalItemsMap.has(currentItem.originalItemId);
 
         const commonProps = {
-            // Use currentItem.key for React's key prop directly in the JSX
             title: currentItem.title,
-            // pointsAwarded prop in components will now mean pointsForCorrect for this attempt
             pointsForCorrect: currentItem.currentPointsToAward, 
-            pointsForIncorrect: (currentItem as any).pointsForIncorrect || 0, // Assuming 0 if not specified
+            pointsForIncorrect: (currentItem as any).pointsForIncorrect || 0, 
             isAnswerSubmitted: isCurrentAttemptSubmitted,
-            isLastItem: isLastItemInQueueAndCompleted,
-            onNext: handleNextItem, // Generic 'next' handler
-            lessonPoints: points, // Current accumulated lesson points
-            // Pass original points for display if needed, or calculate in component
+            isLastItem: isLastItemInQueueAndCompleted, // This might need re-evaluation if it's for "last in whole lesson"
+            onNext: handleNextItem, 
+            lessonPoints: points, 
         };
 
         switch (currentItem.type) {
@@ -214,12 +211,11 @@ export default function LessonPage() {
                     <FreeResponseQuestion
                         key={currentItem.key}
                         {...commonProps}
-                        id={currentItem.originalItemId} // Pass original ID for consistency if needed by component
+                        id={currentItem.originalItemId} 
                         question={currentItem.question}
                         expectedAnswer={currentItem.expectedAnswer}
-                        // pointsForCorrect already set via commonProps
                         onAnswerSubmit={handleAnswerSubmit}
-                        onNextQuestion={handleNextItem} // Specific alias if component uses it
+                        onNextQuestion={handleNextItem} 
                     />
                 );
             case 'multipleChoice':
@@ -231,7 +227,6 @@ export default function LessonPage() {
                         question={currentItem.question}
                         options={currentItem.options}
                         correctOptionIndex={currentItem.correctOptionIndex}
-                        // pointsForCorrect already set via commonProps
                         onAnswerSubmit={handleAnswerSubmit}
                         onNextQuestion={handleNextItem}
                     />
@@ -243,9 +238,8 @@ export default function LessonPage() {
                         {...commonProps}
                         id={currentItem.originalItemId}
                         content={currentItem.content}
-                        pointsAwarded={currentItem.currentPointsToAward} // Snippets use pointsAwarded directly
+                        pointsAwarded={currentItem.currentPointsToAward} 
                         onAcknowledged={handleSnippetAcknowledged}
-                        // isLastItem already in commonProps
                     />
                 );
             case 'promptingTask':
@@ -256,7 +250,6 @@ export default function LessonPage() {
                         id={currentItem.originalItemId}
                         taskDescription={currentItem.taskDescription}
                         evaluationGuidance={currentItem.evaluationGuidance}
-                        // pointsForCorrect already set via commonProps
                         onAnswerSubmit={handleAnswerSubmit}
                         onNextTask={handleNextItem}
                     />
@@ -305,7 +298,7 @@ export default function LessonPage() {
         );
     }
 
-    if (!lesson) { // Should be caught by isLoadingLesson or errorLoadingLesson, but as a fallback
+    if (!lesson) { 
         return (
             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
