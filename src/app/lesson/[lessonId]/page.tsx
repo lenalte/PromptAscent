@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -14,8 +15,18 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Progress } from "@/components/ui/progress";
 import { usePoints } from '@/hooks/usePoints';
-import { getGeneratedLessonById, type Lesson, type LessonItem } from '@/data/lessons';
+import { getGeneratedLessonById, type Lesson, type LessonItem as BaseLessonItem } from '@/data/lessons';
 import { BrainCircuit, PencilRuler, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine, Trophy } from 'lucide-react';
+
+// Extend LessonItem for queue management
+interface QueuedLessonItem extends BaseLessonItem {
+  key: string; // Unique key for React list rendering (originalId + attempt)
+  originalItemId: number | string; // The ID from the source lesson data
+  originalPointsAwarded: number; // The initial points for this item
+  currentAttemptNumber: number; // Starts at 1
+  currentPointsToAward: number; // Points for this specific attempt
+}
+
 
 export default function LessonPage() {
     const params = useParams();
@@ -23,14 +34,19 @@ export default function LessonPage() {
 
     const [lesson, setLesson] = useState<Lesson | null>(null);
     const [isLoadingLesson, setIsLoadingLesson] = useState(true);
-    const { points, addPoints, deductPoints, setPoints } = usePoints(0);
-    const [lessonQueue, setLessonQueue] = useState<LessonItem[]>([]);
-    const [currentItem, setCurrentItem] = useState<LessonItem | null>(null);
+    const { points, addPoints, deductPoints, setPoints } = usePoints(0); // Lesson-specific points
+    
+    const [lessonQueue, setLessonQueue] = useState<QueuedLessonItem[]>([]);
+    const [currentItem, setCurrentItem] = useState<QueuedLessonItem | null>(null);
+    
     const [isCurrentAttemptSubmitted, setIsCurrentAttemptSubmitted] = useState(false);
     const [lastAnswerCorrectness, setLastAnswerCorrectness] = useState<boolean | null>(null);
-    const [completedItemsMap, setCompletedItemsMap] = useState<Map<number | string, boolean>>(new Map());
-    const [totalLessonItems, setTotalLessonItems] = useState(0);
-    const [itemsCompletedCount, setItemsCompletedCount] = useState(0);
+    
+    // Tracks completion based on originalItem.id to ensure each unique item is counted once for progress
+    const [completedOriginalItemsMap, setCompletedOriginalItemsMap] = useState<Map<number | string, boolean>>(new Map());
+    const [totalUniqueLessonItems, setTotalUniqueLessonItems] = useState(0);
+    // itemsCompletedCount will be derived from completedOriginalItemsMap.size
+
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
 
     useEffect(() => {
@@ -42,18 +58,26 @@ export default function LessonPage() {
                 const loadedLesson = await getGeneratedLessonById(lessonId);
                 if (!loadedLesson) {
                     setErrorLoadingLesson("Lesson not found or failed to load.");
-                    notFound();
+                    notFound(); // Or handle more gracefully
                 } else {
                     setLesson(loadedLesson);
-                    const initialItems = [...(loadedLesson.items || [])];
-                    setLessonQueue(initialItems);
-                    setCurrentItem(initialItems[0] || null);
-                    setTotalLessonItems(initialItems.length);
+                    const initialQueuedItems: QueuedLessonItem[] = (loadedLesson.items || []).map((item, index) => ({
+                        ...item,
+                        key: `${item.id}-attempt-1`,
+                        originalItemId: item.id,
+                        originalPointsAwarded: item.pointsAwarded,
+                        currentAttemptNumber: 1,
+                        currentPointsToAward: item.pointsAwarded,
+                    }));
+                    setLessonQueue(initialQueuedItems);
+                    setCurrentItem(initialQueuedItems[0] || null);
+                    setTotalUniqueLessonItems(initialQueuedItems.length);
+                    
+                    // Reset lesson-specific state
                     setPoints(0);
                     setIsCurrentAttemptSubmitted(false);
                     setLastAnswerCorrectness(null);
-                    setCompletedItemsMap(new Map());
-                    setItemsCompletedCount(0);
+                    setCompletedOriginalItemsMap(new Map());
                 }
             } catch (err) {
                 console.error("Error loading lesson:", err);
@@ -67,155 +91,173 @@ export default function LessonPage() {
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean) => {
         if (!currentItem || currentItem.type === 'informationalSnippet') return;
-        const itemId = currentItem.id;
-        if (isCorrect) {
-            if (!completedItemsMap.has(itemId)) {
-                addPoints(currentItem.pointsAwarded);
-                setItemsCompletedCount(prev => prev + 1);
-                setCompletedItemsMap(prevMap => new Map(prevMap).set(itemId, true));
-            }
-            setLastAnswerCorrectness(true);
-        } else {
-            if (!completedItemsMap.has(itemId) && 'pointsForIncorrect' in currentItem) {
-                deductPoints(currentItem.pointsForIncorrect);
-            }
-            setLastAnswerCorrectness(false);
-        }
+
+        setLastAnswerCorrectness(isCorrect);
         setIsCurrentAttemptSubmitted(true);
-    }, [currentItem, addPoints, deductPoints, completedItemsMap]);
 
-    /* const handleNextItem = useCallback(() => {
-        if (!currentItem || (currentItem.type !== 'informationalSnippet' && lastAnswerCorrectness === null)) return;
-        const wasCorrectOrAcknowledged = lastAnswerCorrectness;
-        const itemJustProcessed = currentItem;
-        let nextQueue = lessonQueue.slice(1);
-
-        if (
-            itemJustProcessed.type !== 'informationalSnippet' &&
-            !wasCorrectOrAcknowledged &&
-            !completedItemsMap.has(itemJustProcessed.id)
-        ) {
-            // Erzeuge eine neue ID für den Retry-Fall (damit React nicht verwirrt wird)
-            const retryId = typeof itemJustProcessed.id === 'string'
-                ? `${itemJustProcessed.id}-retry-${Date.now()}`
-                : `${itemJustProcessed.id}-retry-${Date.now()}`;
-            nextQueue.push({ ...itemJustProcessed, id: retryId });
+        if (isCorrect) {
+            // Add points for this attempt
+            addPoints(currentItem.currentPointsToAward);
+            // Mark the original item as completed if it hasn't been already
+            if (!completedOriginalItemsMap.has(currentItem.originalItemId)) {
+                setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(currentItem.originalItemId, true));
+            }
+        } else {
+            // For incorrect answers, pointsForIncorrect is already 0 for these item types.
+            // Point deduction for retries is handled by reducing currentPointsToAward for next attempt.
+            // If there were direct penalties for incorrect answers, they would be handled by `deductPoints` here.
         }
-        setLessonQueue(nextQueue);
-        setCurrentItem(nextQueue[0] || null);
-    }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]); */
-
+    }, [currentItem, addPoints, completedOriginalItemsMap]);
+    
     const handleNextItem = useCallback(() => {
-        if (!currentItem || (currentItem.type !== 'informationalSnippet' && lastAnswerCorrectness === null)) return;
-        const wasCorrectOrAcknowledged = lastAnswerCorrectness;
+        if (!currentItem) return;
+        // Ensure informational snippets or correctly answered/fully attempted items proceed
+        if (currentItem.type === 'informationalSnippet' || lastAnswerCorrectness === true || (lastAnswerCorrectness === false && currentItem.currentAttemptNumber >= 3)) {
+            // Proceed to next item logic for informational snippets or non-retriable items
+        } else if (lastAnswerCorrectness === null && currentItem.type !== 'informationalSnippet') {
+            // Item not submitted yet, do nothing
+            return;
+        }
+
+
         const itemJustProcessed = currentItem;
         let nextQueue = lessonQueue.slice(1);
 
+        // Handle retry logic for incorrect non-snippet items
         if (
             itemJustProcessed.type !== 'informationalSnippet' &&
-            !wasCorrectOrAcknowledged &&
-            !completedItemsMap.has(itemJustProcessed.id)
+            lastAnswerCorrectness === false && // Was incorrect
+            !completedOriginalItemsMap.has(itemJustProcessed.originalItemId) && // Original item not yet completed
+            itemJustProcessed.currentAttemptNumber < 3 // Max 2 retries (3 attempts total)
         ) {
-            // Eindeutig machen:
-            // Nimm die ursprüngliche ID (egal ob Zahl oder String) und hänge einen Timestamp an
-            const baseId = String(
-                typeof itemJustProcessed.id === 'string'
-                    ? itemJustProcessed.id.split('-retry-')[0] // Entferne evtl. alte Retry-Suffixe
-                    : itemJustProcessed.id
-            );
-            const retryId = `${baseId}-retry-${Date.now()}`;
-            nextQueue.push({ ...itemJustProcessed, id: retryId });
+            const nextAttemptNumber = itemJustProcessed.currentAttemptNumber + 1;
+            // Find the original item from the base lesson to get its originalPointsAwarded
+            const originalBaseItem = lesson?.items.find(i => i.id === itemJustProcessed.originalItemId);
+            
+            if (originalBaseItem) {
+                const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
+
+                const retryItem: QueuedLessonItem = {
+                    ...(originalBaseItem as BaseLessonItem), // Cast to ensure all base props are there
+                    key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}`,
+                    originalItemId: itemJustProcessed.originalItemId,
+                    originalPointsAwarded: originalBaseItem.pointsAwarded, // Preserve original
+                    currentAttemptNumber: nextAttemptNumber,
+                    currentPointsToAward: newPointsToAward,
+                    // Ensure all properties from BaseLessonItem are spread. If originalBaseItem is BaseLessonItem, this is fine.
+                    // If itemJustProcessed had other dynamic props not in BaseLessonItem, they'd be lost.
+                    // But for retry, we should use fresh data from originalBaseItem.
+                     // Explicitly carry over type specific properties
+                    ...(itemJustProcessed.type === 'freeResponse' && { question: itemJustProcessed.question, expectedAnswer: itemJustProcessed.expectedAnswer }),
+                    ...(itemJustProcessed.type === 'multipleChoice' && { question: itemJustProcessed.question, options: itemJustProcessed.options, correctOptionIndex: itemJustProcessed.correctOptionIndex }),
+                    ...(itemJustProcessed.type === 'promptingTask' && { taskDescription: itemJustProcessed.taskDescription, evaluationGuidance: itemJustProcessed.evaluationGuidance }),
+                };
+                nextQueue.push(retryItem);
+            }
         }
+
         setLessonQueue(nextQueue);
         setCurrentItem(nextQueue[0] || null);
-    }, [currentItem, lastAnswerCorrectness, lessonQueue, completedItemsMap]);
+        setIsCurrentAttemptSubmitted(false); // Reset for the new item
+        setLastAnswerCorrectness(null);     // Reset for the new item
+
+    }, [currentItem, lastAnswerCorrectness, lessonQueue, completedOriginalItemsMap, lesson]);
 
 
     const handleSnippetAcknowledged = useCallback(() => {
         if (!currentItem || currentItem.type !== 'informationalSnippet') return;
-        const itemId = currentItem.id;
-        if (!completedItemsMap.has(itemId)) {
-            addPoints(currentItem.pointsAwarded);
-            setItemsCompletedCount(prev => prev + 1);
-            setCompletedItemsMap(prevMap => new Map(prevMap).set(itemId, true));
+
+        // Award points for the snippet if not already completed
+        if (!completedOriginalItemsMap.has(currentItem.originalItemId)) {
+            addPoints(currentItem.currentPointsToAward); // Snippets award their full points on first view
+            setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(currentItem.originalItemId, true));
         }
-        setLastAnswerCorrectness(true);
+        
+        setLastAnswerCorrectness(true); // Mark as 'correct' for flow purposes
         setIsCurrentAttemptSubmitted(true);
-        handleNextItem();
-    }, [currentItem, addPoints, completedItemsMap, handleNextItem]);
+        handleNextItem(); // Move to the next item
+    }, [currentItem, addPoints, completedOriginalItemsMap, handleNextItem]);
 
     useEffect(() => {
         if (currentItem) {
             setIsCurrentAttemptSubmitted(false);
             setLastAnswerCorrectness(null);
         }
-    }, [currentItem]);
+    }, [currentItem?.key]); // Depend on item's unique key to reset on new item/attempt
 
-    const allUniqueItemsCompleted = totalLessonItems > 0 && completedItemsMap.size === totalLessonItems;
-    const isFinalCompletedItemInQueue = currentItem !== null && lessonQueue.length === 1 && completedItemsMap.has(currentItem.id);
-    const isLessonComplete = allUniqueItemsCompleted && currentItem === null;
+    const itemsCompletedCount = completedOriginalItemsMap.size;
+    const allUniqueItemsCompleted = totalUniqueLessonItems > 0 && itemsCompletedCount === totalUniqueLessonItems;
+    const isLessonComplete = allUniqueItemsCompleted && currentItem === null && lessonQueue.length === 0;
+
 
     const renderLessonItemComponent = () => {
         if (!currentItem) return null;
-        const commonPropsBase = {
-            id: currentItem.id,
+
+        const isLastItemInQueueAndCompleted = lessonQueue.length === 1 && completedOriginalItemsMap.has(currentItem.originalItemId);
+
+        const commonProps = {
+            // Use currentItem.key for React's key prop directly in the JSX
             title: currentItem.title,
-            pointsAwarded: currentItem.pointsAwarded,
+            // pointsAwarded prop in components will now mean pointsForCorrect for this attempt
+            pointsForCorrect: currentItem.currentPointsToAward, 
+            pointsForIncorrect: (currentItem as any).pointsForIncorrect || 0, // Assuming 0 if not specified
             isAnswerSubmitted: isCurrentAttemptSubmitted,
-            isLastItem: isFinalCompletedItemInQueue,
-            onNext: handleNextItem,
-            lessonPoints: points,
+            isLastItem: isLastItemInQueueAndCompleted,
+            onNext: handleNextItem, // Generic 'next' handler
+            lessonPoints: points, // Current accumulated lesson points
+            // Pass original points for display if needed, or calculate in component
         };
-        const key = currentItem.id;
-        const restCommonProps = commonPropsBase;
 
         switch (currentItem.type) {
             case 'freeResponse':
                 return (
                     <FreeResponseQuestion
-                        key={key}
-                        {...restCommonProps}
+                        key={currentItem.key}
+                        {...commonProps}
+                        id={currentItem.originalItemId} // Pass original ID for consistency if needed by component
                         question={currentItem.question}
                         expectedAnswer={currentItem.expectedAnswer}
-                        pointsForIncorrect={currentItem.pointsForIncorrect}
+                        // pointsForCorrect already set via commonProps
                         onAnswerSubmit={handleAnswerSubmit}
-                        pointsForCorrect={currentItem.pointsAwarded}
-                        onNextQuestion={handleNextItem}
+                        onNextQuestion={handleNextItem} // Specific alias if component uses it
                     />
                 );
             case 'multipleChoice':
                 return (
                     <MultipleChoiceQuestion
-                        key={key}
-                        {...restCommonProps}
+                        key={currentItem.key}
+                        {...commonProps}
+                        id={currentItem.originalItemId}
                         question={currentItem.question}
                         options={currentItem.options}
                         correctOptionIndex={currentItem.correctOptionIndex}
-                        pointsForIncorrect={currentItem.pointsForIncorrect}
+                        // pointsForCorrect already set via commonProps
                         onAnswerSubmit={handleAnswerSubmit}
-                        pointsForCorrect={currentItem.pointsAwarded}
                         onNextQuestion={handleNextItem}
                     />
                 );
             case 'informationalSnippet':
                 return (
                     <InformationalSnippet
-                        key={key}
-                        {...restCommonProps}
+                        key={currentItem.key}
+                        {...commonProps}
+                        id={currentItem.originalItemId}
                         content={currentItem.content}
+                        pointsAwarded={currentItem.currentPointsToAward} // Snippets use pointsAwarded directly
                         onAcknowledged={handleSnippetAcknowledged}
+                        // isLastItem already in commonProps
                     />
                 );
             case 'promptingTask':
                 return (
                     <PromptingTask
-                        key={key}
-                        {...restCommonProps}
+                        key={currentItem.key}
+                        {...commonProps}
+                        id={currentItem.originalItemId}
                         taskDescription={currentItem.taskDescription}
                         evaluationGuidance={currentItem.evaluationGuidance}
-                        pointsForIncorrect={currentItem.pointsForIncorrect}
+                        // pointsForCorrect already set via commonProps
                         onAnswerSubmit={handleAnswerSubmit}
-                        pointsForCorrect={currentItem.pointsAwarded}
                         onNextTask={handleNextItem}
                     />
                 );
@@ -237,7 +279,7 @@ export default function LessonPage() {
         }
     };
 
-    const progressPercentage = totalLessonItems > 0 ? (itemsCompletedCount / totalLessonItems) * 100 : 0;
+    const progressPercentage = totalUniqueLessonItems > 0 ? (itemsCompletedCount / totalUniqueLessonItems) * 100 : 0;
 
     if (isLoadingLesson) {
         return (
@@ -263,7 +305,7 @@ export default function LessonPage() {
         );
     }
 
-    if (!lesson) {
+    if (!lesson) { // Should be caught by isLoadingLesson or errorLoadingLesson, but as a fallback
         return (
             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -288,12 +330,12 @@ export default function LessonPage() {
 
             <Separator className="my-6 w-full max-w-4xl" />
 
-            {totalLessonItems > 0 && !isLessonComplete && (
+            {totalUniqueLessonItems > 0 && !isLessonComplete && (
                 <div className="w-full max-w-4xl mb-6">
                     <div className="flex justify-between items-center mb-1">
                         <p className="text-sm text-muted-foreground">Lesson Progress</p>
                         <p className="text-sm font-medium text-primary">
-                            {itemsCompletedCount} / {totalLessonItems} items
+                            {itemsCompletedCount} / {totalUniqueLessonItems} items completed
                         </p>
                     </div>
                     <Progress value={progressPercentage} className="w-full h-2 [&>*]:bg-primary" />
@@ -306,17 +348,22 @@ export default function LessonPage() {
                 ) : currentItem ? (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-semibold">{currentItem.title}</h2>
+                            <h2 className="text-2xl font-semibold">
+                                {currentItem.title} 
+                                {currentItem.currentAttemptNumber > 1 && ` (Attempt ${currentItem.currentAttemptNumber})`}
+                            </h2>
                             {getCurrentItemIcon()}
                         </div>
                         {renderLessonItemComponent()}
                     </div>
                 ) : (
-                    <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
-                        {totalLessonItems === 0 && !isLoadingLesson ? "This lesson has no content, or content generation failed." : "Loading next item..."}
+                     <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
+                        {totalUniqueLessonItems === 0 && !isLoadingLesson ? "This lesson has no content, or content generation failed." : 
+                         (isLoadingLesson ? "Loading next item..." : "All items processed for now. If the lesson isn't complete, check your progress.")}
                     </div>
                 )}
             </div>
         </main>
     );
 }
+
