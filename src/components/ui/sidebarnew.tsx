@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3 } from 'lucide-react'; // Added UserCircle and BarChart3
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -14,7 +14,7 @@ interface SidebarProps {
 
 type LessonListing = Omit<Lesson, 'items'>;
 
-// Profil SVG Icon (aus vorheriger Version extrahiert)
+// Profil SVG Icon
 const ProfilIcon = () => (
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground shrink-0" viewBox="0 0 790.000000 790.000000"
         preserveAspectRatio="xMidYMid meet">
@@ -27,7 +27,7 @@ const ProfilIcon = () => (
     </svg>
 );
 
-// Placeholder Leaderboard Icon
+// Leaderboard Icon
 const LeaderboardIcon = () => (
     <BarChart3 className="h-8 w-8 text-foreground shrink-0" />
 );
@@ -42,15 +42,14 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
     useEffect(() => {
-        // If content area is opened, and no category is active, default to profil
         if (isContentOpen && !activeCategory) {
             setActiveCategory('profil');
         }
-    }, [isContentOpen, activeCategory]);
+        onContentToggle(isContentOpen); // Notify parent about content area state
+    }, [isContentOpen, activeCategory, onContentToggle]);
 
     useEffect(() => {
         async function fetchLessonsData() {
-            if (activeCategory !== 'profil') return; // Only load lessons if profil is active
             setIsLoadingLessons(true);
             try {
                 const availableLessons = await getAvailableLessons();
@@ -68,12 +67,10 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
     const handleCategoryClick = (category: string) => {
         if (activeCategory === category && isContentOpen) {
             setIsContentOpen(false);
-            onContentToggle(false);
-            // setActiveCategory(null); // Optionally clear active category
+            // setActiveCategory(null); // Keep active category to reopen it later
         } else {
             setActiveCategory(category);
             setIsContentOpen(true);
-            onContentToggle(true);
         }
     };
 
@@ -113,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
 
             {/* Collapsible Content Area */}
             {isContentOpen && (
-                <div className="w-64 sidebar-background h-full px-3 py-4 overflow-y-auto shadow-lg transition-all duration-300 ease-in-out">
+                <div className="w-64 sidebar-background h-full px-3 py-4 overflow-y-auto transition-all duration-300 ease-in-out">
                     {activeCategory === 'profil' && (
                         <div>
                             <h2 className="text-xl font-semibold text-foreground mb-4 px-1">Profil & Lektionen</h2>
@@ -130,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                                             <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
                                                 <a className={`flex flex-col p-2 rounded-lg dark:text-white hover:bg-[var(--sidebar-accent)] dark:hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
                                                     <div className="flex items-center justify-between w-full">
-                                                        <div className="flex items-center overflow-hidden"> {/* Container for text to enable wrapping */}
+                                                        <div className="flex items-center overflow-hidden">
                                                             <BookOpen className="h-5 w-5 text-foreground shrink-0 mr-3" />
                                                             <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
                                                         </div>
