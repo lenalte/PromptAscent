@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react';
@@ -18,15 +17,14 @@ import { usePoints } from '@/hooks/usePoints';
 import { getGeneratedLessonById, type Lesson, type LessonItem as BaseLessonItem } from '@/data/lessons';
 import { BrainCircuit, PencilRuler, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine, Trophy } from 'lucide-react';
 
-// Extend LessonItem for queue management
-interface QueuedLessonItem extends BaseLessonItem {
+// Extend LessonItem for queue management using intersection type instead of interface extension
+type QueuedLessonItem = BaseLessonItem & {
     key: string; // Unique key for React list rendering (originalId + attempt)
     originalItemId: number | string; // The ID from the source lesson data
     originalPointsAwarded: number; // The initial points for this item
     currentAttemptNumber: number; // Starts at 1
     currentPointsToAward: number; // Points for this specific attempt
-}
-
+};
 
 export default function LessonPage() {
     const params = useParams();
@@ -102,69 +100,6 @@ export default function LessonPage() {
             }
         }
     }, [currentItem, addPoints, completedOriginalItemsMap]);
-
-    /*  const handleNextItem = useCallback(() => {
-         if (!currentItem) return;
- 
-         // This initial guard prevents proceeding if a question hasn't been submitted.
-         // It's a safeguard, as button logic should typically handle "Submit" vs "Next" state.
-         if (lastAnswerCorrectness === null && currentItem.type !== 'informationalSnippet') {
-             return;
-         }
- 
-         const itemJustProcessed = currentItem;
-         let nextQueue = lessonQueue.slice(1); // Default action: remove current item from head
- 
-         // Handle logic for incorrect non-snippet items (questions/tasks)
-         if (
-             itemJustProcessed.type !== 'informationalSnippet' &&
-             lastAnswerCorrectness === false // Item was answered incorrectly
-         ) {
-             // Check if this item's original version isn't already marked as completed
-             // (e.g., if it was somehow attempted again after a correct answer, though current flow doesn't support this)
-             if (!completedOriginalItemsMap.has(itemJustProcessed.originalItemId)) {
-                 if (itemJustProcessed.currentAttemptNumber < 3) {
-                     // Item needs to be retried: re-queue it with updated attempt info
-                     const nextAttemptNumber = itemJustProcessed.currentAttemptNumber + 1;
-                     const originalBaseItem = lesson?.items.find(i => i.id === itemJustProcessed.originalItemId);
- 
-                     if (originalBaseItem) {
-                         const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
-                         const retryItem: QueuedLessonItem = {
-                             ...(originalBaseItem as BaseLessonItem), // Base properties
-                             key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}`,
-                             originalItemId: itemJustProcessed.originalItemId,
-                             originalPointsAwarded: originalBaseItem.pointsAwarded,
-                             currentAttemptNumber: nextAttemptNumber,
-                             currentPointsToAward: newPointsToAward,
-                             // Type-specific properties
-                             ...(itemJustProcessed.type === 'freeResponse' && { question: itemJustProcessed.question, expectedAnswer: itemJustProcessed.expectedAnswer }),
-                             ...(itemJustProcessed.type === 'multipleChoice' && { question: itemJustProcessed.question, options: itemJustProcessed.options, correctOptionIndex: itemJustProcessed.correctOptionIndex }),
-                             ...(itemJustProcessed.type === 'promptingTask' && { taskDescription: itemJustProcessed.taskDescription, evaluationGuidance: itemJustProcessed.evaluationGuidance }),
-                         };
-                         nextQueue.push(retryItem); // Add to the end of the queue
-                     }
-                 } else {
-                     // Max attempts (3) reached for this incorrect item.
-                     // Mark its original ID as "completed" for progress tracking.
-                     setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(itemJustProcessed.originalItemId, true));
-                 }
-             }
-             // If itemJustProcessed.originalItemId was already in completedOriginalItemsMap, it means it was successfully completed before,
-             // so we don't re-queue or change its completion status based on a subsequent incorrect attempt.
-             // The item is simply removed from the queue (by lessonQueue.slice(1)) and not re-added.
-         }
-         // For items that were correct or are informational snippets:
-         // - Correct items are marked in completedOriginalItemsMap by handleAnswerSubmit.
-         // - Snippets are marked by handleSnippetAcknowledged.
-         // - They are then simply removed from the front of the queue by lessonQueue.slice(1).
- 
-         setLessonQueue(nextQueue);
-         setCurrentItem(nextQueue[0] || null);
-         setIsCurrentAttemptSubmitted(false);
-         setLastAnswerCorrectness(null);
- 
-     }, [currentItem, lastAnswerCorrectness, lessonQueue, completedOriginalItemsMap, lesson]); */
 
     const handleNextItem = useCallback(() => {
         if (!currentItem) return;
