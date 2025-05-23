@@ -66,31 +66,71 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     const filePath = path.join(LESSON_CONTENT_DIR, lessonEntry.contentFileName);
     const rawContent = await fs.readFile(filePath, 'utf-8');
 
-    // Call the Genkit flow to generate lesson items
-    const generatedLesson = await generateLessonItems({
-      lessonId: lessonEntry.id,
-      lessonTitle: lessonEntry.title,
-      lessonDescription: lessonEntry.description,
-      rawContent: rawContent,
-    });
-    
-    // Validate or further process `generatedLesson` if necessary
-    if (!generatedLesson || !generatedLesson.items || generatedLesson.items.length === 0) {
-        // If items array is empty, it's also a form of failure for this use case.
-        console.error(`AI failed to return valid lesson items for lesson ${lessonId}. Output:`, generatedLesson);
-        throw new Error("AI failed to return valid and non-empty lesson items.");
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 2000; // 2 seconds
+    let generatedLessonData: Lesson | undefined;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        console.log(`[Lesson: ${lessonId}] Attempt ${attempt}/${MAX_RETRIES} to generate lesson items...`);
+        generatedLessonData = await generateLessonItems({
+          lessonId: lessonEntry.id,
+          lessonTitle: lessonEntry.title,
+          lessonDescription: lessonEntry.description,
+          rawContent: rawContent,
+        });
+
+        if (generatedLessonData) {
+          console.log(`[Lesson: ${lessonId}] Successfully generated lesson items on attempt ${attempt}.`);
+          break; // Success, exit retry loop
+        } else {
+          // This case indicates generateLessonItems resolved to undefined/null without throwing.
+          // This should ideally not happen if the flow is robust.
+          console.warn(`[Lesson: ${lessonId}] Attempt ${attempt} - generateLessonItems returned no data but did not throw. This is unexpected.`);
+          if (attempt === MAX_RETRIES) {
+            // If it's the last attempt and still no data, throw an error.
+            throw new Error(`AI returned no data for lesson "${lessonId}" after ${MAX_RETRIES} attempts, even without throwing an error during generation.`);
+          }
+          // Allow loop to continue for another attempt, though this scenario is unusual.
+        }
+      } catch (error) {
+        console.error(`[Lesson: ${lessonId}] Error on attempt ${attempt}/${MAX_RETRIES}:`, error instanceof Error ? error.message : String(error));
+        if (attempt < MAX_RETRIES && error instanceof Error &&
+          (error.message.includes('503') ||
+            error.message.toLowerCase().includes('service unavailable') ||
+            error.message.toLowerCase().includes('model is overloaded') ||
+            error.message.toLowerCase().includes('try again later'))) {
+          console.warn(`[Lesson: ${lessonId}] API overload detected on attempt ${attempt}. Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+        } else {
+          // Not a retryable error or max retries reached (attempt === MAX_RETRIES and error occurred)
+          console.error(`[Lesson: ${lessonId}] Max retries reached or non-retryable error on attempt ${attempt}. Propagating error.`);
+          throw error; // Re-throw the error to be caught by the outer try-catch
+        }
+      }
+    }
+
+    if (!generatedLessonData) {
+      // This fallback should now primarily be hit if generateLessonItems consistently returned undefined/null.
+      console.error(`[Lesson: ${lessonId}] Failed to obtain generated lesson data after ${MAX_RETRIES} attempts.`)
+      throw new Error(`Failed to generate lesson "${lessonId}" after ${MAX_RETRIES} attempts. The AI did not return structured data.`);
+    }
+
+    if (!generatedLessonData.items || generatedLessonData.items.length === 0) {
+      console.error(`[Lesson: ${lessonId}] AI returned empty lesson items after successful generation call. Output:`, generatedLessonData);
+      throw new Error(`AI failed to return valid and non-empty lesson items for lesson "${lessonId}" after retries.`);
     }
 
     if (process.env.NODE_ENV === 'development') {
-      lessonCache.set(lessonId, generatedLesson);
+      lessonCache.set(lessonId, generatedLessonData);
     }
-    return generatedLesson;
+    return generatedLessonData;
 
-  } catch (error) {
-    console.error(`Error processing lesson "${lessonId}":`, error);
+  } catch (error) { // OUTER CATCH for manifest read, file read, or propagated AI errors
+    console.error(`[Lesson: ${lessonId}] Overall processing failed:`, error instanceof Error ? error.message : String(error));
     // Re-throw the error so the page component can catch it and display a specific message.
     if (error instanceof Error) {
-        throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
+      throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
     }
     throw new Error(`Failed to process lesson "${lessonId}" due to an unknown error.`);
   }
