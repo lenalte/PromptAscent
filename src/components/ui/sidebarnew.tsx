@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
-import Link from 'next/link';
+/* import Link from 'next/link'; */
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3 } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 interface SidebarProps {
     initialContentOpen?: boolean;
     onContentToggle: (isOpen: boolean) => void;
+    onLessonSelect: (lesson: LessonListing) => void; // New callback
+    currentSelectedLessonId?: string | null; // To highlight selected lesson
 }
 
 type LessonListing = Omit<Lesson, 'items'>;
@@ -20,7 +22,7 @@ const ProfilIcon = () => (
         preserveAspectRatio="xMidYMid meet">
         <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
             fill="currentColor" stroke="none">
-            <path d="M2900 7630 l0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -1040 0 -1040 270 0 270 0 0 -270 0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -785 0 -785 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -775 0 -775 1580 0 1580 0 0 775 0 775 265 0 265 0 0 270 0 270 265 0 265 0 0 785 0 785 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 -1040 0 -1040 0 0 -270z m2080 -540 l0 -270 265 0 265 0 0 -1040 0 -1040 -265 0 -265 0 0 -270 0 -270 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -785 0 -785 -260 0 -260 0 0 265 0 265 -270 0 -270 0 0 -1040 0 -1040 -260 0 -260 0 0 525 0 525 -525 0 -525 0 0 -525 0 -525 -255 0 -255 0 0 1040 0 1040 -270 0 -270 0 0 -265 0 -265 -260 0 -260 0 0 785 0 785 265 0 265 0 0 270 0 270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 1040 0 1040 265 0 265 0 0 270 0 270 1040 0 1040 0 0 -270z"/>
+            <path d="M2900 7630 l0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -1040 0 -1040 270 0 270 0 0 -270 0 -270 -265 0 -265 0 0 -270 0 -270 -270 0 -270 0 0 -785 0 -785 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -775 0 -775 1580 0 1580 0 0 775 0 775 265 0 265 0 0 270 0 270 265 0 265 0 0 785 0 785 -270 0 -270 0 0 270 0 270 -265 0 -265 0 0 270 0 270 -1040 0 -1040 0 0 -270z m2080 -540 l0 -270 265 0 265 0 0 -1040 0 -1040 -265 0 -265 0 0 -270 0 -270 265 0 265 0 0 -270 0 -270 265 0 265 0 0 -785 0 -785 -260 0 -260 0 0 265 0 265 -270 0 -270 0 0 -1040 0 -1040 -260 0 -260 0 0 525 0 525 -525 0 -525 0 0 -525 0 -525 -255 0 -255 0 0 1040 0 1040 -270 0 -270 0 0 -265 0 -265 -260 0 -260 0 0 785 0 785 265 0 265 0 0 270 0 270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 1040 0 1040 265 0 265 0 0 270 0 270 1040 0 1040 0 0 -270z" />
             <path d="M2900 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
             <path d="M4450 5510 l0 -270 265 0 265 0 0 270 0 270 -265 0 -265 0 0 -270z" />
         </g>
@@ -33,7 +35,7 @@ const LeaderboardIcon = () => (
 );
 
 
-const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentToggle }) => {
+const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentToggle, onLessonSelect, currentSelectedLessonId }) => {
     const [isContentOpen, setIsContentOpen] = useState(initialContentOpen);
     const [activeCategory, setActiveCategory] = useState<string | null>(initialContentOpen ? 'profil' : null);
 
@@ -79,20 +81,19 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
         setExpandedLessonId(prevId => prevId === lessonId ? null : lessonId);
     };
 
-    // Calculate left offset for the dotted line and padding for description
-    const iconContainerLeftPadding = 0.5; // rem, from a's p-2
-    const iconSpanPadding = 0.375; // rem, from span's p-1.5
-    const iconWidth = 1.25; // rem, from w-5 (BookOpen icon)
-    const iconSpanMarginRight = 0.75; // rem, from mr-3
+    const iconContainerLeftPadding = 0.5;
+    const iconSpanPadding = 0.375;
+    const iconWidth = 1.25;
+    const iconSpanMarginRight = 0.75;
 
-    const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2); // Center of icon
+    const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2);
     const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
 
 
     return (
         <div className="flex h-screen fixed top-0 left-0 z-40">
             {/* Fixed Icon Bar */}
-            <div className="w-16 sidebar-background flex flex-col items-center py-4 space-y-6"> {/* Changed w-20 to w-16 */}
+            <div className="w-16 sidebar-background flex flex-col items-center py-4 space-y-6">
                 <button
                     type="button"
                     onClick={() => handleCategoryClick('profil')}
@@ -130,52 +131,58 @@ const Sidebar: React.FC<SidebarProps> = ({ initialContentOpen = true, onContentT
                                 </div>
                             )}
                             {!isLoadingLessons && lessons.length > 0 && (
-                                <div className="relative"> {/* Container for UL and the line */}
+                                <div className="relative">
                                     {/* Dotted Line Element */}
                                     <div
                                         className="absolute w-px bg-repeat-y opacity-70"
                                         style={{
                                             left: `${lineLeftOffsetRem}rem`,
-                                            top: '1.25rem', 
+                                            top: '1.25rem',
                                             bottom: '1.25rem',
                                             backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
-                                            backgroundSize: '1px 8px', 
-                                            zIndex: 0, 
+                                            backgroundSize: '1px 8px',
+                                            zIndex: 0,
                                         }}
                                     ></div>
                                     <ul className="space-y-1 font-medium relative z-10">
                                         {lessons.map((lesson) => (
                                             <li key={lesson.id} className="relative">
-                                                <Link href={`/lesson/${lesson.id}`} passHref legacyBehavior>
-                                                    <a className={`flex flex-col p-2 rounded-lg hover:bg-[var(--sidebar-accent)] group sidebar-foreground`}>
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <div className="flex items-center overflow-hidden">
-                                                                <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
-                                                                    <BookOpen className="h-5 w-5 text-foreground shrink-0" />
-                                                                </span>
-                                                                <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
-                                                            </div>
-                                                            {lesson.description && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={(e) => toggleLessonDescription(lesson.id, e)}
-                                                                    className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0"
-                                                                    aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
-                                                                >
-                                                                    {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
-                                                                </button>
-                                                            )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onLessonSelect(lesson)}
+                                                    className={cn(
+                                                        `flex flex-col p-2 rounded-lg hover:bg-[var(--sidebar-accent)] group sidebar-foreground w-full text-left`,
+                                                        currentSelectedLessonId === lesson.id && "bg-[var(--sidebar-accent)]" // Highlight selected lesson
+                                                    )}
+                                                >
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <div className="flex items-center overflow-hidden">
+                                                            <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
+                                                                <BookOpen className="h-5 w-5 text-foreground shrink-0" />
+                                                            </span>
+                                                            <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
                                                         </div>
-                                                        {expandedLessonId === lesson.id && lesson.description && (
-                                                            <p
-                                                              className="mt-2 text-xs text-foreground/80 whitespace-normal break-words"
-                                                              style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
+                                                        {lesson.description && (
+                                                            <div
+                                                                onClick={(e) => toggleLessonDescription(lesson.id, e)}
+                                                                className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0 z-30 cursor-pointer" // Ensure button is clickable over the line
+                                                                aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
+                                                                role="button" // Optional: for better accessibility
+                                                                tabIndex={0}  // Optional: for better accessibility
                                                             >
-                                                                {lesson.description}
-                                                            </p>
+                                                                {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
+                                                            </div>
                                                         )}
-                                                    </a>
-                                                </Link>
+                                                    </div>
+                                                    {expandedLessonId === lesson.id && lesson.description && (
+                                                        <p
+                                                            className="mt-2 text-xs text-foreground/80 whitespace-normal break-words"
+                                                            style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
+                                                        >
+                                                            {lesson.description}
+                                                        </p>
+                                                    )}
+                                                </button>
                                             </li>
                                         ))}
                                     </ul>
