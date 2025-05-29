@@ -2,26 +2,48 @@
 import { ArrowRight } from "lucide-react";
 import React from "react";
 
-export function EightbitButton({ children }: { children: React.ReactNode }) {
+interface EightbitButtonProps {
+    children: React.ReactNode;
+    as?: 'button' | 'a';
+    href?: string;
+    onClick?: () => void;
+    className?: string;
+}
+
+export function EightbitButton({
+    children,
+    as = 'button',
+    href,
+    onClick,
+    className = ''
+}: EightbitButtonProps) {
+    const baseClasses = `
+    relative 
+    inline-block
+    bg-[hsl(var(--foreground))]
+    text-[hsl(var(--background))]
+    px-5
+    py-3
+    hover:bg-[hsl(var(--foreground))_/_0.8]
+    hover:text-[hsl(var(--background))_/_0.8]
+    hover:shadow-[inset_-6px_-6px_0_0_hsl(var(--secondary))]
+    active:shadow-[inset_4px_4px_0_0_hsl(var(--secondary))]
+    transition-all
+    duration-100
+    z-10
+    no-underline
+    ${className}
+  `;
+
+    const Element = as;
+
+    const elementProps = {
+        className: baseClasses,
+        ...(as === 'a' ? { href } : { onClick }),
+    };
+
     return (
-        <button
-            className={`
-        relative 
-        inline-block
-        bg-[hsl(var(--foreground))]
-        text-[hsl(var(--background))]
-        px-5
-        py-3
-        
-        hover:bg-[hsl(var(--foreground))_/_0.8]
-        hover:text-[hsl(var(--background))_/_0.8]
-        hover:shadow-[inset_-6px_-6px_0_0_hsl(var(--secondary))]
-        active:shadow-[inset_4px_4px_0_0_hsl(var(--secondary))]
-        transition-all
-        duration-100
-        z-10
-      `}
-        >
+        <Element {...elementProps}>
             {/* Top/Bottom Border (mimics ::before) */}
             <span
                 className="
@@ -55,6 +77,6 @@ export function EightbitButton({ children }: { children: React.ReactNode }) {
             <span className="relative z-20 flex items-center justify-center">
                 {children}
             </span>
-        </button>
+        </Element>
     );
 }
