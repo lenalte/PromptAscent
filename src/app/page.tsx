@@ -13,7 +13,7 @@ import ProgressBar from '@/components/ui/progressbar';
 import Sidebar from '@/components/ui/sidebarnew';
 import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 import BirdsBackground from '@/components/BirdsBackground';
-
+import { EightbitButton } from '@/components/ui/eightbit-button';
 
 type LessonListing = Omit<Lesson, 'items'>;
 
@@ -88,13 +88,22 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-foreground mb-3">{selectedLesson.title}</h2>
               <p className="text-muted-foreground mb-6 text-lg">{selectedLesson.description}</p>
               <Link href={`/lesson/${selectedLesson.id}`} passHref legacyBehavior>
-                <Button
+                {/* <Button
                   size="lg"
                   className="bg-foreground text-background hover:bg-[hsl(0,81%,28%)] hover:text-foreground"
                 >
                   Start Lesson <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                </Button> */}
+                <EightbitButton>
+                  Start Lesson <ArrowRight className="ml-2 h-5 w-5" />
+                </EightbitButton>
               </Link>
+              {/* <Link href={`/lesson/${selectedLesson.id}`} passHref legacyBehavior>
+                <EightbitButton as="a">
+                  Start Lesson <ArrowRight className="ml-2 h-5 w-5" />
+                </EightbitButton>
+              </Link> */}
+
             </div>
           ) : (
             <div className="w-full max-w-4xl text-center py-10">
