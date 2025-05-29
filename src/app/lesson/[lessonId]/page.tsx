@@ -1,7 +1,7 @@
 "use client";
 
-import type React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import React from 'react';
+import { useState, useEffect, useCallback, useRef, useTransition } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
@@ -26,6 +26,14 @@ type QueuedLessonItem = BaseLessonItem & {
     currentPointsToAward: number; // Points for this specific attempt
 };
 
+// Separate type for tracking completion status
+type ItemCompletionStatus = {
+    id: number | string;
+    isCompleted: boolean;
+    wasCorrect: boolean;
+    attemptCount: number;
+};
+
 export default function LessonPage() {
     const params = useParams();
     const lessonId = params.lessonId as string;
@@ -40,19 +48,39 @@ export default function LessonPage() {
     const [isCurrentAttemptSubmitted, setIsCurrentAttemptSubmitted] = useState(false);
     const [lastAnswerCorrectness, setLastAnswerCorrectness] = useState<boolean | null>(null);
 
-    // Tracks completion based on originalItem.id to ensure each unique item is counted once for progress
-    const [completedOriginalItemsMap, setCompletedOriginalItemsMap] = useState<Map<number | string, boolean>>(new Map());
+    // Use array instead of Map for better state management
+    const [itemCompletionStatus, setItemCompletionStatus] = useState<ItemCompletionStatus[]>([]);
     const [totalUniqueLessonItems, setTotalUniqueLessonItems] = useState(0);
 
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
 
-    const [isTransitioning, setIsTransitioning] = useState(false);
+    // Ref to track the last loaded lesson ID to prevent unnecessary reloads
+    const lastLoadedLessonId = useRef<string | null>(null);
+
+    // Helper function to get completion status for an item
+    const getItemCompletionStatus = useCallback((itemId: number | string): ItemCompletionStatus | undefined => {
+        return itemCompletionStatus.find(status => status.id === itemId);
+    }, [itemCompletionStatus]);
+
+    // Helper function to check if all items are completed (either correct or failed after 3 attempts)
+    const isLessonComplete = useCallback(() => {
+        if (totalUniqueLessonItems === 0) return false;
+
+        const completedCount = itemCompletionStatus.filter(status => status.isCompleted).length;
+        const queueIsEmpty = lessonQueue.length === 0;
+
+        return completedCount === totalUniqueLessonItems && queueIsEmpty;
+    }, [totalUniqueLessonItems, itemCompletionStatus, lessonQueue.length]);
 
     useEffect(() => {
         async function loadLessonData() {
-            if (!lessonId) return;
+            if (!lessonId || lessonId === lastLoadedLessonId.current) return;
+
             setIsLoadingLesson(true);
             setErrorLoadingLesson(null);
+            lastLoadedLessonId.current = lessonId;
+
             try {
                 const loadedLesson = await getGeneratedLessonById(lessonId);
                 if (!loadedLesson) {
@@ -62,20 +90,29 @@ export default function LessonPage() {
                     setLesson(loadedLesson);
                     const initialQueuedItems: QueuedLessonItem[] = (loadedLesson.items || []).map((item, index) => ({
                         ...item,
-                        key: `${item.id}-attempt-1-${Date.now()}-${index}`,
+                        key: `${item.id}-attempt-1-${index}-${Date.now()}`,
                         originalItemId: item.id,
                         originalPointsAwarded: item.pointsAwarded,
                         currentAttemptNumber: 1,
                         currentPointsToAward: item.pointsAwarded,
                     }));
+
+                    // Initialize completion status for all items
+                    const initialCompletionStatus: ItemCompletionStatus[] = (loadedLesson.items || []).map(item => ({
+                        id: item.id,
+                        isCompleted: false,
+                        wasCorrect: false,
+                        attemptCount: 0
+                    }));
+
+                    // Reset all state in one batch - avoid multiple state updates
                     setLessonQueue(initialQueuedItems);
                     setCurrentItem(initialQueuedItems[0] || null);
                     setTotalUniqueLessonItems(initialQueuedItems.length);
-
+                    setItemCompletionStatus(initialCompletionStatus);
                     setPoints(0);
                     setIsCurrentAttemptSubmitted(false);
                     setLastAnswerCorrectness(null);
-                    setCompletedOriginalItemsMap(new Map());
                 }
             } catch (err) {
                 console.error("Error loading lesson:", err);
@@ -95,78 +132,111 @@ export default function LessonPage() {
 
         if (isCorrect) {
             addPoints(currentItem.currentPointsToAward);
-            if (!completedOriginalItemsMap.has(currentItem.originalItemId)) {
-                setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(currentItem.originalItemId, true));
-            }
         }
-    }, [currentItem, addPoints, completedOriginalItemsMap]);
+    }, [currentItem, addPoints]);
 
     const handleNextItem = useCallback(() => {
-        if (!currentItem) return;
-
-        // Verhindere mehrfache Ausführung
-        if (isTransitioning) return;
-        setIsTransitioning(true);
+        if (!currentItem || isPending) return;
 
         const itemJustProcessed = currentItem;
-        let nextQueue = [...lessonQueue.slice(1)]; // Erstelle neue Array-Referenz
+        let nextQueue = [...lessonQueue.slice(1)];
 
-        if (
-            itemJustProcessed.type !== 'informationalSnippet' &&
-            lastAnswerCorrectness === false &&
-            !completedOriginalItemsMap.has(itemJustProcessed.originalItemId)
-        ) {
-            if (itemJustProcessed.currentAttemptNumber < 3) {
-                const nextAttemptNumber = itemJustProcessed.currentAttemptNumber + 1;
-                const originalBaseItem = lesson?.items.find(i => i.id === itemJustProcessed.originalItemId);
+        // Update completion status
+        const updatedCompletionStatus = [...itemCompletionStatus];
+        const statusIndex = updatedCompletionStatus.findIndex(status => status.id === itemJustProcessed.originalItemId);
 
-                if (originalBaseItem) {
-                    const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
-                    const retryItem: QueuedLessonItem = {
-                        ...originalBaseItem,
-                        key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}`,
-                        originalItemId: itemJustProcessed.originalItemId,
-                        originalPointsAwarded: originalBaseItem.pointsAwarded,
-                        currentAttemptNumber: nextAttemptNumber,
-                        currentPointsToAward: newPointsToAward,
+        if (statusIndex !== -1) {
+            const currentStatus = updatedCompletionStatus[statusIndex];
+
+            // Handle question items (not informational snippets)
+            if (itemJustProcessed.type !== 'informationalSnippet') {
+                const newAttemptCount = currentStatus.attemptCount + 1;
+
+                if (lastAnswerCorrectness === true) {
+                    // Correct answer - mark as completed
+                    updatedCompletionStatus[statusIndex] = {
+                        ...currentStatus,
+                        isCompleted: true,
+                        wasCorrect: true,
+                        attemptCount: newAttemptCount
                     };
-                    nextQueue = [...nextQueue, retryItem];
+                } else if (lastAnswerCorrectness === false) {
+                    // Wrong answer
+                    if (newAttemptCount < 3) {
+                        // Create retry item
+                        const nextAttemptNumber = itemJustProcessed.currentAttemptNumber + 1;
+                        const originalBaseItem = lesson?.items.find(i => i.id === itemJustProcessed.originalItemId);
+
+                        if (originalBaseItem) {
+                            const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
+                            const retryItem: QueuedLessonItem = {
+                                ...originalBaseItem,
+                                key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}-${Date.now()}`,
+                                originalItemId: itemJustProcessed.originalItemId,
+                                originalPointsAwarded: originalBaseItem.pointsAwarded,
+                                currentAttemptNumber: nextAttemptNumber,
+                                currentPointsToAward: newPointsToAward,
+                            };
+                            nextQueue = [...nextQueue, retryItem];
+                        }
+
+                        // Update attempt count but don't mark as completed yet
+                        updatedCompletionStatus[statusIndex] = {
+                            ...currentStatus,
+                            attemptCount: newAttemptCount
+                        };
+                    } else {
+                        // Third attempt was wrong - mark as completed (failed)
+                        updatedCompletionStatus[statusIndex] = {
+                            ...currentStatus,
+                            isCompleted: true,
+                            wasCorrect: false,
+                            attemptCount: newAttemptCount
+                        };
+                    }
                 }
             } else {
-                // Batch das State-Update
-                setCompletedOriginalItemsMap(prevMap => {
-                    const newMap = new Map(prevMap);
-                    newMap.set(itemJustProcessed.originalItemId, true);
-                    return newMap;
-                });
+                // Informational snippet - always mark as completed
+                updatedCompletionStatus[statusIndex] = {
+                    ...currentStatus,
+                    isCompleted: true,
+                    wasCorrect: true,
+                    attemptCount: 1
+                };
             }
         }
 
-        // Batch alle State-Updates zusammen
-        setTimeout(() => {
-            setLessonQueue(nextQueue);
-            setCurrentItem(nextQueue[0] || null);
-            setIsCurrentAttemptSubmitted(false);
-            setLastAnswerCorrectness(null);
-            setIsTransitioning(false);
-        }, 0);
+        // Update state - using individual setters to avoid race conditions
+        setItemCompletionStatus(updatedCompletionStatus);
+        setLessonQueue(nextQueue);
+        setCurrentItem(nextQueue[0] || null);
+        setIsCurrentAttemptSubmitted(false);
+        setLastAnswerCorrectness(null);
 
-    }, [currentItem, lastAnswerCorrectness, lessonQueue, completedOriginalItemsMap, lesson, isTransitioning]);
-
+    }, [currentItem, lastAnswerCorrectness, lessonQueue, itemCompletionStatus, lesson, isPending]);
 
     const handleSnippetAcknowledged = useCallback(() => {
-        if (!currentItem || currentItem.type !== 'informationalSnippet') return;
+        if (!currentItem || currentItem.type !== 'informationalSnippet' || isPending) return;
 
-        if (!completedOriginalItemsMap.has(currentItem.originalItemId)) {
+        const currentStatus = getItemCompletionStatus(currentItem.originalItemId);
+
+        // Only add points if not already processed
+        if (!currentStatus?.isCompleted) {
             addPoints(currentItem.currentPointsToAward);
-            setCompletedOriginalItemsMap(prevMap => new Map(prevMap).set(currentItem.originalItemId, true));
         }
 
+        // Set correctness state for consistency
         setLastAnswerCorrectness(true);
         setIsCurrentAttemptSubmitted(true);
-        handleNextItem();
-    }, [currentItem, addPoints, completedOriginalItemsMap, handleNextItem]);
 
+        // Use setTimeout to avoid nested state updates
+        setTimeout(() => {
+            handleNextItem();
+        }, 0);
+
+    }, [currentItem, addPoints, getItemCompletionStatus, handleNextItem, isPending]);
+
+    // Reset item-specific state when current item changes
     useEffect(() => {
         if (currentItem) {
             setIsCurrentAttemptSubmitted(false);
@@ -174,22 +244,20 @@ export default function LessonPage() {
         }
     }, [currentItem?.key]);
 
-    const itemsCompletedCount = completedOriginalItemsMap.size;
-    const allUniqueItemsCompleted = totalUniqueLessonItems > 0 && itemsCompletedCount === totalUniqueLessonItems;
-    const isLessonComplete = allUniqueItemsCompleted && currentItem === null && lessonQueue.length === 0;
-
-
     const renderLessonItemComponent = () => {
         if (!currentItem) return null;
 
-        const isLastItemInQueueAndCompleted = lessonQueue.length === 1 && completedOriginalItemsMap.has(currentItem.originalItemId);
+        const completedItems = itemCompletionStatus.filter(status => status.isCompleted);
+        const itemsCompletedCount = completedItems.length;
+        const currentItemStatus = getItemCompletionStatus(currentItem.originalItemId);
+        const isLastItemInQueueAndCompleted = lessonQueue.length === 1 && currentItemStatus?.isCompleted;
 
         const commonProps = {
             title: currentItem.title,
             pointsForCorrect: currentItem.currentPointsToAward,
             pointsForIncorrect: (currentItem as any).pointsForIncorrect || 0,
             isAnswerSubmitted: isCurrentAttemptSubmitted,
-            isLastItem: isLastItemInQueueAndCompleted, // This might need re-evaluation if it's for "last in whole lesson"
+            isLastItem: isLastItemInQueueAndCompleted,
             onNext: handleNextItem,
             lessonPoints: points,
         };
@@ -246,7 +314,7 @@ export default function LessonPage() {
             default:
                 const _exhaustiveCheck: never = currentItem;
                 console.error("Unknown lesson item type:", _exhaustiveCheck);
-                return <div> Error: Unknown lesson item type. </div>;
+                return <div>Error: Unknown lesson item type.</div>;
         }
     };
 
@@ -261,7 +329,10 @@ export default function LessonPage() {
         }
     };
 
+    const completedItems = itemCompletionStatus.filter(status => status.isCompleted);
+    const itemsCompletedCount = completedItems.length;
     const progressPercentage = totalUniqueLessonItems > 0 ? (itemsCompletedCount / totalUniqueLessonItems) * 100 : 0;
+    const showLessonComplete = isLessonComplete();
 
     if (isLoadingLesson) {
         return (
@@ -312,7 +383,7 @@ export default function LessonPage() {
 
             <Separator className="my-6 w-full max-w-4xl" />
 
-            {totalUniqueLessonItems > 0 && !isLessonComplete && (
+            {totalUniqueLessonItems > 0 && !showLessonComplete && (
                 <div className="w-full max-w-4xl mb-6">
                     <div className="flex justify-between items-center mb-1">
                         <p className="text-sm text-muted-foreground">Lesson Progress</p>
@@ -325,7 +396,7 @@ export default function LessonPage() {
             )}
 
             <div className="w-full max-w-4xl">
-                {isLessonComplete ? (
+                {showLessonComplete ? (
                     <LessonCompleteScreen points={points} lessonTitle={lesson.title} />
                 ) : currentItem ? (
                     <div className="space-y-6">
@@ -339,10 +410,11 @@ export default function LessonPage() {
                         {renderLessonItemComponent()}
                     </div>
                 ) : (
-                    <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
-                        {totalUniqueLessonItems === 0 && !isLoadingLesson ? "This lesson has no content, or content generation failed." :
-                            (isLoadingLesson ? "Loading next item..." : "All items processed for now. If the lesson isn't complete, check your progress.")}
-                    </div>
+                    totalUniqueLessonItems === 0 && !isLoadingLesson && (
+                        <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
+                            This lesson has no content, or content generation failed.
+                        </div>
+                    )
                 )}
             </div>
         </main>
