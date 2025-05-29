@@ -1,4 +1,4 @@
-// components/EightbitButton.tsx
+// Code aus Quelle: https://codepen.io/Maximuz/pen/BdqXXN 
 import { ArrowRight } from "lucide-react";
 import React from "react";
 
@@ -22,12 +22,11 @@ export function EightbitButton({
     inline-block
     bg-[hsl(var(--foreground))]
     text-[hsl(var(--background))]
-    px-5
-    py-3
-    hover:bg-[hsl(var(--foreground))_/_0.8]
-    hover:text-[hsl(var(--background))_/_0.8]
-    hover:shadow-[inset_-6px_-6px_0_0_hsl(var(--secondary))]
-    active:shadow-[inset_4px_4px_0_0_hsl(var(--secondary))]
+    px-4
+    py-2
+    hover:bg-[hsl(var(--primary-foreground))]
+    hover:text-[hsl(var(--background))]
+    
     transition-all
     duration-100
     z-10
@@ -54,6 +53,7 @@ export function EightbitButton({
           -top-[6px]
           h-[calc(100%+12px)]
           border-t-[6px] border-b-[6px] border-[hsl(var(--foreground))]
+          hover:border-[hsl(var(--primary-foreground))]
           border-solid
           z-10
         "
@@ -70,6 +70,7 @@ export function EightbitButton({
           w-[calc(100%+12px)]
           border-l-[6px] border-r-[6px] border-[hsl(var(--foreground))]
           border-solid
+          hover:border-[hsl(var(--primary-foreground))]
           z-10
         "
                 aria-hidden="true"
