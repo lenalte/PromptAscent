@@ -85,7 +85,7 @@ export default function Home() {
       />
 
       <div
-        className="flex flex-col min-h-screen transition-all duration-300 ease-in-out bg-background"
+        className="flex flex-col min-h-screen transition-all duration-300 ease-in-out"
         style={{ marginLeft: `${currentSidebarTotalWidth}px` }}
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
