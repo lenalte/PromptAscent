@@ -2,36 +2,33 @@
 import React from 'react';
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import type { Level } from '@/data/level-structure'; // Import Level type
 
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     sidebarWidth: number;
-    points: number;
+    totalPoints: number; // Renamed from points
+    currentLevel: Level | null; // Added currentLevel prop
 }
 
-const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebarWidth, points, className }) => {
-    // sidebarWidth is removed from style calculation if this bar is always full-width relative to its container
+const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebarWidth, totalPoints, currentLevel, className }) => {
     return (
         <>
-            {/* Icons and Information Bar */}
             <div
-                className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4", className)} // Ensure z-index is high enough, pl and pr for padding
+                className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4", className)}
             >
-                {/* Level Text on the Left */}
                 <div>
-                    <span>Level 1</span>
+                    {/* Display current level title or fallback */}
+                    <span className="text-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
                 </div>
 
-                {/* Icons Container */}
                 <div className="flex space-x-8">
-
                     <div className="flex items-center gap-2">
                         <div className="flex items-center">
-                            <span>{points} km</span> {/* Replace with your points icon or dynamic data */}
+                            <span className="text-foreground">{totalPoints} km</span>
                         </div>
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground" viewBox="0 0 790.000000 790.000000"
                             preserveAspectRatio="xMidYMid meet">
-
                             <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
                                 fill="currentColor" stroke="none">
                                 <path d="M4540 7180 l0 -390 -440 0 -440 0 0 -340 0 -340 -230 0 -230 0 0
@@ -44,13 +41,10 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebar
                             </g>
                         </svg>
                     </div>
-
-                    {/* Backpack Icon */}
                     <div className="flex items-center">
                         <span className="text-yellow-500">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground" viewBox="0 0 790.000000 790.000000"
                                 preserveAspectRatio="xMidYMid meet">
-
                                 <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
                                     fill="currentColor" stroke="none">
                                     <path d="M3180 7375 l0 -195 -170 0 -170 0 0 -185 0 -185 -665 0 -665 0 0
