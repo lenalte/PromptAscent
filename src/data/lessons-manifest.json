@@ -1,69 +1,207 @@
 
 [
   {
-    "id": "intro-prompt-engineering",
+    "id": "lesson1",
+    "title": "What is Generative AI?",
+    "description": "An introduction to Generative AI and its core concepts.",
+    "contentFileName": "lesson1.md"
+  },
+  {
+    "id": "lesson2",
     "title": "Introduction to Prompt Engineering",
-    "description": "Learn the fundamentals of prompt engineering, why it's crucial, and how to craft effective prompts to improve outputs from Generative AI models like ChatGPT.",
-    "contentFileName": "intro-prompt-engineering.md"
+    "description": "Learn the fundamentals of prompt engineering.",
+    "contentFileName": "lesson2.md"
   },
   {
-    "id": "lp-combining-techniques",
-    "title": "Combining Techniques",
-    "description": "Understand how to combine prompting techniques for more powerful results.",
-    "contentFileName": "lp-combining-techniques.md"
+    "id": "lesson3",
+    "title": "Basic Prompt Structure and Key Parts",
+    "description": "Understand the key components of effective prompts.",
+    "contentFileName": "lesson3.md"
   },
   {
-    "id": "lp-showing-examples",
-    "title": "Showing Examples (Few-Shot)",
-    "description": "Learn about zero, one, and few-shot prompting and how to use examples to structure AI outputs.",
-    "contentFileName": "lp-showing-examples.md"
+    "id": "lesson4",
+    "title": "Technique #1: Instructions in Prompts",
+    "description": "Learn how to give clear instructions in your prompts.",
+    "contentFileName": "lesson4.md"
   },
   {
-    "id": "lp-formalizing-prompts",
-    "title": "Formalizing Prompts",
-    "description": "Understand the common parts of a prompt and their typical arrangement.",
-    "contentFileName": "lp-formalizing-prompts.md"
+    "id": "lesson5",
+    "title": "Technique #2: Roles in Prompts",
+    "description": "Discover how assigning roles to AI can shape responses.",
+    "contentFileName": "lesson5.md"
   },
   {
-    "id": "lp-giving-instructions",
-    "title": "Giving Instructions",
-    "description": "Understand how to instruct Generative AIs for simple and complex tasks.",
-    "contentFileName": "lp-giving-instructions.md"
+    "id": "lesson6",
+    "title": "Technique #3: Examples in Prompts: From Zero-Shot to Few-Shot",
+    "description": "Explore using examples in prompts, from zero-shot to few-shot.",
+    "contentFileName": "lesson6.md"
   },
   {
-    "id": "lp-pitfalls-of-llms",
-    "title": "Pitfalls of LLMs",
-    "description": "Understand common biases and problems associated with Large Language Models.",
-    "contentFileName": "lp-pitfalls-of-llms.md"
+    "id": "lesson7",
+    "title": "Combining Prompting Techniques",
+    "description": "Learn how to combine different prompting techniques effectively.",
+    "contentFileName": "lesson7.md"
   },
   {
-    "id": "lp-priming-chatbots",
-    "title": "Priming Chatbots",
-    "description": "Learn to control conversation style and structure using priming prompts.",
-    "contentFileName": "lp-priming-chatbots.md"
+    "id": "lesson8",
+    "title": "Tips for Writing Better Prompts",
+    "description": "Get practical tips for improving your prompt writing skills.",
+    "contentFileName": "lesson8.md"
   },
   {
-    "id": "lp-prompt-engineering-intro",
-    "title": "What is Prompt Engineering?",
-    "description": "Learn about the iterative process of refining prompts to improve AI outputs.",
-    "contentFileName": "lp-prompt-engineering-intro.md"
+    "id": "lesson9",
+    "title": "Prompt Priming: Setting Context for AI",
+    "description": "Understand prompt priming and how to set context for AI.",
+    "contentFileName": "lesson9.md"
   },
   {
-    "id": "lp-prompting-with-chatgpt",
-    "title": "Prompting With ChatGPT",
-    "description": "Understand basic prompting with ChatGPT, its setup, and initial examples.",
-    "contentFileName": "lp-prompting-with-chatgpt.md"
+    "id": "lesson10",
+    "title": "Prompt Priming: Setting Context for AI",
+    "description": "Further exploration of prompt priming and context setting.",
+    "contentFileName": "lesson10.md"
   },
   {
-    "id": "lp-assigning-roles",
-    "title": "Assigning Roles",
-    "description": "Learn how role prompting can style text and improve AI accuracy.",
-    "contentFileName": "lp-assigning-roles.md"
+    "id": "lesson11",
+    "title": "Differences Between Chatbots and LLMs",
+    "description": "Learn the key differences between chatbots and Large Language Models.",
+    "contentFileName": "lesson11.md"
   },
   {
-    "id": "lp-understanding-ai-minds",
-    "title": "Understanding AI Minds",
-    "description": "Grasp fundamental concepts about different AI types and how LLMs work.",
-    "contentFileName": "lp-understanding-ai-minds.md"
+    "id": "lesson12",
+    "title": "LLM Limitations: When Models and Chatbots Make Mistakes",
+    "description": "Understand common limitations and pitfalls of LLMs.",
+    "contentFileName": "lesson12.md"
+  },
+  {
+    "id": "lesson13",
+    "title": "What Can Generative AI Create Beyond Text?",
+    "description": "Explore the diverse capabilities of Generative AI beyond text generation.",
+    "contentFileName": "lesson13.md"
+  },
+  {
+    "id": "lesson14",
+    "title": "How to Solve Problems Using Generative AI: A Simple Method",
+    "description": "A structured method for solving problems using Generative AI.",
+    "contentFileName": "lesson14.md"
+  },
+  {
+    "id": "lesson15",
+    "title": "Text Summarization",
+    "description": "Learn techniques for effective text summarization with AI.",
+    "contentFileName": "lesson15.md"
+  },
+  {
+    "id": "lesson16",
+    "title": "Table Generation",
+    "description": "How to use AI to generate structured tables from text.",
+    "contentFileName": "lesson16.md"
+  },
+  {
+    "id": "lesson17",
+    "title": "Multiple Choice Questions",
+    "description": "Techniques for using AI to solve and generate multiple choice questions.",
+    "contentFileName": "lesson17.md"
+  },
+  {
+    "id": "lesson18",
+    "title": "Short-Form Content",
+    "description": "Tips for creating effective short-form content with AI.",
+    "contentFileName": "lesson18.md"
+  },
+  {
+    "id": "lesson19",
+    "title": "Writing in Different Styles",
+    "description": "Learn to guide AI to write in various styles and tones.",
+    "contentFileName": "lesson19.md"
+  },
+  {
+    "id": "lesson20",
+    "title": "Writing Emails",
+    "description": "Using AI to draft and respond to emails effectively.",
+    "contentFileName": "lesson20.md"
+  },
+  {
+    "id": "lesson21",
+    "title": "Blog Writing",
+    "description": "Techniques for leveraging AI in the blog writing process.",
+    "contentFileName": "lesson21.md"
+  },
+  {
+    "id": "lesson22",
+    "title": "Legal Documents",
+    "description": "Exploring AI's role in reading and drafting legal documents.",
+    "contentFileName": "lesson22.md"
+  },
+  {
+    "id": "lesson23",
+    "title": "Study Buddy",
+    "description": "How to use AI as an effective study partner.",
+    "contentFileName": "lesson23.md"
+  },
+  {
+    "id": "lesson24",
+    "title": "Digital Marketing",
+    "description": "Applying AI in various digital marketing tasks.",
+    "contentFileName": "lesson24.md"
+  },
+  {
+    "id": "lesson25",
+    "title": "Coding Assistance",
+    "description": "Using AI for code generation, debugging, and more.",
+    "contentFileName": "lesson25.md"
+  },
+  {
+    "id": "lesson26",
+    "title": "Knowledge Base Chatbot",
+    "description": "Building chatbots that leverage knowledge bases with AI.",
+    "contentFileName": "lesson26.md"
+  },
+  {
+    "id": "lesson27",
+    "title": "Chain-of-Thought Prompting",
+    "description": "Understanding and using chain-of-thought prompting.",
+    "contentFileName": "lesson27.md"
+  },
+  {
+    "id": "lesson28",
+    "title": "Zero-Shot Chain-of-Thought",
+    "description": "An introduction to zero-shot chain-of-thought prompting.",
+    "contentFileName": "lesson28.md"
+  },
+  {
+    "id": "lesson29",
+    "title": "Self-Consistency",
+    "description": "Learn about self-consistency in AI responses.",
+    "contentFileName": "lesson29.md"
+  },
+  {
+    "id": "lesson30",
+    "title": "Generated Knowledge",
+    "description": "Exploring the concept of generated knowledge in AI.",
+    "contentFileName": "lesson30.md"
+  },
+  {
+    "id": "lesson31",
+    "title": "Least-to-Most Prompting",
+    "description": "An introduction to least-to-most prompting techniques.",
+    "contentFileName": "lesson31.md"
+  },
+  {
+    "id": "lesson32",
+    "title": "Dealing With Long Form Content",
+    "description": "Strategies for handling long-form content with AI.",
+    "contentFileName": "lesson32.md"
+  },
+  {
+    "id": "lesson33",
+    "title": "Revisiting Roles",
+    "description": "A deeper look into the effectiveness of role prompting.",
+    "contentFileName": "lesson33.md"
+  },
+  {
+    "id": "lesson34",
+    "title": "More About Prompt Elements",
+    "description": "Further insights into important elements of prompts.",
+    "contentFileName": "lesson34.md"
   }
 ]
