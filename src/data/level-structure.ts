@@ -5,35 +5,36 @@ export interface Level {
   lessonIds: string[];
 }
 
+const level1LessonIds: string[] = [];
+for (let i = 1; i <= 11; i++) {
+  level1LessonIds.push(`lesson${i}`);
+}
+
+const level2LessonIds: string[] = [];
+for (let i = 12; i <= 22; i++) {
+  level2LessonIds.push(`lesson${i}`);
+}
+
+const level3LessonIds: string[] = [];
+for (let i = 23; i <= 34; i++) {
+  level3LessonIds.push(`lesson${i}`);
+}
+
 export const LEVELS: Level[] = [
   {
     id: 'level-1',
     title: 'Level 1: Foundations',
-    lessonIds: [
-      'intro-prompt-engineering',
-      'lp-combining-techniques',
-      'lp-showing-examples',
-      'lp-formalizing-prompts',
-    ],
+    lessonIds: level1LessonIds,
   },
   {
     id: 'level-2',
     title: 'Level 2: Core Techniques',
-    lessonIds: [
-      'lp-giving-instructions',
-      'lp-pitfalls-of-llms',
-      'lp-priming-chatbots',
-      'lp-prompt-engineering-intro',
-    ],
+    lessonIds: level2LessonIds,
   },
   {
     id: 'level-3',
     title: 'Level 3: Advanced Concepts',
-    lessonIds: [
-      'lp-prompting-with-chatgpt',
-      'lp-assigning-roles',
-      'lp-understanding-ai-minds',
-    ],
+    lessonIds: level3LessonIds,
   },
 ];
 
