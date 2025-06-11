@@ -23,17 +23,17 @@ for (let i = 23; i <= 34; i++) {
 export const LEVELS: Level[] = [
   {
     id: 'level-1',
-    title: 'Level 1: Foundations',
+    title: 'Basics',
     lessonIds: level1LessonIds,
   },
   {
     id: 'level-2',
-    title: 'Level 2: Core Techniques',
+    title: 'Application',
     lessonIds: level2LessonIds,
   },
   {
     id: 'level-3',
-    title: 'Level 3: Advanced Concepts',
+    title: 'Intermediate',
     lessonIds: level3LessonIds,
   },
 ];
