@@ -20,40 +20,44 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
   const { completeLessonAndProceed, isLoadingProgress: isContextLoading, userProgress } = useUserProgress();
   const router = useRouter();
   const [actualNextLessonId, setActualNextLessonId] = useState<string | null>(null);
-  const [isProcessingScreenLogic, setIsProcessingScreenLogic] = useState(true);
+  const [isProcessingScreenLogic, setIsProcessingScreenLogic] = useState(true); // True initially to show loading
   const [hasAttemptedProcessing, setHasAttemptedProcessing] = useState(false);
 
   useEffect(() => {
     const markLessonCompleteAndGetNext = async () => {
-      if (hasAttemptedProcessing || !lessonId ) {
-        if (!hasAttemptedProcessing) setIsProcessingScreenLogic(false);
+      // Ensure this runs only once per screen load for a specific lesson
+      if (hasAttemptedProcessing || !lessonId) {
+        if (!hasAttemptedProcessing) setIsProcessingScreenLogic(false); // Stop loading if no lessonId or already processed
         return;
       }
 
-      setHasAttemptedProcessing(true);
-      setIsProcessingScreenLogic(true);
+      setHasAttemptedProcessing(true); // Mark that we are attempting the processing
+      setIsProcessingScreenLogic(true); // Ensure loading state is active
       console.log(`[LessonCompleteScreen] useEffect running for lesson ${lessonId}. Attempting to mark complete.`);
 
       try {
         console.log(`[LessonCompleteScreen] Calling completeLessonAndProceed for lesson ${lessonId} with points ${points}`);
         const nextId = await completeLessonAndProceed(lessonId, points);
-        console.log(`[LessonCompleteScreen] completeLessonAndProceed returned: ${nextId}. Setting actualNextLessonId.`);
-        setActualNextLessonId(nextId);
+        console.log(`[LessonCompleteScreen] completeLessonAndProceed returned: "${nextId}". Setting actualNextLessonId.`);
+        setActualNextLessonId(nextId); // Store the direct result
       } catch (error) {
         console.error("[LessonCompleteScreen] Error during lesson completion process:", error);
         setActualNextLessonId(null); // Ensure it's null on error
       } finally {
-        setIsProcessingScreenLogic(false);
+        setIsProcessingScreenLogic(false); // Processing finished, hide loading for button
       }
     };
 
     markLessonCompleteAndGetNext();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonId, points, completeLessonAndProceed, hasAttemptedProcessing]);
+  }, [lessonId, points, completeLessonAndProceed, hasAttemptedProcessing]); // Keep dependencies, hasAttemptedProcessing prevents re-runs
 
   const handleProceed = () => {
-    console.log(`[LessonCompleteScreen] handleProceed called. isProcessingScreenLogic: ${isProcessingScreenLogic}, isContextLoading: ${isContextLoading}, actualNextLessonId: ${actualNextLessonId}`);
-    if (isProcessingScreenLogic || isContextLoading) return;
+    console.log(`[LessonCompleteScreen] handleProceed called. actualNextLessonId: "${actualNextLessonId}"`);
+    if (isProcessingScreenLogic || isContextLoading) { // Still loading from context or local processing
+      console.log(`[LessonCompleteScreen] Proceed blocked: isProcessingScreenLogic=${isProcessingScreenLogic}, isContextLoading=${isContextLoading}`);
+      return;
+    }
 
     if (actualNextLessonId) {
       console.log(`[LessonCompleteScreen] Navigating to next lesson: /lesson/${actualNextLessonId}`);
@@ -74,7 +78,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
     return actualNextLessonId ? <ArrowRight className="ml-2 h-4 w-4" /> : <HomeIcon className="mr-2 h-4 w-4" />;
   };
 
-  // Show a general loading screen while initial processing (the useEffect) is happening and hasn't been attempted.
+  // Initial loading state while useEffect runs for the first time
   if (isProcessingScreenLogic && !hasAttemptedProcessing) {
     return (
         <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
@@ -106,9 +110,8 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
          <p className="text-sm text-muted-foreground">
              Dein Gesamtpunktestand und Fortschritt wurden aktualisiert.
          </p>
-         {/* Debug Info: Can be removed later */}
          <p className="text-xs text-muted-foreground/80 mt-2">
-            (Context points: {userProgress?.totalPoints ?? 'N/A'}, Next lesson in context: {userProgress?.currentLessonId ?? 'N/A'}, ActualNextID: {actualNextLessonId ?? 'null'})
+            (DEBUG: User Total Points: {userProgress?.totalPoints ?? 'N/A'}, Context Current Lesson: {userProgress?.currentLessonId ?? 'N/A'}, Determined Next Lesson: {actualNextLessonId ?? 'null'})
          </p>
       </CardContent>
        <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
