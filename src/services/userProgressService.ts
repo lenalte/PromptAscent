@@ -25,20 +25,21 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
 
     if (userDocSnap.exists()) {
       const data = userDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
+      // Ensure all fields have defaults if missing from Firestore, crucial for consistency
       return {
         userId,
-        username: data.username,
+        username: data.username, // Can be undefined
         totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0,
-        currentLessonId: typeof data.currentLessonId === 'string' && data.currentLessonId ? data.currentLessonId : "lesson1",
+        currentLessonId: typeof data.currentLessonId === 'string' && data.currentLessonId ? data.currentLessonId : "lesson1", // Default to "lesson1"
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
-        unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : ["lesson1"],
+        unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : ["lesson1"], // Default to ["lesson1"]
       };
     } else {
-      console.log(`No progress document found for user ${userId}. A new one will be created if needed.`);
-      return null;
+      console.log(`[userProgressService] No progress document found for user ${userId}.`);
+      return null; // Explicitly return null if no document exists, createUserProgressDocument will handle creation
     }
   } catch (error) {
-    console.error(`Error fetching user progress for UID: ${userId}:`, error);
+    console.error(`[userProgressService] Error fetching user progress for UID: ${userId}:`, error);
     throw error;
   }
 }
@@ -50,36 +51,47 @@ export async function createUserProgressDocument(userId: string, initialData?: P
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const defaultLessonId = "lesson1";
+    const defaultLessonId = "lesson1"; // Define a default starting lesson
 
+    // Construct the data ensuring all fields are present, even if with default values
     const dataToSet: Omit<UserProgressData, 'userId'> = {
       totalPoints: initialData?.totalPoints ?? 0,
       currentLessonId: initialData?.currentLessonId ?? defaultLessonId,
       completedLessons: initialData?.completedLessons ?? [],
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
-        : [defaultLessonId],
-      username: initialData?.username, // Can be undefined
+        : [defaultLessonId], // Ensure "lesson1" is always unlocked initially
+      username: initialData?.username, // This can be undefined
     };
 
+    // For Firestore, explicitly remove undefined fields or ensure they are allowed by rules (null is better)
     const firestoreData: { [key: string]: any } = { ...dataToSet };
     if (firestoreData.username === undefined) {
-      delete firestoreData.username; // Explicitly remove if undefined
+      // Firestore doesn't store undefined. Either remove or set to null if your schema allows.
+      // For new users, not having a username field is fine until they set one.
+      delete firestoreData.username;
     }
 
+
     await setDoc(userDocRef, firestoreData);
-    console.log(`User progress document created for ${userId} with data:`, firestoreData);
+    console.log(`[userProgressService] User progress document created for ${userId} with data:`, firestoreData);
     
+    // Return the full UserProgressData structure
     return {
         userId,
-        ...dataToSet, // Spread dataToSet which might have undefined username
+        username: dataToSet.username, // This will be undefined if not provided
+        totalPoints: dataToSet.totalPoints,
+        currentLessonId: dataToSet.currentLessonId,
+        completedLessons: dataToSet.completedLessons,
+        unlockedLessons: dataToSet.unlockedLessons,
     };
 
   } catch (error) {
-    console.error(`Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
+    console.error(`[userProgressService] Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
     throw error;
   }
 }
+
 
 export async function updateTotalPointsInFirestore(userId: string, newTotalPoints: number): Promise<void> {
   if (!db) {
@@ -91,23 +103,24 @@ export async function updateTotalPointsInFirestore(userId: string, newTotalPoint
     await updateDoc(userDocRef, {
       totalPoints: newTotalPoints,
     });
-    console.log(`Total points updated to ${newTotalPoints} for user ${userId}`);
+    console.log(`[userProgressService] Total points updated to ${newTotalPoints} for user ${userId}`);
   } catch (error) {
-    console.error(`Error updating total points for UID: ${userId}:`, error);
+    console.error(`[userProgressService] Error updating total points for UID: ${userId}:`, error);
     throw error;
   }
 }
 
-export async function completeLessonInFirestore(userId: string, completedLessonId: string, currentTotalPoints: number): Promise<{ nextLessonId: string | null, updatedProgress: UserProgressData }> {
+export async function completeLessonInFirestore(userId: string, completedLessonId: string, newTotalPointsForUser: number): Promise<{ nextLessonId: string | null, updatedProgress: UserProgressData }> {
   if (!db) {
     console.error("Firestore instance (db) is not available in userProgressService.completeLessonInFirestore for user:", userId);
     throw new Error("Firestore not initialized");
   }
-  console.log(`[userProgressService] Attempting to complete lesson ${completedLessonId} for user ${userId} with currentTotalPoints ${currentTotalPoints}.`);
+  console.log(`[userProgressService] Attempting to complete lesson ${completedLessonId} for user ${userId}. New total points will be ${newTotalPointsForUser}.`);
+  
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const allLessonsManifest = await getAvailableLessons();
-    console.log(`[userProgressService] Available lessons manifest length: ${allLessonsManifest.length}`);
+    const allLessonsManifest = await getAvailableLessons(); // Assumes this returns lessons in order
+    console.log(`[userProgressService] Available lessons manifest (${allLessonsManifest.length}):`, allLessonsManifest.map(l => l.id));
 
     const completedLessonIndex = allLessonsManifest.findIndex(lesson => lesson.id === completedLessonId);
     console.log(`[userProgressService] Index of completed lesson "${completedLessonId}": ${completedLessonIndex}`);
@@ -116,22 +129,29 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     if (completedLessonIndex !== -1 && completedLessonIndex < allLessonsManifest.length - 1) {
       nextLessonId = allLessonsManifest[completedLessonIndex + 1].id;
       console.log(`[userProgressService] Next lesson ID determined: ${nextLessonId}`);
+    } else if (completedLessonIndex === -1) {
+      console.error(`[userProgressService] CRITICAL: Completed lesson ID "${completedLessonId}" not found in manifest. Cannot determine next lesson.`);
+      // Potentially throw error or handle as if it's the last lesson to prevent broken state
     } else {
-      console.log(`[userProgressService] No next lesson found or "${completedLessonId}" is the last lesson.`);
+      console.log(`[userProgressService] "${completedLessonId}" is the last lesson or not found correctly.`);
     }
 
     const batch = writeBatch(db);
-    const updates: { [key: string]: any | FieldValue } = { // More precise type for updates
+    const updates: { [key: string]: any | FieldValue } = {
       completedLessons: arrayUnion(completedLessonId),
-      totalPoints: currentTotalPoints,
+      totalPoints: newTotalPointsForUser, // Use the new total points passed in
     };
 
     if (nextLessonId) {
       updates.currentLessonId = nextLessonId;
-      updates.unlockedLessons = arrayUnion(nextLessonId);
+      updates.unlockedLessons = arrayUnion(nextLessonId); // Unlock the next lesson
+      console.log(`[userProgressService] Unlocking next lesson: ${nextLessonId} and setting as current.`);
     } else {
+      // If no next lesson, currentLessonId might remain the one just completed,
+      // or set to a special marker if all lessons are done.
+      // For now, we'll just ensure completedLessons includes this one.
       updates.currentLessonId = completedLessonId; // Mark current as the last one completed
-      console.log(`[userProgressService] User ${userId} completed the last available lesson: ${completedLessonId}. currentLessonId set to ${completedLessonId}.`);
+      console.log(`[userProgressService] User ${userId} completed the last available lesson: ${completedLessonId}. currentLessonId set to ${completedLessonId}. No new lesson to unlock.`);
     }
     console.log(`[userProgressService] Firestore batch updates for user ${userId}:`, updates);
 
@@ -139,28 +159,14 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     await batch.commit();
     console.log(`[userProgressService] Firestore batch commit successful for user ${userId}.`);
 
-    const updatedDocSnap = await getDoc(userDocRef);
-    if (!updatedDocSnap.exists()) {
-        console.error(`[userProgressService] User progress document disappeared after update for UID: ${userId}.`);
-        throw new Error(`User progress document not found after update for UID: ${userId}.`);
+    // Fetch the updated document to return the latest state
+    const updatedUserProgress = await getUserProgress(userId);
+    if (!updatedUserProgress) {
+        console.error(`[userProgressService] Failed to fetch updated user progress for ${userId} after lesson completion.`);
+        throw new Error(`Failed to fetch updated user progress for ${userId}`);
     }
-    const data = updatedDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
-    const updatedProgress: UserProgressData = {
-        userId,
-        username: data.username,
-        totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0,
-        currentLessonId: data.currentLessonId || "lesson1",
-        completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
-        unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : ["lesson1"],
-    };
-
-    console.log(`[userProgressService] completeLessonInFirestore successful:
-      User ID: ${userId}
-      Completed Lesson ID: ${completedLessonId}
-      Determined Next Lesson ID: ${nextLessonId}
-      Updated Total Points in DB: ${updatedProgress.totalPoints}
-      Updated Unlocked Lessons in DB: ${updatedProgress.unlockedLessons.join(', ')}
-      Updated Current Lesson ID in DB: ${updatedProgress.currentLessonId}`);
+    
+    console.log(`[userProgressService] completeLessonInFirestore successful. Returning nextLessonId: ${nextLessonId} and updatedProgress:`, updatedUserProgress);
     return { nextLessonId, updatedProgress };
 
   } catch (error) {
@@ -176,15 +182,19 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
+    
     const cleanDataToUpdate: { [key: string]: any } = { ...dataToUpdate };
+    // Firestore doesn't allow 'undefined' values. Remove them or convert to null.
+    // If username is explicitly set to undefined, it means we want to remove it (or it wasn't provided)
     if (cleanDataToUpdate.username === undefined && 'username' in cleanDataToUpdate) {
        delete cleanDataToUpdate.username;
     }
+    // Add similar checks for other optional fields if necessary
 
     await updateDoc(userDocRef, cleanDataToUpdate);
-    console.log(`User document updated for ${userId} with data:`, cleanDataToUpdate);
+    console.log(`[userProgressService] User document updated for ${userId} with data:`, cleanDataToUpdate);
   } catch (error) {
-    console.error(`Error updating user document for UID: ${userId}:`, error);
+    console.error(`[userProgressService] Error updating user document for UID: ${userId}:`, error);
     throw error;
   }
 }
