@@ -25,9 +25,8 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
 
   useEffect(() => {
     const markLessonCompleteAndGetNext = async () => {
-      if (hasAttemptedProcessing || !lessonId ) { // points < 0 removed as it might be 0
-          // console.log(`[LessonCompleteScreen] Skipping processing. hasAttempted: ${hasAttemptedProcessing}, lessonId: ${lessonId}`);
-        if (!hasAttemptedProcessing) setIsProcessingScreenLogic(false); // Ensure loading stops if initial guards fail
+      if (hasAttemptedProcessing || !lessonId ) {
+        if (!hasAttemptedProcessing) setIsProcessingScreenLogic(false);
         return;
       }
 
@@ -42,8 +41,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
         setActualNextLessonId(nextId);
       } catch (error) {
         console.error("[LessonCompleteScreen] Error during lesson completion process:", error);
-        // Optionally set actualNextLessonId to a specific state or show a toast
-        // For now, it will remain null, leading to "Back to Lessons Hub"
+        setActualNextLessonId(null); // Ensure it's null on error
       } finally {
         setIsProcessingScreenLogic(false);
       }
@@ -51,14 +49,10 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
 
     markLessonCompleteAndGetNext();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonId, points, completeLessonAndProceed, hasAttemptedProcessing]); // Added completeLessonAndProceed and hasAttemptedProcessing
+  }, [lessonId, points, completeLessonAndProceed, hasAttemptedProcessing]);
 
   const handleProceed = () => {
-    console.log(`[LessonCompleteScreen] handleProceed called.
-      isProcessingScreenLogic: ${isProcessingScreenLogic},
-      isContextLoading: ${isContextLoading},
-      actualNextLessonId: ${actualNextLessonId}`);
-
+    console.log(`[LessonCompleteScreen] handleProceed called. isProcessingScreenLogic: ${isProcessingScreenLogic}, isContextLoading: ${isContextLoading}, actualNextLessonId: ${actualNextLessonId}`);
     if (isProcessingScreenLogic || isContextLoading) return;
 
     if (actualNextLessonId) {
@@ -71,8 +65,8 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
   };
 
   const getButtonText = () => {
-    if (isProcessingScreenLogic || isContextLoading) return "Saving...";
-    return actualNextLessonId ? "Next Lesson" : "Back to Lessons Hub";
+    if (isProcessingScreenLogic || isContextLoading) return "Wird gespeichert...";
+    return actualNextLessonId ? "Nächste Lektion" : "Zurück zur Lektionsübersicht";
   };
 
   const getButtonIcon = () => {
@@ -80,11 +74,12 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
     return actualNextLessonId ? <ArrowRight className="ml-2 h-4 w-4" /> : <HomeIcon className="mr-2 h-4 w-4" />;
   };
 
-  if (isProcessingScreenLogic && !hasAttemptedProcessing) { // Show loader only on initial processing attempt
+  // Show a general loading screen while initial processing (the useEffect) is happening and hasn't been attempted.
+  if (isProcessingScreenLogic && !hasAttemptedProcessing) {
     return (
         <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <p className="mt-4 text-muted-foreground">Finalizing Lesson...</p>
+            <p className="mt-4 text-muted-foreground">Lektion wird abgeschlossen...</p>
         </div>
     );
   }
@@ -93,32 +88,33 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-green-500 bg-green-50 dark:border-green-700 dark:bg-green-900/20">
       <CardHeader className="items-center">
         <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400 mb-4" />
-        <CardTitle className="text-2xl font-bold text-green-800 dark:text-green-200">Lesson Complete!</CardTitle>
+        <CardTitle className="text-2xl font-bold text-green-800 dark:text-green-200">Lektion abgeschlossen!</CardTitle>
          <CardDescription className="text-green-700 dark:text-green-300">
-           You finished the "{lessonTitle}" lesson.
+           Du hast die Lektion "{lessonTitle}" beendet.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-lg text-green-700 dark:text-green-300">
-          Congratulations! You've successfully navigated all the items.
+          Herzlichen Glückwunsch! Du hast alle Aufgaben erfolgreich gemeistert.
         </p>
         <div className="flex items-center justify-center space-x-2 pt-4">
           <Trophy className="h-8 w-8 text-yellow-500" />
           <p className="text-xl font-semibold text-foreground dark:text-card-foreground">
-            Points earned this lesson: <span className="font-bold text-primary">{points}</span>
+            Punkte für diese Lektion: <span className="font-bold text-primary">{points}</span>
           </p>
         </div>
          <p className="text-sm text-muted-foreground">
-             Your total score and progress have been updated.
+             Dein Gesamtpunktestand und Fortschritt wurden aktualisiert.
          </p>
+         {/* Debug Info: Can be removed later */}
          <p className="text-xs text-muted-foreground/80 mt-2">
-            (Context points: {userProgress?.totalPoints ?? 'N/A'}, Next lesson in context: {userProgress?.currentLessonId ?? 'N/A'})
+            (Context points: {userProgress?.totalPoints ?? 'N/A'}, Next lesson in context: {userProgress?.currentLessonId ?? 'N/A'}, ActualNextID: {actualNextLessonId ?? 'null'})
          </p>
       </CardContent>
        <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
            <Link href="/" passHref legacyBehavior>
                 <Button variant="outline">
-                   <HomeIcon className="mr-2 h-4 w-4" /> Back to Lessons Hub
+                   <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Lektionsübersicht
                 </Button>
            </Link>
            <Button onClick={handleProceed} disabled={isProcessingScreenLogic || isContextLoading}>
