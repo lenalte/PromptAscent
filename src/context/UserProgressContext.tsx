@@ -11,7 +11,7 @@ import {
   updateTotalPointsInFirestore,
   completeLessonInFirestore,
   type UserProgressData
-} from '@/services/userProgressService'; // Adjusted path to use alias, assuming services is also under src
+} from '../services/userProgressService'; // Adjusted path to use alias, assuming services is also under src
 import { useRouter } from 'next/navigation'; // For redirection
 
 interface UserProgressContextType {
@@ -70,12 +70,12 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     console.log('[UserProgressContext] Setting up onAuthStateChanged listener. Auth available via import:', !!auth, 'DB available via import:', !!db);
     if (!auth) {
-      console.error("[UserProgressContext] Firebase Auth instance is not available from import. Check Firebase initialization in src/lib/firebase/index.ts.");
+      console.error("[UserProgressContext] Firebase Auth instance is not available from import. Check Firebase initialization in src/lib/firebase.");
       setIsLoadingAuth(false);
       return;
     }
      if (!db) {
-      console.error("[UserProgressContext] Firestore instance (db) is not available from import. Check Firebase initialization in src/lib/firebase/index.ts.");
+      console.error("[UserProgressContext] Firestore instance (db) is not available from import. Check Firebase initialization in src/lib/firebase.");
     }
 
 

@@ -136,3 +136,4 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     throw error;
   }
 }
+
