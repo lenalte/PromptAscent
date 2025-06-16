@@ -3,8 +3,8 @@
 
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useRef } from 'react';
-import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/index.ts';
+import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase/index';
 import {
   getUserProgress,
   createUserProgressDocument,
@@ -71,7 +71,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       console.log('[UserProgressContext] User progress loaded:', progress);
 
       if (initialUsernameFromAuthChange) {
-        queuedUsernameRef.current = null; // Clear the ref after it has been used
+        queuedUsernameRef.current = null; 
       }
     } catch (error) {
       console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${userId}:`, error);
@@ -111,7 +111,14 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
           setCurrentUser(userCredential.user);
           await fetchUserProgressData(userCredential.user.uid, null);
         } catch (error) {
-          console.error("[UserProgressContext] Anonymous sign-in failed:", error);
+          const authError = error as AuthError;
+          console.error("[UserProgressContext] Anonymous sign-in failed:", authError);
+          if (authError.code === 'auth/operation-not-allowed') {
+            console.error("*****************************************************************************************************************");
+            console.error("IMPORTANT: Anonymous sign-in failed because it's not enabled in your Firebase project.");
+            console.error("Please go to your Firebase console -> Authentication -> Sign-in method -> Enable 'Anonymous' provider.");
+            console.error("*****************************************************************************************************************");
+          }
         }
       }
       setIsLoadingAuth(false);
@@ -254,3 +261,4 @@ export const useUserProgress = (): UserProgressContextType => {
   }
   return context;
 };
+
