@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3, LogIn, UserPlus, LogOut, Lock } from 'lucide-react'; // Added Lock icon
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { Button } from "./button"; // Assuming Button is in the same folder or accessible path
@@ -45,8 +45,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     onContentToggle,
     onLessonSelect,
     currentSelectedLessonId,
-    currentLessonIdFromProgress, 
-    unlockedLessonIds = [],      
+    currentLessonIdFromProgress,
+    unlockedLessonIds = [],
     isAuthenticated
 }) => {
     const [isContentOpen, setIsContentOpen] = useState(initialContentOpen);
@@ -101,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
 
     const isLessonEffectivelyUnlocked = (lessonId: string) => {
-        if (currentUser?.isAnonymous) return true; 
+        if (currentUser?.isAnonymous) return true;
         return unlockedLessonIds.includes(lessonId);
     };
 
@@ -209,7 +209,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                     <div className="flex items-center justify-between w-full">
                                                         <div className="flex items-center overflow-hidden">
                                                             <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
-                                                                <BookOpen className="h-5 w-5 text-foreground shrink-0" />
+                                                                {isLessonEffectivelyUnlocked(lesson.id) ? (
+                                                                    <BookOpen className="h-5 w-5 text-foreground shrink-0" />
+                                                                ) : (
+                                                                    <Lock className="h-5 w-5 text-foreground shrink-0" />
+                                                                )}
                                                             </span>
                                                             <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
                                                         </div>
