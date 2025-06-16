@@ -4,7 +4,7 @@
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/index.ts'; // Ensure db is correctly imported if used here, or pass to service
+import { auth, db } from '../lib/firebase/index.ts'; // Ensure db is correctly imported if used here, or pass to service
 import {
   getUserProgress,
   createUserProgressDocument,
