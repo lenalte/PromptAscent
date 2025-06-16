@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/firebase/index.ts';
+import { db } from '@/lib/firebase/index';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch } from 'firebase/firestore';
 import { getAvailableLessons, type Lesson } from '@/data/lessons'; // For lesson structure
 
@@ -25,8 +25,16 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
     const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
-      const data = userDocSnap.data() as Omit<UserProgressData, 'userId'>;
-      return { userId, ...data };
+      const data = userDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>; // Use Partial for safety
+      // Ensure all required fields are present, defaulting if necessary
+      return {
+        userId,
+        username: data.username, // Will be undefined if not present, which is fine for optional field
+        totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0, // Default to 0 if missing or not a number
+        currentLessonId: data.currentLessonId || "lesson1", // Default if missing
+        completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [], // Default to empty array
+        unlockedLessons: Array.isArray(data.unlockedLessons) ? data.unlockedLessons : ["lesson1"], // Default
+      };
     } else {
       console.log(`No progress document found for user ${userId}. A new one will be created if needed.`);
       return null;
@@ -47,26 +55,43 @@ export async function createUserProgressDocument(userId: string, initialData?: P
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const defaultLessonId = "lesson1";
 
-    // Base data without username
-    const baseData: Omit<UserProgressData, 'userId' | 'username'> & { username?: string } = {
+    // Prepare data to be set, ensuring all non-optional fields have defaults
+    const dataToSet: Omit<UserProgressData, 'userId'> = {
       totalPoints: initialData?.totalPoints ?? 0,
       currentLessonId: initialData?.currentLessonId ?? defaultLessonId,
       completedLessons: initialData?.completedLessons ?? [],
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
         : [defaultLessonId],
+      // username is handled conditionally below
     };
 
-    // Conditionally add username
-    const dataToSet: Omit<UserProgressData, 'userId'> = { ...baseData };
     if (initialData?.username) {
       dataToSet.username = initialData.username;
     }
+    // else, dataToSet.username remains undefined, which is fine for Firestore if the field is simply omitted for undefined values.
+    // However, when constructing the object to be stored, we need to be careful.
 
-    await setDoc(userDocRef, dataToSet);
-    console.log(`User progress document created for ${userId} with data:`, dataToSet);
-    // The returned object will have username as undefined if it wasn't in dataToSet, which matches UserProgressData
-    return { userId, ...dataToSet } as UserProgressData;
+    // Create a clean object for Firestore, omitting username if it's undefined.
+    const firestoreData: any = { ...dataToSet };
+    if (firestoreData.username === undefined) {
+      delete firestoreData.username;
+    }
+
+
+    await setDoc(userDocRef, firestoreData);
+    console.log(`User progress document created for ${userId} with data:`, firestoreData);
+    
+    // Return the full UserProgressData object, including userId and potentially undefined username
+    return {
+        userId,
+        username: dataToSet.username, // This will be undefined if not set
+        totalPoints: dataToSet.totalPoints,
+        currentLessonId: dataToSet.currentLessonId,
+        completedLessons: dataToSet.completedLessons,
+        unlockedLessons: dataToSet.unlockedLessons,
+    };
+
   } catch (error) {
     console.error(`Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
     throw error;
@@ -118,7 +143,10 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
       updates.currentLessonId = nextLessonId;
       updates.unlockedLessons = arrayUnion(nextLessonId) as any;
     } else {
-      updates.currentLessonId = completedLessonId;
+      // If there's no next lesson, currentLessonId might remain as the completed one,
+      // or you might want to set it to a specific state indicating all lessons are done.
+      // For now, it implies the current lesson remains the last completed one.
+      updates.currentLessonId = completedLessonId; // Or keep as is if currentLessonId isn't meant to change here
       console.log(`User ${userId} completed the last available lesson: ${completedLessonId}`);
     }
 
@@ -129,7 +157,17 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     if (!updatedDocSnap.exists()) {
         throw new Error(`User progress document disappeared after update for UID: ${userId}.`);
     }
-    const updatedProgress = { userId, ...(updatedDocSnap.data() as Omit<UserProgressData, 'userId'>) };
+    // Construct UserProgressData carefully, ensuring defaults for missing fields
+    const data = updatedDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
+    const updatedProgress: UserProgressData = {
+        userId,
+        username: data.username,
+        totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0,
+        currentLessonId: data.currentLessonId || "lesson1",
+        completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
+        unlockedLessons: Array.isArray(data.unlockedLessons) ? data.unlockedLessons : ["lesson1"],
+    };
+
 
     console.log(`Lesson ${completedLessonId} marked complete for user ${userId}. Next lesson: ${nextLessonId}. Updated progress:`, updatedProgress);
     return { nextLessonId, updatedProgress };
@@ -148,8 +186,20 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    await updateDoc(userDocRef, dataToUpdate);
-    console.log(`User document updated for ${userId} with data:`, dataToUpdate);
+    // Ensure undefined fields are handled if necessary, though updateDoc usually ignores them.
+    // For explicit removal, fields can be set to deleteField() but that's not the goal here.
+    const cleanDataToUpdate: any = { ...dataToUpdate };
+    if (cleanDataToUpdate.username === undefined && 'username' in cleanDataToUpdate) {
+        // If you want to remove the username field if it's explicitly set to undefined:
+        // import { deleteField } from "firebase/firestore";
+        // cleanDataToUpdate.username = deleteField();
+        // For now, we assume updateDoc handles undefined by not changing the field or erroring.
+        // If username is meant to be optional and potentially absent, ensure UserProgressData reflects that.
+        // If username is simply not part of this particular update, it's fine.
+    }
+
+    await updateDoc(userDocRef, cleanDataToUpdate);
+    console.log(`User document updated for ${userId} with data:`, cleanDataToUpdate);
   } catch (error) {
     console.error(`Error updating user document for UID: ${userId}:`, error);
     throw error;
