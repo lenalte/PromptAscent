@@ -53,6 +53,11 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
   const [showHint, setShowHint] = useState(false);
+  const [isClientMounted, setIsClientMounted] = useState(false);
+
+  useEffect(() => {
+    setIsClientMounted(true);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +67,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   });
 
   // Reset internal component state when the `id` prop changes (new item or new attempt of same item).
-  // Or more reliably, use a unique key provided by the parent for the component instance.
   useEffect(() => {
     form.reset({ userAnswer: '' });
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
@@ -102,33 +106,23 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const getButtonText = () => {
     if (isPending) return 'Validating...';
     if (!isAnswerSubmitted) return 'Submit Answer';
-    if (isLastItem) return `View Score (${lessonPoints} Points)`; // This text might change based on parent's `isLessonComplete` logic
+    if (isLastItem) return `View Score (${lessonPoints} Points)`;
     return 'Next';
   };
 
-  // const getButtonIcon = () => { // Combined into button text span
-  //   if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-  //   if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
-  //   if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
-  //   return null;
-  // };
-
-  // Disable button if pending, or if it's the last item and submission hasn't happened yet (to avoid premature navigation)
-  // Also disable if form is invalid and not yet submitted (for the initial submit action)
   const isButtonDisabled = isPending || (isLastItem && isAnswerSubmitted && !validationResult.attemptMade);
   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
-      {/* Title is now handled by parent page, but CardTitle provides structure */}
       <CardHeader>
         <CardTitle>Question</CardTitle> 
         <CardDescription>{question}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <div className="space-y-6"> {/* Changed from form to div for button placement */}
+          <div className="space-y-6">
             <FormField
               control={form.control}
               name="userAnswer"
@@ -150,7 +144,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {validationResult.attemptMade && (
+            {isClientMounted && validationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={validationResult.isValid ? 'default' : 'destructive'}
@@ -177,7 +171,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 </AlertDescription>
                 {!validationResult.isValid && validationResult.feedback && !expectedAnswer && (
                   <Button
-                    type="button" // Ensure it's not submitting the form
+                    type="button"
                     variant="ghost"
                     size="sm"
                     onClick={toggleHint}
@@ -188,7 +182,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                     {showHint ? 'Hide Hint' : 'Show Hint'}
                   </Button>
                 )}
-                {showHint && !validationResult.isValid && ( // Show hint only if button clicked and answer is invalid
+                {showHint && !validationResult.isValid && ( 
                   <p className="text-sm text-muted-foreground mt-2 p-2 border rounded bg-muted">
                     Hint: {validationResult.feedback}
                   </p>
@@ -197,13 +191,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             )}
             
             <Button
-              type="button" // Changed from submit to button as form.handleSubmit is called manually
+              type="button"
               onClick={handleButtonClick}
               disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700" // Special style for final "View Score"
+                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
               )}
             >
               <span className="flex items-center justify-center">
