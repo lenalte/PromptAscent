@@ -13,7 +13,7 @@ import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 import BirdsBackground from '@/components/BirdsBackground';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import type { Level } from '@/data/level-structure';
-import { getLevelForLessonId } from '@/data/level-structure';
+import { getLevelForLessonId, LEVELS } from '@/data/level-structure';
 
 type LessonListing = Omit<Lesson, 'items'>;
 
@@ -28,6 +28,7 @@ export default function Home() {
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState<LessonListing | null>(null);
   const [currentLevel, setCurrentLevel] = useState<Level | null>(null);
+  const [levelProgressPercentage, setLevelProgressPercentage] = useState(0);
 
   useEffect(() => {
     async function fetchLessons() {
@@ -51,16 +52,32 @@ export default function Home() {
       setIsLoadingLessons(false);
     }
     fetchLessons();
-  }, [userProgress?.currentLessonId]); // Re-fetch or re-evaluate if currentLessonId changes
+  }, [userProgress?.currentLessonId, selectedLesson]); // Added selectedLesson to ensure re-fetch logic is sound
 
   useEffect(() => {
     if (selectedLesson) {
       const level = getLevelForLessonId(selectedLesson.id);
       setCurrentLevel(level || null);
+    } else if (userProgress?.currentLessonId) { // Fallback if selectedLesson isn't set but we have a current lesson
+      const level = getLevelForLessonId(userProgress.currentLessonId);
+      setCurrentLevel(level || null);
     } else {
-      setCurrentLevel(null);
+      setCurrentLevel(LEVELS[0] || null); // Default to first level if nothing else
     }
-  }, [selectedLesson]);
+  }, [selectedLesson, userProgress?.currentLessonId]);
+
+  useEffect(() => {
+    if (currentLevel && userProgress?.completedLessons && currentLevel.lessonIds.length > 0) {
+      const completedInLevelCount = currentLevel.lessonIds.filter(id =>
+        userProgress.completedLessons.includes(id)
+      ).length;
+      const percentage = (completedInLevelCount / currentLevel.lessonIds.length) * 100;
+      setLevelProgressPercentage(Math.round(percentage));
+    } else {
+      setLevelProgressPercentage(0);
+    }
+  }, [currentLevel, userProgress?.completedLessons]);
+
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => {
     setIsSidebarContentAreaOpen(isOpen);
@@ -78,7 +95,7 @@ export default function Home() {
     : ICON_BAR_WIDTH_PX;
 
   const isLessonUnlocked = (lessonId: string) => {
-    if (currentUser?.isAnonymous) return true; // Anonymous users can access all lessons for now
+    if (currentUser?.isAnonymous) return true;
     return unlockedLessonsForSidebar.includes(lessonId);
   };
 
@@ -101,10 +118,14 @@ export default function Home() {
         style={{ marginLeft: `${currentSidebarTotalWidth}px` }}
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
-          <ProgressBar progress={50} sidebarWidth={0} />
+          <ProgressBar
+            progress={levelProgressPercentage}
+            progressText={`${levelProgressPercentage}%`}
+            sidebarWidth={0} // This prop might be deprecated if bar is always relative to container
+          />
           <LevelAndInformationBar
             className="mt-2"
-            sidebarWidth={0}
+            sidebarWidth={0} // This prop might be deprecated
             totalPoints={totalPoints}
             currentLevel={currentLevel}
           />
@@ -164,3 +185,4 @@ export default function Home() {
     </>
   );
 }
+
