@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/firebase/index.ts'; 
+import { db } from '@/lib/firebase/index.ts';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch } from 'firebase/firestore';
 import { getAvailableLessons, type Lesson } from '@/data/lessons'; // For lesson structure
 
@@ -25,11 +25,11 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
     const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
-      const data = userDocSnap.data() as Omit<UserProgressData, 'userId'>; 
+      const data = userDocSnap.data() as Omit<UserProgressData, 'userId'>;
       return { userId, ...data };
     } else {
       console.log(`No progress document found for user ${userId}. A new one will be created if needed.`);
-      return null; 
+      return null;
     }
   } catch (error) {
     console.error(`Error fetching user progress for UID: ${userId}:`, error);
@@ -45,21 +45,28 @@ export async function createUserProgressDocument(userId: string, initialData?: P
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const defaultLessonId = "lesson1"; 
+    const defaultLessonId = "lesson1";
 
-    const dataToSet: Omit<UserProgressData, 'userId'> = {
-      username: initialData?.username, // Set username if provided
+    // Base data without username
+    const baseData: Omit<UserProgressData, 'userId' | 'username'> & { username?: string } = {
       totalPoints: initialData?.totalPoints ?? 0,
       currentLessonId: initialData?.currentLessonId ?? defaultLessonId,
       completedLessons: initialData?.completedLessons ?? [],
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
-        : [defaultLessonId], 
+        : [defaultLessonId],
     };
+
+    // Conditionally add username
+    const dataToSet: Omit<UserProgressData, 'userId'> = { ...baseData };
+    if (initialData?.username) {
+      dataToSet.username = initialData.username;
+    }
 
     await setDoc(userDocRef, dataToSet);
     console.log(`User progress document created for ${userId} with data:`, dataToSet);
-    return { userId, ...dataToSet };
+    // The returned object will have username as undefined if it wasn't in dataToSet, which matches UserProgressData
+    return { userId, ...dataToSet } as UserProgressData;
   } catch (error) {
     console.error(`Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
     throw error;
@@ -92,7 +99,7 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const allLessonsManifest = await getAvailableLessons(); 
+    const allLessonsManifest = await getAvailableLessons();
 
     const completedLessonIndex = allLessonsManifest.findIndex(lesson => lesson.id === completedLessonId);
     let nextLessonId: string | null = null;
@@ -103,8 +110,8 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     const batch = writeBatch(db);
 
     const updates: Partial<Omit<UserProgressData, 'userId'>> = {
-      completedLessons: arrayUnion(completedLessonId) as any, 
-      totalPoints: currentTotalPoints, 
+      completedLessons: arrayUnion(completedLessonId) as any,
+      totalPoints: currentTotalPoints,
     };
 
     if (nextLessonId) {
