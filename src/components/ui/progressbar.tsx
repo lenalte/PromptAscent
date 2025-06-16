@@ -13,7 +13,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress, progressText }) => 
     return (
         <div
             className={cn(
-                "w-full h-[15px] flex items-center sidebar-background relative overflow-hidden" // Added relative and overflow-hidden for text positioning
+                "w-full h-[15px] flex items-center sidebar-background relative overflow-hidden py-[1px]" // Added py-[1px]
             )}
             // style={{ width: `calc(100% - ${sidebarWidth}px)`, left: `${sidebarWidth}px` }} // Adjusted if it's inside a margin-controlled parent
         >
@@ -38,3 +38,4 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress, progressText }) => 
 };
 
 export default ProgressBar;
+
