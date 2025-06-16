@@ -156,3 +156,14 @@ h6 {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom utility to hide scrollbars */
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
