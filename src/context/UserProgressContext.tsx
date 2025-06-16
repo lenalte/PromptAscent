@@ -4,7 +4,7 @@
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth, db } from '../lib/firebase/index'; // Ensure db is correctly imported if used here, or pass to service
+import { auth, db } from '../lib/firebase/index.ts'; // Ensure db is correctly imported if used here, or pass to service
 import {
   getUserProgress,
   createUserProgressDocument,
@@ -42,13 +42,10 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth instance is not available from import. Check Firebase initialization in src/lib/firebase/index.ts.");
       setIsLoadingAuth(false);
-      // Optionally, attempt anonymous sign-in if auth object is somehow globally available but not via module
-      // This case should ideally not happen if module imports are working.
       return;
     }
      if (!db) {
       console.error("[UserProgressContext] Firestore instance (db) is not available from import. Check Firebase initialization in src/lib/firebase/index.ts.");
-      // Continue with auth if available, but DB operations will fail.
     }
 
 
@@ -65,7 +62,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         try {
           const userCredential = await signInAnonymously(auth);
           console.log('[UserProgressContext] Anonymously signed in UID:', userCredential.user.uid);
-          // setCurrentUser and fetchUserProgressData will be handled by the next onAuthStateChanged event
+          // Ensure setCurrentUser and fetchUserProgressData are called for anonymous user
+          setCurrentUser(userCredential.user);
+          await fetchUserProgressData(userCredential.user.uid);
         } catch (error) {
           console.error("[UserProgressContext] Anonymous sign-in failed:", error);
         }
@@ -78,7 +77,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       unsubscribe();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchUserProgressData]); // fetchUserProgressData is memoized with useCallback
+  }, [fetchUserProgressData]);
 
   const fetchUserProgressData = useCallback(async (userId: string) => {
     if (!db) {
@@ -169,10 +168,11 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed up successfully:", userCredential.user.uid);
+      // User state will be updated by onAuthStateChanged listener, which will trigger fetchUserProgressData
       return userCredential.user;
     } catch (error) {
       console.error("[UserProgressContext] Error signing up:", error);
-      throw error;
+      throw error; // Re-throw to be caught by the form
     } finally {
       setIsLoadingAuth(false);
     }
@@ -187,10 +187,11 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed in successfully:", userCredential.user.uid);
+      // User state will be updated by onAuthStateChanged listener
       return userCredential.user;
     } catch (error) {
       console.error("[UserProgressContext] Error signing in:", error);
-      throw error;
+      throw error; // Re-throw to be caught by the form
     } finally {
       setIsLoadingAuth(false);
     }
@@ -204,17 +205,17 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     setIsLoadingAuth(true);
     try {
       await firebaseSignOut(auth);
-      setCurrentUser(null);
-      setUserProgress(null);
-      console.log("[UserProgressContext] User signed out.");
-      router.push('/');
+      // setCurrentUser(null) and setUserProgress(null) will be handled by onAuthStateChanged listener
+      // which will then trigger anonymous sign-in.
+      console.log("[UserProgressContext] User signed out. Anonymous sign-in will be attempted by onAuthStateChanged.");
+      router.push('/'); // Navigate to home, which might show login/register or lesson list for anon user
     } catch (error) {
       console.error("[UserProgressContext] Error signing out:", error);
     } finally {
       setIsLoadingAuth(false);
     }
   };
-  
+
   return (
     <UserProgressContext.Provider value={{
       currentUser,
@@ -241,4 +242,3 @@ export const useUserProgress = (): UserProgressContextType => {
   }
   return context;
 };
-
