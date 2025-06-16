@@ -4,14 +4,14 @@
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth, db } from '../lib/firebase/index.ts'; // Ensure db is correctly imported if used here, or pass to service
+import { auth, db } from '@/lib/firebase/index.ts'; // Ensure db is correctly imported if used here, or pass to service
 import {
   getUserProgress,
   createUserProgressDocument,
   updateTotalPointsInFirestore,
   completeLessonInFirestore,
   type UserProgressData
-} from '../services/userProgressService'; // Updated path
+} from '@/services/userProgressService'; // Adjusted path to use alias, assuming services is also under src
 import { useRouter } from 'next/navigation'; // For redirection
 
 interface UserProgressContextType {
@@ -36,6 +36,36 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
   const router = useRouter();
+
+  const fetchUserProgressData = useCallback(async (userId: string) => {
+    if (!db) {
+      console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
+      setIsLoadingProgress(false);
+      return;
+    }
+    setIsLoadingProgress(true);
+    console.log('[UserProgressContext] Fetching user progress for UID:', userId);
+    try {
+      let progress = await getUserProgress(userId);
+      if (!progress) {
+        console.log('[UserProgressContext] No progress found, creating new document for UID:', userId);
+        const initialLessonId = "lesson1";
+        progress = await createUserProgressDocument(userId, {
+          totalPoints: 0,
+          currentLessonId: initialLessonId,
+          completedLessons: [],
+          unlockedLessons: [initialLessonId],
+        });
+      }
+      setUserProgress(progress);
+      console.log('[UserProgressContext] User progress loaded:', progress);
+    } catch (error) {
+      console.error("[UserProgressContext] Error fetching/creating user progress:", error);
+      setUserProgress(null);
+    } finally {
+      setIsLoadingProgress(false);
+    }
+  }, []);
 
   useEffect(() => {
     console.log('[UserProgressContext] Setting up onAuthStateChanged listener. Auth available via import:', !!auth, 'DB available via import:', !!db);
@@ -78,36 +108,6 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUserProgressData]);
-
-  const fetchUserProgressData = useCallback(async (userId: string) => {
-    if (!db) {
-      console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
-      setIsLoadingProgress(false);
-      return;
-    }
-    setIsLoadingProgress(true);
-    console.log('[UserProgressContext] Fetching user progress for UID:', userId);
-    try {
-      let progress = await getUserProgress(userId);
-      if (!progress) {
-        console.log('[UserProgressContext] No progress found, creating new document for UID:', userId);
-        const initialLessonId = "lesson1";
-        progress = await createUserProgressDocument(userId, {
-          totalPoints: 0,
-          currentLessonId: initialLessonId,
-          completedLessons: [],
-          unlockedLessons: [initialLessonId],
-        });
-      }
-      setUserProgress(progress);
-      console.log('[UserProgressContext] User progress loaded:', progress);
-    } catch (error) {
-      console.error("[UserProgressContext] Error fetching/creating user progress:", error);
-      setUserProgress(null);
-    } finally {
-      setIsLoadingProgress(false);
-    }
-  }, []);
 
 
   const addPointsToTotal = useCallback(async (amount: number) => {
@@ -242,3 +242,4 @@ export const useUserProgress = (): UserProgressContextType => {
   }
   return context;
 };
+
