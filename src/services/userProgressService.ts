@@ -1,5 +1,5 @@
 
-import { db } from '@/lib/firebase/index.ts';
+import { db } from '../lib/firebase/index.ts';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, increment, writeBatch } from 'firebase/firestore';
 import { getAvailableLessons, type Lesson } from '@/data/lessons'; // For lesson structure
 
