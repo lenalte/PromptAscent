@@ -26,7 +26,7 @@ const ProfilIcon = ({ isActive }: { isActive?: boolean }) => (
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
         className={cn(
             "h-8 w-8 shrink-0",
-            isActive ? "text-[hsl(var(--foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
+            isActive ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
         )}
         viewBox="0 0 790.000000 790.000000"
         preserveAspectRatio="xMidYMid meet">
@@ -223,7 +223,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                                     <Lock className="h-5 w-5 text-foreground shrink-0" />
                                                                 )}
                                                             </span>
-                                                            <span className="text-sm whitespace-normal break-words flex-1">{lesson.title}</span>
+                                                            <span className={cn(
+                                                              "text-sm whitespace-normal break-words flex-1",
+                                                              isLessonEffectivelyUnlocked(lesson.id) && "font-semibold"
+                                                            )}>
+                                                                {lesson.title}
+                                                            </span>
                                                         </div>
                                                         {lesson.description && (
                                                             <div
