@@ -1,6 +1,6 @@
 
-import { db } from '../lib/firebase/index.ts';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, increment, writeBatch } from 'firebase/firestore';
+import { db } from '../lib/firebase/index'; // Corrected path
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch } from 'firebase/firestore';
 import { getAvailableLessons, type Lesson } from '@/data/lessons'; // For lesson structure
 
 export interface UserProgressData {
@@ -32,7 +32,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       return null; // No document found
     }
   } catch (error) {
-    console.error("Error fetching user progress:", error);
+    console.error(`Error fetching user progress for UID: ${userId}:`, error);
     throw error;
   }
 }
@@ -60,7 +60,7 @@ export async function createUserProgressDocument(userId: string, initialData?: P
     console.log(`User progress document created for ${userId} with data:`, dataToSet);
     return { userId, ...dataToSet };
   } catch (error) {
-    console.error("Error creating user progress document:", error);
+    console.error(`Error creating user progress document for UID: ${userId}:`, error);
     throw error;
   }
 }
@@ -78,7 +78,7 @@ export async function updateTotalPointsInFirestore(userId: string, newTotalPoint
     });
     console.log(`Total points updated to ${newTotalPoints} for user ${userId}`);
   } catch (error) {
-    console.error("Error updating total points:", error);
+    console.error(`Error updating total points for UID: ${userId}:`, error);
     throw error;
   }
 }
@@ -132,8 +132,7 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     return { nextLessonId, updatedProgress };
 
   } catch (error) {
-    console.error("Error completing lesson in Firestore:", error);
+    console.error(`Error completing lesson ${completedLessonId} for UID: ${userId} in Firestore:`, error);
     throw error;
   }
 }
-
