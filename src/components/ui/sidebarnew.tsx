@@ -22,8 +22,13 @@ interface SidebarProps {
 type LessonListing = Omit<Lesson, 'items'>;
 
 // Profil SVG Icon
-const ProfilIcon = () => (
-    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground shrink-0" viewBox="0 0 790.000000 790.000000"
+const ProfilIcon = ({ isActive }: { isActive?: boolean }) => (
+    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+        className={cn(
+            "h-8 w-8 shrink-0",
+            isActive ? "text-primary" : "text-[hsl(var(--sidebar-foreground))]"
+        )}
+        viewBox="0 0 790.000000 790.000000"
         preserveAspectRatio="xMidYMid meet">
         <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
             fill="currentColor" stroke="none">
@@ -35,8 +40,11 @@ const ProfilIcon = () => (
 );
 
 // Leaderboard Icon
-const LeaderboardIcon = () => (
-    <BarChart3 className="h-8 w-8 text-foreground shrink-0" />
+const LeaderboardIcon = ({ isActive }: { isActive?: boolean }) => (
+    <BarChart3 className={cn(
+        "h-8 w-8 shrink-0",
+        isActive ? "text-primary" : "text-[hsl(var(--sidebar-foreground))]"
+    )} />
 );
 
 
@@ -129,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         aria-label="Profil und Lektionen"
                     >
-                        <ProfilIcon />
+                        <ProfilIcon isActive={activeCategory === 'profil' && isContentOpen} />
                     </button>
                     <button
                         type="button"
@@ -140,7 +148,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         aria-label="Leaderboard"
                     >
-                        <LeaderboardIcon />
+                        <LeaderboardIcon isActive={activeCategory === 'leaderboard' && isContentOpen} />
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
