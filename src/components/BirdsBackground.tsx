@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useEffect, useRef } from 'react';
 
@@ -87,7 +88,7 @@ const BirdsBackground = () => {
                     /* p.background(255); */
                     // Farben aus CSS-Variablen holen
                     backgroundColor = getCssVariableColor('--background');
-                    birdColor = getCssVariableColor('--foreground');
+                    birdColor = '#D0B3FF'; // Changed to specific color
 
                     // Canvas dem Container hinzufügen
                     if (containerRef.current) {
@@ -105,7 +106,7 @@ const BirdsBackground = () => {
 
                     // Farben bei Größenänderung aktualisieren (falls sich das Theme ändert)
                     backgroundColor = getCssVariableColor('--background');
-                    birdColor = getCssVariableColor('--foreground');
+                    // Bird color remains the custom one, no need to update from CSS var
                 };
 
                 p.draw = function () {
