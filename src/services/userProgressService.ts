@@ -25,10 +25,9 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
 
     if (userDocSnap.exists()) {
       const data = userDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
-      // Ensure all fields have defaults if missing from Firestore
       return {
         userId,
-        username: data.username, // Stays undefined if not present
+        username: data.username,
         totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0,
         currentLessonId: typeof data.currentLessonId === 'string' && data.currentLessonId ? data.currentLessonId : "lesson1",
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
@@ -53,7 +52,6 @@ export async function createUserProgressDocument(userId: string, initialData?: P
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const defaultLessonId = "lesson1";
 
-    // Base structure with defaults
     const dataToSet: Omit<UserProgressData, 'userId'> = {
       totalPoints: initialData?.totalPoints ?? 0,
       currentLessonId: initialData?.currentLessonId ?? defaultLessonId,
@@ -61,23 +59,24 @@ export async function createUserProgressDocument(userId: string, initialData?: P
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
         : [defaultLessonId],
-      username: initialData?.username, // Will be undefined if not provided
+      // username will be undefined if not in initialData, and thus omitted from firestoreData
+    };
+    
+    const firestoreData: { [key: string]: any } = {
+        totalPoints: dataToSet.totalPoints,
+        currentLessonId: dataToSet.currentLessonId,
+        completedLessons: dataToSet.completedLessons,
+        unlockedLessons: dataToSet.unlockedLessons,
     };
 
-    // Create a version of dataToSet for Firestore that omits undefined fields
-    const firestoreData: { [key: string]: any } = {};
-    Object.keys(dataToSet).forEach(key => {
-      const K = key as keyof typeof dataToSet;
-      if (dataToSet[K] !== undefined) {
-        firestoreData[K] = dataToSet[K];
-      }
-    });
+    if (initialData?.username) {
+        firestoreData.username = initialData.username;
+    }
 
     await setDoc(userDocRef, firestoreData);
     console.log(`[userProgressService.createUserProgressDocument] User progress document created for ${userId} with data:`, firestoreData);
     
-    // Return the full UserProgressData structure, including potentially undefined username
-    return { userId, ...dataToSet };
+    return { userId, ...dataToSet, username: initialData?.username };
 
   } catch (error) {
     console.error(`[userProgressService.createUserProgressDocument] Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
@@ -114,39 +113,44 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const allLessonsManifest = await getAvailableLessons(); 
     
-    // **** DIAGNOSTIC LOGS ****
+    console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: Fetched allLessonsManifest. Length: ${allLessonsManifest.length}`);
+    if (!allLessonsManifest || allLessonsManifest.length === 0) {
+      console.error(`[userProgressService.completeLessonInFirestore] CRITICAL ERROR: allLessonsManifest is null or empty after getAvailableLessons(). Cannot determine next lesson. Length: ${allLessonsManifest?.length}`);
+      // If manifest is empty, no next lesson can be determined.
+      const updates: { [key: string]: any | FieldValue } = {
+        completedLessons: arrayUnion(completedLessonId),
+        totalPoints: newTotalPointsForUser,
+        currentLessonId: completedLessonId, // Stay on current/last completed if no manifest.
+      };
+      await updateDoc(userDocRef, updates);
+      const updatedUserProgressOnError = await getUserProgress(userId);
+      if (!updatedUserProgressOnError) throw new Error(`Failed to fetch updated user progress for ${userId} after manifest error.`);
+      return { nextLessonId: null, updatedProgress: updatedUserProgressOnError };
+    }
+    
     console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: completedLessonId = "${completedLessonId}"`);
     console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: allLessonsManifest (length ${allLessonsManifest.length}):`, allLessonsManifest.map(l => l.id).join(', '));
     if (allLessonsManifest.length > 0) {
       console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: First lesson in manifest = "${allLessonsManifest[0]?.id}", Last lesson in manifest = "${allLessonsManifest[allLessonsManifest.length - 1]?.id}"`);
     }
-    // **** END DIAGNOSTIC LOGS ****
 
     const completedLessonIndex = allLessonsManifest.findIndex(lesson => lesson.id === completedLessonId);
-    // **** DIAGNOSTIC LOGS ****
     console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: completedLessonIndex = ${completedLessonIndex}`);
-    // **** END DIAGNOSTIC LOGS ****
 
     let nextLessonId: string | null = null;
     if (completedLessonIndex !== -1 && completedLessonIndex < allLessonsManifest.length - 1) {
       nextLessonId = allLessonsManifest[completedLessonIndex + 1].id;
-      // **** DIAGNOSTIC LOGS ****
       console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: Condition for next lesson MET. Determined nextLessonId = "${nextLessonId}"`);
-      // **** END DIAGNOSTIC LOGS ****
     } else {
-      // **** DIAGNOSTIC LOGS ****
       if (completedLessonIndex === -1) {
         console.error(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC CRITICAL: Condition for next lesson NOT MET. Reason: completedLessonIndex is -1. "${completedLessonId}" not found in manifest.`);
       } else if (!(completedLessonIndex < allLessonsManifest.length - 1)) {
         console.log(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC: Condition for next lesson NOT MET. Reason: completedLessonIndex (${completedLessonIndex}) is NOT < allLessonsManifest.length - 1 (${allLessonsManifest.length - 1}). This implies it's the last lesson or manifest is too short.`);
       } else {
-        // Should not be reached if the above two conditions are exhaustive
         console.error(`[userProgressService.completeLessonInFirestore] DIAGNOSTIC CRITICAL: Condition for next lesson NOT MET for unknown reason. completedLessonIndex: ${completedLessonIndex}, allLessonsManifest.length: ${allLessonsManifest.length}`);
       }
-      // **** END DIAGNOSTIC LOGS ****
     }
     console.log(`[userProgressService.completeLessonInFirestore] FINAL Determined nextLessonId before Firestore update: "${nextLessonId}"`);
-
 
     const batch = writeBatch(db);
     const updates: { [key: string]: any | FieldValue } = {
@@ -191,7 +195,7 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
 
   } catch (error) {
     console.error(`[userProgressService.completeLessonInFirestore] Error for UID: ${userId}, lesson: ${completedLessonId}:`, error);
-    throw error; // Re-throw to be caught by UserProgressContext
+    throw error;
   }
 }
 
@@ -204,8 +208,6 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     
     const cleanDataToUpdate: { [key: string]: any } = { ...dataToUpdate };
-    // Remove username field if it's explicitly undefined, as Firestore doesn't support undefined values.
-    // If username is part of dataToUpdate but not undefined (e.g. null or a string), it will be included.
     if ('username' in cleanDataToUpdate && cleanDataToUpdate.username === undefined) {
        delete cleanDataToUpdate.username;
     }

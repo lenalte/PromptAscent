@@ -23,24 +23,34 @@ interface LessonManifestEntry {
 let manifestCache: LessonManifestEntry[] | null = null;
 
 async function getLessonManifest(): Promise<LessonManifestEntry[]> {
+  console.log('[getLessonManifest] Attempting to get lesson manifest.');
   if (process.env.NODE_ENV === 'development' && manifestCache) {
+    console.log(`[getLessonManifest] Returning cached manifest. Length: ${manifestCache.length}`);
     return manifestCache;
   }
   try {
+    console.log(`[getLessonManifest] Reading lesson manifest from path: ${LESSON_MANIFEST_PATH}`);
     const manifestContent = await fs.readFile(LESSON_MANIFEST_PATH, 'utf-8');
     const manifest = JSON.parse(manifestContent) as LessonManifestEntry[];
+    console.log(`[getLessonManifest] Successfully parsed lesson manifest. Number of entries: ${manifest.length}`);
     if (process.env.NODE_ENV === 'development') {
       manifestCache = manifest;
     }
     return manifest;
   } catch (error) {
-    console.error("Failed to read or parse lesson manifest:", error);
-    throw new Error(`Failed to load lesson manifest: ${error instanceof Error ? error.message : String(error)}`);
+    console.error("[getLessonManifest] CRITICAL: Failed to read or parse lesson manifest:", error);
+    // Return empty array on error to allow app to continue but highlight the issue.
+    return [];
   }
 }
 
 export async function getAvailableLessons(): Promise<Omit<Lesson, 'items'>[]> {
+  console.log('[getAvailableLessons] Attempting to get available lessons.');
   const manifest = await getLessonManifest();
+  console.log(`[getAvailableLessons] Manifest received in getAvailableLessons. Length: ${manifest.length}`);
+  if (manifest.length === 0) {
+    console.warn("[getAvailableLessons] WARNING: The lesson manifest is empty. This will lead to issues in lesson progression and display.");
+  }
   return manifest.map(({ id, title, description }) => ({ id, title, description }));
 }
 
@@ -53,12 +63,11 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     // return lessonCache.get(lessonId);
   }
 
-  const manifest = await getLessonManifest();
+  const manifest = await getLessonManifest(); // Uses the enhanced getLessonManifest
   const lessonEntry = manifest.find(l => l.id === lessonId);
 
   if (!lessonEntry) {
-    console.warn(`Lesson with ID "${lessonId}" not found in manifest.`);
-    // Throw an error if lesson entry is not found, so it can be caught by the page
+    console.warn(`[getGeneratedLessonById] Lesson with ID "${lessonId}" not found in manifest.`);
     throw new Error(`Lesson with ID "${lessonId}" not found in manifest.`);
   }
 
@@ -67,7 +76,7 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     const rawContent = await fs.readFile(filePath, 'utf-8');
 
     const MAX_RETRIES = 3;
-    const RETRY_DELAY_MS = 2000; // 2 seconds
+    const RETRY_DELAY_MS = 2000;
     let generatedLessonData: Lesson | undefined;
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -82,16 +91,12 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
 
         if (generatedLessonData) {
           console.log(`[Lesson: ${lessonId}] Successfully generated lesson items on attempt ${attempt}.`);
-          break; // Success, exit retry loop
+          break;
         } else {
-          // This case indicates generateLessonItems resolved to undefined/null without throwing.
-          // This should ideally not happen if the flow is robust.
-          console.warn(`[Lesson: ${lessonId}] Attempt ${attempt} - generateLessonItems returned no data but did not throw. This is unexpected.`);
+          console.warn(`[Lesson: ${lessonId}] Attempt ${attempt} - generateLessonItems returned no data but did not throw.`);
           if (attempt === MAX_RETRIES) {
-            // If it's the last attempt and still no data, throw an error.
-            throw new Error(`AI returned no data for lesson "${lessonId}" after ${MAX_RETRIES} attempts, even without throwing an error during generation.`);
+            throw new Error(`AI returned no data for lesson "${lessonId}" after ${MAX_RETRIES} attempts.`);
           }
-          // Allow loop to continue for another attempt, though this scenario is unusual.
         }
       } catch (error) {
         console.error(`[Lesson: ${lessonId}] Error on attempt ${attempt}/${MAX_RETRIES}:`, error instanceof Error ? error.message : String(error));
@@ -103,15 +108,13 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
           console.warn(`[Lesson: ${lessonId}] API overload detected on attempt ${attempt}. Retrying in ${RETRY_DELAY_MS / 1000}s...`);
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
         } else {
-          // Not a retryable error or max retries reached (attempt === MAX_RETRIES and error occurred)
           console.error(`[Lesson: ${lessonId}] Max retries reached or non-retryable error on attempt ${attempt}. Propagating error.`);
-          throw error; // Re-throw the error to be caught by the outer try-catch
+          throw error;
         }
       }
     }
 
     if (!generatedLessonData) {
-      // This fallback should now primarily be hit if generateLessonItems consistently returned undefined/null.
       console.error(`[Lesson: ${lessonId}] Failed to obtain generated lesson data after ${MAX_RETRIES} attempts.`)
       throw new Error(`Failed to generate lesson "${lessonId}" after ${MAX_RETRIES} attempts. The AI did not return structured data.`);
     }
@@ -126,9 +129,8 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     }
     return generatedLessonData;
 
-  } catch (error) { // OUTER CATCH for manifest read, file read, or propagated AI errors
+  } catch (error) {
     console.error(`[Lesson: ${lessonId}] Overall processing failed:`, error instanceof Error ? error.message : String(error));
-    // Re-throw the error so the page component can catch it and display a specific message.
     if (error instanceof Error) {
       throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
     }
