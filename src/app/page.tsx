@@ -121,7 +121,6 @@ export default function Home() {
           <ProgressBar
             progress={levelProgressPercentage}
             progressText={`${levelProgressPercentage}%`}
-            sidebarWidth={0} // This prop might be deprecated if bar is always relative to container
           />
           <LevelAndInformationBar
             className="mt-2"
@@ -140,7 +139,7 @@ export default function Home() {
           ) : selectedLesson ? (
             <div className="w-full max-w-4xl text-left mb-8">
               <h2 className="text-3xl font-bold text-foreground mb-3">{selectedLesson.title}</h2>
-              <p className="text-muted-foreground mb-6 text-lg">{selectedLesson.description}</p>
+              <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
               {isLessonUnlocked(selectedLesson.id) ? (
                 <Link href={`/lesson/${selectedLesson.id}`} passHref legacyBehavior>
                   <EightbitButton>
