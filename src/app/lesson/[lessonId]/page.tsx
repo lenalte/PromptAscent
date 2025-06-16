@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -82,20 +83,25 @@ export default function LessonPage() {
             lastLoadedLessonId.current = lessonId;
 
             try {
+                console.log(`[LessonPage] Attempting to load lesson: ${lessonId}`);
                 const loadedLesson = await getGeneratedLessonById(lessonId);
                 if (!loadedLesson) {
+                    console.warn(`[LessonPage] Lesson not found or failed to load: ${lessonId}`);
                     setErrorLoadingLesson("Lesson not found or failed to load.");
                     notFound();
                 } else {
+                    console.log(`[LessonPage] Lesson loaded: ${lessonId}, Title: ${loadedLesson.title}, Items: ${loadedLesson.items?.length ?? 0}`);
                     setLesson(loadedLesson);
                     const initialQueuedItems: QueuedLessonItem[] = (loadedLesson.items || []).map((item, index) => ({
                         ...item,
-                        key: `${item.id}-attempt-1-${index}-${Date.now()}`,
+                        key: `${item.id}-attempt-1-${index}`, // Stable key
                         originalItemId: item.id,
                         originalPointsAwarded: item.pointsAwarded,
                         currentAttemptNumber: 1,
                         currentPointsToAward: item.pointsAwarded,
                     }));
+                    console.log(`[LessonPage] Initial queued items created: ${initialQueuedItems.length}`);
+
 
                     // Initialize completion status for all items
                     const initialCompletionStatus: ItemCompletionStatus[] = (loadedLesson.items || []).map(item => ({
@@ -104,6 +110,8 @@ export default function LessonPage() {
                         wasCorrect: false,
                         attemptCount: 0
                     }));
+                    console.log(`[LessonPage] Initial completion status created: ${initialCompletionStatus.length}`);
+
 
                     // Reset all state in one batch - avoid multiple state updates
                     setLessonQueue(initialQueuedItems);
@@ -113,12 +121,14 @@ export default function LessonPage() {
                     setPoints(0);
                     setIsCurrentAttemptSubmitted(false);
                     setLastAnswerCorrectness(null);
+                    console.log(`[LessonPage] State initialized for lesson ${lessonId}. Current item set: ${!!(initialQueuedItems[0])}`);
                 }
             } catch (err) {
-                console.error("Error loading lesson:", err);
+                console.error("[LessonPage] Error loading lesson:", err);
                 setErrorLoadingLesson(err instanceof Error ? err.message : "An unknown error occurred while loading the lesson.");
             } finally {
                 setIsLoadingLesson(false);
+                console.log(`[LessonPage] Finished loading attempt for lesson: ${lessonId}`);
             }
         }
         loadLessonData();
@@ -126,6 +136,7 @@ export default function LessonPage() {
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean) => {
         if (!currentItem || currentItem.type === 'informationalSnippet') return;
+        console.log(`[LessonPage] handleAnswerSubmit called for item ${currentItem.originalItemId}. Correct: ${isCorrect}`);
 
         setLastAnswerCorrectness(isCorrect);
         setIsCurrentAttemptSubmitted(true);
@@ -137,6 +148,8 @@ export default function LessonPage() {
 
     const handleNextItem = useCallback(() => {
         if (!currentItem || isPending) return;
+        console.log(`[LessonPage] handleNextItem called for item ${currentItem.originalItemId}. Last answer correct: ${lastAnswerCorrectness}`);
+
 
         const itemJustProcessed = currentItem;
         let nextQueue = [...lessonQueue.slice(1)];
@@ -160,6 +173,7 @@ export default function LessonPage() {
                         wasCorrect: true,
                         attemptCount: newAttemptCount
                     };
+                    console.log(`[LessonPage] Item ${itemJustProcessed.originalItemId} marked as completed (correct). Attempt: ${newAttemptCount}`);
                 } else if (lastAnswerCorrectness === false) {
                     // Wrong answer
                     if (newAttemptCount < 3) {
@@ -171,13 +185,14 @@ export default function LessonPage() {
                             const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - (nextAttemptNumber - 1));
                             const retryItem: QueuedLessonItem = {
                                 ...originalBaseItem,
-                                key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}-${Date.now()}`,
+                                key: `${itemJustProcessed.originalItemId}-attempt-${nextAttemptNumber}`, // Stable key for retry
                                 originalItemId: itemJustProcessed.originalItemId,
                                 originalPointsAwarded: originalBaseItem.pointsAwarded,
                                 currentAttemptNumber: nextAttemptNumber,
                                 currentPointsToAward: newPointsToAward,
                             };
                             nextQueue = [...nextQueue, retryItem];
+                            console.log(`[LessonPage] Item ${itemJustProcessed.originalItemId} incorrect. Adding retry item (attempt ${nextAttemptNumber}). Key: ${retryItem.key}`);
                         }
 
                         // Update attempt count but don't mark as completed yet
@@ -193,6 +208,7 @@ export default function LessonPage() {
                             wasCorrect: false,
                             attemptCount: newAttemptCount
                         };
+                        console.log(`[LessonPage] Item ${itemJustProcessed.originalItemId} marked as completed (failed after 3 attempts).`);
                     }
                 }
             } else {
@@ -200,9 +216,10 @@ export default function LessonPage() {
                 updatedCompletionStatus[statusIndex] = {
                     ...currentStatus,
                     isCompleted: true,
-                    wasCorrect: true,
-                    attemptCount: 1
+                    wasCorrect: true, // Snippets are always 'correct' in terms of completion
+                    attemptCount: currentStatus.attemptCount + 1 // Increment attempt count
                 };
+                console.log(`[LessonPage] Item ${itemJustProcessed.originalItemId} (snippet) marked as completed.`);
             }
         }
 
@@ -212,29 +229,34 @@ export default function LessonPage() {
         setCurrentItem(nextQueue[0] || null);
         setIsCurrentAttemptSubmitted(false);
         setLastAnswerCorrectness(null);
+        console.log(`[LessonPage] State updated after handleNextItem. New queue length: ${nextQueue.length}. New current item: ${nextQueue[0]?.originalItemId ?? 'none'}`);
+
 
     }, [currentItem, lastAnswerCorrectness, lessonQueue, itemCompletionStatus, lesson, isPending]);
 
     const handleSnippetAcknowledged = useCallback(() => {
         if (!currentItem || currentItem.type !== 'informationalSnippet' || isPending) return;
+        console.log(`[LessonPage] handleSnippetAcknowledged called for item ${currentItem.originalItemId}`);
 
         const currentStatus = getItemCompletionStatus(currentItem.originalItemId);
 
         // Only add points if not already processed
-        if (!currentStatus?.isCompleted) {
+        if (!currentStatus?.isCompleted) { // Or check attemptCount if points should only be awarded once
             addPoints(currentItem.currentPointsToAward);
         }
 
-        // Set correctness state for consistency
+        // Set correctness state for consistency, snippets are always "correct" for progression
         setLastAnswerCorrectness(true);
-        setIsCurrentAttemptSubmitted(true);
+        setIsCurrentAttemptSubmitted(true); // Mark as submitted to trigger next item logic
 
-        // Use setTimeout to avoid nested state updates
+        // Use setTimeout to avoid nested state updates which can be problematic
+        // This ensures handleNextItem runs after the current render cycle completes.
         setTimeout(() => {
             handleNextItem();
         }, 0);
 
     }, [currentItem, addPoints, getItemCompletionStatus, handleNextItem, isPending]);
+
 
     // Reset item-specific state when current item changes
     useEffect(() => {
@@ -242,24 +264,35 @@ export default function LessonPage() {
             setIsCurrentAttemptSubmitted(false);
             setLastAnswerCorrectness(null);
         }
-    }, [currentItem?.key]);
+    }, [currentItem?.key]); // Rely on the unique key of the item
 
     const renderLessonItemComponent = () => {
-        if (!currentItem) return null;
+        if (!currentItem) {
+             if (!isLoadingLesson && totalUniqueLessonItems > 0) {
+                 // This case might indicate the queue is empty but lesson is not marked complete yet,
+                 // or an issue with setCurrentItem(nextQueue[0] || null)
+                 console.log("[LessonPage] renderLessonItemComponent: currentItem is null, but not loading and totalUniqueLessonItems > 0. Lesson complete status:", isLessonComplete());
+             }
+             return null;
+        }
 
-        const completedItems = itemCompletionStatus.filter(status => status.isCompleted);
-        const itemsCompletedCount = completedItems.length;
+        const itemsCompletedCount = itemCompletionStatus.filter(status => status.isCompleted).length;
         const currentItemStatus = getItemCompletionStatus(currentItem.originalItemId);
-        const isLastItemInQueueAndCompleted = lessonQueue.length === 1 && currentItemStatus?.isCompleted;
+
+        // isLastItem logic might need adjustment depending on how "last item" is defined
+        // For now, it's the last item in the *current queue*
+        const isEffectivelyLastItem = lessonQueue.length === 1 && (isLessonComplete() || (currentItemStatus?.isCompleted && itemsCompletedCount === totalUniqueLessonItems -1) ) ;
+
 
         const commonProps = {
             title: currentItem.title,
             pointsForCorrect: currentItem.currentPointsToAward,
-            pointsForIncorrect: (currentItem as any).pointsForIncorrect || 0,
+            pointsForIncorrect: (currentItem as any).pointsForIncorrect || 0, // Cast if pointsForIncorrect is not on all base types
             isAnswerSubmitted: isCurrentAttemptSubmitted,
-            isLastItem: isLastItemInQueueAndCompleted,
-            onNext: handleNextItem,
-            lessonPoints: points,
+            isLastItem: isEffectivelyLastItem,
+            onNext: handleNextItem, // This is onNextQuestion, onNextTask, onAcknowledged
+            lessonPoints: points, // Pass current lesson points
+            id: currentItem.originalItemId, // Pass original item ID
         };
 
         switch (currentItem.type) {
@@ -268,11 +301,10 @@ export default function LessonPage() {
                     <FreeResponseQuestion
                         key={currentItem.key}
                         {...commonProps}
-                        id={currentItem.originalItemId}
                         question={currentItem.question}
                         expectedAnswer={currentItem.expectedAnswer}
                         onAnswerSubmit={handleAnswerSubmit}
-                        onNextQuestion={handleNextItem}
+                        onNextQuestion={handleNextItem} // Explicitly map general 'onNext'
                     />
                 );
             case 'multipleChoice':
@@ -280,12 +312,11 @@ export default function LessonPage() {
                     <MultipleChoiceQuestion
                         key={currentItem.key}
                         {...commonProps}
-                        id={currentItem.originalItemId}
                         question={currentItem.question}
                         options={currentItem.options}
                         correctOptionIndex={currentItem.correctOptionIndex}
                         onAnswerSubmit={handleAnswerSubmit}
-                        onNextQuestion={handleNextItem}
+                        onNextQuestion={handleNextItem} // Explicitly map
                     />
                 );
             case 'informationalSnippet':
@@ -293,10 +324,10 @@ export default function LessonPage() {
                     <InformationalSnippet
                         key={currentItem.key}
                         {...commonProps}
-                        id={currentItem.originalItemId}
                         content={currentItem.content}
-                        pointsAwarded={currentItem.currentPointsToAward}
-                        onAcknowledged={handleSnippetAcknowledged}
+                        pointsAwarded={currentItem.currentPointsToAward} // Already in commonProps as pointsForCorrect
+                        onAcknowledged={handleSnippetAcknowledged} // Specific handler
+                        // onNext is already handleNextItem from commonProps, but onAcknowledged is more specific for snippets
                     />
                 );
             case 'promptingTask':
@@ -304,17 +335,17 @@ export default function LessonPage() {
                     <PromptingTask
                         key={currentItem.key}
                         {...commonProps}
-                        id={currentItem.originalItemId}
                         taskDescription={currentItem.taskDescription}
                         evaluationGuidance={currentItem.evaluationGuidance}
                         onAnswerSubmit={handleAnswerSubmit}
-                        onNextTask={handleNextItem}
+                        onNextTask={handleNextItem} // Explicitly map
                     />
                 );
             default:
+                // This should ideally not happen if types are correct
                 const _exhaustiveCheck: never = currentItem;
                 console.error("Unknown lesson item type:", _exhaustiveCheck);
-                return <div>Error: Unknown lesson item type.</div>;
+                return <div>Error: Unknown lesson item type. See console.</div>;
         }
     };
 
@@ -329,10 +360,14 @@ export default function LessonPage() {
         }
     };
 
-    const completedItems = itemCompletionStatus.filter(status => status.isCompleted);
-    const itemsCompletedCount = completedItems.length;
-    const progressPercentage = totalUniqueLessonItems > 0 ? (itemsCompletedCount / totalUniqueLessonItems) * 100 : 0;
+    const completedItemsCount = itemCompletionStatus.filter(status => status.isCompleted).length;
+    const progressPercentage = totalUniqueLessonItems > 0 ? (completedItemsCount / totalUniqueLessonItems) * 100 : 0;
     const showLessonComplete = isLessonComplete();
+
+    useEffect(() => {
+      console.log(`[LessonPage] Progress update: Completed ${completedItemsCount}/${totalUniqueLessonItems}. Percentage: ${progressPercentage}%. ShowCompleteScreen: ${showLessonComplete}`);
+    }, [completedItemsCount, totalUniqueLessonItems, progressPercentage, showLessonComplete]);
+
 
     if (isLoadingLesson) {
         return (
@@ -359,6 +394,7 @@ export default function LessonPage() {
     }
 
     if (!lesson) {
+        // This state should ideally be brief if errorLoadingLesson is false and isLoadingLesson is false
         return (
             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -388,7 +424,7 @@ export default function LessonPage() {
                     <div className="flex justify-between items-center mb-1">
                         <p className="text-sm text-muted-foreground">Lesson Progress</p>
                         <p className="text-sm font-medium text-primary">
-                            {itemsCompletedCount} / {totalUniqueLessonItems} items completed
+                            {completedItemsCount} / {totalUniqueLessonItems} items completed
                         </p>
                     </div>
                     <Progress value={progressPercentage} className="w-full h-2 [&>*]:bg-primary" />
@@ -397,7 +433,7 @@ export default function LessonPage() {
 
             <div className="w-full max-w-4xl">
                 {showLessonComplete ? (
-                    <LessonCompleteScreen points={points} lessonTitle={lesson.title} />
+                    <LessonCompleteScreen points={points} lessonTitle={lesson.title} lessonId={lesson.id} />
                 ) : currentItem ? (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
@@ -410,13 +446,24 @@ export default function LessonPage() {
                         {renderLessonItemComponent()}
                     </div>
                 ) : (
-                    totalUniqueLessonItems === 0 && !isLoadingLesson && (
+                    // This case means no currentItem, and lesson is not complete.
+                    // Could be an empty lesson, or an issue.
+                    totalUniqueLessonItems === 0 && !isLoadingLesson ? (
                         <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
                             This lesson has no content, or content generation failed.
                         </div>
+                    ) : (
+                         // If totalUniqueLessonItems > 0 but currentItem is null and not complete, it's an unexpected state.
+                         !isLoadingLesson && !showLessonComplete && (
+                            <div className="mt-6 p-4 border rounded-lg bg-destructive/20 border-destructive text-destructive-foreground text-center">
+                                An unexpected error occurred. No current item to display, but the lesson is not yet complete. Please try refreshing or returning to the lessons page.
+                                <p className="text-xs mt-2">(Debug: Queue length: {lessonQueue.length}, Completed: {completedItemsCount}/{totalUniqueLessonItems})</p>
+                            </div>
+                         )
                     )
                 )}
             </div>
         </main>
     );
 }
+
