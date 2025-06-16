@@ -66,12 +66,9 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-  // Reset internal component state when the `id` prop changes (new item or new attempt of same item).
-  useEffect(() => {
-    form.reset({ userAnswer: '' });
-    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
-    setShowHint(false);
-  }, [id, question, form]); // id here refers to originalItemId if that's what parent passes
+  // Removed the useEffect that explicitly called form.reset() and reset other state.
+  // The component relies on being re-mounted by the parent (due to key change)
+  // for its form and state to be reset to initial values.
 
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
