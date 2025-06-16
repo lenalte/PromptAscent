@@ -6,7 +6,7 @@ interface EightbitButtonProps {
     children: React.ReactNode;
     as?: 'button' | 'a';
     href?: string;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => void; // Added event type
     className?: string;
 }
 
@@ -24,7 +24,7 @@ export function EightbitButton({
     text-[hsl(var(--background))]
     px-4
     py-2
-    hover:bg-[hsl(var(--primary-foreground))]
+    hover:bg-[#D0B3FF]
     hover:text-[hsl(var(--background))]
     
     transition-all
@@ -53,7 +53,7 @@ export function EightbitButton({
           -top-[6px]
           h-[calc(100%+12px)]
           border-t-[6px] border-b-[6px] border-[hsl(var(--foreground))]
-          hover:border-[hsl(var(--primary-foreground))]
+          hover:border-[#D0B3FF]
           border-solid
           z-10
         "
@@ -70,7 +70,7 @@ export function EightbitButton({
           w-[calc(100%+12px)]
           border-l-[6px] border-r-[6px] border-[hsl(var(--foreground))]
           border-solid
-          hover:border-[hsl(var(--primary-foreground))]
+          hover:border-[#D0B3FF]
           z-10
         "
                 aria-hidden="true"
