@@ -4,7 +4,7 @@
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useRef } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/index';
+import { auth, db } from '../lib/firebase'; // Ensure db is correctly imported if used here, or pass to service
 import {
   getUserProgress,
   createUserProgressDocument,
@@ -146,7 +146,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     } finally {
       setIsLoadingProgress(false);
     }
-  }, [currentUser, userProgress]);
+  }, [currentUser, userProgress, db]);
 
   const completeLessonAndProceed = useCallback(async (lessonId: string, pointsEarnedThisLesson: number) => {
     if (!currentUser || !db) {
@@ -168,7 +168,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         newTotalPoints
       );
       setUserProgress(updatedProgress);
-      console.log(`[UserProgressContext] Lesson ${lessonId} completed for UID ${currentUser.uid}. Points updated. Next lesson: ${newNextLessonId}`);
+      console.log(`[UserProgressContext] Lesson ${lessonId} completed for UID ${currentUser.uid}. Points updated. Next lesson: ${newNextLessonId}. Updated context progress:`, updatedProgress);
       return newNextLessonId;
     } catch (error) {
       console.error(`[UserProgressContext] Error completing lesson ${lessonId} for UID ${currentUser.uid}:`, error);
@@ -176,7 +176,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     } finally {
       setIsLoadingProgress(false);
     }
-  }, [currentUser, userProgress]);
+  }, [currentUser, userProgress, db]);
 
   const signUpWithEmail = async (email: string, password: string, username: string): Promise<User | null> => {
     if (!auth) {

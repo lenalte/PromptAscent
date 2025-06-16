@@ -2,13 +2,13 @@
 "use client";
 
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react'; // Added useState
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Trophy, HomeIcon, ArrowRight } from 'lucide-react';
+import { CheckCircle, Trophy, HomeIcon, ArrowRight, Loader2 } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Corrected import
 
 interface LessonCompleteScreenProps {
   points: number; // Points earned in *this* lesson
@@ -17,40 +17,59 @@ interface LessonCompleteScreenProps {
 }
 
 export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ points, lessonTitle, lessonId }) => {
-  const { completeLessonAndProceed, userProgress, isLoadingProgress } = useUserProgress();
+  const { completeLessonAndProceed, isLoadingProgress: isContextLoading } = useUserProgress();
   const router = useRouter();
+  const [actualNextLessonId, setActualNextLessonId] = useState<string | null>(null);
+  const [isProcessingCompletion, setIsProcessingCompletion] = useState(true);
 
   useEffect(() => {
-    // This effect now primarily serves to automatically mark the lesson as complete
-    // and get the next lesson ID. The actual point addition is handled by completeLessonAndProceed.
-    const markLessonComplete = async () => {
-      if (lessonId && points >= 0) { // points can be 0
-        // We don't need to call addPointsToTotal separately if completeLessonAndProceed handles it.
-        // The `points` prop here is the points earned *in this lesson instance*.
-        // `completeLessonAndProceed` will use this to update the total.
+    const markLessonCompleteAndGetNext = async () => {
+      if (!lessonId || points < 0) {
+        console.warn("[LessonCompleteScreen] Invalid lessonId or points, cannot process completion.");
+        setIsProcessingCompletion(false);
+        return;
+      }
+
+      setIsProcessingCompletion(true);
+      try {
         console.log(`[LessonCompleteScreen] Marking lesson ${lessonId} as complete, points earned: ${points}`);
-        // No need to await here if we navigate immediately, or handle loading state
-        completeLessonAndProceed(lessonId, points);
+        const nextId = await completeLessonAndProceed(lessonId, points);
+        setActualNextLessonId(nextId); // Store the direct result
+        console.log(`[LessonCompleteScreen] Next lesson ID determined: ${nextId}`);
+      } catch (error) {
+        console.error("[LessonCompleteScreen] Error during lesson completion process:", error);
+        // Optionally set actualNextLessonId to a specific state or show a toast
+      } finally {
+        setIsProcessingCompletion(false);
       }
     };
 
-    markLessonComplete();
+    markLessonCompleteAndGetNext();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonId, points]); // completeLessonAndProceed is stable due to useCallback
+  }, [lessonId, points]); // completeLessonAndProceed is memoized in context
 
-  const handleProceedToNextLesson = async () => {
-      if (isLoadingProgress) return;
-      // completeLessonAndProceed might have already been called by useEffect
-      // We might want to ensure it's called if not, or just rely on its result for nextLessonId
-      const nextLessonId = userProgress?.currentLessonId; // This should be the *new* current lesson after completion
+  const handleProceed = () => {
+      if (isProcessingCompletion || isContextLoading) return;
 
-      if (nextLessonId && nextLessonId !== lessonId) {
-        router.push(`/lesson/${nextLessonId}`);
+      if (actualNextLessonId) {
+        router.push(`/lesson/${actualNextLessonId}`);
       } else {
-        // If no next lesson, or if currentLessonId hasn't updated yet, go home
+        // If no next lesson ID (e.g., it's the last lesson, or an error occurred setting it)
+        console.log("[LessonCompleteScreen] No specific next lesson ID, navigating to home.");
         router.push('/');
       }
   };
+
+  const getButtonText = () => {
+    if (isProcessingCompletion || isContextLoading) return "Saving...";
+    return actualNextLessonId ? "Next Lesson" : "Back to Lessons Hub";
+  }
+
+  const getButtonIcon = () => {
+    if (isProcessingCompletion || isContextLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
+    return actualNextLessonId ? <ArrowRight className="ml-2 h-4 w-4" /> : <HomeIcon className="mr-2 h-4 w-4" />;
+  }
+
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-green-500 bg-green-50">
@@ -72,7 +91,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
           </p>
         </div>
          <p className="text-sm text-muted-foreground">
-             Your total score has been updated.
+             Your total score and progress have been updated.
          </p>
       </CardContent>
        <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
@@ -81,11 +100,13 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
                    <HomeIcon className="mr-2 h-4 w-4" /> Back to Lessons Hub
                 </Button>
            </Link>
-           <Button onClick={handleProceedToNextLesson} disabled={isLoadingProgress}>
-                {isLoadingProgress ? "Saving..." : "Next Lesson"}
-                {!isLoadingProgress && <ArrowRight className="ml-2 h-4 w-4" />}
+           {/* This button will now either go to next lesson or back home if no next lesson */}
+           <Button onClick={handleProceed} disabled={isProcessingCompletion || isContextLoading}>
+                {getButtonIcon()}
+                {getButtonText()}
            </Button>
        </CardFooter>
     </Card>
   );
 };
+
