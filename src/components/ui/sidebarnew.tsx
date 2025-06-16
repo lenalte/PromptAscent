@@ -169,10 +169,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="w-64 sidebar-background h-full pr-3 pl-2 py-4 overflow-y-auto transition-all duration-300 ease-in-out">
                     {activeCategory === 'profil' && (
                         <div>
-                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4">Profil &amp; Lektionen</h2>
-                            {currentUser && !currentUser.isAnonymous && (
-                                <p className="text-xs text-foreground/70 px-2 mb-3 truncate">Logged in as: {currentUser.email}</p>
-                            )}
+                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4 truncate">
+                                {currentUser && !currentUser.isAnonymous && currentUser.email ? currentUser.email : "Profil & Lektionen"}
+                            </h2>
                             {isLoadingLessons && (
                                 <div className={`flex items-center p-2 rounded-lg text-foreground`}>
                                     <Loader2 className="h-5 w-5 animate-spin shrink-0" />
