@@ -13,10 +13,11 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2, UserPlus, User as UserIcon } from 'lucide-react'; // Added UserIcon
 import { useToast } from "@/hooks/use-toast";
 
 const registrationSchema = z.object({
+  username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string(),
@@ -37,6 +38,7 @@ export default function RegistrationForm() {
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -47,7 +49,7 @@ export default function RegistrationForm() {
     setIsLoading(true);
     setError(null);
     try {
-      await signUpWithEmail(data.email, data.password);
+      await signUpWithEmail(data.email, data.password, data.username); // Pass username
       toast({
         title: "Registration Successful",
         description: "Your account has been created. Welcome!",
@@ -84,6 +86,22 @@ export default function RegistrationForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor="username">Username</Label>
+                  <FormControl>
+                    <div className="relative">
+                      <UserIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input id="username" placeholder="your_username" {...field} disabled={isLoading} className="pl-8" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"

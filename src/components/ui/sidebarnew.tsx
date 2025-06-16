@@ -45,8 +45,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     onContentToggle,
     onLessonSelect,
     currentSelectedLessonId,
-    currentLessonIdFromProgress, // Use this for default highlighting
-    unlockedLessonIds = [],      // Default to empty array if not provided
+    currentLessonIdFromProgress, 
+    unlockedLessonIds = [],      
     isAuthenticated
 }) => {
     const [isContentOpen, setIsContentOpen] = useState(initialContentOpen);
@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [lessons, setLessons] = useState<LessonListing[]>([]);
     const [isLoadingLessons, setIsLoadingLessons] = useState(true);
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
-    const { logOut, currentUser } = useUserProgress();
+    const { logOut, currentUser, userProgress } = useUserProgress(); // Added userProgress
 
 
     useEffect(() => {
@@ -101,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
 
     const isLessonEffectivelyUnlocked = (lessonId: string) => {
-        if (currentUser?.isAnonymous) return true; // Anonymous users can access all for now
+        if (currentUser?.isAnonymous) return true; 
         return unlockedLessonIds.includes(lessonId);
     };
 
@@ -113,6 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2);
     const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
 
+    const userDisplayName = userProgress?.username || (currentUser && !currentUser.isAnonymous && currentUser.email) || "Profil & Lektionen";
 
     return (
         <div className="flex h-screen fixed top-0 left-0 z-40">
@@ -169,8 +170,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="w-64 sidebar-background h-full pr-3 pl-2 py-4 overflow-y-auto transition-all duration-300 ease-in-out">
                     {activeCategory === 'profil' && (
                         <div>
-                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4 truncate">
-                                {currentUser && !currentUser.isAnonymous && currentUser.email ? currentUser.email : "Profil & Lektionen"}
+                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4 truncate" title={userDisplayName}>
+                                {userDisplayName}
                             </h2>
                             {isLoadingLessons && (
                                 <div className={`flex items-center p-2 rounded-lg text-foreground`}>

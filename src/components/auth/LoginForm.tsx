@@ -13,11 +13,12 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, LogIn } from 'lucide-react';
+import { Loader2, LogIn, User as UserIcon } from 'lucide-react'; // Added UserIcon
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
+  email: z.string().email({ message: "Invalid email address." }), // Or make email optional if username can be used for login
+  // username: z.string().min(1, { message: "Username is required." }), // If username can be used for login instead of email
   password: z.string().min(1, { message: "Password is required." }),
 });
 
@@ -34,6 +35,7 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
+      // username: '',
       password: '',
     },
   });
@@ -42,6 +44,9 @@ export default function LoginForm() {
     setIsLoading(true);
     setError(null);
     try {
+      // Firebase signInWithEmailAndPassword uses email.
+      // If username login is intended, a lookup for email by username would be needed here.
+      // For now, we'll proceed with email-based login.
       await signInWithEmail(data.email, data.password);
       toast({
         title: "Login Successful",
@@ -77,6 +82,24 @@ export default function LoginForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/*
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor="username">Username</Label>
+                  <FormControl>
+                    <div className="relative">
+                      <UserIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input id="username" placeholder="your_username" {...field} disabled={isLoading} className="pl-8" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            */}
             <FormField
               control={form.control}
               name="email"
