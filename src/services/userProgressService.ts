@@ -16,7 +16,7 @@ const USERS_COLLECTION = 'users';
 
 export async function getUserProgress(userId: string): Promise<UserProgressData | null> {
   if (!db) {
-    console.error("[userProgressService.getUserProgress] Firestore (db) is not available for user:", userId);
+    console.error("[SERVER LOG] [userProgressService.getUserProgress] Firestore (db) is not available for user:", userId);
     throw new Error("Firestore not initialized");
   }
   try {
@@ -35,55 +35,51 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : ["lesson1"], // Default to lesson1 unlocked
       };
     } else {
-      console.log(`[userProgressService.getUserProgress] No progress document found for user ${userId}. Will attempt to create one.`);
+      console.log(`[SERVER LOG] [userProgressService.getUserProgress] No progress document found for user ${userId}. Will attempt to create one.`);
       return null;
     }
   } catch (error) {
-    console.error(`[userProgressService.getUserProgress] Error fetching user progress for UID: ${userId}:`, error);
+    console.error(`[SERVER LOG] [userProgressService.getUserProgress] Error fetching user progress for UID: ${userId}:`, error);
     throw error;
   }
 }
 
 export async function createUserProgressDocument(userId: string, initialData?: Partial<Omit<UserProgressData, 'userId'>>): Promise<UserProgressData> {
   if (!db) {
-    console.error("[userProgressService.createUserProgressDocument] Firestore (db) is not available for user:", userId);
+    console.error("[SERVER LOG] [userProgressService.createUserProgressDocument] Firestore (db) is not available for user:", userId);
     throw new Error("Firestore not initialized");
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const defaultLessonId = "lesson1"; // Default starting lesson
 
-    // Prepare the data structure to be set, ensuring defaults
     const dataToSet: Omit<UserProgressData, 'userId'> & { username?: string } = {
       totalPoints: initialData?.totalPoints ?? 0,
       currentLessonId: initialData?.currentLessonId ?? defaultLessonId,
       completedLessons: initialData?.completedLessons ?? [],
-      unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0 
-        ? initialData.unlockedLessons 
+      unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
+        ? initialData.unlockedLessons
         : [defaultLessonId],
-      username: initialData?.username, // Will be undefined if not provided
+      username: initialData?.username,
     };
-    
-    // Firestore does not allow 'undefined' values.
-    // Create a clean object for Firestore, omitting 'username' if it's undefined.
+
     const firestoreData: { [key: string]: any } = {
         totalPoints: dataToSet.totalPoints,
         currentLessonId: dataToSet.currentLessonId,
         completedLessons: dataToSet.completedLessons,
         unlockedLessons: dataToSet.unlockedLessons,
     };
-    if (dataToSet.username) { // Only add username if it's defined
+    if (dataToSet.username) {
         firestoreData.username = dataToSet.username;
     }
 
     await setDoc(userDocRef, firestoreData);
-    console.log(`[userProgressService.createUserProgressDocument] User progress document created for ${userId} with data:`, firestoreData);
-    
-    // Return the full UserProgressData structure including userId and potentially undefined username
+    console.log(`[SERVER LOG] [userProgressService.createUserProgressDocument] User progress document created for ${userId} with data:`, firestoreData);
+
     return { userId, ...dataToSet };
 
   } catch (error) {
-    console.error(`[userProgressService.createUserProgressDocument] Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
+    console.error(`[SERVER LOG] [userProgressService.createUserProgressDocument] Error creating user progress document for UID: ${userId} with initialData ${JSON.stringify(initialData)}:`, error);
     throw error;
   }
 }
@@ -91,7 +87,7 @@ export async function createUserProgressDocument(userId: string, initialData?: P
 
 export async function updateTotalPointsInFirestore(userId: string, newTotalPoints: number): Promise<void> {
   if (!db) {
-    console.error("[userProgressService.updateTotalPointsInFirestore] Firestore (db) is not available for user:", userId);
+    console.error("[SERVER LOG] [userProgressService.updateTotalPointsInFirestore] Firestore (db) is not available for user:", userId);
     throw new Error("Firestore not initialized");
   }
   try {
@@ -99,9 +95,9 @@ export async function updateTotalPointsInFirestore(userId: string, newTotalPoint
     await updateDoc(userDocRef, {
       totalPoints: newTotalPoints,
     });
-    console.log(`[userProgressService.updateTotalPointsInFirestore] Total points updated to ${newTotalPoints} for user ${userId}`);
+    console.log(`[SERVER LOG] [userProgressService.updateTotalPointsInFirestore] Total points updated to ${newTotalPoints} for user ${userId}`);
   } catch (error) {
-    console.error(`[userProgressService.updateTotalPointsInFirestore] Error updating total points for UID: ${userId}:`, error);
+    console.error(`[SERVER LOG] [userProgressService.updateTotalPointsInFirestore] Error updating total points for UID: ${userId}:`, error);
     throw error;
   }
 }
@@ -112,26 +108,25 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     throw new Error("Firestore not initialized");
   }
   console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] Attempting to complete lesson ${completedLessonId} for user ${userId}. New total points will be ${newTotalPointsForUser}.`);
-  
+
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const allLessonsManifest = await getAvailableLessons(); 
-    
-    // CRITICAL DIAGNOSTIC LOG
+    const allLessonsManifest = await getAvailableLessons();
+
     console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] DIAGNOSTIC: Fetched allLessonsManifest. Length: ${allLessonsManifest?.length ?? 'undefined/null'}`);
     if (!allLessonsManifest || allLessonsManifest.length === 0) {
       console.error(`[SERVER LOG] [userProgressService.completeLessonInFirestore] CRITICAL ERROR: allLessonsManifest is null or empty after getAvailableLessons(). Cannot determine next lesson.`);
       const updatesOnError: { [key: string]: any | FieldValue } = {
         completedLessons: arrayUnion(completedLessonId),
         totalPoints: newTotalPointsForUser,
-        currentLessonId: completedLessonId, 
+        currentLessonId: completedLessonId,
       };
       await updateDoc(userDocRef, updatesOnError);
       const updatedUserProgressOnError = await getUserProgress(userId);
       if (!updatedUserProgressOnError) throw new Error(`Failed to fetch updated user progress for ${userId} after manifest error.`);
       return { nextLessonId: null, updatedProgress: updatedUserProgressOnError };
     }
-    
+
     console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] DIAGNOSTIC: completedLessonId = "${completedLessonId}"`);
     const manifestLessonIds = allLessonsManifest.map(l => l.id);
     console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] DIAGNOSTIC: allLessonsManifest IDs (length ${manifestLessonIds.length}): [${manifestLessonIds.join(', ')}]`);
@@ -165,13 +160,13 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
 
     if (nextLessonId) {
       updates.currentLessonId = nextLessonId;
-      updates.unlockedLessons = arrayUnion(nextLessonId); 
+      updates.unlockedLessons = arrayUnion(nextLessonId);
       console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] PREPARED FOR BATCH: Unlocking lesson: "${nextLessonId}" and setting as current. Adding to completed: "${completedLessonId}"`);
     } else {
-      updates.currentLessonId = completedLessonId; 
-      console.log(`[SERVER LOG] [userProgressService.completeLessoInFirestore] PREPARED FOR BATCH: No next lesson. CurrentLessonId becomes/stays "${completedLessonId}". Adding to completed: "${completedLessonId}"`);
+      updates.currentLessonId = completedLessonId;
+      console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] PREPARED FOR BATCH: No next lesson. CurrentLessonId becomes/stays "${completedLessonId}". Adding to completed: "${completedLessonId}"`);
     }
-    
+
     batch.update(userDocRef, updates);
     await batch.commit();
     console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] Firestore batch commit successful for user ${userId}.`);
@@ -179,8 +174,8 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
     const postCommitSnap = await getDoc(userDocRef); // Re-fetch to confirm write
     if (postCommitSnap.exists()) {
         const postCommitData = postCommitSnap.data();
-        console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] IMMEDIATE POST-COMMIT CHECK for ${userId}: 
-          currentLessonId: ${postCommitData.currentLessonId}, 
+        console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] IMMEDIATE POST-COMMIT CHECK for ${userId}:
+          currentLessonId: ${postCommitData.currentLessonId},
           unlockedLessons: [${(postCommitData.unlockedLessons || []).join(', ')}],
           completedLessons: [${(postCommitData.completedLessons || []).join(', ')}],
           totalPoints: ${postCommitData.totalPoints}
@@ -194,9 +189,9 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
         console.error(`[SERVER LOG] [userProgressService.completeLessonInFirestore] Failed to fetch updated user progress for ${userId} after lesson completion (via getUserProgress).`);
         throw new Error(`Failed to fetch updated user progress for ${userId}`);
     }
-    
+
     console.log(`[SERVER LOG] [userProgressService.completeLessonInFirestore] Data returned by getUserProgress for context update: nextLessonId: "${nextLessonId}", updatedProgress:`, JSON.stringify(updatedUserProgress, null, 2));
-    return { nextLessonId, updatedProgress };
+    return { nextLessonId, updatedProgress: updatedUserProgress };
 
   } catch (error) {
     console.error(`[SERVER LOG] [userProgressService.completeLessonInFirestore] Error for UID: ${userId}, lesson: ${completedLessonId}:`, error);
@@ -206,22 +201,21 @@ export async function completeLessonInFirestore(userId: string, completedLessonI
 
 export async function updateUserDocument(userId: string, dataToUpdate: Partial<Omit<UserProgressData, 'userId'>>): Promise<void> {
   if (!db) {
-    console.error("[userProgressService.updateUserDocument] Firestore (db) is not available for user:", userId);
+    console.error("[SERVER LOG] [userProgressService.updateUserDocument] Firestore (db) is not available for user:", userId);
     throw new Error("Firestore not initialized");
   }
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
-    
+
     const cleanDataToUpdate: { [key: string]: any } = { ...dataToUpdate };
-    // Ensure username is not set to undefined if it's part of dataToUpdate but has no value
     if ('username' in cleanDataToUpdate && cleanDataToUpdate.username === undefined) {
-       delete cleanDataToUpdate.username; // Remove it so Firestore doesn't see 'undefined'
+       delete cleanDataToUpdate.username;
     }
 
     await updateDoc(userDocRef, cleanDataToUpdate);
-    console.log(`[userProgressService.updateUserDocument] User document updated for ${userId} with data:`, cleanDataToUpdate);
+    console.log(`[SERVER LOG] [userProgressService.updateUserDocument] User document updated for ${userId} with data:`, cleanDataToUpdate);
   } catch (error) {
-    console.error(`[userProgressService.updateUserDocument] Error updating user document for UID: ${userId}:`, error);
+    console.error(`[SERVER LOG] [userProgressService.updateUserDocument] Error updating user document for UID: ${userId}:`, error);
     throw error;
   }
 }
