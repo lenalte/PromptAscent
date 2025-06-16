@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google'; // Corrected import path if needed
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"; // Import Toaster
-import { PointsProvider } from '@/context/PointsContext'; // Import PointsProvider
+import { UserProgressProvider } from '@/context/UserProgressContext'; // Import UserProgressProvider
 import { JetBrains_Mono } from 'next/font/google';
 
 
@@ -36,10 +36,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
-        <PointsProvider> {/* Wrap children with PointsProvider */}
+        <UserProgressProvider> {/* Wrap children with UserProgressProvider */}
           {children}
           <Toaster /> {/* Add Toaster here */}
-        </PointsProvider>
+        </UserProgressProvider>
       </body>
     </html>
   );
