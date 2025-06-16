@@ -19,37 +19,30 @@ interface LessonManifestEntry {
   contentFileName: string;
 }
 
-// Cache for lesson manifest to avoid repeated file reads in dev
-let manifestCache: LessonManifestEntry[] | null = null;
-
 async function getLessonManifest(): Promise<LessonManifestEntry[]> {
-  console.log('[getLessonManifest] Attempting to get lesson manifest.');
-  if (process.env.NODE_ENV === 'development' && manifestCache) {
-    console.log(`[getLessonManifest] Returning cached manifest. Length: ${manifestCache.length}`);
-    return manifestCache;
-  }
+  console.log('[SERVER LOG] [getLessonManifest] Attempting to read lesson manifest.');
+  console.log(`[SERVER LOG] [getLessonManifest] Reading from path: ${LESSON_MANIFEST_PATH}`);
   try {
-    console.log(`[getLessonManifest] Reading lesson manifest from path: ${LESSON_MANIFEST_PATH}`);
     const manifestContent = await fs.readFile(LESSON_MANIFEST_PATH, 'utf-8');
     const manifest = JSON.parse(manifestContent) as LessonManifestEntry[];
-    console.log(`[getLessonManifest] Successfully parsed lesson manifest. Number of entries: ${manifest.length}`);
-    if (process.env.NODE_ENV === 'development') {
-      manifestCache = manifest;
+    console.log(`[SERVER LOG] [getLessonManifest] Successfully parsed lesson manifest. Number of entries: ${manifest.length}`);
+    if (manifest.length === 0) {
+        console.warn("[SERVER LOG] [getLessonManifest] WARNING: Parsed manifest is empty.");
     }
     return manifest;
   } catch (error) {
-    console.error("[getLessonManifest] CRITICAL: Failed to read or parse lesson manifest:", error);
+    console.error("[SERVER LOG] [getLessonManifest] CRITICAL: Failed to read or parse lesson manifest:", error);
     // Return empty array on error to allow app to continue but highlight the issue.
     return [];
   }
 }
 
 export async function getAvailableLessons(): Promise<Omit<Lesson, 'items'>[]> {
-  console.log('[getAvailableLessons] Attempting to get available lessons.');
+  console.log('[SERVER LOG] [getAvailableLessons] Attempting to get available lessons.');
   const manifest = await getLessonManifest();
-  console.log(`[getAvailableLessons] Manifest received in getAvailableLessons. Length: ${manifest.length}`);
+  console.log(`[SERVER LOG] [getAvailableLessons] Manifest received in getAvailableLessons. Length: ${manifest.length}`);
   if (manifest.length === 0) {
-    console.warn("[getAvailableLessons] WARNING: The lesson manifest is empty. This will lead to issues in lesson progression and display.");
+    console.warn("[SERVER LOG] [getAvailableLessons] WARNING: The lesson manifest is empty. This will lead to issues in lesson progression and display.");
   }
   return manifest.map(({ id, title, description }) => ({ id, title, description }));
 }
@@ -67,7 +60,7 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
   const lessonEntry = manifest.find(l => l.id === lessonId);
 
   if (!lessonEntry) {
-    console.warn(`[getGeneratedLessonById] Lesson with ID "${lessonId}" not found in manifest.`);
+    console.warn(`[SERVER LOG] [getGeneratedLessonById] Lesson with ID "${lessonId}" not found in manifest.`);
     throw new Error(`Lesson with ID "${lessonId}" not found in manifest.`);
   }
 
@@ -81,7 +74,7 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
-        console.log(`[Lesson: ${lessonId}] Attempt ${attempt}/${MAX_RETRIES} to generate lesson items...`);
+        console.log(`[SERVER LOG] [Lesson: ${lessonId}] Attempt ${attempt}/${MAX_RETRIES} to generate lesson items...`);
         generatedLessonData = await generateLessonItems({
           lessonId: lessonEntry.id,
           lessonTitle: lessonEntry.title,
@@ -90,37 +83,37 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
         });
 
         if (generatedLessonData) {
-          console.log(`[Lesson: ${lessonId}] Successfully generated lesson items on attempt ${attempt}.`);
+          console.log(`[SERVER LOG] [Lesson: ${lessonId}] Successfully generated lesson items on attempt ${attempt}.`);
           break;
         } else {
-          console.warn(`[Lesson: ${lessonId}] Attempt ${attempt} - generateLessonItems returned no data but did not throw.`);
+          console.warn(`[SERVER LOG] [Lesson: ${lessonId}] Attempt ${attempt} - generateLessonItems returned no data but did not throw.`);
           if (attempt === MAX_RETRIES) {
             throw new Error(`AI returned no data for lesson "${lessonId}" after ${MAX_RETRIES} attempts.`);
           }
         }
       } catch (error) {
-        console.error(`[Lesson: ${lessonId}] Error on attempt ${attempt}/${MAX_RETRIES}:`, error instanceof Error ? error.message : String(error));
+        console.error(`[SERVER LOG] [Lesson: ${lessonId}] Error on attempt ${attempt}/${MAX_RETRIES}:`, error instanceof Error ? error.message : String(error));
         if (attempt < MAX_RETRIES && error instanceof Error &&
           (error.message.includes('503') ||
             error.message.toLowerCase().includes('service unavailable') ||
             error.message.toLowerCase().includes('model is overloaded') ||
             error.message.toLowerCase().includes('try again later'))) {
-          console.warn(`[Lesson: ${lessonId}] API overload detected on attempt ${attempt}. Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+          console.warn(`[SERVER LOG] [Lesson: ${lessonId}] API overload detected on attempt ${attempt}. Retrying in ${RETRY_DELAY_MS / 1000}s...`);
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
         } else {
-          console.error(`[Lesson: ${lessonId}] Max retries reached or non-retryable error on attempt ${attempt}. Propagating error.`);
+          console.error(`[SERVER LOG] [Lesson: ${lessonId}] Max retries reached or non-retryable error on attempt ${attempt}. Propagating error.`);
           throw error;
         }
       }
     }
 
     if (!generatedLessonData) {
-      console.error(`[Lesson: ${lessonId}] Failed to obtain generated lesson data after ${MAX_RETRIES} attempts.`)
+      console.error(`[SERVER LOG] [Lesson: ${lessonId}] Failed to obtain generated lesson data after ${MAX_RETRIES} attempts.`)
       throw new Error(`Failed to generate lesson "${lessonId}" after ${MAX_RETRIES} attempts. The AI did not return structured data.`);
     }
 
     if (!generatedLessonData.items || generatedLessonData.items.length === 0) {
-      console.error(`[Lesson: ${lessonId}] AI returned empty lesson items after successful generation call. Output:`, generatedLessonData);
+      console.error(`[SERVER LOG] [Lesson: ${lessonId}] AI returned empty lesson items after successful generation call. Output:`, generatedLessonData);
       throw new Error(`AI failed to return valid and non-empty lesson items for lesson "${lessonId}" after retries.`);
     }
 
@@ -130,7 +123,7 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     return generatedLessonData;
 
   } catch (error) {
-    console.error(`[Lesson: ${lessonId}] Overall processing failed:`, error instanceof Error ? error.message : String(error));
+    console.error(`[SERVER LOG] [Lesson: ${lessonId}] Overall processing failed:`, error instanceof Error ? error.message : String(error));
     if (error instanceof Error) {
       throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
     }
