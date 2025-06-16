@@ -26,7 +26,7 @@ const ProfilIcon = ({ isActive }: { isActive?: boolean }) => (
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
         className={cn(
             "h-8 w-8 shrink-0",
-            isActive ? "text-primary" : "text-[hsl(var(--sidebar-foreground))]"
+            isActive ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
         )}
         viewBox="0 0 790.000000 790.000000"
         preserveAspectRatio="xMidYMid meet">
@@ -43,7 +43,7 @@ const ProfilIcon = ({ isActive }: { isActive?: boolean }) => (
 const LeaderboardIcon = ({ isActive }: { isActive?: boolean }) => (
     <BarChart3 className={cn(
         "h-8 w-8 shrink-0",
-        isActive ? "text-primary" : "text-[hsl(var(--sidebar-foreground))]"
+        isActive ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
     )} />
 );
 
@@ -155,18 +155,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                     {!isAuthenticated ? (
                         <>
                             <Link href="/auth/login" passHref legacyBehavior>
-                                <Button variant="ghost" size="icon" className="text-foreground hover:bg-sidebar-accent" aria-label="Login">
+                                <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Login">
                                     <LogIn />
                                 </Button>
                             </Link>
                             <Link href="/auth/register" passHref legacyBehavior>
-                                <Button variant="ghost" size="icon" className="text-foreground hover:bg-sidebar-accent" aria-label="Register">
+                                <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Register">
                                     <UserPlus />
                                 </Button>
                             </Link>
                         </>
                     ) : (
-                        <Button variant="ghost" size="icon" onClick={logOut} className="text-foreground hover:bg-sidebar-accent" aria-label="Logout">
+                        <Button variant="ghost" size="icon" onClick={logOut} className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Logout">
                             <LogOut />
                         </Button>
                     )}
@@ -271,3 +271,5 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
+
+    
