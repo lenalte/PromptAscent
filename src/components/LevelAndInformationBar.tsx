@@ -19,15 +19,15 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebar
             >
                 <div>
                     {/* Display current level title or fallback */}
-                    <span className="text-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
+                    <span className="text-primary-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
                 </div>
 
                 <div className="flex space-x-8">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center">
-                            <span className="text-foreground">{totalPoints} km</span>
+                            <span className="text-primary-foreground">{totalPoints} km</span>
                         </div>
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground" viewBox="0 0 790.000000 790.000000"
+                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary-foreground" viewBox="0 0 790.000000 790.000000"
                             preserveAspectRatio="xMidYMid meet">
                             <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
                                 fill="currentColor" stroke="none">
@@ -42,8 +42,8 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebar
                         </svg>
                     </div>
                     <div className="flex items-center">
-                        <span className="text-yellow-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-foreground" viewBox="0 0 790.000000 790.000000"
+                        <span className="text-primary-foreground">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary-foreground" viewBox="0 0 790.000000 790.000000"
                                 preserveAspectRatio="xMidYMid meet">
                                 <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
                                     fill="currentColor" stroke="none">
