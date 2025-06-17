@@ -184,11 +184,11 @@ export default function Home() {
         {/* Staircase Divs Section */}
         <div className="flex w-full items-end">
           <div className="flex-1 h-16 bg-foreground"></div>
-          <div className="flex-1 h-24 bg-foreground"></div>
           <div className="flex-1 h-32 bg-foreground"></div>
-          <div className="flex-1 h-40 bg-foreground"></div>
           <div className="flex-1 h-48 bg-foreground"></div>
-          <div className="flex-1 h-56 bg-foreground"></div>
+          <div className="flex-1 h-64 bg-foreground"></div>
+          <div className="flex-1 h-80 bg-foreground"></div>
+          <div className="flex-1 h-96 bg-foreground"></div>
         </div>
       </div>
     </>
