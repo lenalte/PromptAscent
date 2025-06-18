@@ -155,22 +155,15 @@ export default function LessonPage() {
         setIsStageCompletedScreenVisible(false);
         setIsSubmittingStage(true);
         
-        // Calculate total points for this stage based on successful first attempts or successful retries
-        // This can be simplified if pointsEarnedThisStageSession is already accurate
-        // Or, re-calculate based on stageItemAttempts and original item points.
-        // For now, using pointsEarnedThisStageSession assumes it's correctly accumulated.
-
         const { nextLessonIdIfAny } = await completeStageAndProceed(
             lessonId,
             currentStage.id,
             currentStageIndex,
-            stageItemAttempts, // Pass the locally tracked attempts for this stage
+            stageItemAttempts, 
             pointsEarnedThisStageSession 
         );
         setIsSubmittingStage(false);
 
-        // UserProgress context update will trigger useEffect to load the next stage or lesson completion screen
-        // No need to manually setCurrentStageIndex here if context handles it
          if (userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage') {
             toast({ title: "Stufe nicht bestanden", description: "Du hast zu viele Fehler gemacht. Versuche diese Stufe erneut oder starte die Lektion neu.", variant: "destructive" });
         }
@@ -226,15 +219,13 @@ export default function LessonPage() {
             setIsCurrentAttemptSubmitted(false);
             setLastAnswerCorrectness(null);
         } else {
-            // End of current stage's queue
             console.log("End of stage queue. Evaluating stage completion.");
             
-            if (currentStageIndex < 5) { // Not the last stage
-                setIsStageCompletedScreenVisible(true); // Show stage complete screen
-                // completeStageAndProceed will be called from the modal
-            } else { // Last stage of the lesson completed
-                setIsSubmittingStage(true); // For LessonCompleteScreen transition
-                await completeStageAndProceed( // Directly call for last stage
+            if (currentStageIndex < 5) { 
+                setIsStageCompletedScreenVisible(true); 
+            } else { 
+                setIsSubmittingStage(true); 
+                await completeStageAndProceed( 
                     lessonId,
                     currentStage.id,
                     currentStageIndex,
@@ -242,7 +233,7 @@ export default function LessonPage() {
                     pointsEarnedThisStageSession
                 );
                 setIsSubmittingStage(false);
-                setIsLessonFullyCompleted(true); // This will be set by context update, but good for immediate UI
+                setIsLessonFullyCompleted(true); 
                 toast({ title: "Lektion abgeschlossen!", description: `Glückwunsch! Du hast ${lessonPoints} Punkte in dieser Lektion erreicht.` });
             }
         }
@@ -261,8 +252,8 @@ export default function LessonPage() {
         const isLastItemOfStage = lessonQueue.indexOf(currentItem) === lessonQueue.length - 1;
         const isLastStageOfLesson = currentStageIndex === 5;
 
-        const commonPropsWithoutKey = {
-            key: currentItem.key, // Key is now part of commonProps
+        // Define an object with all common props EXCEPT the React key
+        const propsToSpread = {
             title: currentItem.title,
             pointsForCorrect: pointsForThisAttempt,
             pointsForIncorrect: 0, 
@@ -270,18 +261,20 @@ export default function LessonPage() {
             isLastItem: isLastItemOfStage && isLastStageOfLesson, 
             onNext: handleNext,
             lessonPoints: lessonPoints, 
-            id: currentItem.originalItemId,
+            id: currentItem.originalItemId, // Use originalItemId for component's internal logic
         };
 
         switch (currentItem.type) {
             case 'freeResponse':
-                return <FreeResponseQuestion {...commonPropsWithoutKey} question={currentItem.question} expectedAnswer={currentItem.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
+                return <FreeResponseQuestion key={currentItem.key} {...propsToSpread} question={currentItem.question} expectedAnswer={currentItem.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
             case 'multipleChoice':
-                return <MultipleChoiceQuestion {...commonPropsWithoutKey} question={currentItem.question} options={currentItem.options} correctOptionIndex={currentItem.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
+                return <MultipleChoiceQuestion key={currentItem.key} {...propsToSpread} question={currentItem.question} options={currentItem.options} correctOptionIndex={currentItem.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
             case 'informationalSnippet':
-                return <InformationalSnippet {...commonPropsWithoutKey} content={currentItem.content} pointsAwarded={currentItem.originalPointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
+                // For snippets, onAcknowledged leads to handleNext.
+                // Points are handled in handleNext for snippets to award only once.
+                return <InformationalSnippet key={currentItem.key} {...propsToSpread} content={currentItem.content} pointsAwarded={currentItem.originalPointsAwarded} onAcknowledged={handleNext} />;
             case 'promptingTask':
-                return <PromptingTask {...commonPropsWithoutKey} taskDescription={currentItem.taskDescription} evaluationGuidance={currentItem.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextTask={handleNext} />;
+                return <PromptingTask key={currentItem.key} {...propsToSpread} taskDescription={currentItem.taskDescription} evaluationGuidance={currentItem.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextTask={handleNext} />;
             default:
                 const _exhaustiveCheck: never = currentItem;
                 return <div>Error: Unknown item type.</div>;
@@ -295,7 +288,7 @@ export default function LessonPage() {
         return lessonData.stages.map((stage, index) => {
             const stageInfo = lessonProg.stages[stage.id];
             let bgColor = 'bg-muted'; 
-            let IconComponent = PencilRuler; // Default icon
+            let IconComponent = PencilRuler; 
 
             if (index < lessonProg.currentStageIndex || stageInfo?.status?.startsWith('completed')) {
                 if (stageInfo?.status === 'completed-perfect') { bgColor = 'bg-green-500'; IconComponent = CheckCircle; }
@@ -312,14 +305,13 @@ export default function LessonPage() {
             
             return (
                 <div key={stage.id} className={`flex-1 h-3 rounded ${bgColor} mx-0.5 flex items-center justify-center`}>
-                   {/* <IconComponent className="w-2 h-2 text-white opacity-75" /> */}
                 </div>
             );
         });
-    }, [lessonData, userProgress, lessonId, currentStageIndex]); // Added currentStageIndex
+    }, [lessonData, userProgress, lessonId, currentStageIndex]); 
 
 
-    if (isLoadingLesson || (isContextLoading && !currentUser && !userProgress)) { // Adjusted loading condition
+    if (isLoadingLesson || (isContextLoading && !currentUser && !userProgress)) { 
         return (
             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -365,17 +357,16 @@ export default function LessonPage() {
     const overallProgressPercentage = userProgress?.lessonStageProgress?.[lessonId] ?
         (userProgress.lessonStageProgress[lessonId].currentStageIndex / lessonData.stages.length) * 100 : 0;
 
-    // Render StageCompleteScreen if visible
     if (isStageCompletedScreenVisible && currentStage) {
         return (
             <StageCompleteScreen
                 stageTitle={currentStage.title}
                 pointsEarnedInStage={pointsEarnedThisStageSession}
                 stageItemAttempts={stageItemAttempts}
-                stageItems={currentStage.items as LessonItem[]} // Cast as LessonItem[]
+                stageItems={currentStage.items as LessonItem[]} 
                 onNextStage={handleProceedToNextStageFromModal}
                 onGoHome={handleGoHomeFromStageModal}
-                isLastStage={currentStageIndex === 5} // To adjust button text if needed
+                isLastStage={currentStageIndex === 5} 
                 stageStatus={userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'in-progress'}
             />
         );
