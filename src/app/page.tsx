@@ -14,6 +14,7 @@ import BirdsBackground from '@/components/BirdsBackground';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import type { Level } from '@/data/level-structure';
 import { getLevelForLessonId, LEVELS } from '@/data/level-structure';
+import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new ProfilIcon
 
 type LessonListing = Omit<Lesson, 'items'>;
 
@@ -183,7 +184,9 @@ export default function Home() {
 
         {/* Staircase Divs Section */}
         <div className="flex w-full items-end">
-          <div className="flex-1 h-[6.5rem] bg-foreground"></div>
+          <div className="flex-1 h-[6.5rem] bg-foreground flex items-center justify-center">
+            <ProfilIcon className="h-10 w-10 text-[hsl(var(--primary-foreground))]" />
+          </div>
           <div className="flex-1 h-[9rem] bg-foreground"></div>
           <div className="flex-1 h-[11.5rem] bg-foreground"></div>
           <div className="flex-1 h-[14rem] bg-foreground"></div>
