@@ -184,8 +184,9 @@ export default function Home() {
 
         {/* Staircase Divs Section */}
         <div className="flex w-full items-end">
-          <div className="flex-1 h-[6.5rem] bg-foreground flex items-center justify-center">
-            <ProfilIcon className="h-10 w-10 text-[hsl(var(--primary-foreground))]" />
+          <div className="flex-1 flex flex-col items-center justify-end">
+            <ProfilIcon className="h-10 w-10 text-[hsl(var(--primary-foreground))] mb-2" />
+            <div className="w-full h-[6.5rem] bg-foreground"></div>
           </div>
           <div className="flex-1 h-[9rem] bg-foreground"></div>
           <div className="flex-1 h-[11.5rem] bg-foreground"></div>
