@@ -1,6 +1,7 @@
+
 import { db } from '@/lib/firebase/index';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, type FieldValue } from 'firebase/firestore';
-import { getAvailableLessons, type Lesson, type StageProgress } from '@/data/lessons';
+import { getAvailableLessons, getGeneratedLessonById, type Lesson, type StageProgress } from '@/data/lessons'; // Added getGeneratedLessonById
 
 export interface UserProgressData {
   userId: string;
@@ -285,3 +286,5 @@ export async function completeStageInFirestore(
     throw error;
   }
 }
+
+    
