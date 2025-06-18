@@ -18,6 +18,8 @@ import { useUserProgress } from '@/context/UserProgressContext';
 import { getGeneratedLessonById, type Lesson, type LessonStage, type LessonItem as BaseLessonItem, type StageItemStatus, type StageProgress } from '@/data/lessons';
 import { BrainCircuit, PencilRuler, ListChecks, Info, BookOpen, HomeIcon, Loader2, FilePenLine, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 type QueuedLessonItem = BaseLessonItem & {
     key: string; // Unique key for React list rendering (originalItemId + attempt)
@@ -387,7 +389,6 @@ export default function LessonPage() {
     const overallProgressPercentage = userProgress?.lessonStageProgress?.[lessonId] ?
         (userProgress.lessonStageProgress[lessonId].currentStageIndex / lessonData.stages.length) * 100 : 0;
 
-
     return (
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
             <div className="w-full max-w-4xl flex justify-between items-center">
@@ -421,7 +422,6 @@ export default function LessonPage() {
                 </div>
             )}
 
-
             <div className="w-full max-w-4xl">
                 {isLessonFullyCompleted ? (
                     <LessonCompleteScreen points={lessonPoints} lessonTitle={lessonData.title} lessonId={lessonData.id} />
@@ -438,7 +438,7 @@ export default function LessonPage() {
                         {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
                             <Alert variant="destructive" className="mt-4">
                                 <AlertCircle className="h-4 w-4" />
-                                <Alert.displayName>Stage Failed</Alert.displayName>
+                                <AlertTitle>Stage Failed</AlertTitle>
                                 <AlertDescription>
                                     You did not pass this stage. You can review the items or restart the lesson.
                                      {/* Add a button to retry stage if that logic is implemented */}
@@ -452,4 +452,6 @@ export default function LessonPage() {
                     </div>
                 )}
             </div>
-        </
+        </main>
+    );
+}
