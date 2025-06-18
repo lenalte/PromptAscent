@@ -280,8 +280,7 @@ export default function LessonPage() {
         const isLastItemOfStage = lessonQueue.indexOf(currentItem) === lessonQueue.length - 1;
         const isLastStageOfLesson = currentStageIndex === 5;
 
-        const commonProps = {
-            key: currentItem.key, // Use the unique key for re-renders
+        const commonPropsWithoutKey = {
             title: currentItem.title,
             pointsForCorrect: pointsForThisAttempt,
             pointsForIncorrect: 0, // Deductions are handled by reduced pointsForCorrect on retry.
@@ -294,15 +293,15 @@ export default function LessonPage() {
 
         switch (currentItem.type) {
             case 'freeResponse':
-                return <FreeResponseQuestion {...commonProps} question={currentItem.question} expectedAnswer={currentItem.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
+                return <FreeResponseQuestion key={currentItem.key} {...commonPropsWithoutKey} question={currentItem.question} expectedAnswer={currentItem.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
             case 'multipleChoice':
-                return <MultipleChoiceQuestion {...commonProps} question={currentItem.question} options={currentItem.options} correctOptionIndex={currentItem.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
+                return <MultipleChoiceQuestion key={currentItem.key} {...commonPropsWithoutKey} question={currentItem.question} options={currentItem.options} correctOptionIndex={currentItem.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
             case 'informationalSnippet':
                 // For snippets, onAcknowledged leads to handleNext, which calls handleAnswerSubmit for snippets.
                 // Points are handled in handleNext for snippets to award only once.
-                return <InformationalSnippet {...commonProps} content={currentItem.content} pointsAwarded={currentItem.originalPointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
+                return <InformationalSnippet key={currentItem.key} {...commonPropsWithoutKey} content={currentItem.content} pointsAwarded={currentItem.originalPointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
             case 'promptingTask':
-                return <PromptingTask {...commonProps} taskDescription={currentItem.taskDescription} evaluationGuidance={currentItem.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextTask={handleNext} />;
+                return <PromptingTask key={currentItem.key} {...commonPropsWithoutKey} taskDescription={currentItem.taskDescription} evaluationGuidance={currentItem.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextTask={handleNext} />;
             default:
                 const _exhaustiveCheck: never = currentItem;
                 return <div>Error: Unknown item type.</div>;
@@ -455,3 +454,4 @@ export default function LessonPage() {
         </main>
     );
 }
+
