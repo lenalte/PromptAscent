@@ -1,36 +1,37 @@
-
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { getAvailableLessons, type Lesson } from '@/data/lessons';
+import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BookOpen, Loader2, LogIn, UserPlus } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
-import ProgressBar from '@/components/ui/progressbar';
+import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
 import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 import BirdsBackground from '@/components/BirdsBackground';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import type { Level } from '@/data/level-structure';
-import { getLevelForLessonId, LEVELS } from '@/data/level-structure';
-import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new ProfilIcon
+import type { Level as OverallLevel } from '@/data/level-structure';
+import { getLevelForLessonId as getOverallLevelForLessonId, LEVELS as OVERALL_LEVELS } from '@/data/level-structure';
+import { ProfilIcon } from '@/components/icons/ProfilIcon';
+import { cn } from '@/lib/utils';
 
-type LessonListing = Omit<Lesson, 'items'>;
+
+type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
 
 export default function Home() {
   const { userProgress, currentUser, isLoadingAuth } = useUserProgress();
   const totalPoints = userProgress?.totalPoints ?? 0;
-  const currentLessonIdForSidebar = userProgress?.currentLessonId ?? null;
-  const unlockedLessonsForSidebar = userProgress?.unlockedLessons ?? [];
-
+  
   const [isSidebarContentAreaOpen, setIsSidebarContentAreaOpen] = useState(true);
   const [lessonList, setLessonList] = useState<LessonListing[]>([]);
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState<LessonListing | null>(null);
-  const [currentLevel, setCurrentLevel] = useState<Level | null>(null);
-  const [levelProgressPercentage, setLevelProgressPercentage] = useState(0);
+  
+  const [currentOverallLevel, setCurrentOverallLevel] = useState<OverallLevel | null>(null);
+  const [overallLevelProgressPercentage, setOverallLevelProgressPercentage] = useState(0);
 
+  // Effect to fetch available lessons
   useEffect(() => {
     async function fetchLessons() {
       setIsLoadingLessons(true);
@@ -38,6 +39,7 @@ export default function Home() {
         const availableLessons = await getAvailableLessons();
         setLessonList(availableLessons);
         if (availableLessons.length > 0) {
+          // If no lesson is selected, or selected is not in list, try to set one.
           if (!selectedLesson || !availableLessons.find(l => l.id === selectedLesson.id)) {
              const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
              const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
@@ -53,31 +55,34 @@ export default function Home() {
       setIsLoadingLessons(false);
     }
     fetchLessons();
-  }, [userProgress?.currentLessonId, selectedLesson]); // Added selectedLesson to ensure re-fetch logic is sound
+  }, [userProgress?.currentLessonId, selectedLesson]); // Re-run if currentLessonId changes or selectedLesson state changes
 
+  // Effect to update current overall level based on selected lesson
   useEffect(() => {
-    if (selectedLesson) {
-      const level = getLevelForLessonId(selectedLesson.id);
-      setCurrentLevel(level || null);
-    } else if (userProgress?.currentLessonId) { // Fallback if selectedLesson isn't set but we have a current lesson
-      const level = getLevelForLessonId(userProgress.currentLessonId);
-      setCurrentLevel(level || null);
+    const lessonIdForLevel = selectedLesson?.id || userProgress?.currentLessonId;
+    if (lessonIdForLevel) {
+      const level = getOverallLevelForLessonId(lessonIdForLevel);
+      setCurrentOverallLevel(level || null);
+    } else if (lessonList.length > 0) { // Fallback to first lesson's level if available
+      const level = getOverallLevelForLessonId(lessonList[0].id);
+       setCurrentOverallLevel(level || OVERALL_LEVELS[0] || null);
     } else {
-      setCurrentLevel(LEVELS[0] || null); // Default to first level if nothing else
+      setCurrentOverallLevel(OVERALL_LEVELS[0] || null); // Default to first overall level
     }
-  }, [selectedLesson, userProgress?.currentLessonId]);
+  }, [selectedLesson, userProgress?.currentLessonId, lessonList]);
 
+  // Effect to calculate overall level progress percentage
   useEffect(() => {
-    if (currentLevel && userProgress?.completedLessons && currentLevel.lessonIds.length > 0) {
-      const completedInLevelCount = currentLevel.lessonIds.filter(id =>
+    if (currentOverallLevel && userProgress?.completedLessons && currentOverallLevel.lessonIds.length > 0) {
+      const completedInLevelCount = currentOverallLevel.lessonIds.filter(id =>
         userProgress.completedLessons.includes(id)
       ).length;
-      const percentage = (completedInLevelCount / currentLevel.lessonIds.length) * 100;
-      setLevelProgressPercentage(Math.round(percentage));
+      const percentage = (completedInLevelCount / currentOverallLevel.lessonIds.length) * 100;
+      setOverallLevelProgressPercentage(Math.round(percentage));
     } else {
-      setLevelProgressPercentage(0);
+      setOverallLevelProgressPercentage(0);
     }
-  }, [currentLevel, userProgress?.completedLessons]);
+  }, [currentOverallLevel, userProgress?.completedLessons]);
 
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => {
@@ -90,15 +95,29 @@ export default function Home() {
 
   const ICON_BAR_WIDTH_PX = 64;
   const CONTENT_AREA_WIDTH_PX = 256;
-
   const currentSidebarTotalWidth = isSidebarContentAreaOpen
     ? ICON_BAR_WIDTH_PX + CONTENT_AREA_WIDTH_PX
     : ICON_BAR_WIDTH_PX;
 
   const isLessonUnlocked = (lessonId: string) => {
-    if (currentUser?.isAnonymous) return true;
-    return unlockedLessonsForSidebar.includes(lessonId);
+    if (currentUser?.isAnonymous) return true; // Anonymous users can access all for now
+    return userProgress?.unlockedLessons?.includes(lessonId) ?? false;
   };
+
+  // Determine current stage for the selected lesson to position ProfilIcon
+  const currentStageIndexOfSelectedLesson = selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined
+    ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex
+    : -1; // -1 means not started or no progress data
+
+  const getStageStatusColor = (stageId: string): StageStatusValue | 'default' => {
+    if (!selectedLesson || !userProgress?.lessonStageProgress?.[selectedLesson.id]) return 'default';
+    const stageProgress = userProgress.lessonStageProgress[selectedLesson.id].stages?.[stageId];
+    return stageProgress?.status || 'default'; // default if stage not started or no status
+  };
+  
+  const stageHeights = [
+    'h-[6.5rem]', 'h-[9rem]', 'h-[11.5rem]', 'h-[14rem]', 'h-[16.5rem]', 'h-[19rem]'
+  ];
 
 
   return (
@@ -109,8 +128,8 @@ export default function Home() {
         onContentToggle={handleSidebarContentToggle}
         onLessonSelect={handleLessonSelect}
         currentSelectedLessonId={selectedLesson?.id}
-        currentLessonIdFromProgress={currentLessonIdForSidebar}
-        unlockedLessonIds={unlockedLessonsForSidebar}
+        currentLessonIdFromProgress={userProgress?.currentLessonId}
+        unlockedLessonIds={userProgress?.unlockedLessons || []}
         isAuthenticated={!!currentUser && !currentUser.isAnonymous}
       />
 
@@ -120,19 +139,19 @@ export default function Home() {
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <ProgressBar
-            progress={levelProgressPercentage}
-            progressText={`${levelProgressPercentage}%`}
+            progress={overallLevelProgressPercentage} // Show overall game/level progress
+            progressText={`${overallLevelProgressPercentage}% Complete - ${currentOverallLevel?.title || 'Current Level'}`}
           />
           <LevelAndInformationBar
             className="mt-2"
-            sidebarWidth={0} // This prop might be deprecated
+            sidebarWidth={0}
             totalPoints={totalPoints}
-            currentLevel={currentLevel}
+            currentLevel={currentOverallLevel}
           />
         </header>
 
         <main className="flex-1 p-8 pt-30">
-          {isLoadingAuth || isLoadingLessons ? (
+          {isLoadingAuth || (isLoadingLessons && !selectedLesson) ? (
             <div className="w-full max-w-4xl text-center py-10 flex flex-col items-center justify-center">
               <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
               <p className="text-muted-foreground">Loading...</p>
@@ -155,47 +174,47 @@ export default function Home() {
             </div>
           ) : !currentUser && !isLoadingAuth ? (
              <div className="w-full max-w-4xl text-center py-10">
-                <h2 className="text-2xl font-semibold text-foreground mb-4">Welcome to The Promptening!</h2>
+                <h2 className="text-2xl font-semibold text-foreground mb-4">Welcome to Prompt Ascent!</h2>
                 <p className="text-muted-foreground mb-6">
                   Please log in or register to save your progress and access all lessons.
                 </p>
                 <div className="flex justify-center space-x-4">
-                  <Link href="/auth/login" passHref legacyBehavior>
-                    <EightbitButton>
-                      <LogIn className="mr-2 h-5 w-5" /> Login
-                    </EightbitButton>
-                  </Link>
-                  <Link href="/auth/register" passHref legacyBehavior>
-                    <EightbitButton>
-                      <UserPlus className="mr-2 h-5 w-5" /> Register
-                    </EightbitButton>
-                  </Link>
+                  <Link href="/auth/login" passHref legacyBehavior><EightbitButton><LogIn className="mr-2 h-5 w-5" /> Login</EightbitButton></Link>
+                  <Link href="/auth/register" passHref legacyBehavior><EightbitButton><UserPlus className="mr-2 h-5 w-5" /> Register</EightbitButton></Link>
                 </div>
               </div>
           ) : (
             <div className="w-full max-w-4xl text-center py-10">
-              <h2 className="text-2xl font-semibold text-foreground mb-2">Welcome to The Promptening!</h2>
+              <h2 className="text-2xl font-semibold text-foreground mb-2">Welcome to Prompt Ascent!</h2>
               <p className="text-muted-foreground">
-                No lessons available at the moment, or an error occurred. Please select a lesson from the sidebar.
+                Please select a lesson from the sidebar to begin.
               </p>
             </div>
           )}
         </main>
 
-        {/* Staircase Divs Section */}
+        {/* Staircase Divs Section - Now represents stages of selectedLesson */}
         <div className="flex w-full items-end">
-          <div className="flex-1 flex flex-col items-center justify-end">
-            <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
-            <div className="w-full h-[6.5rem] bg-foreground"></div>
-          </div>
-          <div className="flex-1 h-[9rem] bg-foreground"></div>
-          <div className="flex-1 h-[11.5rem] bg-foreground"></div>
-          <div className="flex-1 h-[14rem] bg-foreground"></div>
-          <div className="flex-1 h-[16.5rem] bg-foreground"></div>
-          <div className="flex-1 h-[19rem] bg-foreground"></div>
+          {stageHeights.map((heightClass, index) => {
+            const stageId = `stage${index + 1}`;
+            const status = getStageStatusColor(stageId);
+            let bgColorClass = 'bg-foreground'; // Default (foreground for open/pending)
+            if (status === 'completed-perfect') bgColorClass = 'bg-green-500';
+            else if (status === 'completed-good') bgColorClass = 'bg-yellow-500';
+            else if (status === 'failed-stage') bgColorClass = 'bg-red-500';
+            // 'locked' and 'unlocked' or 'in-progress' will use default 'bg-foreground' or could be styled differently
+
+            return (
+              <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
+                {currentStageIndexOfSelectedLesson === index && (
+                  <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
+                )}
+                <div className={cn("w-full", heightClass, bgColorClass)}></div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
   );
 }
-

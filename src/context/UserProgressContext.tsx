@@ -1,18 +1,17 @@
-
 'use client';
 
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useRef } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError } from 'firebase/auth';
-import { auth, db } from '../lib/firebase/index'; // Adjusted path
+import { auth, db } from '../lib/firebase/index';
 import {
   getUserProgress,
   createUserProgressDocument,
-  updateTotalPointsInFirestore,
-  completeLessonInFirestore,
   updateUserDocument,
+  completeStageInFirestore, // Changed from completeLessonInFirestore
   type UserProgressData
 } from '@/services/userProgressService';
+import type { StageItemStatus } from '@/ai/schemas/lesson-schemas'; // For typing
 import { useRouter } from 'next/navigation';
 
 const USERS_COLLECTION = 'users';
@@ -22,13 +21,20 @@ interface UserProgressContextType {
   userProgress: UserProgressData | null;
   isLoadingAuth: boolean;
   isLoadingProgress: boolean;
-  addPointsToTotal: (amount: number) => Promise<void>; // Kept for potential direct point additions
-  completeLessonAndProceed: (lessonId: string, pointsEarned: number) => Promise<string | null>;
+  // addPointsToTotal: (amount: number) => Promise<void>; // This might be handled by stage completion points
+  completeStageAndProceed: (
+    lessonId: string,
+    stageId: string,
+    stageIndex: number,
+    stageItemsWithStatus: { [itemId: string]: StageItemStatus },
+    pointsEarnedThisStage: number
+  ) => Promise<{ nextLessonIdIfAny: string | null }>; // Returns ID of next *lesson* if current lesson completed.
   signUpWithEmail: (email: string, password: string, username: string) => Promise<User | null>;
   signInWithEmail: (email: string, password: string) => Promise<User | null>;
   logOut: () => Promise<void>;
-  currentLessonId: string | null;
-  unlockedLessons: string[];
+  // Redundant, can be derived from userProgress
+  // currentLessonId: string | null;
+  // unlockedLessons: string[];
 }
 
 const UserProgressContext = createContext<UserProgressContextType | undefined>(undefined);
@@ -54,20 +60,18 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       if (!progress) {
         console.log('[UserProgressContext] No progress found, creating new document for UID:', userId, 'with username:', usernameForNewUser);
         progress = await createUserProgressDocument(userId, {
-          username: usernameForNewUser ?? undefined, // Pass username if available
-          // Defaults (like currentLessonId, unlockedLessons) are handled in createUserProgressDocument
+          username: usernameForNewUser ?? undefined,
         });
       } else if (usernameForNewUser && !progress.username) {
-        // User exists but doesn't have a username, update it (e.g., after email signup)
         console.log(`[UserProgressContext] User doc for ${userId} existed, updating with queued username: ${usernameForNewUser}`);
         await updateUserDocument(userId, { username: usernameForNewUser });
-        progress.username = usernameForNewUser; // Manually update local copy
+        progress.username = usernameForNewUser;
       }
       setUserProgress(progress);
       console.log('[UserProgressContext] User progress loaded/updated:', progress);
 
       if (usernameForNewUser) {
-        queuedUsernameRef.current = null; // Clear the queued username after use
+        queuedUsernameRef.current = null;
       }
     } catch (error) {
       console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${userId}:`, error);
@@ -79,7 +83,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 
   useEffect(() => {
-    console.log('[UserProgressContext] Setting up onAuthStateChanged listener. Auth available via import:', !!auth, 'DB available via import:', !!db);
+    console.log('[UserProgressContext] Setting up onAuthStateChanged listener. Auth available:', !!auth, 'DB available:', !!db);
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth instance is not available. Auth operations will fail.");
       setIsLoadingAuth(false);
@@ -91,7 +95,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       const usernameForNewUserOnAuthChange = queuedUsernameRef.current;
 
       if (user) {
-        console.log('[UserProgressContext] onAuthStateChanged: User is signed in:', user.uid, 'isAnonymous:', user.isAnonymous, 'Display Name (from Auth):', user.displayName);
+        console.log('[UserProgressContext] onAuthStateChanged: User is signed in:', user.uid, 'isAnonymous:', user.isAnonymous);
         setCurrentUser(user);
         await fetchUserProgressData(user.uid, usernameForNewUserOnAuthChange);
       } else {
@@ -101,16 +105,12 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         queuedUsernameRef.current = null;
         try {
           const userCredential = await signInAnonymously(auth);
-          // The onAuthStateChanged listener will fire again for this new anonymous user.
-          // setCurrentUser and fetchUserProgressData will be handled in that subsequent call.
           console.log('[UserProgressContext] Anonymously signed in UID:', userCredential.user.uid);
         } catch (error) {
           const authError = error as AuthError;
           console.error("[UserProgressContext] Anonymous sign-in failed:", authError);
           if (authError.code === 'auth/operation-not-allowed') {
-            console.error("*****************************************************************************************************************");
-            console.error("IMPORTANT: Anonymous sign-in failed. Ensure it's enabled in Firebase console: Authentication -> Sign-in method -> Anonymous.");
-            console.error("*****************************************************************************************************************");
+            console.error("IMPORTANT: Anonymous sign-in failed. Ensure it's enabled in Firebase console.");
           }
         }
       }
@@ -121,67 +121,44 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       console.log('[UserProgressContext] Unsubscribing from onAuthStateChanged.');
       unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchUserProgressData]); // fetchUserProgressData is memoized and stable
+  }, [fetchUserProgressData]);
 
-  const addPointsToTotal = useCallback(async (amount: number) => {
-    if (!currentUser || !userProgress || amount <= 0 || !db) {
-        if(!db) console.error("[UserProgressContext] Firestore (db) is not available for addPointsToTotal.");
-        if(!currentUser) console.warn("[UserProgressContext] addPointsToTotal: No current user.");
-        if(!userProgress) console.warn("[UserProgressContext] addPointsToTotal: userProgress not loaded.");
-        return;
-    }
-    setIsLoadingProgress(true);
-    try {
-      const newTotalPoints = userProgress.totalPoints + amount;
-      await updateTotalPointsInFirestore(currentUser.uid, newTotalPoints);
-      setUserProgress(prev => prev ? { ...prev, totalPoints: newTotalPoints } : null);
-      console.log(`[UserProgressContext] Added ${amount} points for user ${currentUser.uid}. New total: ${newTotalPoints}`);
-    } catch (error) {
-      console.error(`[UserProgressContext] Error adding points for UID ${currentUser.uid}:`, error);
-    } finally {
-      setIsLoadingProgress(false);
-    }
-  }, [currentUser, userProgress, db]);
 
-  const completeLessonAndProceed = useCallback(async (lessonId: string, pointsEarnedThisLesson: number) => {
+  const completeStageAndProceed = useCallback(async (
+    lessonId: string,
+    stageId: string,
+    stageIndex: number,
+    stageItemsWithStatus: { [itemId: string]: StageItemStatus },
+    pointsEarnedThisStage: number
+  ): Promise<{ nextLessonIdIfAny: string | null }> => {
     if (!currentUser || !db) {
-      console.error("[UserProgressContext] completeLessonAndProceed: Cannot complete lesson - no current user or db unavailable.");
-      if(!db) console.error("[UserProgressContext] Firestore (db) is not available for completeLessonAndProceed.");
-      return null;
+      console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - no current user or db unavailable.");
+      if(!db) console.error("[UserProgressContext] Firestore (db) is not available.");
+      return { nextLessonIdIfAny: null };
     }
     if (!userProgress) {
-        console.error("[UserProgressContext] completeLessonAndProceed: Cannot complete lesson - userProgress not loaded for user", currentUser.uid);
-        return null;
+        console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - userProgress not loaded for user", currentUser.uid);
+        return { nextLessonIdIfAny: null };
     }
 
-    console.log(`[UserProgressContext] completeLessonAndProceed called for lesson ${lessonId}, user ${currentUser.uid}, pointsEarned: ${pointsEarnedThisLesson}`);
+    console.log(`[UserProgressContext] completeStageAndProceed called for lesson ${lessonId}, stage ${stageId} (index ${stageIndex}), user ${currentUser.uid}, pointsEarned: ${pointsEarnedThisStage}`);
     setIsLoadingProgress(true);
     try {
-      // Calculate the new total points *before* calling the service
-      const newTotalPoints = (userProgress.totalPoints || 0) + pointsEarnedThisLesson;
-      console.log(`[UserProgressContext] Calculated newTotalPoints: ${newTotalPoints} (current: ${userProgress.totalPoints || 0} + earned: ${pointsEarnedThisLesson})`);
-
-      const { nextLessonId: newNextLessonId, updatedProgress } = await completeLessonInFirestore(
+      const { nextLessonIdIfAny, updatedProgress } = await completeStageInFirestore(
         currentUser.uid,
         lessonId,
-        newTotalPoints // Pass the correctly calculated new total points
+        stageId,
+        stageIndex,
+        stageItemsWithStatus,
+        pointsEarnedThisStage
       );
 
-      setUserProgress(updatedProgress); // Update context with the fresh data from Firestore
-      
-      console.log(`[UserProgressContext] completeLessonAndProceed successfully processed for user ${currentUser.uid}:
-        Returned Next Lesson ID: ${newNextLessonId},
-        Updated Progress in context: {
-          totalPoints: ${updatedProgress.totalPoints},
-          currentLessonId: ${updatedProgress.currentLessonId},
-          unlockedLessons: [${updatedProgress.unlockedLessons.join(', ')}],
-          completedLessons: [${updatedProgress.completedLessons.join(', ')}]
-        }`);
-      return newNextLessonId; // This is the ID of the next lesson to navigate to
+      setUserProgress(updatedProgress);
+      console.log(`[UserProgressContext] completeStageAndProceed success. Updated progress set in context. Next lesson to unlock (if any): ${nextLessonIdIfAny}`);
+      return { nextLessonIdIfAny };
     } catch (error) {
-      console.error(`[UserProgressContext] Error in completeLessonAndProceed for lesson ${lessonId}, UID ${currentUser.uid}:`, error);
-      return null;
+      console.error(`[UserProgressContext] Error in completeStageAndProceed for lesson ${lessonId}, stage ${stageId}, UID ${currentUser.uid}:`, error);
+      return { nextLessonIdIfAny: null };
     } finally {
       setIsLoadingProgress(false);
     }
@@ -194,17 +171,14 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
     setIsLoadingAuth(true);
     try {
-      queuedUsernameRef.current = username; 
+      queuedUsernameRef.current = username;
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("[UserProgressContext] User signed up successfully via Firebase Auth:", userCredential.user.uid, "Username to queue:", username);
-      // onAuthStateChanged will handle setting currentUser and calling fetchUserProgressData (which uses queuedUsernameRef.current)
+      console.log("[UserProgressContext] User signed up successfully:", userCredential.user.uid);
       return userCredential.user;
     } catch (error) {
       console.error("[UserProgressContext] Error signing up:", error);
-      queuedUsernameRef.current = null; 
+      queuedUsernameRef.current = null;
       throw error;
-    } finally {
-      // setIsLoadingAuth(false); // onAuthStateChanged manages this
     }
   };
 
@@ -215,16 +189,13 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
     setIsLoadingAuth(true);
     try {
-      queuedUsernameRef.current = null; // Clear any queued username on sign-in
+      queuedUsernameRef.current = null;
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("[UserProgressContext] User signed in successfully via Firebase Auth:", userCredential.user.uid);
-      // onAuthStateChanged will handle setting currentUser and calling fetchUserProgressData
+      console.log("[UserProgressContext] User signed in successfully:", userCredential.user.uid);
       return userCredential.user;
     } catch (error) {
       console.error("[UserProgressContext] Error signing in:", error);
       throw error;
-    } finally {
-      // setIsLoadingAuth(false); // onAuthStateChanged manages this
     }
   };
 
@@ -234,10 +205,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       return;
     }
     try {
-      queuedUsernameRef.current = null; 
+      queuedUsernameRef.current = null;
       await firebaseSignOut(auth);
-      console.log("[UserProgressContext] User signed out. Anonymous sign-in will be attempted by onAuthStateChanged.");
-      // router.push('/'); // Let onAuthStateChanged handle state reset and potential redirection via page logic
+      console.log("[UserProgressContext] User signed out. Anonymous sign-in will be attempted.");
     } catch (error) {
       console.error("[UserProgressContext] Error signing out:", error);
     }
@@ -249,13 +219,10 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       userProgress,
       isLoadingAuth,
       isLoadingProgress,
-      addPointsToTotal,
-      completeLessonAndProceed,
+      completeStageAndProceed,
       signUpWithEmail,
       signInWithEmail,
       logOut,
-      currentLessonId: userProgress?.currentLessonId || null,
-      unlockedLessons: userProgress?.unlockedLessons || [],
     }}>
       {children}
     </UserProgressContext.Provider>

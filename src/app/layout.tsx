@@ -1,31 +1,25 @@
-
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google'; // Corrected import path if needed
+// Removed Geist imports, if UntitledSans is the primary choice for body text, or if Arial/Helvetica is acceptable fallback
+// import { Geist, Geist_Mono } from 'next/font/google'; 
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"; // Import Toaster
-import { UserProgressProvider } from '@/context/UserProgressContext'; // Import UserProgressProvider
-import { JetBrains_Mono } from 'next/font/google';
+import { Toaster } from "@/components/ui/toaster";
+import { UserProgressProvider } from '@/context/UserProgressContext';
+import { JetBrains_Mono } from 'next/font/google'; // Keeping JetBrains for mono if needed
 
-
-// Assuming Geist and Geist_Mono setup is correct
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+// If UntitledSans is to be used as a variable font for body:
+// You would typically use next/font to load it if it's a variable font file.
+// Since it's loaded via @font-face in globals.css, we don't need a next/font instance for it here for body.
+// The `font-family` in `globals.css` body tag will apply it.
 
 const jetBrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
+  variable: '--font-jetbrains-mono', // If you use this for specific code blocks
   subsets: ['latin'],
+  display: 'swap', // Good practice for font loading
 });
 
 export const metadata: Metadata = {
-  title: 'The Promptening - Learn Prompt Engineering', // More descriptive title
-  description: 'Interactive lessons and tools to master prompt engineering skills with AI feedback.', // Updated description
+  title: 'Prompt Ascent - Master AI Prompting', // Updated Title
+  description: 'Interactive lessons and AI-powered tools to master prompt engineering skills, with stage-based progress and feedback.', // Updated description
 };
 
 export default function RootLayout({
@@ -35,13 +29,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
-        <UserProgressProvider> {/* Wrap children with UserProgressProvider */}
+      {/* 
+        If you want to apply UntitledSans globally via a CSS variable from next/font (requires font file setup):
+        <body className={`${untitledSans.variable} ${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
+        Otherwise, rely on globals.css for body font-family. JetBrains Mono can still be a variable for specific elements.
+      */}
+      <body className={`${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
+        <UserProgressProvider>
           {children}
-          <Toaster /> {/* Add Toaster here */}
+          <Toaster />
         </UserProgressProvider>
       </body>
     </html>
   );
 }
-
