@@ -1,12 +1,12 @@
 
 'use server';
 /**
- * @fileOverview A Genkit flow for generating structured lesson items from raw lesson text.
+ * @fileOverview A Genkit flow for generating structured lesson items, organized into 6 stages, from raw lesson text.
  *
  * - generateLessonItems - A function that takes raw lesson content and metadata,
- *   and returns a fully structured Lesson object with AI-generated items.
+ *   and returns a fully structured Lesson object with 6 stages, each containing AI-generated items.
  * - GenerateLessonItemsInput - The input type for the generateLessonItems function.
- * - Lesson (from lesson-schemas) - The output type (structured lesson).
+ * - Lesson (from lesson-schemas) - The output type (structured lesson with stages).
  */
 
 import { ai } from '@/ai/ai-instance';
@@ -14,10 +14,8 @@ import { z } from 'genkit';
 import {
   LessonSchema,
   type Lesson,
-  LessonItemSchema,
-} from '@/ai/schemas/lesson-schemas'; // Ensure this path is correct
+} from '@/ai/schemas/lesson-schemas';
 
-// Define Zod schema for the input to this flow
 const GenerateLessonItemsInputSchema = z.object({
   lessonId: z.string().describe('The unique ID of the lesson.'),
   lessonTitle: z.string().describe('The title of the lesson.'),
@@ -26,19 +24,17 @@ const GenerateLessonItemsInputSchema = z.object({
 });
 export type GenerateLessonItemsInput = z.infer<typeof GenerateLessonItemsInputSchema>;
 
-// Exported function to be called by the application
 export async function generateLessonItems(input: GenerateLessonItemsInput): Promise<Lesson> {
   return generateLessonItemsFlow(input);
 }
 
 const lessonGenerationPrompt = ai.definePrompt({
-  name: 'generateLessonItemsPrompt',
+  name: 'generateLessonItemsWithStagesPrompt',
   input: { schema: GenerateLessonItemsInputSchema },
   output: { schema: LessonSchema },
   prompt: `You are an expert educational content creator for a learning platform teaching AI and prompt engineering.
-Your task is to analyze the provided raw lesson text (delimited by <raw_content></raw_content>) and generate a structured list of learning items.
-The output MUST be a single, valid JSON object conforming to the provided Lesson schema.
-
+Your task is to analyze the provided raw lesson text (delimited by <raw_content></raw_content>) and generate a structured lesson composed of EXACTLY 6 STAGES.
+Each stage will have a specific theme and set of learning item types.
 The lesson has the following metadata:
 Lesson ID: {{{lessonId}}}
 Lesson Title: "{{{lessonTitle}}}"
@@ -49,53 +45,77 @@ Raw lesson content:
 {{{rawContent}}}
 </raw_content>
 
-Based on the raw content, generate an array of lesson 'items'. Each item must have:
-1.  A unique 'id' (integer, sequential starting from 1 for this lesson).
-2.  A 'title' (string, meaningful and concise, derived from the content).
-3.  'pointsAwarded' (integer) based on these rules:
-    *   'freeResponse': 5 points. 'pointsForIncorrect' must be 0.
-    *   'multipleChoice': 3 points. 'pointsForIncorrect' must be 0.
-    *   'informationalSnippet': 1 point.
-    *   'promptingTask': 10 points. 'pointsForIncorrect' must be 0.
+Output MUST be a single, valid JSON object conforming to the provided Lesson schema, where the 'stages' array contains these 6 stages, and each stage contains its own 'items' array of lesson activities.
+Item IDs MUST be unique across the entire lesson (e.g., "s1_item1", "s2_mcq1", etc.).
 
-Item Types and specific fields:
--   **informationalSnippet**:
-    *   'type': "informationalSnippet"
-    *   'content': A key takeaway, definition, or explanation directly extracted or summarized from the raw text. Max 2-3 sentences.
-    *   'pointsAwarded': 1
--   **freeResponse**:
-    *   'type': "freeResponse"
-    *   'question': A question that tests understanding of concepts from the raw text.
-    *   'expectedAnswer': A concise example or description of the correct answer.
-    *   'pointsAwarded': 5
-    *   'pointsForIncorrect': 0
--   **multipleChoice**:
-    *   'type': "multipleChoice"
-    *   'question': A question based on the raw text.
-    *   'options': An array of 3-4 string options. One option must be correct.
-    *   'correctOptionIndex': The 0-based index of the correct option.
-    *   'pointsAwarded': 3
-    *   'pointsForIncorrect': 0
--   **promptingTask**:
-    *   'type': "promptingTask"
-    *   'taskDescription': A detailed task for the user to write a prompt, applying techniques discussed in the raw text.
-    *   'evaluationGuidance': 3-5 specific, numbered criteria for evaluating the user's submitted prompt. These criteria should relate to the task and concepts from the raw text.
-    *   'pointsAwarded': 10
-    *   'pointsForIncorrect': 0
+Stage Details:
 
-**CRITICAL Content Sequencing Rule:**
--   For any 'freeResponse' question, 'multipleChoice' question, or 'promptingTask', the concepts, facts, or techniques being tested or applied MUST have been explicitly introduced in one or more 'informationalSnippet' items that appear EARLIER in the generated 'items' array for THIS lesson.
--   Structure the lesson items logically: introduce information with an 'informationalSnippet', then later test understanding or application of THAT specific information with a 'freeResponse', 'multipleChoice', or 'promptingTask'.
--   Do NOT ask questions or set tasks about topics the user has not yet encountered through an 'informationalSnippet' in the current lesson's generated item sequence.
--   For example, a valid sequence could be: Snippet A -> Snippet B -> Question about A -> Multiple Choice about B -> Snippet C -> Prompting Task using concepts from A, B, and C.
--   All content for items (questions, options, descriptions, snippet content, task details etc.) must be derived from or directly reference the provided raw lesson text. Do not invent new concepts not present in the text.
+Stage 1: "Verstehen" (Understanding)
+- id: "stage1"
+- title: "Stage 1: Verstehen"
+- Goal: Introduce core concepts and definitions.
+- Item Types:
+    - 2-3 'informationalSnippet' items explaining key terms or concepts from the raw text. (Assign IDs like "s1_info1", "s1_info2")
+    - 1-2 'multipleChoice' questions testing comprehension of these snippets. (Assign IDs like "s1_mcq1")
+    - 1 'freeResponse' question (easy) asking to define a concept in their own words. (Assign ID like "s1_fr1")
+- Point Allocation: Snippets (1pt), MCQs (3pts), Easy Free Response (5pts). 'pointsForIncorrect' must be 0 for all items.
+
+Stage 2: "Anwenden" (Applying)
+- id: "stage2"
+- title: "Stage 2: Anwenden"
+- Goal: Apply learned concepts in simple scenarios.
+- Item Types:
+    - 2-3 'freeResponse' questions requiring users to apply concepts to given examples. (Assign IDs like "s2_fr1", "s2_fr2")
+    - 1-2 'informationalSnippet' items demonstrating simple applications or providing worked examples. (Assign IDs like "s2_info1")
+- Point Allocation: Free Response (5-7pts), Snippets (1pt). 'pointsForIncorrect' must be 0.
+
+Stage 3: "Variieren" (Varying)
+- id: "stage3"
+- title: "Stage 3: Variieren"
+- Goal: Encourage users to create variations of prompts or apply concepts in different ways.
+- Item Types:
+    - 1-2 'promptingTask' items where users write prompts for a given scenario, possibly with slight variations to the scenario. (Assign IDs like "s3_pt1")
+    - Evaluation guidance should focus on achieving the task and using varied techniques if applicable.
+- Point Allocation: Prompting Tasks (10-15pts). 'pointsForIncorrect' must be 0.
+
+Stage 4: "Reflektieren" (Reflecting - Error Analysis)
+- id: "stage4"
+- title: "Stage 4: Reflektieren"
+- Goal: Develop critical thinking by analyzing and improving prompts.
+- Item Types:
+    - 1-2 'promptingTask' items. The 'taskDescription' will present a (intentionally) flawed or suboptimal prompt and ask the user to identify its weaknesses and suggest improvements. 'evaluationGuidance' for the LLM should focus on the quality of the user's analysis and the validity of their suggested improvements. (Assign IDs like "s4_pt_error1")
+    - 1 'freeResponse' question asking about common pitfalls or best practices related to the lesson topic. (Assign ID like "s4_fr1")
+- Point Allocation: Prompting Tasks (10-15pts), Free Response (5-7pts). 'pointsForIncorrect' must be 0.
+
+Stage 5: "Wiederholen" (Repeating - Revision Quiz)
+- id: "stage5"
+- title: "Stage 5: Wiederholen"
+- Goal: Reinforce learning through a targeted quiz.
+- Item Types:
+    - 2-3 'multipleChoice' questions covering key concepts from the entire lesson. (Assign IDs like "s5_mcq1", "s5_mcq2")
+    - 1-2 'freeResponse' questions summarizing or explaining important topics. (Assign IDs like "s5_fr1")
+- Point Allocation: MCQs (3-5pts), Free Response (5-7pts). 'pointsForIncorrect' must be 0.
+
+Stage 6: "Anwenden & Reflektieren" (Applying & Reflecting - Complex Task)
+- id: "stage6"
+- title: "Stage 6: Anwenden & Reflektieren"
+- Goal: Apply knowledge to a complex task and reflect on the learning process.
+- Item Types:
+    - 1 'promptingTask' (complex) that requires integrating multiple concepts from the lesson. Evaluation guidance should be comprehensive. (Assign ID like "s6_pt_complex1")
+    - 1 'freeResponse' question: "What are your key takeaways from this lesson and how might you apply them in the future?" (Expected answer should be a placeholder like "User's personal reflection"). (Assign ID like "s6_fr_reflect1")
+- Point Allocation: Complex Prompting Task (15-20pts), Reflection Free Response (5pts). 'pointsForIncorrect' must be 0.
+
+CRITICAL Content Sequencing Rule:
+- Concepts tested in a stage MUST have been introduced in earlier informational snippets within THE SAME STAGE OR PREVIOUS STAGES.
+- Later stages should build upon knowledge from earlier stages.
+- All content for items (questions, options, descriptions, snippet content, task details etc.) must be derived from or directly reference the provided raw lesson text. Do not invent new concepts not present in the text.
 
 General Guidelines:
--   Generate a variety of item types. Aim for at least 5-10 items per lesson if content allows.
--   Ensure the generated JSON is valid and strictly adheres to the Lesson schema structure, including all required fields for each item type.
--   The final output should be a single JSON object: { "id": "{{{lessonId}}}", "title": "{{{lessonTitle}}}", "description": "{{{lessonDescription}}}", "items": [...] }.
--   For multiple choice options, ensure one is clearly correct based on the text and others are plausible distractors.
--   For prompting tasks, the taskDescription should clearly state what the user needs to do, and evaluationGuidance should provide clear, actionable criteria.
+- Each stage must have the specified 'id' (e.g., "stage1") and 'title' (e.g., "Stage 1: Verstehen").
+- Ensure generated JSON is valid and strictly adheres to the Lesson schema structure, including all required fields for each item type and stage.
+- The final output should be a single JSON object: { "id": "{{{lessonId}}}", "title": "{{{lessonTitle}}}", "description": "{{{lessonDescription}}}", "stages": [ { "id": "stage1", "title": "Stage 1: Verstehen", "items": [...] }, ...6 stages total... ] }.
+- For multiple choice options, ensure one is clearly correct based on the text and others are plausible distractors.
+- For prompting tasks, the taskDescription should clearly state what the user needs to do, and evaluationGuidance should provide clear, actionable criteria.
 
 Produce ONLY the JSON object. Do not include any other text before or after the JSON.
 `,
@@ -103,31 +123,42 @@ Produce ONLY the JSON object. Do not include any other text before or after the 
 
 const generateLessonItemsFlow = ai.defineFlow(
   {
-    name: 'generateLessonItemsFlow',
+    name: 'generateLessonItemsWithStagesFlow',
     inputSchema: GenerateLessonItemsInputSchema,
     outputSchema: LessonSchema,
   },
   async (input) => {
-    console.log(`Generating lesson items for: ${input.lessonTitle}`);
+    console.log(`Generating lesson items with 6 stages for: ${input.lessonTitle}`);
     const { output } = await lessonGenerationPrompt(input);
 
     if (!output) {
-      console.error('AI did not return an output for lesson generation.');
-      throw new Error('Failed to generate lesson items: No output from AI.');
+      console.error('AI did not return an output for lesson generation with stages.');
+      throw new Error('Failed to generate lesson items with stages: No output from AI.');
     }
 
-    // Additional validation could be done here if needed, beyond Zod's parsing.
-    // For example, ensuring item IDs are sequential.
-    // For now, we rely on the prompt and Zod schema validation.
-    let itemIdCounter = 1;
-    const validatedItems = output.items.map(item => ({
-      ...item,
-      id: itemIdCounter++ // Ensure sequential IDs
-    }));
+    // Additional validation for 6 stages and unique item IDs across stages
+    if (output.stages.length !== 6) {
+        console.error(`AI did not return exactly 6 stages. Got: ${output.stages.length}`);
+        throw new Error(`AI generation error: Expected 6 stages, but received ${output.stages.length}.`);
+    }
 
-    return {
-        ...output,
-        items: validatedItems
-    };
+    const allItemIds = new Set<string>();
+    output.stages.forEach(stage => {
+        if(!stage.items) {
+            console.warn(`Stage ${stage.id} has no items array.`);
+            stage.items = []; // Ensure items array exists
+        }
+        stage.items.forEach(item => {
+            if (allItemIds.has(item.id)) {
+                console.warn(`Duplicate item ID found: ${item.id} in stage ${stage.id}. This might cause issues.`);
+                // Potentially re-assign ID or throw error. For now, log warning.
+                // item.id = `${item.id}_dup_${Math.random().toString(36).substring(7)}`; // Simple fix, but ideally AI gets it right
+            }
+            allItemIds.add(item.id);
+        });
+    });
+    
+    console.log(`Successfully generated lesson ${input.lessonId} with ${output.stages.length} stages and a total of ${allItemIds.size} items.`);
+    return output;
   }
 );
