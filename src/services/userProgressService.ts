@@ -1,4 +1,6 @@
 
+'use server';
+
 import { db } from '@/lib/firebase/index';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, type FieldValue } from 'firebase/firestore';
 import { getAvailableLessons, getGeneratedLessonById, type Lesson, type StageProgress } from '@/data/lessons'; // Added getGeneratedLessonById
@@ -51,29 +53,16 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       const data = userDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
       const defaultLessonId = "lesson1";
 
-      let lessonStageProgress = data.lessonStageProgress || {};
-      // Ensure the currentLessonId and its initial stage progress exists if lessonStageProgress is empty or currentLessonId is missing
-      const currentLesson = data.currentLessonId || defaultLessonId;
-      if (!lessonStageProgress[currentLesson]) {
-        const lessonData = await getGeneratedLessonById(currentLesson); // Fetch lesson structure
-        if (lessonData) {
-            lessonStageProgress[currentLesson] = initializeDefaultStageProgressForLesson(lessonData);
-        } else {
-            console.warn(`[SERVER LOG] [userProgressService.getUserProgress] Could not find lesson data for ${currentLesson} to initialize stage progress.`);
-            // Fallback: create an empty structure to prevent crashes, though this indicates a deeper issue.
-            lessonStageProgress[currentLesson] = { currentStageIndex: 0, stages: {} };
-        }
-      }
-
-
+      // Return data directly from Firestore without triggering AI generation.
+      // The frontend or specific user actions will handle initialization if needed.
       return {
         userId,
         username: data.username,
         totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0,
-        currentLessonId: currentLesson,
+        currentLessonId: data.currentLessonId || defaultLessonId,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : [defaultLessonId],
-        lessonStageProgress: lessonStageProgress,
+        lessonStageProgress: data.lessonStageProgress || {},
       };
     } else {
       console.log(`[SERVER LOG] [userProgressService.getUserProgress] No progress document found for user ${userId}. Will attempt to create one.`);
