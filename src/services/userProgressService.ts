@@ -82,29 +82,17 @@ export async function createUserProgressDocument(userId: string, initialData?: P
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const defaultLessonId = "lesson1";
-    const currentLessonToInit = initialData?.currentLessonId ?? defaultLessonId;
-
-    let initialLessonStageProgress: UserProgressData['lessonStageProgress'] = {};
-    const lessonData = await getGeneratedLessonById(currentLessonToInit);
-    if (lessonData) {
-        initialLessonStageProgress[currentLessonToInit] = initializeDefaultStageProgressForLesson(lessonData);
-    } else {
-        console.error(`[SERVER LOG] [userProgressService.createUserProgressDocument] CRITICAL: Could not load lesson data for ${currentLessonToInit} during new user setup.`);
-        // Create a fallback empty structure for lessonStageProgress to avoid app crash, but this is an error state.
-        initialLessonStageProgress[currentLessonToInit] = { currentStageIndex: 0, stages: {} };
-    }
-
 
     const dataToSet: UserProgressData = {
       userId,
       totalPoints: initialData?.totalPoints ?? 0,
-      currentLessonId: currentLessonToInit,
+      currentLessonId: initialData?.currentLessonId ?? defaultLessonId,
       completedLessons: initialData?.completedLessons ?? [],
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
         : [defaultLessonId],
       username: initialData?.username,
-      lessonStageProgress: initialData?.lessonStageProgress ?? initialLessonStageProgress,
+      lessonStageProgress: initialData?.lessonStageProgress ?? {}, // Initialize as empty. Progress is created on first lesson access.
     };
     
     // Firestore doesn't like `userId` field in the document itself if doc ID is userId
@@ -238,19 +226,10 @@ export async function completeStageInFirestore(
           nextLessonIdIfAny = nextLessonToUnlock.id;
           batch.update(userDocRef, {
             unlockedLessons: arrayUnion(nextLessonToUnlock.id),
-            // Optionally, set currentLessonId to the new one if auto-advancing lessons
-            // currentLessonId: nextLessonToUnlock.id, 
-            // For now, let user explicitly start new lesson.
           });
-          const nextLessonData = await getGeneratedLessonById(nextLessonToUnlock.id);
-          if (nextLessonData) {
-               batch.set(doc(db, USERS_COLLECTION, userId), { // Use set with merge if you want to ensure the structure exists
-                lessonStageProgress: {
-                    [nextLessonToUnlock.id]: initializeDefaultStageProgressForLesson(nextLessonData)
-                }
-               }, { merge: true });
-          }
-          console.log(`[UserProgress] Unlocked next lesson: ${nextLessonToUnlock.id}.`);
+          // Initialization of the next lesson's progress is removed to prevent blocking AI calls.
+          // This will be handled on the lesson page when the user navigates to it.
+          console.log(`[UserProgress] Unlocked next lesson: ${nextLessonToUnlock.id}. Progress will be initialized on first access.`);
         } else {
           console.log(`[UserProgress] Lesson ${lessonId} was the last lesson, or next lesson not found in manifest.`);
         }
