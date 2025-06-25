@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -62,10 +61,10 @@ export default function Home() {
   useEffect(() => {
     const lessonIdForLevel = selectedLesson?.id || userProgress?.currentLessonId;
     if (lessonIdForLevel) {
-      const level = getOverallLevelForLessonId(lessonIdForLevel);
+      const level = getLevelForLessonId(lessonIdForLevel);
       setCurrentOverallLevel(level || null);
     } else if (lessonList.length > 0) { // Fallback to first lesson's level if available
-      const level = getOverallLevelForLessonId(lessonList[0].id);
+      const level = getLevelForLessonId(lessonList[0].id);
        setCurrentOverallLevel(level || OVERALL_LEVELS[0] || null);
     } else {
       setCurrentOverallLevel(OVERALL_LEVELS[0] || null); // Default to first overall level
@@ -209,12 +208,14 @@ export default function Home() {
             const stageId = `stage${index + 1}`;
             const status = getStageStatusColor(stageId);
             const { title, icon: StageIcon } = stageDetails[index];
+            
             let bgColorClass = 'bg-foreground';
+            let contentColorClass = 'text-background'; // Default color for icon and title
             let showCheckIcon = false;
 
             if (status === 'completed-perfect' || status === 'completed-good') {
               showCheckIcon = true;
-              bgColorClass = 'bg-green-500';
+              contentColorClass = 'text-green-400';
             } else if (status === 'failed-stage') {
               bgColorClass = 'bg-red-500';
             }
@@ -225,11 +226,11 @@ export default function Home() {
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
                 <div className={cn("w-full relative flex flex-col items-center justify-between p-2 text-center", heightClass, bgColorClass)}>
-                  <div className="flex items-center gap-2">
-                    <StageIcon className="h-4 w-4 text-background" />
-                    <span className="text-background font-semibold text-xs md:text-sm">{title}</span>
+                  <div className={cn("flex items-center gap-2", contentColorClass)}>
+                    <StageIcon className="h-4 w-4" />
+                    <span className="font-semibold text-xs md:text-sm">{title}</span>
                   </div>
-                  {showCheckIcon && <CheckCircle className="h-8 w-8 text-white" />}
+                  {showCheckIcon && <CheckCircle className="h-8 w-8 text-green-400" />}
                 </div>
               </div>
             );
