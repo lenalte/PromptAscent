@@ -8,10 +8,10 @@ import {
   getUserProgress,
   createUserProgressDocument,
   updateUserDocument,
-  completeStageInFirestore, // Changed from completeLessonInFirestore
+  completeStageInFirestore,
   type UserProgressData
 } from '@/services/userProgressService';
-import type { StageItemStatus } from '@/ai/schemas/lesson-schemas'; // For typing
+import type { StageItemStatus, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { useRouter } from 'next/navigation';
 
 const USERS_COLLECTION = 'users';
@@ -21,20 +21,17 @@ interface UserProgressContextType {
   userProgress: UserProgressData | null;
   isLoadingAuth: boolean;
   isLoadingProgress: boolean;
-  // addPointsToTotal: (amount: number) => Promise<void>; // This might be handled by stage completion points
   completeStageAndProceed: (
     lessonId: string,
     stageId: string,
     stageIndex: number,
     stageItemsWithStatus: { [itemId: string]: StageItemStatus },
-    pointsEarnedThisStage: number
-  ) => Promise<{ nextLessonIdIfAny: string | null }>; // Returns ID of next *lesson* if current lesson completed.
+    pointsEarnedThisStage: number,
+    stageItems: LessonItem[]
+  ) => Promise<{ nextLessonIdIfAny: string | null }>;
   signUpWithEmail: (email: string, password: string, username: string) => Promise<User | null>;
   signInWithEmail: (email: string, password: string) => Promise<User | null>;
   logOut: () => Promise<void>;
-  // Redundant, can be derived from userProgress
-  // currentLessonId: string | null;
-  // unlockedLessons: string[];
 }
 
 const UserProgressContext = createContext<UserProgressContextType | undefined>(undefined);
@@ -129,7 +126,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     stageId: string,
     stageIndex: number,
     stageItemsWithStatus: { [itemId: string]: StageItemStatus },
-    pointsEarnedThisStage: number
+    pointsEarnedThisStage: number,
+    stageItems: LessonItem[]
   ): Promise<{ nextLessonIdIfAny: string | null }> => {
     if (!currentUser || !db) {
       console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - no current user or db unavailable.");
@@ -150,7 +148,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         stageId,
         stageIndex,
         stageItemsWithStatus,
-        pointsEarnedThisStage
+        pointsEarnedThisStage,
+        stageItems
       );
 
       setUserProgress(updatedProgress);

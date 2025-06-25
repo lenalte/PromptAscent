@@ -160,7 +160,8 @@ export default function LessonPage() {
             currentStage.id,
             currentStageIndex,
             stageItemAttempts, 
-            pointsEarnedThisStageSession 
+            pointsEarnedThisStageSession,
+            currentStage.items as LessonItem[]
         );
         setIsSubmittingStage(false);
 
@@ -230,7 +231,8 @@ export default function LessonPage() {
                     currentStage.id,
                     currentStageIndex,
                     stageItemAttempts,
-                    pointsEarnedThisStageSession
+                    pointsEarnedThisStageSession,
+                    currentStage.items as LessonItem[]
                 );
                 setIsSubmittingStage(false);
                 setIsLessonFullyCompleted(true); 
@@ -252,8 +254,7 @@ export default function LessonPage() {
         const isLastItemOfStage = lessonQueue.indexOf(currentItem) === lessonQueue.length - 1;
         const isLastStageOfLesson = currentStageIndex === 5;
 
-        // Define an object with all common props EXCEPT the React key
-        const propsToSpread = {
+        const props = {
             title: currentItem.title,
             pointsForCorrect: pointsForThisAttempt,
             pointsForIncorrect: 0, 
@@ -261,20 +262,18 @@ export default function LessonPage() {
             isLastItem: isLastItemOfStage && isLastStageOfLesson, 
             onNext: handleNext,
             lessonPoints: lessonPoints, 
-            id: currentItem.originalItemId, // Use originalItemId for component's internal logic
+            id: currentItem.originalItemId,
         };
 
         switch (currentItem.type) {
             case 'freeResponse':
-                return <FreeResponseQuestion key={currentItem.key} {...propsToSpread} question={currentItem.question} expectedAnswer={currentItem.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
+                return <FreeResponseQuestion key={currentItem.key} {...props} question={currentItem.question} expectedAnswer={currentItem.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
             case 'multipleChoice':
-                return <MultipleChoiceQuestion key={currentItem.key} {...propsToSpread} question={currentItem.question} options={currentItem.options} correctOptionIndex={currentItem.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
+                return <MultipleChoiceQuestion key={currentItem.key} {...props} question={currentItem.question} options={currentItem.options} correctOptionIndex={currentItem.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextQuestion={handleNext} />;
             case 'informationalSnippet':
-                // For snippets, onAcknowledged leads to handleNext.
-                // Points are handled in handleNext for snippets to award only once.
-                return <InformationalSnippet key={currentItem.key} {...propsToSpread} content={currentItem.content} pointsAwarded={currentItem.originalPointsAwarded} onAcknowledged={handleNext} />;
+                return <InformationalSnippet key={currentItem.key} {...props} content={currentItem.content} pointsAwarded={currentItem.originalPointsAwarded} onAcknowledged={handleNext} />;
             case 'promptingTask':
-                return <PromptingTask key={currentItem.key} {...propsToSpread} taskDescription={currentItem.taskDescription} evaluationGuidance={currentItem.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextTask={handleNext} />;
+                return <PromptingTask key={currentItem.key} {...props} taskDescription={currentItem.taskDescription} evaluationGuidance={currentItem.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt)} onNextTask={handleNext} />;
             default:
                 const _exhaustiveCheck: never = currentItem;
                 return <div>Error: Unknown item type.</div>;
@@ -435,4 +434,3 @@ export default function LessonPage() {
         </main>
     );
 }
-

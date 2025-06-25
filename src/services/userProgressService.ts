@@ -3,7 +3,7 @@
 
 import { db } from '@/lib/firebase/index';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, type FieldValue } from 'firebase/firestore';
-import { getAvailableLessons, getGeneratedLessonById, type Lesson, type StageProgress } from '@/data/lessons'; // Added getGeneratedLessonById
+import { getAvailableLessons, type Lesson, type StageProgress, type LessonItem } from '@/data/lessons';
 
 export interface UserProgressData {
   userId: string;
@@ -25,21 +25,6 @@ export interface UserProgressData {
 
 const USERS_COLLECTION = 'users';
 
-// Helper to initialize stage progress for a new lesson
-function initializeDefaultStageProgressForLesson(lesson: Lesson): { currentStageIndex: number; stages: { [stageId: string]: StageProgress } } {
-  const stagesProgress: { [stageId: string]: StageProgress } = {};
-  lesson.stages.forEach((stage, index) => {
-    stagesProgress[stage.id] = {
-      status: index === 0 ? 'unlocked' : 'locked', // Unlock first stage
-      items: {}, // Item attempts will be populated as user interacts
-    };
-  });
-  return {
-    currentStageIndex: 0, // Start at the first stage
-    stages: stagesProgress,
-  };
-}
-
 export async function getUserProgress(userId: string): Promise<UserProgressData | null> {
   if (!db) {
     console.error("[SERVER LOG] [userProgressService.getUserProgress] Firestore (db) is not available for user:", userId);
@@ -53,8 +38,6 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       const data = userDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
       const defaultLessonId = "lesson1";
 
-      // Return data directly from Firestore without triggering AI generation.
-      // The frontend or specific user actions will handle initialization if needed.
       return {
         userId,
         username: data.username,
@@ -92,10 +75,9 @@ export async function createUserProgressDocument(userId: string, initialData?: P
         ? initialData.unlockedLessons
         : [defaultLessonId],
       username: initialData?.username,
-      lessonStageProgress: initialData?.lessonStageProgress ?? {}, // Initialize as empty. Progress is created on first lesson access.
+      lessonStageProgress: initialData?.lessonStageProgress ?? {},
     };
     
-    // Firestore doesn't like `userId` field in the document itself if doc ID is userId
     const { userId: _, ...firestoreData } = dataToSet; 
 
     await setDoc(userDocRef, firestoreData);
@@ -122,11 +104,6 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
     if ('username' in cleanDataToUpdate && cleanDataToUpdate.username === undefined) {
        delete cleanDataToUpdate.username;
     }
-    // For nested objects like lessonStageProgress, ensure specific paths are updated
-    // e.g., `lessonStageProgress.lesson1.currentStageIndex`
-    // Simple spread might overwrite entire lessonStageProgress if not careful.
-    // For now, assuming direct update path if lessonStageProgress is included.
-    // Example: updateDoc(userDocRef, { "lessonStageProgress.lesson1.currentStageIndex": 2 });
 
     await updateDoc(userDocRef, cleanDataToUpdate);
     console.log(`[SERVER LOG] [userProgressService.updateUserDocument] User document updated for ${userId} with data:`, cleanDataToUpdate);
@@ -142,7 +119,8 @@ export async function completeStageInFirestore(
   completedStageId: string, // e.g., "stage1"
   completedStageIndex: number, // 0-5
   stageItemsWithStatus: { [itemId: string]: { attempts: number; correct: boolean | null } },
-  pointsEarnedThisStage: number
+  pointsEarnedThisStage: number,
+  stageItems: LessonItem[] // Passed from client
 ): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData }> {
   if (!db) {
     console.error("[userProgressService.completeStageInFirestore] Firestore (db) is not available.");
@@ -159,25 +137,20 @@ export async function completeStageInFirestore(
       throw new Error(`User progress not found for ${userId} when trying to complete stage.`);
     }
 
-    // Determine stage status (perfect, good, failed)
     let stageStatus: StageProgress['status'] = 'completed-perfect';
     let allPerfect = true;
     let anyFailedMaxAttempts = false;
 
-    const lessonData = await getGeneratedLessonById(lessonId);
-    if (!lessonData) throw new Error(`Lesson data for ${lessonId} not found.`);
-    const stageItems = lessonData.stages[completedStageIndex]?.items || [];
-
     for (const item of stageItems) {
       const itemResult = stageItemsWithStatus[item.id];
-      if (!itemResult) { // Should not happen if all items are processed
+      if (!itemResult) {
         console.warn(`[UserProgress] Item ${item.id} missing in stageItemsWithStatus for stage ${completedStageId}`);
-        allPerfect = false; // Treat missing as not perfect
+        allPerfect = false; 
         continue;
       }
       if (itemResult.correct === false && itemResult.attempts >= 3) {
         anyFailedMaxAttempts = true;
-        break; // Stage failed
+        break; 
       }
       if (itemResult.correct === false || itemResult.attempts > 1) {
         allPerfect = false;
@@ -189,13 +162,11 @@ export async function completeStageInFirestore(
     } else if (!allPerfect) {
       stageStatus = 'completed-good';
     }
-    // else it remains 'completed-perfect'
 
-    // Update stage progress in Firestore
     const stageProgressPath = `lessonStageProgress.${lessonId}.stages.${completedStageId}`;
     batch.update(userDocRef, {
       [`${stageProgressPath}.status`]: stageStatus,
-      [`${stageProgressPath}.items`]: stageItemsWithStatus, // Overwrite/set all item statuses for this stage
+      [`${stageProgressPath}.items`]: stageItemsWithStatus,
       totalPoints: currentUserProgress.totalPoints + pointsEarnedThisStage,
     });
     console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${pointsEarnedThisStage}. New total (pending commit): ${currentUserProgress.totalPoints + pointsEarnedThisStage}`);
@@ -203,22 +174,20 @@ export async function completeStageInFirestore(
     let nextLessonIdIfAny: string | null = null;
 
     if (stageStatus !== 'failed-stage') {
-      if (completedStageIndex < 5) { // Not the last stage of the lesson
+      if (completedStageIndex < 5) {
         const nextStageIndex = completedStageIndex + 1;
-        const nextStageId = `stage${nextStageIndex + 1}`; // Assuming stage IDs are "stage1", "stage2", etc.
+        const nextStageId = `stage${nextStageIndex + 1}`;
         batch.update(userDocRef, {
           [`lessonStageProgress.${lessonId}.currentStageIndex`]: nextStageIndex,
           [`lessonStageProgress.${lessonId}.stages.${nextStageId}.status`]: 'unlocked',
         });
         console.log(`[UserProgress] Advancing to stage ${nextStageId} (index ${nextStageIndex}) in lesson ${lessonId}.`);
-      } else { // Last stage of the lesson completed successfully
+      } else {
         batch.update(userDocRef, {
           completedLessons: arrayUnion(lessonId),
-          // currentLessonId remains this lesson until user navigates away or starts next explicitly
         });
         console.log(`[UserProgress] Lesson ${lessonId} fully completed.`);
 
-        // Unlock next lesson in sequence
         const allLessonsManifest = await getAvailableLessons();
         const currentLessonManifestIndex = allLessonsManifest.findIndex(l => l.id === lessonId);
         if (currentLessonManifestIndex !== -1 && currentLessonManifestIndex < allLessonsManifest.length - 1) {
@@ -227,15 +196,12 @@ export async function completeStageInFirestore(
           batch.update(userDocRef, {
             unlockedLessons: arrayUnion(nextLessonToUnlock.id),
           });
-          // Initialization of the next lesson's progress is removed to prevent blocking AI calls.
-          // This will be handled on the lesson page when the user navigates to it.
           console.log(`[UserProgress] Unlocked next lesson: ${nextLessonToUnlock.id}. Progress will be initialized on first access.`);
         } else {
           console.log(`[UserProgress] Lesson ${lessonId} was the last lesson, or next lesson not found in manifest.`);
         }
       }
     } else {
-      // Stage failed, user remains on this stage. No advancement.
       console.log(`[UserProgress] Stage ${completedStageId} of lesson ${lessonId} failed. User remains on this stage.`);
     }
 
@@ -254,5 +220,3 @@ export async function completeStageInFirestore(
     throw error;
   }
 }
-
-    
