@@ -223,7 +223,7 @@ export default function Home() {
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
                 <div className={cn("w-full relative flex flex-col items-center justify-between p-2 text-center", heightClass, bgColorClass)}>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <StageIcon className="h-4 w-4 text-background" />
                     <span className="text-background font-semibold text-xs md:text-sm">{title}</span>
                   </div>
