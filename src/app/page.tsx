@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -213,6 +214,7 @@ export default function Home() {
 
             if (status === 'completed-perfect' || status === 'completed-good') {
               showCheckIcon = true;
+              bgColorClass = 'bg-green-500';
             } else if (status === 'failed-stage') {
               bgColorClass = 'bg-red-500';
             }
@@ -227,7 +229,7 @@ export default function Home() {
                     <StageIcon className="h-4 w-4 text-background" />
                     <span className="text-background font-semibold text-xs md:text-sm">{title}</span>
                   </div>
-                  {showCheckIcon && <CheckCircle className="h-8 w-8 text-green-500" />}
+                  {showCheckIcon && <CheckCircle className="h-8 w-8 text-white" />}
                 </div>
               </div>
             );
