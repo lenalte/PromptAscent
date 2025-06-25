@@ -61,10 +61,10 @@ export default function Home() {
   useEffect(() => {
     const lessonIdForLevel = selectedLesson?.id || userProgress?.currentLessonId;
     if (lessonIdForLevel) {
-      const level = getLevelForLessonId(lessonIdForLevel);
+      const level = getOverallLevelForLessonId(lessonIdForLevel);
       setCurrentOverallLevel(level || null);
     } else if (lessonList.length > 0) { // Fallback to first lesson's level if available
-      const level = getLevelForLessonId(lessonList[0].id);
+      const level = getOverallLevelForLessonId(lessonList[0].id);
        setCurrentOverallLevel(level || OVERALL_LEVELS[0] || null);
     } else {
       setCurrentOverallLevel(OVERALL_LEVELS[0] || null); // Default to first overall level
@@ -215,7 +215,7 @@ export default function Home() {
 
             if (status === 'completed-perfect' || status === 'completed-good') {
               showCheckIcon = true;
-              contentColorClass = 'text-green-400';
+              contentColorClass = 'text-green-400'; // Change content color to green
             } else if (status === 'failed-stage') {
               bgColorClass = 'bg-red-500';
             }
