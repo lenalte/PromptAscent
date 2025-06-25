@@ -120,6 +120,15 @@ export default function Home() {
     'h-[6.5rem]', 'h-[9rem]', 'h-[11.5rem]', 'h-[14rem]', 'h-[16.5rem]', 'h-[19rem]'
   ];
 
+  const stageTitles = [
+    'Verstehen',
+    'Anwenden',
+    'Variieren',
+    'Reflektieren',
+    'Wiederholen',
+    'Anwenden & Reflektieren',
+  ];
+
 
   return (
     <>
@@ -213,8 +222,9 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex items-center justify-center", heightClass, bgColorClass)}>
-                   {showCheckIcon && <CheckCircle className="h-8 w-8 text-green-500" />}
+                <div className={cn("w-full relative flex flex-col items-center justify-center p-2 text-center", heightClass, bgColorClass)}>
+                   <span className="text-background font-semibold text-sm">{stageTitles[index]}</span>
+                   {showCheckIcon && <CheckCircle className="h-8 w-8 text-green-500 mt-2" />}
                 </div>
               </div>
             );
