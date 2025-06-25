@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -225,12 +226,14 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex flex-col items-center justify-between p-2 text-center", heightClass, bgColorClass)}>
-                  <div className={cn("flex items-center gap-2", contentColorClass)}>
-                    <StageIcon className="h-4 w-4" />
-                    <span className="font-semibold text-xs md:text-sm">{title}</span>
-                  </div>
-                  {showCheckIcon && <CheckCircle className="h-12 w-12 text-green-400" />}
+                <div className={cn("w-full relative flex flex-col items-center justify-center p-2 text-center", heightClass, bgColorClass)}>
+                    <div className="flex flex-col items-center">
+                        <div className={cn("flex items-center gap-2", contentColorClass)}>
+                            <StageIcon className="h-4 w-4" />
+                            <span className="font-semibold text-xs md:text-sm">{title}</span>
+                        </div>
+                        {showCheckIcon && <CheckCircle className="h-12 w-12 text-green-400 mt-4" />}
+                    </div>
                 </div>
               </div>
             );
