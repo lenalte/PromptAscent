@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -126,7 +125,7 @@ export default function Home() {
     { title: 'Variieren', icon: Shuffle },
     { title: 'Reflektieren', icon: Search },
     { title: 'Wiederholen', icon: Repeat },
-    { title: 'Anwenden & Reflektieren', icon: GraduationCap },
+    { title: 'Meistern', icon: GraduationCap },
   ];
 
 
