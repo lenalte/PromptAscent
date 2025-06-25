@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for generating structured lesson items, organized into 6 stages, from raw lesson text.
@@ -96,13 +95,13 @@ Stage 5: "Wiederholen" (Repeating - Revision Quiz)
     - 1-2 'freeResponse' questions summarizing or explaining important topics. (Assign IDs like "s5_fr1")
 - Point Allocation: MCQs (3-5pts), Free Response (5-7pts). 'pointsForIncorrect' must be 0.
 
-Stage 6: "Anwenden & Reflektieren" (Applying & Reflecting - Complex Task)
+Stage 6: "Meistern" (Mastery)
 - id: "stage6"
-- title: "Stage 6: Anwenden & Reflektieren"
-- Goal: Apply knowledge to a complex task and reflect on the learning process.
+- title: "Stage 6: Meistern"
+- Goal: Apply all learned knowledge to a complex final task and reflect on the learning process.
 - Item Types:
     - 1 'promptingTask' (complex) that requires integrating multiple concepts from the lesson. Evaluation guidance should be comprehensive. (Assign ID like "s6_pt_complex1")
-    - 1 'freeResponse' question: "What are your key takeaways from this lesson and how might you apply them in the future?" (Expected answer should be a placeholder like "User's personal reflection"). (Assign ID like "s6_fr_reflect1")
+    - 1 'freeResponse' question: "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?" (Expected answer should be a placeholder like "User's personal reflection"). (Assign ID like "s6_fr_reflect1")
 - Point Allocation: Complex Prompting Task (15-20pts), Reflection Free Response (5pts). 'pointsForIncorrect' must be 0.
 
 CRITICAL Content Sequencing Rule:
@@ -113,7 +112,7 @@ CRITICAL Content Sequencing Rule:
 General Guidelines:
 - Each stage must have the specified 'id' (e.g., "stage1") and 'title' (e.g., "Stage 1: Verstehen").
 - Ensure generated JSON is valid and strictly adheres to the Lesson schema structure, including all required fields for each item type and stage.
-- The final output should be a single JSON object: { "id": "{{{lessonId}}}", "title": "{{{lessonTitle}}}", "description": "{{{lessonDescription}}}", "stages": [ { "id": "stage1", "title": "Stage 1: Verstehen", "items": [...] }, ...6 stages total... ] }.
+- The final output should be a single JSON object: { "id": "{{{lessonId}}}", "title": "{{{lessonTitle}}}", "description": "{{{lessonDescription}}}", "stages": [ { "id": "stage1", "title": "Stage 1: Verstehen", "items": [...] }, ..., { "id": "stage6", "title": "Stage 6: Meistern", "items": [...] } ] }.
 - For multiple choice options, ensure one is clearly correct based on the text and others are plausible distractors.
 - For prompting tasks, the taskDescription should clearly state what the user needs to do, and evaluationGuidance should provide clear, actionable criteria.
 
