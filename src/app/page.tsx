@@ -1,10 +1,11 @@
+
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -198,18 +199,23 @@ export default function Home() {
           {stageHeights.map((heightClass, index) => {
             const stageId = `stage${index + 1}`;
             const status = getStageStatusColor(stageId);
-            let bgColorClass = 'bg-foreground'; // Default (foreground for open/pending)
-            if (status === 'completed-perfect') bgColorClass = 'bg-green-500';
-            else if (status === 'completed-good') bgColorClass = 'bg-yellow-500';
-            else if (status === 'failed-stage') bgColorClass = 'bg-red-500';
-            // 'locked' and 'unlocked' or 'in-progress' will use default 'bg-foreground' or could be styled differently
+            let bgColorClass = 'bg-foreground';
+            let showCheckIcon = false;
+
+            if (status === 'completed-perfect' || status === 'completed-good') {
+              showCheckIcon = true;
+            } else if (status === 'failed-stage') {
+              bgColorClass = 'bg-red-500';
+            }
 
             return (
               <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full", heightClass, bgColorClass)}></div>
+                <div className={cn("w-full relative flex items-center justify-center", heightClass, bgColorClass)}>
+                   {showCheckIcon && <CheckCircle className="h-8 w-8 text-green-500" />}
+                </div>
               </div>
             );
           })}
