@@ -226,7 +226,7 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex flex-col items-center justify-center p-2 text-center", heightClass, bgColorClass)}>
+                <div className={cn("w-full relative flex flex-col items-center justify-start p-2 text-center", heightClass, bgColorClass)}>
                     <div className="flex flex-col items-center">
                         <div className={cn("flex items-center gap-2", contentColorClass)}>
                             <StageIcon className="h-4 w-4" />
