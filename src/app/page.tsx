@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, Lightbulb, PencilRuler, Shuffle, Search, Repeat, GraduationCap } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, PencilRuler, Shuffle, Search, Repeat, GraduationCap } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -16,6 +16,7 @@ import type { Level as OverallLevel } from '@/data/level-structure';
 import { getLevelForLessonId as getOverallLevelForLessonId, LEVELS as OVERALL_LEVELS } from '@/data/level-structure';
 import { ProfilIcon } from '@/components/icons/ProfilIcon';
 import { cn } from '@/lib/utils';
+import { MagnifyingGlassIcon } from '@/components/icons/MagnifyingGlassIcon';
 
 
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
@@ -121,7 +122,7 @@ export default function Home() {
   ];
 
   const stageDetails = [
-    { title: 'Verstehen', icon: Lightbulb },
+    { title: 'Verstehen', icon: MagnifyingGlassIcon },
     { title: 'Anwenden', icon: PencilRuler },
     { title: 'Variieren', icon: Shuffle },
     { title: 'Reflektieren', icon: Search },
