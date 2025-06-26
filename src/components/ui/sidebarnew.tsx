@@ -144,11 +144,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     <LoginIcon />
                                 </Button>
                             </Link>
-                            <Link href="/auth/register" passHref legacyBehavior>
-                                <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Register">
-                                    <UserPlus />
-                                </Button>
-                            </Link>
                         </>
                     ) : (
                         <Button variant="ghost" size="icon" onClick={logOut} className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Logout">
