@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, Repeat, GraduationCap } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, GraduationCap } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -20,6 +20,7 @@ import { MagnifyingGlassIcon } from '@/components/icons/MagnifyingGlassIcon';
 import { ApplyIcon } from '@/components/icons/ApplyIcon';
 import { VaryIcon } from '@/components/icons/VaryIcon';
 import { LightbulbIcon } from '@/components/icons/LightbulbIcon';
+import { RepeatIcon } from '@/components/icons/RepeatIcon';
 
 
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
@@ -129,7 +130,7 @@ export default function Home() {
     { title: 'Anwenden', icon: ApplyIcon },
     { title: 'Variieren', icon: VaryIcon },
     { title: 'Reflektieren', icon: MagnifyingGlassIcon },
-    { title: 'Wiederholen', icon: Repeat },
+    { title: 'Wiederholen', icon: RepeatIcon },
     { title: 'Meistern', icon: GraduationCap },
   ];
 
