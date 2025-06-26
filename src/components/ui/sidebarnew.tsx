@@ -4,11 +4,13 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3, LogIn, UserPlus, LogOut, Lock, LockOpen } from 'lucide-react'; // Added Lock, LockOpen
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3, LogIn, UserPlus, LogOut } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { Button } from "./button"; // Assuming Button is in the same folder or accessible path
 import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new ProfilIcon
+import { LockClosedIcon } from "@/components/icons/lock_closed";
+import { LockOpenIcon } from "@/components/icons/lock_open";
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -204,9 +206,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                         <div className="flex items-center overflow-hidden">
                                                             <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
                                                                 {isLessonEffectivelyUnlocked(lesson.id) ? (
-                                                                    <LockOpen className="h-5 w-5 text-foreground shrink-0" />
+                                                                    <LockOpenIcon className="text-foreground shrink-0" />
                                                                 ) : (
-                                                                    <Lock className="h-5 w-5 text-foreground shrink-0" />
+                                                                    <LockClosedIcon className="text-foreground shrink-0" />
                                                                 )}
                                                             </span>
                                                             <span className={cn(
