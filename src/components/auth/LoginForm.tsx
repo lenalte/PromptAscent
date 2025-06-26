@@ -13,12 +13,11 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, LogIn, User as UserIcon } from 'lucide-react'; // Added UserIcon
+import { Loader2, LogIn, User as UserIcon } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }), // Or make email optional if username can be used for login
-  // username: z.string().min(1, { message: "Username is required." }), // If username can be used for login instead of email
+  email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(1, { message: "Password is required." }),
 });
 
@@ -35,7 +34,6 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
-      // username: '',
       password: '',
     },
   });
@@ -43,34 +41,25 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     setError(null);
-    try {
-      // Firebase signInWithEmailAndPassword uses email.
-      // If username login is intended, a lookup for email by username would be needed here.
-      // For now, we'll proceed with email-based login.
-      await signInWithEmail(data.email, data.password);
+    
+    const result = await signInWithEmail(data.email, data.password);
+
+    if (result.error) {
+      setError(result.error);
+      toast({
+        title: "Login Failed",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
-      router.push('/'); // Redirect to homepage or dashboard
-    } catch (err: any) {
-      const firebaseError = err as { code?: string; message?: string };
-      console.error("Login failed:", firebaseError);
-      let errorMessage = "Login failed. Please check your credentials and try again.";
-      if (firebaseError.code === "auth/user-not-found" || firebaseError.code === "auth/wrong-password" || firebaseError.code === "auth/invalid-credential") {
-        errorMessage = "Invalid email or password.";
-      } else if (firebaseError.message) {
-        errorMessage = firebaseError.message;
-      }
-      setError(errorMessage);
-      toast({
-        title: "Login Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      router.push('/');
     }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -82,24 +71,6 @@ export default function LoginForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/*
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="username">Username</Label>
-                  <FormControl>
-                    <div className="relative">
-                      <UserIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input id="username" placeholder="your_username" {...field} disabled={isLoading} className="pl-8" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            */}
             <FormField
               control={form.control}
               name="email"

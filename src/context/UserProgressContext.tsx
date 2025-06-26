@@ -8,13 +8,18 @@ import {
   getUserProgress,
   createUserProgressDocument,
   updateUserDocument,
-  completeStageInFirestore,
   type UserProgressData
 } from '@/services/userProgressService';
 import type { StageItemStatus, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { useRouter } from 'next/navigation';
 
 const USERS_COLLECTION = 'users';
+
+// New result type for auth operations
+interface AuthResult {
+  user: User | null;
+  error?: string;
+}
 
 interface UserProgressContextType {
   currentUser: User | null;
@@ -29,8 +34,8 @@ interface UserProgressContextType {
     pointsEarnedThisStage: number,
     stageItems: LessonItem[]
   ) => Promise<{ nextLessonIdIfAny: string | null }>;
-  signUpWithEmail: (email: string, password: string, username: string) => Promise<User | null>;
-  signInWithEmail: (email: string, password: string) => Promise<User | null>;
+  signUpWithEmail: (email: string, password: string, username: string) => Promise<AuthResult>;
+  signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
   logOut: () => Promise<void>;
 }
 
@@ -163,38 +168,58 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, [currentUser, userProgress]);
 
-  const signUpWithEmail = useCallback(async (email: string, password: string, username: string): Promise<User | null> => {
+  const signUpWithEmail = useCallback(async (email: string, password: string, username: string): Promise<AuthResult> => {
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth not initialized for sign up");
-      throw new Error("Firebase Auth not initialized");
+      return { user: null, error: "Authentication service not available." };
     }
     setIsLoadingAuth(true);
     try {
       queuedUsernameRef.current = username;
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed up successfully:", userCredential.user.uid);
-      return userCredential.user;
+      return { user: userCredential.user, error: undefined };
     } catch (error) {
       console.error("[UserProgressContext] Error signing up:", error);
       queuedUsernameRef.current = null;
-      throw error;
+      const firebaseError = error as AuthError;
+      let errorMessage = "Registration failed. Please try again.";
+      if (firebaseError.code === "auth/email-already-in-use") {
+        errorMessage = "This email is already registered. Please try logging in.";
+      } else if (firebaseError.code === "auth/weak-password") {
+        errorMessage = "The password is too weak. Please choose a stronger password.";
+      } else if (firebaseError.message) {
+        errorMessage = firebaseError.message;
+      }
+      return { user: null, error: errorMessage };
+    } finally {
+        setIsLoadingAuth(false);
     }
   }, []);
 
-  const signInWithEmail = useCallback(async (email: string, password: string): Promise<User | null> => {
+  const signInWithEmail = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth not initialized for sign in");
-      throw new Error("Firebase Auth not initialized");
+      return { user: null, error: "Authentication service not available." };
     }
     setIsLoadingAuth(true);
     try {
       queuedUsernameRef.current = null;
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed in successfully:", userCredential.user.uid);
-      return userCredential.user;
+      return { user: userCredential.user, error: undefined };
     } catch (error) {
       console.error("[UserProgressContext] Error signing in:", error);
-      throw error;
+      const firebaseError = error as AuthError;
+      let errorMessage = "Login failed. Please check your credentials and try again.";
+      if (firebaseError.code === "auth/user-not-found" || firebaseError.code === "auth/wrong-password" || firebaseError.code === "auth/invalid-credential") {
+        errorMessage = "Invalid email or password.";
+      } else if (firebaseError.message) {
+        errorMessage = firebaseError.message;
+      }
+      return { user: null, error: errorMessage };
+    } finally {
+        setIsLoadingAuth(false);
     }
   }, []);
 

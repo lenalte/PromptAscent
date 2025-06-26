@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, UserPlus, User as UserIcon } from 'lucide-react'; // Added UserIcon
+import { Loader2, UserPlus, User as UserIcon } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 const registrationSchema = z.object({
@@ -48,33 +48,25 @@ export default function RegistrationForm() {
   const onSubmit = async (data: RegistrationFormValues) => {
     setIsLoading(true);
     setError(null);
-    try {
-      await signUpWithEmail(data.email, data.password, data.username); // Pass username
+
+    const result = await signUpWithEmail(data.email, data.password, data.username);
+
+    if (result.error) {
+      setError(result.error);
+      toast({
+        title: "Registration Failed",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
       toast({
         title: "Registration Successful",
         description: "Your account has been created. Welcome!",
       });
-      router.push('/'); // Redirect to homepage or login page
-    } catch (err: any) {
-      const firebaseError = err as { code?: string; message?: string };
-      console.error("Registration failed:", firebaseError);
-      let errorMessage = "Registration failed. Please try again.";
-       if (firebaseError.code === "auth/email-already-in-use") {
-        errorMessage = "This email is already registered. Please try logging in.";
-      } else if (firebaseError.code === "auth/weak-password") {
-        errorMessage = "The password is too weak. Please choose a stronger password.";
-      } else if (firebaseError.message) {
-        errorMessage = firebaseError.message;
-      }
-      setError(errorMessage);
-      toast({
-        title: "Registration Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      router.push('/');
     }
+    
+    setIsLoading(false);
   };
 
   return (
