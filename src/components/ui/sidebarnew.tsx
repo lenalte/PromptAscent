@@ -4,13 +4,14 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, BarChart3, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, LogIn, UserPlus, LogOut } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { Button } from "./button"; // Assuming Button is in the same folder or accessible path
 import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new ProfilIcon
 import { LockClosedIcon } from "@/components/icons/lock_closed";
 import { LockOpenIcon } from "@/components/icons/lock_open";
+import { LeaderboardIcon } from "@/components/icons/LeaderboardIcon";
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -23,15 +24,6 @@ interface SidebarProps {
 }
 
 type LessonListing = Omit<Lesson, 'items'>;
-
-// Leaderboard Icon
-const LeaderboardIcon = ({ isActive }: { isActive?: boolean }) => (
-    <BarChart3 className={cn(
-        "h-8 w-8 shrink-0",
-        isActive ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
-    )} />
-);
-
 
 const Sidebar: React.FC<SidebarProps> = ({
     initialContentOpen = true,
@@ -136,7 +128,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         aria-label="Leaderboard"
                     >
-                        <LeaderboardIcon isActive={activeCategory === 'leaderboard' && isContentOpen} />
+                        <LeaderboardIcon className={cn(
+                            "h-8 w-8 shrink-0",
+                            activeCategory === 'leaderboard' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
+                        )} />
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
