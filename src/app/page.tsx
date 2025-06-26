@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, Search, Repeat, GraduationCap } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, Repeat, GraduationCap, Lightbulb } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -13,7 +13,7 @@ import LevelAndInformationBar from '@/components/LevelAndInformationBar';
 import BirdsBackground from '@/components/BirdsBackground';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import type { Level as OverallLevel } from '@/data/level-structure';
-import { getLevelForLessonId as getOverallLevelForLessonId, LEVELS as OVERALL_LEVELS } from '@/data/level-structure';
+import { getLevelForLessonId, LEVELS as OVERALL_LEVELS } from '@/data/level-structure';
 import { ProfilIcon } from '@/components/icons/ProfilIcon';
 import { cn } from '@/lib/utils';
 import { MagnifyingGlassIcon } from '@/components/icons/MagnifyingGlassIcon';
@@ -65,10 +65,10 @@ export default function Home() {
   useEffect(() => {
     const lessonIdForLevel = selectedLesson?.id || userProgress?.currentLessonId;
     if (lessonIdForLevel) {
-      const level = getOverallLevelForLessonId(lessonIdForLevel);
+      const level = getLevelForLessonId(lessonIdForLevel);
       setCurrentOverallLevel(level || null);
     } else if (lessonList.length > 0) { // Fallback to first lesson's level if available
-      const level = getOverallLevelForLessonId(lessonList[0].id);
+      const level = getLevelForLessonId(lessonList[0].id);
        setCurrentOverallLevel(level || OVERALL_LEVELS[0] || null);
     } else {
       setCurrentOverallLevel(OVERALL_LEVELS[0] || null); // Default to first overall level
@@ -124,10 +124,10 @@ export default function Home() {
   ];
 
   const stageDetails = [
-    { title: 'Verstehen', icon: MagnifyingGlassIcon },
+    { title: 'Verstehen', icon: Lightbulb },
     { title: 'Anwenden', icon: ApplyIcon },
     { title: 'Variieren', icon: VaryIcon },
-    { title: 'Reflektieren', icon: Search },
+    { title: 'Reflektieren', icon: MagnifyingGlassIcon },
     { title: 'Wiederholen', icon: Repeat },
     { title: 'Meistern', icon: GraduationCap },
   ];
@@ -229,7 +229,7 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex flex-col items-start justify-start pt-2 px-2 text-center", heightClass, bgColorClass)}>
+                <div className={cn("w-full relative flex flex-col items-start pt-2 px-2 text-center", heightClass, bgColorClass)}>
                     <div className="flex flex-col items-center w-full">
                         <div className={cn("flex items-center gap-2", contentColorClass)}>
                             <StageIcon className="h-4 w-4" />
