@@ -239,7 +239,7 @@ export default function Home() {
                             <StageIcon className="h-4 w-4" />
                             <span className="font-semibold text-xs md:text-sm">{title}</span>
                         </div>
-                        {showCheckIcon && <CheckIcon className="h-12 w-12 text-white mt-4" />}
+                        {showCheckIcon && <CheckIcon className="h-12 w-12 text-green-400 mt-4" />}
                     </div>
                 </div>
               </div>
@@ -250,3 +250,5 @@ export default function Home() {
     </>
   );
 }
+
+    
