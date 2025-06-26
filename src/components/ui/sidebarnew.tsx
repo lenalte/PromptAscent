@@ -137,18 +137,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
-                    {!isAuthenticated ? (
-                        <>
-                            <Link href="/auth/login" passHref legacyBehavior>
-                                <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Login">
-                                    <LoginIcon />
-                                </Button>
-                            </Link>
-                        </>
-                    ) : (
+                    {isAuthenticated ? (
                         <Button variant="ghost" size="icon" onClick={logOut} className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Logout">
                             <LogoutIcon />
                         </Button>
+                    ) : (
+                         <Link href="/auth/login" passHref legacyBehavior>
+                            <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Login">
+                                <LoginIcon />
+                            </Button>
+                        </Link>
                     )}
                 </div>
             </div>
@@ -197,10 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                     <div className="flex items-center justify-between w-full">
                                                         <div className="flex items-center overflow-hidden">
                                                             <span className={cn(
-                                                                "mr-3 p-1.5 relative z-20 flex items-center justify-center",
-                                                                isLessonEffectivelyUnlocked(lesson.id)
-                                                                    ? "rounded-full"
-                                                                    : "bg-[hsl(var(--sidebar-background))] rounded-md"
+                                                                "mr-3 p-1.5 relative z-20 flex items-center justify-center bg-[hsl(var(--sidebar-background))] rounded-full"
                                                             )}>
                                                                 {isLessonEffectivelyUnlocked(lesson.id) ? (
                                                                     <LockOpenIcon className="shrink-0 text-[hsl(var(--foreground))]" />
