@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useRef } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useRef, useMemo } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError } from 'firebase/auth';
 import { auth, db } from '../lib/firebase/index';
 import {
@@ -161,9 +161,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     } finally {
       setIsLoadingProgress(false);
     }
-  }, [currentUser, userProgress, db]);
+  }, [currentUser, userProgress]);
 
-  const signUpWithEmail = async (email: string, password: string, username: string): Promise<User | null> => {
+  const signUpWithEmail = useCallback(async (email: string, password: string, username: string): Promise<User | null> => {
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth not initialized for sign up");
       throw new Error("Firebase Auth not initialized");
@@ -179,9 +179,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       queuedUsernameRef.current = null;
       throw error;
     }
-  };
+  }, []);
 
-  const signInWithEmail = async (email: string, password: string): Promise<User | null> => {
+  const signInWithEmail = useCallback(async (email: string, password: string): Promise<User | null> => {
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth not initialized for sign in");
       throw new Error("Firebase Auth not initialized");
@@ -196,9 +196,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       console.error("[UserProgressContext] Error signing in:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const logOut = async () => {
+  const logOut = useCallback(async () => {
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth not initialized for sign out");
       return;
@@ -210,19 +210,21 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     } catch (error) {
       console.error("[UserProgressContext] Error signing out:", error);
     }
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    currentUser,
+    userProgress,
+    isLoadingAuth,
+    isLoadingProgress,
+    completeStageAndProceed,
+    signUpWithEmail,
+    signInWithEmail,
+    logOut,
+  }), [currentUser, userProgress, isLoadingAuth, isLoadingProgress, completeStageAndProceed, signUpWithEmail, signInWithEmail, logOut]);
 
   return (
-    <UserProgressContext.Provider value={{
-      currentUser,
-      userProgress,
-      isLoadingAuth,
-      isLoadingProgress,
-      completeStageAndProceed,
-      signUpWithEmail,
-      signInWithEmail,
-      logOut,
-    }}>
+    <UserProgressContext.Provider value={value}>
       {children}
     </UserProgressContext.Provider>
   );
