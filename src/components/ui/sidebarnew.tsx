@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, LogIn, UserPlus } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { Button } from "./button"; // Assuming Button is in the same folder or accessible path
@@ -12,6 +12,7 @@ import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new Pr
 import { LockClosedIcon } from "@/components/icons/lock_closed";
 import { LockOpenIcon } from "@/components/icons/lock_open";
 import { LeaderboardIcon } from "@/components/icons/LeaderboardIcon";
+import { LogoutIcon } from "@/components/icons/LogoutIcon";
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -150,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </>
                     ) : (
                         <Button variant="ghost" size="icon" onClick={logOut} className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Logout">
-                            <LogOut />
+                            <LogoutIcon />
                         </Button>
                     )}
                 </div>
