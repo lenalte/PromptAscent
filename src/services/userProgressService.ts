@@ -111,7 +111,13 @@ export async function createUserProgressDocument(userId: string, initialData?: P
     };
     
     // Firestore doesn't like `userId` field in the document itself if doc ID is userId
-    const { userId: _, ...firestoreData } = dataToSet; 
+    const { userId: _, ...firestoreDataWithMaybeUndefined } = dataToSet;
+    const firestoreData: {[key: string]: any} = firestoreDataWithMaybeUndefined;
+
+    // Firestore throws an error if a field is explicitly set to `undefined`.
+    if ('username' in firestoreData && firestoreData.username === undefined) {
+      delete firestoreData.username;
+    }
 
     await setDoc(userDocRef, firestoreData);
     console.log(`[SERVER LOG] [userProgressService.createUserProgressDocument] User progress document created for ${userId} with data:`, firestoreData);
@@ -141,7 +147,6 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
     // e.g., `lessonStageProgress.lesson1.currentStageIndex`
     // Simple spread might overwrite entire lessonStageProgress if not careful.
     // For now, assuming direct update path if lessonStageProgress is included.
-    // Example: updateDoc(userDocRef, { "lessonStageProgress.lesson1.currentStageIndex": 2 });
 
     await updateDoc(userDocRef, cleanDataToUpdate);
     console.log(`[SERVER LOG] [userProgressService.updateUserDocument] User document updated for ${userId} with data:`, cleanDataToUpdate);
