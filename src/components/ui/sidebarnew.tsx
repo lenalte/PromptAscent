@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, LogIn, UserPlus } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { Button } from "./button"; // Assuming Button is in the same folder or accessible path
@@ -13,6 +13,7 @@ import { LockClosedIcon } from "@/components/icons/lock_closed";
 import { LockOpenIcon } from "@/components/icons/lock_open";
 import { LeaderboardIcon } from "@/components/icons/LeaderboardIcon";
 import { LogoutIcon } from "@/components/icons/LogoutIcon";
+import { LoginIcon } from "@/components/icons/LoginIcon";
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -140,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <>
                             <Link href="/auth/login" passHref legacyBehavior>
                                 <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Login">
-                                    <LogIn />
+                                    <LoginIcon />
                                 </Button>
                             </Link>
                             <Link href="/auth/register" passHref legacyBehavior>
@@ -260,5 +261,3 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
-
-    
