@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, PencilRuler, Shuffle, Search, Repeat, GraduationCap } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle, Shuffle, Search, Repeat, GraduationCap } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -17,6 +17,7 @@ import { getLevelForLessonId as getOverallLevelForLessonId, LEVELS as OVERALL_LE
 import { ProfilIcon } from '@/components/icons/ProfilIcon';
 import { cn } from '@/lib/utils';
 import { MagnifyingGlassIcon } from '@/components/icons/MagnifyingGlassIcon';
+import { ApplyIcon } from '@/components/icons/ApplyIcon';
 
 
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
@@ -123,7 +124,7 @@ export default function Home() {
 
   const stageDetails = [
     { title: 'Verstehen', icon: MagnifyingGlassIcon },
-    { title: 'Anwenden', icon: PencilRuler },
+    { title: 'Anwenden', icon: ApplyIcon },
     { title: 'Variieren', icon: Shuffle },
     { title: 'Reflektieren', icon: Search },
     { title: 'Wiederholen', icon: Repeat },
@@ -227,13 +228,13 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex flex-col items-center justify-start p-2 text-center", heightClass, bgColorClass)}>
-                    <div className="flex flex-col items-center">
+                <div className={cn("w-full relative flex flex-col items-center justify-start pt-2 px-2 text-center", heightClass, bgColorClass)}>
+                    <div className="flex flex-col items-center w-full">
                         <div className={cn("flex items-center gap-2", contentColorClass)}>
                             <StageIcon className="h-4 w-4" />
                             <span className="font-semibold text-xs md:text-sm">{title}</span>
                         </div>
-                        {showCheckIcon && <CheckCircle className="h-12 w-12 text-green-400 mt-4" />}
+                        {showCheckIcon && <CheckCircle className="h-12 w-12 text-white mt-4" />}
                     </div>
                 </div>
               </div>
