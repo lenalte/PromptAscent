@@ -196,11 +196,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                 >
                                                     <div className="flex items-center justify-between w-full">
                                                         <div className="flex items-center overflow-hidden">
-                                                            <span className="mr-3 p-1.5 rounded-full bg-[hsl(var(--sidebar-background))] relative z-20 flex items-center justify-center">
+                                                            <span className={cn(
+                                                                "mr-3 p-1.5 relative z-20 flex items-center justify-center",
+                                                                isLessonEffectivelyUnlocked(lesson.id)
+                                                                    ? "rounded-full"
+                                                                    : "bg-[hsl(var(--sidebar-background))] rounded-md"
+                                                            )}>
                                                                 {isLessonEffectivelyUnlocked(lesson.id) ? (
-                                                                    <LockOpenIcon className="shrink-0" />
+                                                                    <LockOpenIcon className="shrink-0 text-[hsl(var(--foreground))]" />
                                                                 ) : (
-                                                                    <LockClosedIcon className="shrink-0" />
+                                                                    <LockClosedIcon className="shrink-0 text-[hsl(var(--foreground))]" />
                                                                 )}
                                                             </span>
                                                             <span className={cn(
