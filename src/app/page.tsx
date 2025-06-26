@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus, CheckCircle } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -22,6 +22,7 @@ import { VaryIcon } from '@/components/icons/VaryIcon';
 import { LightbulbIcon } from '@/components/icons/LightbulbIcon';
 import { RepeatIcon } from '@/components/icons/RepeatIcon';
 import { PassIcon } from '@/components/icons/PassIcon';
+import { CheckIcon } from '@/components/icons/CheckIcon';
 
 
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
@@ -238,7 +239,7 @@ export default function Home() {
                             <StageIcon className="h-4 w-4" />
                             <span className="font-semibold text-xs md:text-sm">{title}</span>
                         </div>
-                        {showCheckIcon && <CheckCircle className="h-12 w-12 text-white mt-4" />}
+                        {showCheckIcon && <CheckIcon className="h-12 w-12 text-white mt-4" />}
                     </div>
                 </div>
               </div>
