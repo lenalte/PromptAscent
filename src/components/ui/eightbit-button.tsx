@@ -21,7 +21,7 @@ export function EightbitButton({
     relative 
     inline-block
     bg-[hsl(var(--foreground))]
-    text-[hsl(var(--background))]
+    text-primary-foreground
     px-4
     py-2
     hover:bg-[#D0B3FF]
