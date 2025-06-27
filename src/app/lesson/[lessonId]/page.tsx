@@ -186,19 +186,22 @@ export default function LessonPage() {
         if (!currentItem || !currentStage || isSubmittingStage) return;
 
         const currentItemStatus = stageItemAttempts[currentItem.originalItemId];
-        
+
         if (currentItem.type === 'informationalSnippet') {
-            if (!currentItemStatus || currentItemStatus.attempts === 0) { 
-                 const points = currentItem.currentPointsToAward;
-                 setLessonPoints(prev => prev + points);
-                 setPointsEarnedThisStageSession(prev => prev + points);
+            if (!currentItemStatus || currentItemStatus.attempts === 0) {
+                const points = currentItem.currentPointsToAward;
+                setLessonPoints(prev => prev + points);
+                setPointsEarnedThisStageSession(prev => prev + points);
             }
             setStageItemAttempts(prev => ({
                 ...prev,
                 [currentItem.originalItemId]: { attempts: (prev[currentItem.originalItemId]?.attempts || 0) + 1, correct: true }
             }));
         } else {
-            if (lastAnswerCorrectness === false && currentItemStatus && currentItemStatus.attempts < 3) {
+            // Only re-queue if the item has not been answered correctly and there are attempts left.
+            // The 'correct' status is `null` if the user has made < 3 incorrect attempts.
+            // It becomes `true` on a correct answer or `false` after 3 incorrect attempts.
+            if (currentItemStatus && currentItemStatus.correct === null) {
                 const originalBaseItem = currentStage.items.find(i => i.id === currentItem.originalItemId);
                 if (originalBaseItem) {
                     const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - currentItemStatus.attempts);
@@ -211,7 +214,7 @@ export default function LessonPage() {
                         currentPointsToAward: newPointsToAward,
                     };
                     setLessonQueue(prev => [...prev.slice(1), retryItem]);
-                    setCurrentItem(lessonQueue[1] || retryItem); 
+                    setCurrentItem(lessonQueue[1] || retryItem);
                     setIsCurrentAttemptSubmitted(false);
                     setLastAnswerCorrectness(null);
                     return;
@@ -227,12 +230,12 @@ export default function LessonPage() {
             setLastAnswerCorrectness(null);
         } else {
             console.log("End of stage queue. Evaluating stage completion.");
-            
-            if (currentStageIndex < 5) { 
-                setIsStageCompletedScreenVisible(true); 
-            } else { 
-                setIsSubmittingStage(true); 
-                await completeStageAndProceed( 
+
+            if (currentStageIndex < 5) {
+                setIsStageCompletedScreenVisible(true);
+            } else {
+                setIsSubmittingStage(true);
+                await completeStageAndProceed(
                     lessonId,
                     currentStage.id,
                     currentStageIndex,
@@ -241,7 +244,7 @@ export default function LessonPage() {
                     currentStage.items as LessonItem[]
                 );
                 setIsSubmittingStage(false);
-                setIsLessonFullyCompleted(true); 
+                setIsLessonFullyCompleted(true);
                 toast({ title: "Lektion abgeschlossen!", description: `Glückwunsch! Du hast ${lessonPoints} Punkte in dieser Lektion erreicht.` });
             }
         }
