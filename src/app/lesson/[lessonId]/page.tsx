@@ -57,6 +57,8 @@ export default function LessonPage() {
     const [isSubmittingStage, setIsSubmittingStage] = useState(false);
     const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
     const [isStageCompletedScreenVisible, setIsStageCompletedScreenVisible] = useState(false); // New state
+    const [nextLessonId, setNextLessonId] = useState<string | null>(null);
+
 
     useEffect(() => {
         async function loadLessonAndProgress() {
@@ -192,6 +194,7 @@ export default function LessonPage() {
 
         if (processedItem) {
              const itemStatus = stageItemAttempts[processedItem.originalItemId];
+             const isItemCorrect = itemStatus?.correct === true;
 
              // Handle informational snippets (always considered "correct" on first view)
              if (processedItem.type === 'informationalSnippet') {
@@ -206,8 +209,8 @@ export default function LessonPage() {
                 }));
              } 
              // For questions, decide if a retry is needed.
-             // `itemStatus.correct` becomes `true` or `false` (on max attempts) when resolved. It's `null` if it can be retried.
-             else if (itemStatus && itemStatus.correct === null) {
+             // It can be retried if it's not yet correct and attempts are less than 3
+             else if (!isItemCorrect && itemStatus && itemStatus.correct === null) {
                 // Condition to retry: incorrect answer and attempts < 3
                 const originalBaseItem = currentStage.items.find(i => i.id === processedItem.originalItemId);
                 if (originalBaseItem) {
@@ -241,7 +244,7 @@ export default function LessonPage() {
                 setIsStageCompletedScreenVisible(true);
             } else {
                 setIsSubmittingStage(true);
-                await completeStageAndProceed(
+                const { nextLessonIdIfAny } = await completeStageAndProceed(
                     lessonId,
                     currentStage.id,
                     currentStageIndex,
@@ -249,6 +252,7 @@ export default function LessonPage() {
                     pointsEarnedThisStageSession,
                     currentStage.items as LessonItem[]
                 );
+                setNextLessonId(nextLessonIdIfAny);
                 setIsSubmittingStage(false);
                 setIsLessonFullyCompleted(true);
                 toast({ title: "Lektion abgeschlossen!", description: `Glückwunsch! Du hast ${lessonPoints} Punkte in dieser Lektion erreicht.` });
@@ -418,7 +422,7 @@ export default function LessonPage() {
 
             <div className="w-full max-w-4xl">
                 {isLessonFullyCompleted ? (
-                    <LessonCompleteScreen points={lessonPoints} lessonTitle={lessonData.title} lessonId={lessonData.id} />
+                    <LessonCompleteScreen points={lessonPoints} lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} />
                 ) : currentItem ? (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
@@ -448,5 +452,3 @@ export default function LessonPage() {
         </main>
     );
 }
-
-    
