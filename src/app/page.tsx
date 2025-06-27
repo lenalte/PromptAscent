@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Loader2, LogIn, UserPlus } from 'lucide-react';
@@ -23,6 +23,7 @@ import { LightbulbIcon } from '@/components/icons/LightbulbIcon';
 import { RepeatIcon } from '@/components/icons/RepeatIcon';
 import { PassIcon } from '@/components/icons/PassIcon';
 import { CheckIcon } from '@/components/icons/CheckIcon';
+import Link from 'next/link';
 
 
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
@@ -38,6 +39,8 @@ export default function Home() {
   
   const [currentOverallLevel, setCurrentOverallLevel] = useState<OverallLevel | null>(null);
   const [overallLevelProgressPercentage, setOverallLevelProgressPercentage] = useState(0);
+  const [isStartingLesson, setIsStartingLesson] = useState(false);
+  const router = useRouter();
 
   // Effect to fetch available lessons
   useEffect(() => {
@@ -100,6 +103,11 @@ export default function Home() {
   const handleLessonSelect = useCallback((lesson: LessonListing) => {
     setSelectedLesson(lesson);
   }, []);
+
+  const handleStartLesson = (lessonId: string) => {
+    setIsStartingLesson(true);
+    router.push(`/lesson/${lessonId}`);
+  };
 
   const ICON_BAR_WIDTH_PX = 64;
   const CONTENT_AREA_WIDTH_PX = 256;
@@ -175,14 +183,22 @@ export default function Home() {
             </div>
           ) : selectedLesson ? (
             <div className="w-full max-w-4xl text-left mb-8">
-              <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
+              <h2 className="text-3xl font-bold text-white mb-3">{selectedLesson.title}</h2>
               <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
               {isLessonUnlocked(selectedLesson.id) ? (
-                <Link href={`/lesson/${selectedLesson.id}`} passHref legacyBehavior>
-                  <EightbitButton>
-                    Start Lesson <ArrowRight className="ml-2 h-5 w-5" />
-                  </EightbitButton>
-                </Link>
+                <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
+                  {isStartingLesson ? (
+                    <>
+                      Starting...
+                      <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Start Lesson
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
+                </EightbitButton>
               ) : (
                 <EightbitButton className="opacity-50 cursor-not-allowed" onClick={(e) => e.preventDefault()}>
                   Lesson Locked <ArrowRight className="ml-2 h-5 w-5" />
@@ -217,15 +233,12 @@ export default function Home() {
             const status = getStageStatusColor(stageId);
             const { title, icon: StageIcon } = stageDetails[index];
             
-            let bgColorClass = 'bg-foreground';
-            let contentColorClass = 'text-primary-foreground'; // Default color for icon and title
+            let contentColorClass = 'text-white';
             let showCheckIcon = false;
 
             if (status === 'completed-perfect' || status === 'completed-good') {
               showCheckIcon = true;
-              contentColorClass = 'text-green-400'; // Change content color to green
-            } else if (status === 'failed-stage') {
-              bgColorClass = 'bg-red-500';
+              contentColorClass = 'text-green-400';
             }
 
             return (
@@ -233,7 +246,7 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex flex-col items-start justify-start pt-2 px-2 text-center", heightClass, bgColorClass)}>
+                <div className={cn("w-full relative flex flex-col items-start justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
                     <div className="flex flex-col items-center w-full">
                         <div className={cn("flex items-center gap-2", contentColorClass)}>
                             <StageIcon className="h-4 w-4" />
@@ -250,7 +263,3 @@ export default function Home() {
     </>
   );
 }
-
-    
-
-    
