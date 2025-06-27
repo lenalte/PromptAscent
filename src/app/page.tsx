@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -42,7 +41,7 @@ export default function Home() {
   const [isStartingLesson, setIsStartingLesson] = useState(false);
   const router = useRouter();
 
-  // Effect to fetch available lessons
+  // Effect to fetch available lessons and set the selected lesson based on progress
   useEffect(() => {
     async function fetchLessons() {
       setIsLoadingLessons(true);
@@ -50,12 +49,10 @@ export default function Home() {
         const availableLessons = await getAvailableLessons();
         setLessonList(availableLessons);
         if (availableLessons.length > 0) {
-          // If no lesson is selected, or selected is not in list, try to set one.
-          if (!selectedLesson || !availableLessons.find(l => l.id === selectedLesson.id)) {
-             const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
-             const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
-             setSelectedLesson(lessonToSelect);
-          }
+          // When progress is loaded, select the current lesson. Fallback to the first lesson.
+          const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
+          const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
+          setSelectedLesson(lessonToSelect);
         } else {
           setSelectedLesson(null);
         }
@@ -66,7 +63,7 @@ export default function Home() {
       setIsLoadingLessons(false);
     }
     fetchLessons();
-  }, [userProgress?.currentLessonId, selectedLesson]); // Re-run if currentLessonId changes or selectedLesson state changes
+  }, [userProgress?.currentLessonId]); // Reruns when userProgress is loaded or the current lesson changes.
 
   // Effect to update current overall level based on selected lesson
   useEffect(() => {
@@ -233,7 +230,7 @@ export default function Home() {
             const status = getStageStatusColor(stageId);
             const { title, icon: StageIcon } = stageDetails[index];
             
-            let contentColorClass = 'text-white';
+            let contentColorClass = 'text-primary-foreground';
             let showCheckIcon = false;
 
             if (status === 'completed-perfect' || status === 'completed-good') {
