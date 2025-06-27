@@ -8,6 +8,7 @@ interface EightbitButtonProps {
     href?: string;
     onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => void; // Added event type
     className?: string;
+    disabled?: boolean;
 }
 
 export function EightbitButton({
@@ -15,13 +16,14 @@ export function EightbitButton({
     as = 'button',
     href,
     onClick,
-    className = ''
+    className = '',
+    disabled = false
 }: EightbitButtonProps) {
     const baseClasses = `
     relative 
     inline-block
     bg-[hsl(var(--foreground))]
-    text-primary-foreground
+    text-white
     px-4
     py-2
     hover:bg-[#D0B3FF]
@@ -32,14 +34,22 @@ export function EightbitButton({
     z-10
     no-underline
     ${className}
+    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
   `;
 
     const Element = as;
 
-    const elementProps = {
+    const elementProps: any = {
         className: baseClasses,
-        ...(as === 'a' ? { href } : { onClick }),
+        onClick,
     };
+
+    if (as === 'button') {
+        elementProps.disabled = disabled;
+    } else {
+        elementProps.href = href;
+    }
+
 
     return (
         <Element {...elementProps}>
