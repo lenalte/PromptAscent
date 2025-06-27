@@ -181,54 +181,60 @@ export default function LessonPage() {
         router.push('/');
     };
 
-
     const handleNext = useCallback(async () => {
         if (!currentItem || !currentStage || isSubmittingStage) return;
 
-        const currentItemStatus = stageItemAttempts[currentItem.originalItemId];
+        // Make a mutable copy of the queue to decide the next state
+        let nextQueue = [...lessonQueue];
+        
+        // The item we just processed is always at the front of the queue.
+        const processedItem = nextQueue.shift(); // Remove the current item from the front
 
-        if (currentItem.type === 'informationalSnippet') {
-            if (!currentItemStatus || currentItemStatus.attempts === 0) {
-                const points = currentItem.currentPointsToAward;
-                setLessonPoints(prev => prev + points);
-                setPointsEarnedThisStageSession(prev => prev + points);
-            }
-            setStageItemAttempts(prev => ({
-                ...prev,
-                [currentItem.originalItemId]: { attempts: (prev[currentItem.originalItemId]?.attempts || 0) + 1, correct: true }
-            }));
-        } else {
-            // Only re-queue if the item has not been answered correctly and there are attempts left.
-            // The 'correct' status is `null` if the user has made < 3 incorrect attempts.
-            // It becomes `true` on a correct answer or `false` after 3 incorrect attempts.
-            if (currentItemStatus && currentItemStatus.correct === null) {
-                const originalBaseItem = currentStage.items.find(i => i.id === currentItem.originalItemId);
+        if (processedItem) {
+             const itemStatus = stageItemAttempts[processedItem.originalItemId];
+
+             // Handle informational snippets (always considered "correct" on first view)
+             if (processedItem.type === 'informationalSnippet') {
+                if (!itemStatus || itemStatus.attempts === 0) {
+                    const points = processedItem.currentPointsToAward;
+                    setLessonPoints(prev => prev + points);
+                    setPointsEarnedThisStageSession(prev => prev + points);
+                }
+                setStageItemAttempts(prev => ({
+                    ...prev,
+                    [processedItem.originalItemId]: { attempts: (prev[processedItem.originalItemId]?.attempts || 0) + 1, correct: true }
+                }));
+             } 
+             // For questions, decide if a retry is needed.
+             // `itemStatus.correct` becomes `true` or `false` (on max attempts) when resolved. It's `null` if it can be retried.
+             else if (itemStatus && itemStatus.correct === null) {
+                // Condition to retry: incorrect answer and attempts < 3
+                const originalBaseItem = currentStage.items.find(i => i.id === processedItem.originalItemId);
                 if (originalBaseItem) {
-                    const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - currentItemStatus.attempts);
+                    const newPointsToAward = Math.max(0, originalBaseItem.pointsAwarded - itemStatus.attempts);
                     const retryItem: QueuedLessonItem = {
                         ...originalBaseItem,
-                        key: `${currentStage.id}-${currentItem.originalItemId}-attempt-${currentItemStatus.attempts + 1}`,
-                        originalItemId: currentItem.originalItemId,
+                        key: `${currentStage.id}-${processedItem.originalItemId}-attempt-${itemStatus.attempts + 1}`,
+                        originalItemId: processedItem.originalItemId,
                         originalPointsAwarded: originalBaseItem.pointsAwarded,
-                        currentAttemptNumber: currentItemStatus.attempts + 1,
+                        currentAttemptNumber: itemStatus.attempts + 1,
                         currentPointsToAward: newPointsToAward,
                     };
-                    setLessonQueue(prev => [...prev.slice(1), retryItem]);
-                    setCurrentItem(lessonQueue[1] || retryItem);
-                    setIsCurrentAttemptSubmitted(false);
-                    setLastAnswerCorrectness(null);
-                    return;
+                    nextQueue.push(retryItem); // Add to the end for another try
                 }
-            }
+             }
+             // If the item is resolved (correctly answered or failed max attempts), we do nothing, it's already removed from `nextQueue`.
         }
 
-        const nextItemIndexInQueue = lessonQueue.findIndex(item => item.key === currentItem.key) + 1;
 
-        if (nextItemIndexInQueue < lessonQueue.length) {
-            setCurrentItem(lessonQueue[nextItemIndexInQueue]);
+        // Update the state for the next render
+        if (nextQueue.length > 0) {
+            setLessonQueue(nextQueue);
+            setCurrentItem(nextQueue[0]);
             setIsCurrentAttemptSubmitted(false);
             setLastAnswerCorrectness(null);
         } else {
+            // End of stage logic
             console.log("End of stage queue. Evaluating stage completion.");
 
             if (currentStageIndex < 5) {
@@ -248,8 +254,7 @@ export default function LessonPage() {
                 toast({ title: "Lektion abgeschlossen!", description: `Glückwunsch! Du hast ${lessonPoints} Punkte in dieser Lektion erreicht.` });
             }
         }
-    }, [currentItem, currentStage, lessonQueue, stageItemAttempts, lastAnswerCorrectness, completeStageAndProceed, lessonId, currentStageIndex, userProgress, isSubmittingStage, toast, lessonPoints, pointsEarnedThisStageSession]);
-
+    }, [currentItem, currentStage, lessonQueue, stageItemAttempts, completeStageAndProceed, lessonId, currentStageIndex, isSubmittingStage, toast, lessonPoints, pointsEarnedThisStageSession]);
 
     const renderLessonItemComponent = () => {
         if (!currentItem || !currentStage) return null;
@@ -260,7 +265,7 @@ export default function LessonPage() {
             pointsForThisAttempt = Math.max(0, currentItem.originalPointsAwarded - itemStatus.attempts);
         }
 
-        const isLastItemOfStage = lessonQueue.indexOf(currentItem) === lessonQueue.length - 1;
+        const isLastItemOfStage = lessonQueue.length === 1; // It's the last if only one item is left in queue
         const isLastStageOfLesson = currentStageIndex === 5;
 
         const props = {
@@ -443,3 +448,5 @@ export default function LessonPage() {
         </main>
     );
 }
+
+    
