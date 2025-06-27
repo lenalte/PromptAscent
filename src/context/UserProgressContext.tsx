@@ -8,6 +8,7 @@ import {
   getUserProgress,
   createUserProgressDocument,
   updateUserDocument,
+  completeStageInFirestore,
   type UserProgressData
 } from '@/services/userProgressService';
 import type { StageItemStatus, LessonItem } from '@/ai/schemas/lesson-schemas';
