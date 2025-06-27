@@ -175,7 +175,7 @@ export default function Home() {
             </div>
           ) : selectedLesson ? (
             <div className="w-full max-w-4xl text-left mb-8">
-              <h2 className="text-3xl font-bold text-foreground mb-3">{selectedLesson.title}</h2>
+              <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
               <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
               {isLessonUnlocked(selectedLesson.id) ? (
                 <Link href={`/lesson/${selectedLesson.id}`} passHref legacyBehavior>
@@ -250,5 +250,7 @@ export default function Home() {
     </>
   );
 }
+
+    
 
     
