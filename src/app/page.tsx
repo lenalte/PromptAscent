@@ -218,7 +218,7 @@ export default function Home() {
             const { title, icon: StageIcon } = stageDetails[index];
             
             let bgColorClass = 'bg-foreground';
-            let contentColorClass = 'text-background'; // Default color for icon and title
+            let contentColorClass = 'text-primary-foreground'; // Default color for icon and title
             let showCheckIcon = false;
 
             if (status === 'completed-perfect' || status === 'completed-good') {
