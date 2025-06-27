@@ -104,6 +104,12 @@ export default function LessonPage() {
     useEffect(() => {
         if (lessonData && lessonData.stages[currentStageIndex]) {
             const stage = lessonData.stages[currentStageIndex];
+
+            // Guard to prevent re-initializing the same stage, which causes item flicker.
+            if (currentStage?.id === stage.id) {
+                return;
+            }
+
             setCurrentStage(stage);
             setPointsEarnedThisStageSession(0); // Reset stage points when stage changes
             
@@ -124,7 +130,7 @@ export default function LessonPage() {
             setStageItemAttempts(existingAttempts || {});
 
         }
-    }, [lessonData, currentStageIndex, userProgress, lessonId]);
+    }, [lessonData, currentStageIndex, userProgress, lessonId, currentStage]);
 
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number) => {
