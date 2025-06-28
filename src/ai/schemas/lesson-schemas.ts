@@ -61,7 +61,7 @@ export const LessonSchema = z.object({
 });
 export type Lesson = z.infer<typeof LessonSchema>;
 
-// Helper type for UserProgress, not part of AI generation schema
+// Helper types for UserProgress, not part of AI generation schema
 export type StageItemStatus = {
     attempts: number;
     correct: boolean | null; // null if not yet attempted, true if correct, false if incorrect on last attempt
@@ -69,7 +69,29 @@ export type StageItemStatus = {
 
 export type StageStatusValue = 'locked' | 'unlocked' | 'in-progress' | 'completed-perfect' | 'completed-good' | 'failed-stage';
 
+export type BossChallengeQuestionStatus = {
+  correct: boolean | null;
+  attempts: number;
+};
+
+export type BossChallenge = {
+  bossId: string;
+  questionIds: { lessonId: string; itemId: string }[];
+  questionStatus: { [questionId: string]: BossChallengeQuestionStatus };
+  status: 'pending' | 'in-progress' | 'passed' | 'failed';
+  bonusPointsAwarded?: number;
+};
+
 export type StageProgress = {
   status: StageStatusValue;
   items: { [itemId: string]: StageItemStatus }; // Status of each item within the stage
+  hasBoss?: boolean;
+  bossDefeated?: boolean;
+  bossChallenge?: BossChallenge;
+};
+
+// This type represents a question fetched for a boss challenge, including its content.
+export type BossQuestion = {
+  lessonId: string;
+  item: LessonItem;
 };

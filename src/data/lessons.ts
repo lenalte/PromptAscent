@@ -8,7 +8,7 @@ import type { Lesson, LessonItem, LessonStage } from '@/ai/schemas/lesson-schema
 
 // Re-export types for use in components
 export type { Lesson, LessonItem, LessonStage, FreeResponseLessonItem, MultipleChoiceLessonItem, InformationalSnippetLessonItem, PromptingTaskLessonItem } from '@/ai/schemas/lesson-schemas';
-export type { StageItemStatus, StageProgress, StageStatusValue } from '@/ai/schemas/lesson-schemas';
+export type { StageItemStatus, StageProgress, StageStatusValue, BossQuestion } from '@/ai/schemas/lesson-schemas';
 
 
 const LESSON_CONTENT_DIR = path.join(process.cwd(), 'src', 'data', 'lesson-content');
@@ -53,7 +53,7 @@ const lessonCache = new Map<string, Lesson>();
 export async function getGeneratedLessonById(lessonId: string): Promise<Lesson | undefined> {
   if (process.env.NODE_ENV === 'development' && lessonCache.has(lessonId)) {
     // console.log(`Returning cached lesson: ${lessonId}`);
-    // return lessonCache.get(lessonId); // Temporarily disable cache for testing new structure
+    return lessonCache.get(lessonId); // Re-enable cache for performance
   }
 
   const manifest = await getLessonManifest();
@@ -147,4 +147,57 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
       throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
     }
     throw new Error(`Failed to process lesson "${lessonId}" due to an unknown error.`);
-  
+  }
+}
+
+/**
+ * Fetches a specified number of random questions from previous lessons or stages.
+ */
+export async function getQuestionsForBossChallenge(
+  completedLessonIds: string[],
+  currentLessonId: string,
+  currentStageIndex: number,
+  count: number
+): Promise<{ lessonId: string; item: LessonItem }[]> {
+  const allQuestions: { lessonId: string; item: LessonItem }[] = [];
+
+  const processLesson = (lesson: Lesson, lessonId: string, maxStageIndex?: number) => {
+    lesson.stages.slice(0, maxStageIndex).forEach(stage => {
+      stage.items.forEach(item => {
+        if (item.type === 'multipleChoice' || item.type === 'freeResponse') {
+          allQuestions.push({ lessonId, item });
+        }
+      });
+    });
+  };
+
+  if (completedLessonIds.length > 0) {
+    // Fetch questions from all completed lessons
+    const lessons = await Promise.all(
+      completedLessonIds.map(id => getGeneratedLessonById(id))
+    );
+    lessons.forEach((lesson, index) => {
+      if (lesson) {
+        processLesson(lesson, completedLessonIds[index]);
+      }
+    });
+  } else {
+    // No completed lessons (e.g., on lesson 1), fetch from previous stages of the current lesson
+    if (currentStageIndex > 0) {
+      const currentLesson = await getGeneratedLessonById(currentLessonId);
+      if (currentLesson) {
+        processLesson(currentLesson, currentLessonId, currentStageIndex);
+      }
+    }
+  }
+
+  // If still no questions, it's an issue (e.g., boss on stage 1 of lesson 1)
+  if (allQuestions.length === 0) {
+    console.warn("[getQuestionsForBossChallenge] No questions found for boss challenge. This may happen if the boss is on the first stage of the first lesson.");
+    return [];
+  }
+
+  // Shuffle and pick `count` questions
+  const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}

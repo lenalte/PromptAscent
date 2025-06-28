@@ -1,10 +1,11 @@
+
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, LogIn, UserPlus } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, Skull } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -23,6 +24,7 @@ import { RepeatIcon } from '@/components/icons/RepeatIcon';
 import { PassIcon } from '@/components/icons/PassIcon';
 import { CheckIcon } from '@/components/icons/CheckIcon';
 import Link from 'next/link';
+import BossChallengeDialog from '@/components/BossChallengeDialog';
 
 
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
@@ -41,6 +43,8 @@ export default function Home() {
   const [isStartingLesson, setIsStartingLesson] = useState(false);
   const router = useRouter();
 
+  const [bossChallengeInfo, setBossChallengeInfo] = useState<{lessonId: string, stageId: string} | null>(null);
+
   // Effect to fetch available lessons and set the selected lesson based on progress
   useEffect(() => {
     async function fetchLessons() {
@@ -48,12 +52,15 @@ export default function Home() {
       try {
         const availableLessons = await getAvailableLessons();
         setLessonList(availableLessons);
-        if (availableLessons.length > 0) {
+        if (availableLessons.length > 0 && userProgress) {
           // When progress is loaded, select the current lesson. Fallback to the first lesson.
-          const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
+          const initialSelectedLessonId = userProgress.currentLessonId || availableLessons[0].id;
           const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
           setSelectedLesson(lessonToSelect);
-        } else {
+        } else if (availableLessons.length > 0) {
+            setSelectedLesson(availableLessons[0]);
+        }
+        else {
           setSelectedLesson(null);
         }
       } catch (error) {
@@ -63,7 +70,7 @@ export default function Home() {
       setIsLoadingLessons(false);
     }
     fetchLessons();
-  }, [userProgress?.currentLessonId]); // Reruns when userProgress is loaded or the current lesson changes.
+  }, [userProgress]);
 
   // Effect to update current overall level based on selected lesson
   useEffect(() => {
@@ -102,8 +109,21 @@ export default function Home() {
   }, []);
 
   const handleStartLesson = (lessonId: string) => {
-    setIsStartingLesson(true);
-    router.push(`/lesson/${lessonId}`);
+    if (!userProgress?.lessonStageProgress?.[lessonId]) {
+        router.push(`/lesson/${lessonId}`);
+        return;
+    }
+    
+    const lessonProg = userProgress.lessonStageProgress[lessonId];
+    const currentStage = lessonProg.stages[`stage${lessonProg.currentStageIndex + 1}`];
+
+    // Check if the current stage has an undefeated boss
+    if (currentStage?.hasBoss && !currentStage.bossDefeated) {
+        setBossChallengeInfo({ lessonId, stageId: `stage${lessonProg.currentStageIndex + 1}` });
+    } else {
+        setIsStartingLesson(true);
+        router.push(`/lesson/${lessonId}`);
+    }
   };
 
   const ICON_BAR_WIDTH_PX = 64;
@@ -122,11 +142,10 @@ export default function Home() {
     ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex
     : -1; // -1 means not started or no progress data
 
-  const getStageStatusColor = (stageId: string): StageStatusValue | 'default' => {
-    if (!selectedLesson || !userProgress?.lessonStageProgress?.[selectedLesson.id]) return 'default';
-    const stageProgress = userProgress.lessonStageProgress[selectedLesson.id].stages?.[stageId];
-    return stageProgress?.status || 'default'; // default if stage not started or no status
-  };
+    const getStageProgressForSelectedLesson = (stageId: string): StageProgress | undefined => {
+        if (!selectedLesson || !userProgress?.lessonStageProgress?.[selectedLesson.id]) return undefined;
+        return userProgress.lessonStageProgress[selectedLesson.id].stages?.[stageId];
+    };
   
   const stageHeights = [
     'h-[6.5rem]', 'h-[9rem]', 'h-[11.5rem]', 'h-[14rem]', 'h-[16.5rem]', 'h-[19rem]'
@@ -180,7 +199,7 @@ export default function Home() {
             </div>
           ) : selectedLesson ? (
             <div className="w-full max-w-4xl text-left mb-8">
-              <h2 className="text-3xl font-bold text-white mb-3">{selectedLesson.title}</h2>
+              <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
               <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
               {isLessonUnlocked(selectedLesson.id) ? (
                 <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
@@ -227,11 +246,13 @@ export default function Home() {
         <div className="flex w-full items-end">
           {stageHeights.map((heightClass, index) => {
             const stageId = `stage${index + 1}`;
-            const status = getStageStatusColor(stageId);
+            const stageProgress = getStageProgressForSelectedLesson(stageId);
+            const status = stageProgress?.status || 'default';
             const { title, icon: StageIcon } = stageDetails[index];
             
             let contentColorClass = 'text-primary-foreground';
             let showCheckIcon = false;
+            let showBossIcon = stageProgress?.hasBoss && !stageProgress?.bossDefeated;
 
             if (status === 'completed-perfect' || status === 'completed-good') {
               showCheckIcon = true;
@@ -243,13 +264,14 @@ export default function Home() {
                 {currentStageIndexOfSelectedLesson === index && (
                   <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />
                 )}
-                <div className={cn("w-full relative flex flex-col items-start justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
+                <div className={cn("w-full relative flex flex-col items-center justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
                     <div className="flex flex-col items-center w-full">
                         <div className={cn("flex items-center gap-2", contentColorClass)}>
                             <StageIcon className="h-4 w-4" />
                             <span className="font-semibold text-xs md:text-sm">{title}</span>
                         </div>
                         {showCheckIcon && <CheckIcon className="h-12 w-12 text-green-400 mt-4" />}
+                        {showBossIcon && <Skull className="h-12 w-12 text-red-500 mt-4 animate-pulse" />}
                     </div>
                 </div>
               </div>
@@ -257,6 +279,17 @@ export default function Home() {
           })}
         </div>
       </div>
+      {bossChallengeInfo && (
+        <BossChallengeDialog
+          isOpen={!!bossChallengeInfo}
+          onClose={() => {
+            setBossChallengeInfo(null);
+            // Optionally, force a refresh of userProgress to reflect boss status change
+          }}
+          lessonId={bossChallengeInfo.lessonId}
+          stageId={bossChallengeInfo.stageId}
+        />
+      )}
     </>
   );
 }
