@@ -3,13 +3,13 @@
 
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useMemo } from 'react';
-import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError } from 'firebase/auth';
+import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError, updateProfile } from 'firebase/auth';
 import { auth, db } from '../lib/firebase/index';
 import {
   getUserProgress,
   createUserProgressDocument,
   updateUserDocument,
-  completeStageInFirestore,
+  completeStageInFirestore as serverCompleteStage,
   populateBossChallengeQuestions as serverPopulateBoss,
   resolveBossChallenge as serverResolveBoss,
   type UserProgressData
@@ -51,79 +51,76 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [userProgress, setUserProgress] = useState<UserProgressData | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true); // To prevent double fetch on HMR
-
-  const fetchUserProgressData = useCallback(async (userId: string, usernameForNewUser: string | null) => {
-    if (!db) {
-      console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
-      setIsLoadingProgress(false);
-      return;
-    }
-    setIsLoadingProgress(true);
-    console.log('[UserProgressContext] Fetching user progress for UID:', userId);
-    try {
-      let progress = await getUserProgress(userId);
-      if (!progress) {
-        console.log('[UserProgressContext] No progress found, creating new document for UID:', userId, 'with username:', usernameForNewUser);
-        progress = await createUserProgressDocument(userId, {
-          username: usernameForNewUser ?? undefined,
-        });
-      } else if (usernameForNewUser && !progress.username) {
-        console.log(`[UserProgressContext] User doc for ${userId} existed, updating with queued username: ${usernameForNewUser}`);
-        await updateUserDocument(userId, { username: usernameForNewUser });
-        progress.username = usernameForNewUser;
-      }
-      setUserProgress(progress);
-      console.log('[UserProgressContext] User progress loaded/updated:', progress);
-
-    } catch (error) {
-      console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${userId}:`, error);
-      setUserProgress(null);
-    } finally {
-      setIsLoadingProgress(false);
-    }
-  }, []);
 
   useEffect(() => {
-    if (!isInitialLoad) return;
+    // This function is defined inside useEffect to have a stable scope and avoid useCallback issues.
+    const fetchUserProgressData = async (userId: string, usernameForNewUser: string | null) => {
+        if (!db) {
+            console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
+            setIsLoadingProgress(false);
+            return;
+        }
+        setIsLoadingProgress(true);
+        console.log('[UserProgressContext] Fetching user progress for UID:', userId);
+        try {
+            let progress = await getUserProgress(userId);
+            if (!progress) {
+                console.log('[UserProgressContext] No progress found, creating new document for UID:', userId, 'with username:', usernameForNewUser);
+                progress = await createUserProgressDocument(userId, {
+                    username: usernameForNewUser ?? undefined,
+                });
+            } else if (usernameForNewUser && !progress.username) {
+                console.log(`[UserProgressContext] User doc for ${userId} existed, updating with queued username: ${usernameForNewUser}`);
+                await updateUserDocument(userId, { username: usernameForNewUser });
+                progress.username = usernameForNewUser;
+            }
+            setUserProgress(progress);
+            console.log('[UserProgressContext] User progress loaded/updated:', progress);
+
+        } catch (error) {
+            console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${userId}:`, error);
+            setUserProgress(null);
+        } finally {
+            setIsLoadingProgress(false);
+        }
+    };
+      
     console.log('[UserProgressContext] Setting up onAuthStateChanged listener. Auth available:', !!auth, 'DB available:', !!db);
     if (!auth) {
-      console.error("[UserProgressContext] Firebase Auth instance is not available. Auth operations will fail.");
-      setIsLoadingAuth(false);
-      return;
+        console.error("[UserProgressContext] Firebase Auth instance is not available. Auth operations will fail.");
+        setIsLoadingAuth(false);
+        return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setIsLoadingAuth(true);
-      if (user) {
-        console.log('[UserProgressContext] onAuthStateChanged: User is signed in:', user.uid, 'isAnonymous:', user.isAnonymous);
-        setCurrentUser(user);
-        await fetchUserProgressData(user.uid, user.displayName); // Pass display name as potential username
-      } else {
-        console.log('[UserProgressContext] onAuthStateChanged: No user signed in. Attempting anonymous sign-in.');
-        setCurrentUser(null);
-        setUserProgress(null);
-        try {
-          const userCredential = await signInAnonymously(auth);
-          console.log('[UserProgressContext] Anonymously signed in UID:', userCredential.user.uid);
-        } catch (error) {
-          const authError = error as AuthError;
-          console.error("[UserProgressContext] Anonymous sign-in failed:", authError);
-          if (authError.code === 'auth/operation-not-allowed') {
-            console.error("IMPORTANT: Anonymous sign-in failed. Ensure it's enabled in Firebase console.");
-          }
+        setIsLoadingAuth(true);
+        if (user) {
+            console.log('[UserProgressContext] onAuthStateChanged: User is signed in:', user.uid, 'isAnonymous:', user.isAnonymous);
+            setCurrentUser(user);
+            await fetchUserProgressData(user.uid, user.displayName);
+        } else {
+            console.log('[UserProgressContext] onAuthStateChanged: No user signed in. Attempting anonymous sign-in.');
+            setCurrentUser(null);
+            setUserProgress(null);
+            try {
+                await signInAnonymously(auth);
+                console.log('[UserProgressContext] Anonymously signed in.');
+            } catch (error) {
+                const authError = error as AuthError;
+                console.error("[UserProgressContext] Anonymous sign-in failed:", authError);
+                if (authError.code === 'auth/operation-not-allowed') {
+                    console.error("IMPORTANT: Anonymous sign-in failed. Ensure it's enabled in Firebase console.");
+                }
+            }
         }
-      }
-      setIsLoadingAuth(false);
+        setIsLoadingAuth(false);
     });
 
-    setIsInitialLoad(false); // Ensure this only runs once
-
     return () => {
-      console.log('[UserProgressContext] Unsubscribing from onAuthStateChanged.');
-      unsubscribe();
+        console.log('[UserProgressContext] Unsubscribing from onAuthStateChanged.');
+        unsubscribe();
     };
-  }, [fetchUserProgressData, isInitialLoad]);
+  }, []); // Empty dependency array ensures this effect runs only once on mount.
 
 
   const completeStageAndProceed = useCallback(async (
@@ -147,7 +144,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     console.log(`[UserProgressContext] completeStageAndProceed called for lesson ${lessonId}, stage ${stageId} (index ${stageIndex}), user ${currentUser.uid}, pointsEarned: ${pointsEarnedThisStage}`);
     setIsLoadingProgress(true);
     try {
-      const { nextLessonIdIfAny, updatedProgress } = await completeStageInFirestore(
+      const { nextLessonIdIfAny, updatedProgress } = await serverCompleteStage(
         currentUser.uid,
         lessonId,
         stageId,
@@ -177,7 +174,14 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed up successfully:", userCredential.user.uid);
-      await fetchUserProgressData(userCredential.user.uid, username);
+      
+      // Update the user's profile in Firebase Auth. onAuthStateChanged will pick this up.
+      await updateProfile(userCredential.user, { displayName: username });
+
+      // Explicitly create the progress document here to ensure the username is captured immediately.
+      // onAuthStateChanged will later fetch this same document.
+      await createUserProgressDocument(userCredential.user.uid, { username });
+
       return { user: userCredential.user, error: undefined };
     } catch (error) {
       console.error("[UserProgressContext] Error signing up:", error);
@@ -194,7 +198,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     } finally {
         setIsLoadingAuth(false);
     }
-  }, [fetchUserProgressData]);
+  }, []);
 
   const signInWithEmail = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     if (!auth) {
