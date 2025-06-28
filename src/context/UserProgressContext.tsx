@@ -1,7 +1,8 @@
+
 'use client';
 
 import type React from 'react';
-import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useRef, useMemo } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useMemo } from 'react';
 import { type User, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, type AuthError } from 'firebase/auth';
 import { auth, db } from '../lib/firebase/index';
 import {
@@ -9,10 +10,12 @@ import {
   createUserProgressDocument,
   updateUserDocument,
   completeStageInFirestore,
+  populateBossChallengeQuestions as serverPopulateBoss,
+  resolveBossChallenge as serverResolveBoss,
   type UserProgressData
 } from '@/services/userProgressService';
-import type { StageItemStatus, LessonItem } from '@/ai/schemas/lesson-schemas';
-import { useRouter } from 'next/navigation';
+import type { StageItemStatus, LessonItem, BossQuestion } from '@/ai/schemas/lesson-schemas';
+import type { Boss } from '@/data/boss-data';
 
 const USERS_COLLECTION = 'users';
 
@@ -27,6 +30,7 @@ interface UserProgressContextType {
   userProgress: UserProgressData | null;
   isLoadingAuth: boolean;
   isLoadingProgress: boolean;
+  setUserProgress: React.Dispatch<React.SetStateAction<UserProgressData | null>>;
   completeStageAndProceed: (
     lessonId: string,
     stageId: string,
@@ -47,8 +51,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [userProgress, setUserProgress] = useState<UserProgressData | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
-  const queuedUsernameRef = useRef<string | null>(null);
-  const router = useRouter();
+  const [isInitialLoad, setIsInitialLoad] = useState(true); // To prevent double fetch on HMR
 
   const fetchUserProgressData = useCallback(async (userId: string, usernameForNewUser: string | null) => {
     if (!db) {
@@ -73,9 +76,6 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       setUserProgress(progress);
       console.log('[UserProgressContext] User progress loaded/updated:', progress);
 
-      if (usernameForNewUser) {
-        queuedUsernameRef.current = null;
-      }
     } catch (error) {
       console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${userId}:`, error);
       setUserProgress(null);
@@ -84,8 +84,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, []);
 
-
   useEffect(() => {
+    if (!isInitialLoad) return;
     console.log('[UserProgressContext] Setting up onAuthStateChanged listener. Auth available:', !!auth, 'DB available:', !!db);
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth instance is not available. Auth operations will fail.");
@@ -95,17 +95,14 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoadingAuth(true);
-      const usernameForNewUserOnAuthChange = queuedUsernameRef.current;
-
       if (user) {
         console.log('[UserProgressContext] onAuthStateChanged: User is signed in:', user.uid, 'isAnonymous:', user.isAnonymous);
         setCurrentUser(user);
-        await fetchUserProgressData(user.uid, usernameForNewUserOnAuthChange);
+        await fetchUserProgressData(user.uid, user.displayName); // Pass display name as potential username
       } else {
         console.log('[UserProgressContext] onAuthStateChanged: No user signed in. Attempting anonymous sign-in.');
         setCurrentUser(null);
         setUserProgress(null);
-        queuedUsernameRef.current = null;
         try {
           const userCredential = await signInAnonymously(auth);
           console.log('[UserProgressContext] Anonymously signed in UID:', userCredential.user.uid);
@@ -120,11 +117,13 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       setIsLoadingAuth(false);
     });
 
+    setIsInitialLoad(false); // Ensure this only runs once
+
     return () => {
       console.log('[UserProgressContext] Unsubscribing from onAuthStateChanged.');
       unsubscribe();
     };
-  }, [fetchUserProgressData]);
+  }, [fetchUserProgressData, isInitialLoad]);
 
 
   const completeStageAndProceed = useCallback(async (
@@ -176,13 +175,12 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
     setIsLoadingAuth(true);
     try {
-      queuedUsernameRef.current = username;
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed up successfully:", userCredential.user.uid);
+      await fetchUserProgressData(userCredential.user.uid, username);
       return { user: userCredential.user, error: undefined };
     } catch (error) {
       console.error("[UserProgressContext] Error signing up:", error);
-      queuedUsernameRef.current = null;
       const firebaseError = error as AuthError;
       let errorMessage = "Registration failed. Please try again.";
       if (firebaseError.code === "auth/email-already-in-use") {
@@ -196,7 +194,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     } finally {
         setIsLoadingAuth(false);
     }
-  }, []);
+  }, [fetchUserProgressData]);
 
   const signInWithEmail = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     if (!auth) {
@@ -205,7 +203,6 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
     setIsLoadingAuth(true);
     try {
-      queuedUsernameRef.current = null;
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("[UserProgressContext] User signed in successfully:", userCredential.user.uid);
       return { user: userCredential.user, error: undefined };
@@ -230,7 +227,6 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       return;
     }
     try {
-      queuedUsernameRef.current = null;
       await firebaseSignOut(auth);
       console.log("[UserProgressContext] User signed out. Anonymous sign-in will be attempted.");
     } catch (error) {
@@ -243,6 +239,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     userProgress,
     isLoadingAuth,
     isLoadingProgress,
+    setUserProgress,
     completeStageAndProceed,
     signUpWithEmail,
     signInWithEmail,
@@ -262,4 +259,24 @@ export const useUserProgress = (): UserProgressContextType => {
     throw new Error('useUserProgress must be used within a UserProgressProvider');
   }
   return context;
+};
+
+
+// These functions are exported for use in components, wrapping server actions.
+export const populateBossChallengeQuestions = async (
+  userId: string,
+  lessonId: string,
+  stageId: string
+): Promise<{ boss: Boss; questions: BossQuestion[]; challenge: any }> => {
+  return serverPopulateBoss(userId, lessonId, stageId);
+};
+
+export const resolveBossChallenge = async (
+  userId: string,
+  lessonId: string,
+  stageId: string,
+  finalStatus: 'passed' | 'failed',
+  finalQuestionStatus: { [itemId: string]: { correct: boolean | null; attempts: number } }
+): Promise<UserProgressData> => {
+  return serverResolveBoss(userId, lessonId, stageId, finalStatus, finalQuestionStatus);
 };
