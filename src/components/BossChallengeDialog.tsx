@@ -158,6 +158,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     if (isLoading) {
       return (
         <div className="flex flex-col items-center justify-center p-8 min-h-[300px]">
+          <DialogTitle className="sr-only">Laden</DialogTitle>
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <p className="mt-4 text-muted-foreground">Lade Herausforderung...</p>
         </div>
@@ -166,13 +167,22 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     if (error) {
       return (
         <div className="flex flex-col items-center justify-center p-8 min-h-[300px]">
+          <DialogTitle className="sr-only">Fehler</DialogTitle>
           <XCircle className="h-12 w-12 text-destructive" />
           <p className="mt-4 text-destructive-foreground">{error}</p>
         </div>
       );
     }
     if (!bossInfo) {
-      return <div className="p-8">Boss-Informationen konnten nicht geladen werden.</div>;
+      return (
+        <>
+          <DialogHeader>
+            <DialogTitle>Fehler</DialogTitle>
+            <DialogDescription>Boss-Informationen konnten nicht geladen werden.</DialogDescription>
+          </DialogHeader>
+          <div className="p-8">Boss-Informationen konnten nicht geladen werden.</div>
+        </>
+      );
     }
 
     switch (view) {
@@ -194,24 +204,37 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         );
       case 'challenge':
         return (
+          <>
+            <DialogHeader>
+                <DialogTitle>Boss-Herausforderung: {bossInfo.name}</DialogTitle>
+                <DialogDescription>
+                  Beantworte die folgenden Fragen, um fortzufahren.
+                </DialogDescription>
+            </DialogHeader>
            <div className="p-4">{renderQuestion()}</div>
+          </>
         );
       case 'result':
         return (
           <div className="flex flex-col items-center justify-center p-8 min-h-[300px]">
             {challengeResult === 'passed' ? (
               <>
-                <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
-                <h2 className="text-2xl font-bold text-yellow-400">Herausforderung gemeistert!</h2>
-                <p className="mt-2 text-muted-foreground">Du hast {bossInfo.name} besiegt!</p>
+                <DialogHeader className="items-center text-center">
+                  <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                  <DialogTitle className="text-2xl font-bold text-yellow-400">Herausforderung gemeistert!</DialogTitle>
+                  <DialogDescription className="mt-2 text-muted-foreground">Du hast {bossInfo.name} besiegt!</DialogDescription>
+                </DialogHeader>
                 <p className="mt-4 text-lg font-semibold">Bonus: +{bossInfo.bonusPoints} XP</p>
               </>
             ) : (
               <>
-                <XCircle className="h-16 w-16 text-destructive mb-4" />
-                <h2 className="text-2xl font-bold text-destructive">Herausforderung gescheitert</h2>
-                <p className="mt-2 text-muted-foreground">Keine Sorge, du kannst trotzdem weitermachen.</p>
-                <p className="text-sm mt-2">Die falschen Fragen wurden als Wissenslücke markiert.</p>
+                <DialogHeader className="items-center text-center">
+                  <XCircle className="h-16 w-16 text-destructive mb-4" />
+                  <DialogTitle className="text-2xl font-bold text-destructive">Herausforderung gescheitert</DialogTitle>
+                  <DialogDescription className="mt-2 text-muted-foreground">
+                      Keine Sorge, du kannst trotzdem weitermachen. Die falschen Fragen wurden als Wissenslücke markiert.
+                  </DialogDescription>
+                </DialogHeader>
               </>
             )}
             <Button onClick={onClose} className="mt-8">Weiter</Button>
