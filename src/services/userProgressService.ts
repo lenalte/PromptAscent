@@ -385,7 +385,7 @@ export async function resolveBossChallenge(
   };
   
   if (finalStatus === 'passed') {
-    updates.totalPoints = userProgress.totalPoints + boss.bonusPoints;
+    updates.totalPoints = (userProgress.totalPoints || 0) + boss.bonusPoints;
     updates[`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.bonusPointsAwarded`] = boss.bonusPoints;
   } else {
     // Mark failed questions as knowledge gaps
