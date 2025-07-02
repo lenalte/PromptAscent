@@ -4,7 +4,7 @@
 import type React from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { EightbitButton } from '@/components/ui/eightbit-button';
 import { CheckCircle, Trophy, HomeIcon, ArrowRight, Loader2 } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
@@ -69,15 +69,15 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
          </p>
       </CardContent>
        <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
-           <Link href="/" passHref legacyBehavior>
-                <Button variant="outline">
+           <Link href="/" passHref>
+                <EightbitButton as="a">
                    <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Lektionsübersicht
-                </Button>
+                </EightbitButton>
            </Link>
-           <Button onClick={handleProceed} disabled={isContextLoading}>
+           <EightbitButton onClick={handleProceed} disabled={isContextLoading}>
                 {getButtonIcon()}
                 {getButtonText()}
-           </Button>
+           </EightbitButton>
        </CardFooter>
     </Card>
   );

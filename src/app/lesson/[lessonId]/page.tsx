@@ -13,7 +13,7 @@ import { PointsDisplay } from '@/components/PointsDisplay';
 import { LessonCompleteScreen } from '@/components/LessonCompleteScreen';
 import { StageCompleteScreen } from '@/components/StageCompleteScreen';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
+import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
@@ -445,10 +445,10 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                 <BrainCircuit className="h-16 w-16 text-destructive mb-4" />
                 <h1 className="text-2xl font-semibold text-destructive mb-2">Authentication Required</h1>
                 <p className="text-muted-foreground mb-6">Please log in to access lessons.</p>
-                <Link href="/auth/login" passHref legacyBehavior>
-                    <Button variant="outline">
+                <Link href="/auth/login" passHref>
+                    <EightbitButton as="a">
                         <HomeIcon className="mr-2 h-4 w-4" /> Login
-                    </Button>
+                    </EightbitButton>
                 </Link>
             </div>
         );
@@ -460,7 +460,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                 <BrainCircuit className="h-16 w-16 text-destructive mb-4" />
                 <h1 className="text-2xl font-semibold text-destructive mb-2">Error Loading Lesson</h1>
                 <p className="text-muted-foreground mb-6">{errorLoadingLesson}</p>
-                <Link href="/" passHref legacyBehavior><Button variant="outline"><HomeIcon className="mr-2 h-4 w-4" /> Back to Lessons</Button></Link>
+                <Link href="/" passHref><EightbitButton as="a"><HomeIcon className="mr-2 h-4 w-4" /> Back to Lessons</EightbitButton></Link>
             </div>
         );
     }
@@ -478,7 +478,11 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
             <div className="w-full max-w-3xl flex justify-between items-center">
                 <div className="flex items-center space-x-4">
-                    <Link href="/" passHref legacyBehavior><Button variant="outline" size="icon" aria-label="Back to Lessons"><HomeIcon className="h-5 w-5" /></Button></Link>
+                    <Link href="/" passHref>
+                        <EightbitButton as="a" aria-label="Back to Lessons" className="p-2 h-10 w-10 flex items-center justify-center">
+                           <HomeIcon className="h-5 w-5" />
+                        </EightbitButton>
+                    </Link>
                     <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
                 </div>
                 <PointsDisplay points={userProgress?.totalPoints ?? 0} />
@@ -575,7 +579,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
 
             {buttonConfig.visible && (
                 <div className="fixed bottom-8 right-8 z-50">
-                    <Button onClick={buttonConfig.onClick} size="lg" className="shadow-lg rounded-full pl-6 pr-4 py-6 text-lg font-semibold" disabled={buttonConfig.disabled}>
+                    <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
                         {isSubmitting ? (
                            <Loader2 className="h-6 w-6 animate-spin" />
                         ) : (
@@ -584,11 +588,9 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                              <span className="ml-2">{buttonConfig.icon}</span>
                            </>
                         )}
-                    </Button>
+                    </EightbitButton>
                 </div>
             )}
         </main>
     );
 }
-
-    
