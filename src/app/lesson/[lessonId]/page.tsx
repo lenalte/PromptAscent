@@ -231,71 +231,91 @@ export default function LessonPage() {
     }, [completeStageAndProceed, currentStage, currentStageIndex, isSubmitting, lessonData, lessonId, pointsThisStageSession, stageItemAttempts]);
 
     const handleProceed = useCallback(async () => {
-        if (!currentStage || !contentQueue[activeContentIndex]) return;
-
-        const currentContent = contentQueue[activeContentIndex];
-        if (currentContent.renderType !== 'LessonItem') return;
-
-        const itemToProcess = currentContent;
-        const itemStatus = stageItemAttempts[itemToProcess.id];
-        
-        let isLastItemInCurrentStageAttempt = true;
-        const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
-        
-        for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
-            if (contentQueue[i].renderType === 'LessonItem') {
-                const futureItem = contentQueue[i] as LessonItemWithRenderType;
-                if (currentStageItemIds.has(futureItem.id)) {
-                    isLastItemInCurrentStageAttempt = false;
-                    break;
+        if (!currentStage || !contentQueue[activeContentIndex] || isSubmitting) return;
+    
+        setIsSubmitting(true);
+    
+        try {
+            const currentContent = contentQueue[activeContentIndex];
+            if (currentContent.renderType !== 'LessonItem') {
+                return; 
+            }
+    
+            const itemToProcess = currentContent;
+            const itemStatus = stageItemAttempts[itemToProcess.id];
+            
+            let isLastItemInCurrentStageAttempt = true;
+            const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
+            
+            for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
+                if (contentQueue[i].renderType === 'LessonItem') {
+                    const futureItem = contentQueue[i] as LessonItemWithRenderType;
+                    if (currentStageItemIds.has(futureItem.id)) {
+                        isLastItemInCurrentStageAttempt = false;
+                        break;
+                    }
+                } else {
+                     break;
                 }
-            } else {
-                 break;
             }
-        }
-        
-        if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
-            if (itemToProcess.type !== 'informationalSnippet') {
-                setContentQueue(prev => [...prev, { ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
+            
+            const shouldRetry = itemStatus && itemStatus.correct === false && itemStatus.attempts < 3 && itemToProcess.type !== 'informationalSnippet';
+            
+            const itemsToAdd: ContentQueueItem[] = [];
+    
+            if (shouldRetry) {
+                itemsToAdd.push({ ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` });
             }
-        }
-        
-        if (isLastItemInCurrentStageAttempt) {
-            const finalStageStatusCheck = await completeStageAndProceed(
-                lessonId,
-                currentStage.id,
-                currentStageIndex,
-                stageItemAttempts,
-                pointsThisStageSession,
-                currentStage.items as LessonItem[]
-            );
-            
-            const latestProgress = await getUserProgress(currentUser!.uid);
-            const finalStageStatus = latestProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
-
-            const completionCard: StageCompleteInfo = {
-                renderType: 'StageCompleteScreen',
-                key: `complete-${currentStage.id}`,
-                stageId: currentStage.id,
-                stageTitle: currentStage.title,
-                pointsEarnedInStage: pointsThisStageSession,
-                stageItemAttempts: stageItemAttempts,
-                stageItems: currentStage.items as LessonItem[],
-                onNextStage: handleStartNextStage,
-                onGoHome: () => router.push('/'),
-                isLastStage: currentStageIndex === 5,
-                stageStatus: finalStageStatus,
-            };
-            
-            setContentQueue(prev => [...prev, completionCard]);
+    
+            if (isLastItemInCurrentStageAttempt) {
+                await completeStageAndProceed(
+                    lessonId,
+                    currentStage.id,
+                    currentStageIndex,
+                    stageItemAttempts,
+                    pointsThisStageSession,
+                    currentStage.items as LessonItem[]
+                );
+                
+                const latestProgress = await getUserProgress(currentUser!.uid);
+                const finalStageStatus = latestProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+    
+                const completionCard: StageCompleteInfo = {
+                    renderType: 'StageCompleteScreen',
+                    key: `complete-${currentStage.id}`,
+                    stageId: currentStage.id,
+                    stageTitle: currentStage.title,
+                    pointsEarnedInStage: pointsThisStageSession,
+                    stageItemAttempts: stageItemAttempts,
+                    stageItems: currentStage.items as LessonItem[],
+                    onNextStage: handleStartNextStage,
+                    onGoHome: () => router.push('/'),
+                    isLastStage: currentStageIndex === 5,
+                    stageStatus: finalStageStatus,
+                };
+                itemsToAdd.push(completionCard);
+            }
+    
+            if (itemsToAdd.length > 0) {
+                setContentQueue(prev => [...prev, ...itemsToAdd]);
+            }
+    
             setActiveContentIndex(prev => prev + 1);
-        } else {
-             setActiveContentIndex(prev => prev + 1);
+    
+        } catch (error) {
+            console.error("Error in handleProceed: ", error);
+            toast({
+               title: "Error",
+               description: "An error occurred while proceeding to the next step.",
+               variant: "destructive"
+            });
+        } finally {
+            setIsSubmitting(false);
         }
     }, [
         activeContentIndex, 
+        contentQueue,
         currentStage, 
-        contentQueue, 
         stageItemAttempts, 
         completeStageAndProceed, 
         lessonId, 
@@ -304,7 +324,9 @@ export default function LessonPage() {
         router,
         lessonData,
         currentUser,
-        handleStartNextStage
+        handleStartNextStage,
+        isSubmitting,
+        toast
     ]);
 
 
@@ -479,7 +501,7 @@ export default function LessonPage() {
                                             return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                     }
                                 } else if (content.renderType === 'StageCompleteScreen') {
-                                    const { key, renderType, ...restOfContent } = content;
+                                    const { key, ...restOfContent } = content;
                                     return <StageCompleteScreen key={key} {...restOfContent} />;
                                 }
                                 return null;
@@ -517,3 +539,4 @@ export default function LessonPage() {
         </main>
     );
 }
+
