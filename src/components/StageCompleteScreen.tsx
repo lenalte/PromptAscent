@@ -2,23 +2,18 @@
 "use client";
 
 import type React from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CheckCircle, HomeIcon, ArrowRight, Trophy, XCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, Trophy, XCircle } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
 
 interface StageCompleteScreenProps {
   stageTitle: string;
   pointsEarnedInStage: number;
   stageItemAttempts: { [itemId: string]: StageItemStatus };
   stageItems: LessonItem[];
-  onNextStage: () => void;
-  onGoHome: () => void;
   isLastStage: boolean;
   stageStatus: StageStatusValue;
-  isInteractive: boolean;
 }
 
 export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
@@ -26,13 +21,9 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   pointsEarnedInStage,
   stageItemAttempts,
   stageItems,
-  onNextStage,
-  onGoHome,
   isLastStage,
   stageStatus,
-  isInteractive,
 }) => {
-  const [isProceeding, setIsProceeding] = useState(false);
 
   const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet').length;
   let firstTrySuccesses = 0;
@@ -67,11 +58,6 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     return <CheckCircle className={cn(iconSize, "text-green-600 dark:text-green-400")} />;
   }
 
-  const handleNextStageClick = async () => {
-      setIsProceeding(true);
-      await onNextStage();
-  };
-
   return (
     <Card className={cn(
         "w-full max-w-3xl mx-auto shadow-md rounded-lg my-4",
@@ -100,26 +86,9 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
                 </div>
               )}
           </div>
-          {isInteractive && (
-              <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
-                  <Button variant="outline" onClick={onGoHome} disabled={isProceeding}>
-                      <HomeIcon className="mr-2 h-4 w-4" /> Zur Lektionsübersicht
-                  </Button>
-                  {!stageFailed && (
-                    <Button onClick={handleNextStageClick} disabled={isProceeding}>
-                      {isProceeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (isLastStage ? <Trophy className="mr-2 h-4 w-4" /> : <ArrowRight className="ml-2 h-4 w-4" />)}
-                      {isProceeding ? 'Laden...' : (isLastStage ? 'Zur Lektionsübersicht' : 'Nächste Stufe')}
-                    </Button>
-                  )}
-                   {stageFailed && (
-                      <Button onClick={onNextStage} variant="outline" disabled={isProceeding}>
-                           {isProceeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                           Stufe Wiederholen
-                      </Button>
-                  )}
-              </div>
-          )}
       </CardContent>
     </Card>
   );
 };
+
+    

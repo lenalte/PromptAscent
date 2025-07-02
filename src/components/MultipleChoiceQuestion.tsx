@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, ArrowRight, Loader2, Trophy } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MultipleChoiceQuestionProps {
@@ -21,11 +21,8 @@ interface MultipleChoiceQuestionProps {
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isLastItem: boolean;
-  onNextQuestion: () => void;
   title: string;
   id: number | string;
-  lessonPoints: number;
   isReadOnly?: boolean;
 }
 
@@ -40,9 +37,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isLastItem,
-  onNextQuestion,
-  lessonPoints,
   title,
   id,
   isReadOnly = false,
@@ -61,20 +55,11 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   });
 
   useEffect(() => {
-    // Reset internal state when the question id changes
     form.reset({ selectedOption: undefined });
     setIsCorrect(null);
     setIsLoading(false);
     setSubmittedValue(undefined);
   }, [id, form]);
-
-  const handleButtonClick = () => {
-    if (!hasAttempted) {
-      form.handleSubmit(onSubmit)();
-    } else {
-      onNextQuestion();
-    }
-  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -87,12 +72,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     setIsLoading(false);
   };
 
-  const getButtonText = () => {
-    if (isLoading) return 'Checking...';
-    if (!hasAttempted) return 'Submit Answer';
-    return isLastItem ? `Complete Stage` : 'Next';
-  };
-
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
@@ -101,7 +80,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <div className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="selectedOption"
@@ -165,24 +144,20 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               </Alert>
             )}
 
-            <Button
-              type="button"
-              onClick={handleButtonClick}
-              disabled={isReadOnly || isLoading || (!hasAttempted && !form.formState.isValid)}
-              className={cn(
-                "w-full sm:w-auto disabled:opacity-50",
-                !hasAttempted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && hasAttempted && "bg-green-600 hover:bg-green-700"
-              )}
-            >
-              <span className="flex items-center justify-center">
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isLoading && hasAttempted && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
-                {getButtonText()}
-                {!isLoading && hasAttempted && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
-              </span>
-            </Button>
-          </div>
+            {!isReadOnly && !hasAttempted && (
+                <Button
+                    type="submit"
+                    disabled={isLoading || !form.formState.isValid}
+                    className="w-full sm:w-auto"
+                >
+                    {isLoading ? (
+                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking...</>
+                    ) : (
+                        'Submit Answer'
+                    )}
+                </Button>
+            )}
+          </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
@@ -192,3 +167,5 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     </Card>
   );
 };
+
+    
