@@ -22,7 +22,6 @@ interface FreeResponseQuestionProps {
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isAnswerSubmitted: boolean;
   isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
@@ -43,7 +42,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isAnswerSubmitted,
   isLastItem,
   onNextQuestion,
   lessonPoints,
@@ -64,13 +62,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   useEffect(() => {
     setIsClientMounted(true);
-    // Reset feedback when question id changes
+    // Reset feedback when question id and its instance (via key) changes
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     form.reset({ userAnswer: '' });
   }, [id, form]);
 
   const handleButtonClick = () => {
-    if (!isAnswerSubmitted) {
+    if (!validationResult.attemptMade) {
       form.handleSubmit(onSubmit)();
     } else {
       onNextQuestion();
@@ -98,7 +96,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   const getButtonText = () => {
     if (isPending) return 'Validating...';
-    if (!isAnswerSubmitted) return 'Submit Answer';
+    if (!validationResult.attemptMade) return 'Submit Answer';
     return isLastItem ? `Complete Stage` : 'Next';
   };
   
@@ -124,7 +122,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                       rows={4}
                       {...field}
                       aria-describedby={validationResult.attemptMade ? "feedback-alert" : undefined}
-                      disabled={isReadOnly || isPending || isAnswerSubmitted}
+                      disabled={isReadOnly || isPending || validationResult.attemptMade}
                     />
                   </FormControl>
                   <FormMessage />
@@ -132,7 +130,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {isClientMounted && isAnswerSubmitted && validationResult.attemptMade && (
+            {isClientMounted && validationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={validationResult.isValid ? 'default' : 'destructive'}
@@ -163,18 +161,18 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isReadOnly || isPending || (!isAnswerSubmitted && !form.formState.isValid)}
+              disabled={isReadOnly || isPending || (!validationResult.attemptMade && !form.formState.isValid)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
-                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
+                !validationResult.attemptMade ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
+                isLastItem && validationResult.attemptMade && "bg-green-600 hover:bg-green-700"
               )}
             >
               <span className="flex items-center justify-center">
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isPending && isAnswerSubmitted && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
+                {!isPending && validationResult.attemptMade && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
                 {getButtonText()}
-                {!isPending && isAnswerSubmitted && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
+                {!isPending && validationResult.attemptMade && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
               </span>
             </Button>
           </div>

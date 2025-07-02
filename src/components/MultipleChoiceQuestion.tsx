@@ -21,7 +21,6 @@ interface MultipleChoiceQuestionProps {
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isAnswerSubmitted: boolean;
   isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
@@ -41,7 +40,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isAnswerSubmitted,
   isLastItem,
   onNextQuestion,
   lessonPoints,
@@ -52,6 +50,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [submittedValue, setSubmittedValue] = useState<string | undefined>(undefined);
+  const hasAttempted = submittedValue !== undefined;
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,7 +69,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   }, [id, form]);
 
   const handleButtonClick = () => {
-    if (!isAnswerSubmitted) {
+    if (!hasAttempted) {
       form.handleSubmit(onSubmit)();
     } else {
       onNextQuestion();
@@ -90,7 +89,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
   const getButtonText = () => {
     if (isLoading) return 'Checking...';
-    if (!isAnswerSubmitted) return 'Submit Answer';
+    if (!hasAttempted) return 'Submit Answer';
     return isLastItem ? `Complete Stage` : 'Next';
   };
 
@@ -114,29 +113,29 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                       onValueChange={field.onChange}
                       value={field.value}
                       className="flex flex-col space-y-2"
-                      disabled={isReadOnly || isAnswerSubmitted || isLoading}
-                      aria-describedby={isAnswerSubmitted ? "feedback-alert" : undefined}
+                      disabled={isReadOnly || hasAttempted || isLoading}
+                      aria-describedby={hasAttempted ? "feedback-alert" : undefined}
                     >
                       {options.map((option, index) => (
                         <FormItem key={`${id}-option-${index}`} className={cn(
                           "flex items-center space-x-3 space-y-0 p-3 rounded-md border transition-colors",
-                          isAnswerSubmitted && index === correctOptionIndex && "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700",
-                          isAnswerSubmitted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700",
-                          !isAnswerSubmitted && "hover:bg-muted/50"
+                          hasAttempted && index === correctOptionIndex && "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700",
+                          hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700",
+                          !hasAttempted && "hover:bg-muted/50"
                         )}
                         >
                           <FormControl>
-                            <RadioGroupItem value={index.toString()} disabled={isReadOnly || isAnswerSubmitted || isLoading} />
+                            <RadioGroupItem value={index.toString()} disabled={isReadOnly || hasAttempted || isLoading} />
                           </FormControl>
                           <FormLabel className={cn(
                             "font-normal cursor-pointer flex-1",
-                            isAnswerSubmitted && index === correctOptionIndex && "text-green-800 dark:text-green-300",
-                            isAnswerSubmitted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "text-red-800 dark:text-red-300"
+                            hasAttempted && index === correctOptionIndex && "text-green-800 dark:text-green-300",
+                            hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "text-red-800 dark:text-red-300"
                           )}>
                             {option}
                           </FormLabel>
-                          {isAnswerSubmitted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />}
-                          {isAnswerSubmitted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && <XCircle className="h-5 w-5 text-destructive dark:text-red-400" />}
+                          {hasAttempted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />}
+                          {hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && <XCircle className="h-5 w-5 text-destructive dark:text-red-400" />}
                         </FormItem>
                       ))}
                     </RadioGroup>
@@ -146,7 +145,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               )}
             />
 
-            {isAnswerSubmitted && isCorrect !== null && (
+            {hasAttempted && isCorrect !== null && (
               <Alert
                 id="feedback-alert"
                 variant={isCorrect ? 'default' : 'destructive'}
@@ -169,18 +168,18 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isReadOnly || isLoading || (!isAnswerSubmitted && !form.formState.isValid)}
+              disabled={isReadOnly || isLoading || (!hasAttempted && !form.formState.isValid)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
-                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
+                !hasAttempted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
+                isLastItem && hasAttempted && "bg-green-600 hover:bg-green-700"
               )}
             >
               <span className="flex items-center justify-center">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isLoading && isAnswerSubmitted && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
+                {!isLoading && hasAttempted && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
                 {getButtonText()}
-                {!isLoading && isAnswerSubmitted && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
+                {!isLoading && hasAttempted && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
               </span>
             </Button>
           </div>
@@ -193,5 +192,3 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     </Card>
   );
 };
-
-    
