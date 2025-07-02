@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { evaluatePrompt, type EvaluatePromptOutput } from '@/ai/flows/evaluate-prompt';
-import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
@@ -20,11 +19,14 @@ interface PromptingTaskProps {
   taskDescription: string;
   evaluationGuidance: string;
   pointsForCorrect: number;
-  pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
+  isActive?: boolean;
+  registerSubmit?: (fn: () => void) => void;
+  unregisterSubmit?: () => void;
+  onValidityChange?: (isValid: boolean) => void;
 }
 
 const formSchema = z.object({
@@ -37,11 +39,14 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   taskDescription,
   evaluationGuidance,
   pointsForCorrect,
-  pointsForIncorrect,
   onAnswerSubmit,
   title,
   id,
   isReadOnly = false,
+  isActive = false,
+  registerSubmit,
+  unregisterSubmit,
+  onValidityChange,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResultWithAttempt>({
@@ -58,12 +63,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     },
   });
 
-  useEffect(() => {
-    form.reset({ userPrompt: '' });
-    setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
-  }, [id, form]);
+  const { handleSubmit, formState: { isValid } } = form;
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (isReadOnly || evaluationResult.attemptMade) return;
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
     startTransition(async () => {
       try {
@@ -87,6 +90,28 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     });
   };
 
+  useEffect(() => {
+    // Reset state when the question ID changes
+    form.reset({ userPrompt: '' });
+    setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
+  }, [id, form]);
+
+  useEffect(() => {
+    if (isActive && !isReadOnly && registerSubmit && unregisterSubmit) {
+      registerSubmit(handleSubmit(onSubmit));
+      return () => {
+        unregisterSubmit();
+      };
+    }
+  }, [isActive, isReadOnly, registerSubmit, unregisterSubmit, handleSubmit, onSubmit]);
+
+  useEffect(() => {
+    if (isActive && !isReadOnly && onValidityChange) {
+      onValidityChange(isValid);
+    }
+  }, [isValid, isActive, isReadOnly, onValidityChange]);
+
+
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
       <CardHeader>
@@ -97,7 +122,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="userPrompt"
@@ -121,6 +146,13 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 </FormItem>
               )}
             />
+
+            {isPending && (
+                <div className="flex items-center space-x-2 text-muted-foreground">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                    <span>Evaluating...</span>
+                </div>
+            )}
 
             {evaluationResult.attemptMade && (
               <Alert
@@ -158,31 +190,13 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               <h4 className="font-semibold mb-1 text-purple-800 dark:text-purple-300">Evaluation Guidance:</h4>
               <p className="whitespace-pre-line">{evaluationGuidance}</p>
             </div>
-
-            {!isReadOnly && !evaluationResult.attemptMade && (
-              <Button
-                type="submit"
-                disabled={isPending || !form.formState.isValid}
-                className="w-full sm:w-auto"
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Evaluating...
-                  </>
-                ) : (
-                  'Submit Prompt'
-                )}
-              </Button>
-            )}
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-purple-600 dark:text-purple-500 pt-4">
         <p>Effective: +{pointsForCorrect} points</p>
-        <p>Needs Improvement: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (max 3 attempts)</p>
+        <p>Needs Improvement: 0 points (max 3 attempts)</p>
       </CardFooter>
     </Card>
   );
 };
-
-    
