@@ -62,13 +62,12 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   });
 
   useEffect(() => {
-    // Reset internal state when the question changes (identified by id)
-    // but not when isAnswerSubmitted changes, to preserve feedback.
+    // Reset internal state when the question id changes
     form.reset({ selectedOption: undefined });
     setIsCorrect(null);
     setIsLoading(false);
     setSubmittedValue(undefined);
-  }, [id, question, form]);
+  }, [id, form]);
 
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
@@ -98,7 +97,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle>Question</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>{question}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -189,8 +188,10 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
         <p>Correct: +{pointsForCorrect} points</p>
-        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
+        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (max 3 attempts)</p>
       </CardFooter>
     </Card>
   );
 };
+
+    

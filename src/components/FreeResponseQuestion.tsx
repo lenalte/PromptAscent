@@ -53,12 +53,14 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 }) => {
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
-  const [showHint, setShowHint] = useState(false);
   const [isClientMounted, setIsClientMounted] = useState(false);
 
   useEffect(() => {
     setIsClientMounted(true);
-  }, []);
+    // Reset feedback when question id changes
+    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+    form.reset({ userAnswer: '' });
+  }, [id, form]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,7 +79,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
-    setShowHint(false);
     startTransition(async () => {
       try {
         const result = await validateUserAnswer({
@@ -95,8 +96,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     });
   };
 
-  const toggleHint = () => setShowHint(prev => !prev);
-
   const getButtonText = () => {
     if (isPending) return 'Validating...';
     if (!isAnswerSubmitted) return 'Submit Answer';
@@ -106,7 +105,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle>Question</CardTitle> 
+        <CardTitle>{title}</CardTitle> 
         <CardDescription>{question}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -133,7 +132,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {isClientMounted && validationResult.attemptMade && (
+            {isClientMounted && isAnswerSubmitted && validationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={validationResult.isValid ? 'default' : 'destructive'}
@@ -183,8 +182,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
         <p>Correct: +{pointsForCorrect} points</p>
-        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
+        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (max 3 attempts)</p>
       </CardFooter>
     </Card>
   );
 };
+
+    

@@ -67,8 +67,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   });
 
   useEffect(() => {
-    // Only reset form and local feedback state when the item ID changes.
-    // This preserves feedback across re-renders caused by parent state updates.
+    // Reset form and local feedback state when the item ID changes.
     form.reset({ userPrompt: '' });
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
   }, [id, form]);
@@ -115,7 +114,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-purple-800 dark:text-purple-300 flex items-center">
-          <FilePenLine className="mr-2 h-5 w-5" /> Prompting Task
+          <FilePenLine className="mr-2 h-5 w-5" /> {title}
         </CardTitle>
         <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription>
       </CardHeader>
@@ -146,7 +145,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               )}
             />
 
-            {evaluationResult.attemptMade && (
+            {isAnswerSubmitted && evaluationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={evaluationResult.isCorrect ? 'default' : 'destructive'}
@@ -205,8 +204,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-purple-600 dark:text-purple-500 pt-4">
         <p>Effective: +{pointsForCorrect} points</p>
-        <p>Needs Improvement: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (min 0)</p>
+        <p>Needs Improvement: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (max 3 attempts)</p>
       </CardFooter>
     </Card>
   );
 };
+
+    

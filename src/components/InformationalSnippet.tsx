@@ -31,16 +31,8 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   isReadOnly = false,
   id,
 }) => {
-  // Automatically "acknowledge" the snippet when it becomes read-only (i.e., not active anymore)
-  // or on first mount if it's already not the active item.
-  useEffect(() => {
-    if (!isReadOnly) {
-        onAcknowledged();
-    }
-  }, [id, isReadOnly, onAcknowledged]);
-
   const getButtonText = () => {
-    return isLastItem ? `Complete Stage` : 'Next';
+    return isLastItem ? `Complete Stage` : 'Continue';
   };
 
   const getButtonIcon = () => {
@@ -51,12 +43,12 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   };
 
   return (
-    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg border-blue-300 bg-blue-50", isReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg border-blue-300 bg-blue-50 dark:bg-blue-900/20", isReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-blue-800 flex items-center">
-          <Info className="mr-2 h-5 w-5" /> Information
+        <CardTitle className="text-blue-800 dark:text-blue-200 flex items-center">
+          <Info className="mr-2 h-5 w-5" /> {title}
         </CardTitle>
-        <CardDescription className="text-blue-700 pt-2">{content}</CardDescription>
+        <CardDescription className="text-blue-700 dark:text-blue-300 pt-2 whitespace-pre-line">{content}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* The button is only shown for the active snippet */}
@@ -69,14 +61,16 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
                     isLastItem && "bg-green-600 hover:bg-green-700"
                 )}
             >
-                {getButtonIcon()}
                 {getButtonText()}
+                {getButtonIcon()}
             </Button>
         )}
       </CardContent>
-      <CardFooter className="flex justify-start text-xs text-blue-600 pt-4">
+      <CardFooter className="flex justify-start text-xs text-blue-600 dark:text-blue-500 pt-4">
         <p>Points for reading: +{pointsAwarded}</p>
       </CardFooter>
     </Card>
   );
 };
+
+    
