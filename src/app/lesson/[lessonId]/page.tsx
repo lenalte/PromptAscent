@@ -107,18 +107,19 @@ export default function LessonPage() {
 
         const currentAttemptsForThisItem = stageItemAttempts[itemId]?.attempts || 0;
         const newAttemptsCount = currentAttemptsForThisItem + 1;
-        const hasBeenCorrectBefore = stageItemAttempts[itemId]?.correct === true;
+        const wasCorrectBefore = stageItemAttempts[itemId]?.correct === true;
+        const isNowCorrect = wasCorrectBefore || isCorrect;
         
         setStageItemAttempts(prev => ({
             ...prev,
             [itemId]: {
                 attempts: newAttemptsCount,
-                correct: hasBeenCorrectBefore || isCorrect,
+                correct: isNowCorrect,
             }
         }));
         
-        if (isCorrect && !hasBeenCorrectBefore) {
-            setPointsEarnedThisStageSession(prev => prev + pointsChange);
+        if (isCorrect && !wasCorrectBefore) {
+            setPointsEarnedThisStage(prev => prev + pointsChange);
         }
     }, [currentStage, stageItemAttempts]);
 
@@ -158,7 +159,7 @@ export default function LessonPage() {
         if (itemToProcess.type === 'informationalSnippet' && !itemStatus) {
             handleAnswerSubmit(true, itemToProcess.pointsAwarded, itemToProcess.id);
         }
-
+        
         // Re-queue if incorrect and attempts are left
         if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
             setDisplayedItems(prev => [...prev, itemToProcess]);
@@ -320,33 +321,29 @@ export default function LessonPage() {
                     <div className="space-y-8">
                         {displayedItems.map((item, index) => {
                             const isItemActive = index === activeItemIndex;
-                            const itemStatus = stageItemAttempts[item.id];
-                            
-                            // A question is "completed" and should show a "Next" button if it has been attempted.
-                            const isAnswered = !!itemStatus;
                             // The component is locked if it's not the active item.
                             const isReadOnly = !isItemActive;
                             
                             const isLastItemInQueue = isItemActive && (activeItemIndex === displayedItems.length - 1);
 
                             const commonProps = {
+                                key: `${item.id}-${index}`,
                                 isReadOnly,
                                 id: item.id,
                                 title: item.title,
-                                isAnswerSubmitted: isAnswered, // This prop now correctly represents if the item has been attempted at all
                                 isLastItem: isLastItemInQueue,
                                 lessonPoints: userProgress?.totalPoints ?? 0,
                             };
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <FreeResponseQuestion {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <MultipleChoiceQuestion {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'informationalSnippet':
-                                    return <InformationalSnippet key={`${item.id}-${index}`} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
+                                    return <InformationalSnippet {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
                                 case 'promptingTask':
-                                    return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
+                                    return <PromptingTask {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
@@ -375,5 +372,3 @@ export default function LessonPage() {
         </main>
     );
 }
-
-    

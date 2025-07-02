@@ -22,7 +22,6 @@ interface PromptingTaskProps {
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isAnswerSubmitted: boolean;
   isLastItem: boolean;
   onNextTask: () => void;
   title: string;
@@ -43,7 +42,6 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isAnswerSubmitted,
   isLastItem,
   onNextTask,
   title,
@@ -73,7 +71,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   }, [id, form]);
 
   const handleButtonClick = () => {
-    if (!isAnswerSubmitted) {
+    if (!evaluationResult.attemptMade) {
       form.handleSubmit(onSubmit)();
     } else {
       onNextTask();
@@ -106,7 +104,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
 
   const getButtonText = () => {
     if (isPending) return 'Evaluating...';
-    if (!isAnswerSubmitted) return 'Submit Prompt';
+    if (!evaluationResult.attemptMade) return 'Submit Prompt';
     return isLastItem ? `Complete Stage` : 'Next';
   };
 
@@ -134,7 +132,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                       rows={6}
                       {...field}
                       aria-describedby={evaluationResult.attemptMade ? "feedback-alert" : undefined}
-                      disabled={isReadOnly || isPending || isAnswerSubmitted}
+                      disabled={isReadOnly || isPending || evaluationResult.attemptMade}
                     />
                   </FormControl>
                   <FormDescription className="text-purple-600 dark:text-purple-500">
@@ -145,7 +143,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               )}
             />
 
-            {isAnswerSubmitted && evaluationResult.attemptMade && (
+            {evaluationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={evaluationResult.isCorrect ? 'default' : 'destructive'}
@@ -185,18 +183,18 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isReadOnly || isPending || (!isAnswerSubmitted && !form.formState.isValid)}
+              disabled={isReadOnly || isPending || (!evaluationResult.attemptMade && !form.formState.isValid)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
-                !isAnswerSubmitted ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "bg-secondary hover:bg-secondary/90 text-secondary-foreground",
-                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700 text-white dark:text-primary-foreground"
+                !evaluationResult.attemptMade ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "bg-secondary hover:bg-secondary/90 text-secondary-foreground",
+                isLastItem && evaluationResult.attemptMade && "bg-green-600 hover:bg-green-700 text-white dark:text-primary-foreground"
               )}
             >
               <span className="flex items-center justify-center">
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isPending && isAnswerSubmitted && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
+                {!isPending && evaluationResult.attemptMade && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
                 {getButtonText()}
-                {!isPending && isAnswerSubmitted && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
+                {!isPending && evaluationResult.attemptMade && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
               </span>
             </Button>
           </div>
@@ -209,5 +207,3 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     </Card>
   );
 };
-
-    
