@@ -105,23 +105,25 @@ export default function LessonPage() {
     const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
         if (!currentStage) return;
 
-        const currentAttemptsForThisItem = stageItemAttempts[itemId]?.attempts || 0;
-        const newAttemptsCount = currentAttemptsForThisItem + 1;
-        const wasCorrectBefore = stageItemAttempts[itemId]?.correct === true;
-        const isNowCorrect = wasCorrectBefore || isCorrect;
-        
-        setStageItemAttempts(prev => ({
-            ...prev,
-            [itemId]: {
-                attempts: newAttemptsCount,
-                correct: isNowCorrect,
+        setStageItemAttempts(prev => {
+            const currentAttemptsForThisItem = prev[itemId]?.attempts || 0;
+            const newAttemptsCount = currentAttemptsForThisItem + 1;
+            const wasCorrectBefore = prev[itemId]?.correct === true;
+            const isNowCorrect = wasCorrectBefore || isCorrect;
+
+            if (isCorrect && !wasCorrectBefore) {
+                setPointsEarnedThisStageSession(p => p + pointsChange);
             }
-        }));
-        
-        if (isCorrect && !wasCorrectBefore) {
-            setPointsEarnedThisStageSession(prev => prev + pointsChange);
-        }
-    }, [currentStage, stageItemAttempts]);
+
+            return {
+                ...prev,
+                [itemId]: {
+                    attempts: newAttemptsCount,
+                    correct: isNowCorrect,
+                }
+            };
+        });
+    }, [currentStage]);
 
     const handleProceedToNextStageFromModal = async () => {
         if (!currentStage || isSubmittingStage) return;
@@ -149,19 +151,20 @@ export default function LessonPage() {
         router.push('/');
     };
 
-    const handleNext = useCallback(async () => {
+    const handleProceed = useCallback(async () => {
         if (!currentStage || !displayedItems) return;
 
         const itemToProcess = displayedItems[activeItemIndex];
         const itemStatus = stageItemAttempts[itemToProcess.id];
 
-        // For informational snippets, ensure they are marked as "attempted"
+        // For informational snippets, which don't have a separate submit step.
+        // We mark them as "correct" upon proceeding.
         if (itemToProcess.type === 'informationalSnippet' && !itemStatus) {
             handleAnswerSubmit(true, itemToProcess.pointsAwarded, itemToProcess.id);
         }
-        
-        // Re-queue if incorrect and attempts are left
-        if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
+        // For other items (questions), check if they were answered incorrectly and have attempts left.
+        else if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
+            // Re-queue the item by adding it to the end of the displayedItems array.
             setDisplayedItems(prev => [...prev, itemToProcess]);
         }
         
@@ -321,7 +324,6 @@ export default function LessonPage() {
                     <div className="space-y-8">
                         {displayedItems.map((item, index) => {
                             const isItemActive = index === activeItemIndex;
-                            // The component is locked if it's not the active item.
                             const isReadOnly = !isItemActive;
                             
                             const isLastItemInQueue = isItemActive && (activeItemIndex === displayedItems.length - 1);
@@ -338,13 +340,13 @@ export default function LessonPage() {
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
                                 case 'informationalSnippet':
-                                    return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
+                                    return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} onNext={handleProceed} />;
                                 case 'promptingTask':
-                                    return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
+                                    return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
