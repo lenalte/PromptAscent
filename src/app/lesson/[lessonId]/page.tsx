@@ -354,14 +354,13 @@ export default function LessonPage() {
                     <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStage} />
                 ) : (
                     <div className="space-y-8">
-                        {contentQueue.map((content, index) => {
+                        {contentQueue.slice(0, activeContentIndex + 1).map((content, index) => {
                              const isReadOnly = index < activeContentIndex;
                              const isLastItemInStage = index === contentQueue.length - 1 && content.renderType === 'LessonItem';
 
                              if (content.renderType === 'LessonItem') {
                                 const item = content;
                                 const commonProps = {
-                                    key: `${item.id}-${index}`,
                                     isReadOnly,
                                     id: item.id,
                                     title: item.title,
@@ -371,20 +370,20 @@ export default function LessonPage() {
 
                                 switch (item.type) {
                                     case 'freeResponse':
-                                        return <FreeResponseQuestion {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                        return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
                                     case 'multipleChoice':
-                                        return <MultipleChoiceQuestion {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                        return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
                                     case 'informationalSnippet':
-                                        return <InformationalSnippet {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} onNext={handleProceed} />;
+                                        return <InformationalSnippet key={`${item.id}-${index}`} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} onNext={handleProceed} />;
                                     case 'promptingTask':
-                                        return <PromptingTask {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
+                                        return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
                                     default:
                                         const _exhaustiveCheck: never = item;
                                         return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                 }
                             } else if (content.renderType === 'StageCompleteScreen') {
                                 const isInteractive = index === activeContentIndex;
-                                return isInteractive ? <StageCompleteScreen {...content} /> : null; // Only show the active one
+                                return isInteractive ? <StageCompleteScreen key={content.key} {...content} /> : null; // Only show the active one
                             }
                             return null;
                         })}
