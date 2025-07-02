@@ -231,44 +231,44 @@ export default function LessonPage() {
     }, [completeStageAndProceed, currentStage, currentStageIndex, isSubmitting, lessonData, lessonId, pointsThisStageSession, stageItemAttempts]);
 
     const handleProceed = useCallback(async () => {
-        if (!currentStage || !contentQueue[activeContentIndex] || isSubmitting) return;
-    
+        if (!currentStage || !activeContent || isSubmitting) return;
+
         setIsSubmitting(true);
-    
+
         try {
-            const currentContent = contentQueue[activeContentIndex];
-            if (currentContent.renderType !== 'LessonItem') {
-                return; 
+            const itemToProcess = activeContent;
+            if (itemToProcess.renderType !== 'LessonItem') {
+                setActiveContentIndex(prev => prev + 1);
+                setIsSubmitting(false);
+                return;
             }
-    
-            const itemToProcess = currentContent;
-            const itemStatus = stageItemAttempts[itemToProcess.id];
-            
-            let isLastItemInCurrentStageAttempt = true;
+
+            // Determine if this was the last item in the stage that was just attempted
             const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
-            
+            let isLastItemInCurrentStageAttempt = true;
             for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
-                if (contentQueue[i].renderType === 'LessonItem') {
-                    const futureItem = contentQueue[i] as LessonItemWithRenderType;
-                    if (currentStageItemIds.has(futureItem.id)) {
-                        isLastItemInCurrentStageAttempt = false;
-                        break;
-                    }
-                } else {
-                     break;
+                const futureItem = contentQueue[i];
+                if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
+                    isLastItemInCurrentStageAttempt = false;
+                    break;
+                }
+                if (futureItem.renderType === 'StageCompleteScreen') {
+                    break;
                 }
             }
             
+            const itemStatus = stageItemAttempts[itemToProcess.id];
             const shouldRetry = itemStatus && itemStatus.correct === false && itemStatus.attempts < 3 && itemToProcess.type !== 'informationalSnippet';
             
             const itemsToAdd: ContentQueueItem[] = [];
-    
+
             if (shouldRetry) {
+                // Important: Ensure unique key for retry items
                 itemsToAdd.push({ ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` });
             }
     
             if (isLastItemInCurrentStageAttempt) {
-                await completeStageAndProceed(
+                const stageResult = await completeStageAndProceed(
                     lessonId,
                     currentStage.id,
                     currentStageIndex,
@@ -277,9 +277,8 @@ export default function LessonPage() {
                     currentStage.items as LessonItem[]
                 );
                 
-                const latestProgress = await getUserProgress(currentUser!.uid);
-                const finalStageStatus = latestProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
-    
+                const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+                
                 const completionCard: StageCompleteInfo = {
                     renderType: 'StageCompleteScreen',
                     key: `complete-${currentStage.id}`,
@@ -297,7 +296,12 @@ export default function LessonPage() {
             }
     
             if (itemsToAdd.length > 0) {
-                setContentQueue(prev => [...prev, ...itemsToAdd]);
+              setContentQueue(prev => {
+                  const newQueue = [...prev];
+                  // Insert new items right after the current one, ensures correct order
+                  newQueue.splice(activeContentIndex + 1, 0, ...itemsToAdd);
+                  return newQueue;
+              });
             }
     
             setActiveContentIndex(prev => prev + 1);
@@ -313,8 +317,9 @@ export default function LessonPage() {
             setIsSubmitting(false);
         }
     }, [
-        activeContentIndex, 
+        activeContent,
         contentQueue,
+        activeContentIndex,
         currentStage, 
         stageItemAttempts, 
         completeStageAndProceed, 
@@ -470,7 +475,7 @@ export default function LessonPage() {
                             <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
                         ) : (
                             contentQueue.map((content, index) => {
-                                const isReadOnly = index < activeContentIndex;
+                                const isReadOnly = index !== activeContentIndex;
                                 const isActive = index === activeContentIndex;
 
                                 if (content.renderType === 'LessonItem') {
@@ -539,4 +544,3 @@ export default function LessonPage() {
         </main>
     );
 }
-
