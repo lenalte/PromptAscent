@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
-import { BrainCircuit, PencilRuler, HomeIcon, Loader2, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { BrainCircuit, PencilRuler, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -226,12 +226,25 @@ export default function LessonPage() {
         const itemToProcess = currentContent;
         const itemStatus = stageItemAttempts[itemToProcess.id];
         
-        const isLastItemInCurrentStageAttempt = activeContentIndex === contentQueue.length - 1;
+        // This is tricky: we need to check if we are on the last item of the "current attempt block".
+        // This means we look ahead in the queue. If there are no more lesson items for the current stage, it's the last one.
+        let isLastItemInCurrentStageAttempt = true;
+        for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
+            if (contentQueue[i].renderType === 'LessonItem') {
+                const futureItem = contentQueue[i] as LessonItemWithRenderType;
+                // Check if future item belongs to the same stage
+                if (lessonData?.stages[currentStageIndex].items.some(stageItem => stageItem.id === futureItem.id)) {
+                    isLastItemInCurrentStageAttempt = false;
+                    break;
+                }
+            }
+        }
+        
 
         // If incorrect and has attempts left, add to end of queue.
         if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
             if (itemToProcess.type !== 'informationalSnippet') {
-                setContentQueue(prev => [...prev, { ...itemToProcess, renderType: 'LessonItem' as const, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
+                setContentQueue(prev => [...prev, { ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
             }
         }
         
@@ -279,7 +292,6 @@ export default function LessonPage() {
         lessonId, 
         currentStageIndex, 
         pointsThisStageSession,
-        handleAnswerSubmit,
         router,
         lessonData,
         currentUser
@@ -309,6 +321,41 @@ export default function LessonPage() {
             );
         });
     }, [lessonData, userProgress, lessonId]);
+
+    const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
+
+    const canProceed = useMemo(() => {
+        if (!activeContent || isSubmitting) return false;
+
+        if (activeContent.renderType === 'StageCompleteScreen') {
+            return true;
+        }
+
+        if (activeContent.renderType === 'LessonItem') {
+            // An informational snippet is acknowledged on mount, so it updates stageItemAttempts.
+            // Therefore, we just need to check if an attempt record exists for any item.
+            return !!stageItemAttempts[activeContent.id];
+        }
+        return false;
+    }, [activeContent, stageItemAttempts, isSubmitting]);
+
+    const getButtonConfig = () => {
+        if (activeContent?.renderType === 'StageCompleteScreen') {
+            return {
+                onClick: handleStartNextStage,
+                text: activeContent.isLastStage ? 'Finish Lesson' : 'Next Stage',
+                icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />,
+                disabled: isSubmitting,
+            }
+        }
+        return {
+            onClick: handleProceed,
+            text: 'Next',
+            icon: <ArrowRight className="h-5 w-5" />,
+            disabled: isSubmitting,
+        }
+    }
+    const buttonConfig = getButtonConfig();
 
     if (isLoadingLesson || (isContextLoading && !currentUser && !userProgress)) {
         return (
@@ -382,45 +429,35 @@ export default function LessonPage() {
                             <div className="space-y-8">
                                 {contentQueue.slice(0, activeContentIndex + 1).map((content, index) => {
                                     const isReadOnly = index < activeContentIndex;
+                                    const key = content.key || `${(content as any).id}-${index}`; // Ensure key is unique
 
                                     if (content.renderType === 'LessonItem') {
                                         const item = content;
-                                        const key = `${item.id}-${index}-${isReadOnly}`; // Key needs to be unique for re-renders
                                         const commonProps = {
                                             isReadOnly,
                                             id: item.id,
                                             title: item.title,
-                                            isLastItem: false, // This is complex to determine here, handled inside component
-                                            lessonPoints: userProgress?.totalPoints ?? 0,
                                         };
 
                                         switch (item.type) {
                                             case 'freeResponse':
-                                                return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                                return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} />;
                                             case 'multipleChoice':
-                                                return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                                return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} />;
                                             case 'informationalSnippet':
-                                                return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} />;
+                                                return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={() => handleAnswerSubmit(true, item.pointsAwarded, item.id)} />;
                                             case 'promptingTask':
-                                                return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
+                                                return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} />;
                                             default:
                                                 const _exhaustiveCheck: never = item;
                                                 return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                         }
                                     } else if (content.renderType === 'StageCompleteScreen') {
-                                        const isInteractive = index === activeContentIndex;
-                                        const { key, renderType, ...restOfContent } = content;
-                                        return <StageCompleteScreen key={key} {...restOfContent} isInteractive={isInteractive} />;
+                                        const { key: contentKey, renderType, ...restOfContent } = content;
+                                        return <StageCompleteScreen key={contentKey} {...restOfContent} />;
                                     }
                                     return null;
                                 })}
-
-                                {isSubmitting && (
-                                    <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
-                                        <Loader2 className="inline-block mr-2 h-5 w-5 animate-spin" />
-                                        <span>Saving progress...</span>
-                                    </div>
-                                )}
                                 
                                 {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
                                     <Alert variant="destructive" className="mt-4">
@@ -436,6 +473,23 @@ export default function LessonPage() {
                     </Card>
                 )}
             </div>
+
+            {canProceed && (
+                <div className="fixed bottom-8 right-8 z-50">
+                    <Button onClick={buttonConfig.onClick} size="lg" className="shadow-lg rounded-full pl-6 pr-4 py-6 text-lg font-semibold" disabled={buttonConfig.disabled}>
+                        {isSubmitting ? (
+                           <Loader2 className="h-6 w-6 animate-spin" />
+                        ) : (
+                           <>
+                             {buttonConfig.text}
+                             <span className="ml-2">{buttonConfig.icon}</span>
+                           </>
+                        )}
+                    </Button>
+                </div>
+            )}
         </main>
     );
 }
+
+    

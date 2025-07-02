@@ -12,21 +12,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, Loader2, Lightbulb, ArrowRight, Trophy } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// props
 interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isLastItem: boolean;
-  onNextQuestion: () => void;
   title: string;
   id: number | string;
-  lessonPoints: number;
   isReadOnly?: boolean;
 }
 
@@ -42,9 +38,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isLastItem,
-  onNextQuestion,
-  lessonPoints,
   title,
   id,
   isReadOnly = false,
@@ -62,18 +55,9 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   useEffect(() => {
     setIsClientMounted(true);
-    // Reset feedback when question id and its instance (via key) changes
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     form.reset({ userAnswer: '' });
   }, [id, form]);
-
-  const handleButtonClick = () => {
-    if (!validationResult.attemptMade) {
-      form.handleSubmit(onSubmit)();
-    } else {
-      onNextQuestion();
-    }
-  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
@@ -93,12 +77,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       }
     });
   };
-
-  const getButtonText = () => {
-    if (isPending) return 'Validating...';
-    if (!validationResult.attemptMade) return 'Submit Answer';
-    return isLastItem ? `Complete Stage` : 'Next';
-  };
   
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
@@ -108,7 +86,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <div className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="userAnswer"
@@ -158,24 +136,22 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               </Alert>
             )}
             
-            <Button
-              type="button"
-              onClick={handleButtonClick}
-              disabled={isReadOnly || isPending || (!validationResult.attemptMade && !form.formState.isValid)}
-              className={cn(
-                "w-full sm:w-auto disabled:opacity-50",
-                !validationResult.attemptMade ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && validationResult.attemptMade && "bg-green-600 hover:bg-green-700"
-              )}
-            >
-              <span className="flex items-center justify-center">
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isPending && validationResult.attemptMade && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
-                {getButtonText()}
-                {!isPending && validationResult.attemptMade && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
-              </span>
-            </Button>
-          </div>
+            {!isReadOnly && !validationResult.attemptMade && (
+              <Button
+                type="submit"
+                disabled={isPending || !form.formState.isValid}
+                className="w-full sm:w-auto"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validating...
+                  </>
+                ) : (
+                  'Submit Answer'
+                )}
+              </Button>
+            )}
+          </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
@@ -185,3 +161,5 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     </Card>
   );
 };
+
+    

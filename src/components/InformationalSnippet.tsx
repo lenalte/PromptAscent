@@ -2,9 +2,8 @@
 "use client";
 
 import type React from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, CheckCircle, Info, Trophy } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 
@@ -13,10 +12,7 @@ interface InformationalSnippetProps {
   content: string;
   pointsAwarded: number;
   onAcknowledged: () => void;
-  isLastItem: boolean;
   id: number | string;
-  onNext: () => void;
-  lessonPoints: number;
   isReadOnly?: boolean;
 }
 
@@ -25,21 +21,9 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   content,
   pointsAwarded,
   onAcknowledged,
-  isLastItem,
   isReadOnly = false,
   id,
 }) => {
-  const getButtonText = () => {
-    return isLastItem ? `Complete Stage` : 'Continue';
-  };
-
-  const getButtonIcon = () => {
-    if (isLastItem) {
-      return <Trophy className="mr-2 h-4 w-4" />;
-    }
-    return <ArrowRight className="ml-2 h-4 w-4" />;
-  };
-
   useEffect(() => {
     if (!isReadOnly) {
         onAcknowledged();
@@ -54,24 +38,11 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
         </CardTitle>
         <CardDescription className="text-blue-700 dark:text-blue-300 pt-2 whitespace-pre-line">{content}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {!isReadOnly && (
-            <Button
-                type="button"
-                onClick={onAcknowledged}
-                className={cn(
-                    "w-full sm:w-auto bg-secondary hover:bg-secondary/90",
-                    isLastItem && "bg-green-600 hover:bg-green-700"
-                )}
-            >
-                {getButtonText()}
-                {getButtonIcon()}
-            </Button>
-        )}
-      </CardContent>
       <CardFooter className="flex justify-start text-xs text-blue-600 dark:text-blue-500 pt-4">
         <p>Points for reading: +{pointsAwarded}</p>
       </CardFooter>
     </Card>
   );
 };
+
+    

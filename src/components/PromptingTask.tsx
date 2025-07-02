@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, Loader2, ArrowRight, FilePenLine, Trophy } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, FilePenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PromptingTaskProps {
@@ -22,11 +22,8 @@ interface PromptingTaskProps {
   pointsForCorrect: number;
   pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
-  isLastItem: boolean;
-  onNextTask: () => void;
   title: string;
   id: number | string;
-  lessonPoints: number;
   isReadOnly?: boolean;
 }
 
@@ -42,11 +39,8 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   pointsForCorrect,
   pointsForIncorrect,
   onAnswerSubmit,
-  isLastItem,
-  onNextTask,
   title,
   id,
-  lessonPoints,
   isReadOnly = false,
 }) => {
   const [isPending, startTransition] = useTransition();
@@ -65,18 +59,9 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   });
 
   useEffect(() => {
-    // Reset form and local feedback state when the item ID changes.
     form.reset({ userPrompt: '' });
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
   }, [id, form]);
-
-  const handleButtonClick = () => {
-    if (!evaluationResult.attemptMade) {
-      form.handleSubmit(onSubmit)();
-    } else {
-      onNextTask();
-    }
-  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
@@ -102,12 +87,6 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     });
   };
 
-  const getButtonText = () => {
-    if (isPending) return 'Evaluating...';
-    if (!evaluationResult.attemptMade) return 'Submit Prompt';
-    return isLastItem ? `Complete Stage` : 'Next';
-  };
-
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
       <CardHeader>
@@ -118,7 +97,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <div className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="userPrompt"
@@ -180,24 +159,22 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               <p className="whitespace-pre-line">{evaluationGuidance}</p>
             </div>
 
-            <Button
-              type="button"
-              onClick={handleButtonClick}
-              disabled={isReadOnly || isPending || (!evaluationResult.attemptMade && !form.formState.isValid)}
-              className={cn(
-                "w-full sm:w-auto disabled:opacity-50",
-                !evaluationResult.attemptMade ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "bg-secondary hover:bg-secondary/90 text-secondary-foreground",
-                isLastItem && evaluationResult.attemptMade && "bg-green-600 hover:bg-green-700 text-white dark:text-primary-foreground"
-              )}
-            >
-              <span className="flex items-center justify-center">
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isPending && evaluationResult.attemptMade && isLastItem && <Trophy className="mr-2 h-4 w-4" />}
-                {getButtonText()}
-                {!isPending && evaluationResult.attemptMade && !isLastItem && <ArrowRight className="ml-2 h-4 w-4" />}
-              </span>
-            </Button>
-          </div>
+            {!isReadOnly && !evaluationResult.attemptMade && (
+              <Button
+                type="submit"
+                disabled={isPending || !form.formState.isValid}
+                className="w-full sm:w-auto"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Evaluating...
+                  </>
+                ) : (
+                  'Submit Prompt'
+                )}
+              </Button>
+            )}
+          </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-purple-600 dark:text-purple-500 pt-4">
@@ -207,3 +184,5 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     </Card>
   );
 };
+
+    
