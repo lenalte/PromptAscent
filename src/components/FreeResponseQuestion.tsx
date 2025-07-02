@@ -55,19 +55,19 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
   const [isClientMounted, setIsClientMounted] = useState(false);
 
-  useEffect(() => {
-    setIsClientMounted(true);
-    // Reset feedback when question id changes
-    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
-    form.reset({ userAnswer: '' });
-  }, [id, form]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       userAnswer: '',
     },
   });
+
+  useEffect(() => {
+    setIsClientMounted(true);
+    // Reset feedback when question id changes
+    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+    form.reset({ userAnswer: '' });
+  }, [id, form]);
 
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
@@ -187,5 +187,3 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     </Card>
   );
 };
-
-    
