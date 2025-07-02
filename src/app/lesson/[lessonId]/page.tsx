@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
-import { getUserProgress } from '@/services/userProgressService';
 import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -151,7 +150,7 @@ export default function LessonPage() {
                     
                     newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
                     setContentQueue(newQueue);
-                    setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
+setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
 
                     setStageItemAttempts(currentStageProgress?.items || {});
                     setPointsThisStageSession(0); 
@@ -203,36 +202,29 @@ export default function LessonPage() {
     }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
 
 
-    const handleStartNextStage = useCallback(async () => {
-        if (isProcessing.current || !currentStage) return;
-
+    const handleStartNextStage = useCallback(() => {
+        if (isProcessing.current) return;
         isProcessing.current = true;
         setIsSubmitting(true);
+
         try {
-            const { nextLessonIdIfAny } = await completeStageAndProceed(
-                lessonId,
-                currentStage.id,
-                currentStageIndex,
-                stageItemAttempts,
-                pointsThisStageSession,
-                currentStage.items as LessonItem[]
-            );
-            
             if (currentStageIndex < 5) {
+                // Advance to the next stage in the current lesson
                 const nextStage = lessonData!.stages[currentStageIndex + 1];
                 setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id }))]);
-                setActiveContentIndex(prev => prev + 1); 
+                setActiveContentIndex(prev => prev + 1);
                 setStageItemAttempts({});
                 setPointsThisStageSession(0);
             } else {
-                 setNextLessonId(nextLessonIdIfAny);
-                 setIsLessonFullyCompleted(true);
+                // This was the last stage, so the lesson is fully complete.
+                // nextLessonId is already set from handleProceed.
+                setIsLessonFullyCompleted(true);
             }
         } finally {
             isProcessing.current = false;
             setIsSubmitting(false);
         }
-    }, [completeStageAndProceed, currentStage, currentStageIndex, lessonData, lessonId, pointsThisStageSession, stageItemAttempts]);
+    }, [currentStageIndex, lessonData]);
 
     const handleProceed = useCallback(async () => {
         if (isProcessing.current || !currentStage || !activeContent) return;
@@ -284,6 +276,19 @@ export default function LessonPage() {
                         pointsThisStageSession,
                         currentStage.items as LessonItem[]
                     );
+                    
+                    if (!stageResult || !stageResult.updatedProgress) {
+                        toast({
+                            title: "Error",
+                            description: "Could not save your progress. Please try again.",
+                            variant: "destructive"
+                        });
+                        isProcessing.current = false;
+                        setIsSubmitting(false);
+                        return; // Abort on failure
+                    }
+
+                    setNextLessonId(stageResult.nextLessonIdIfAny);
                     
                     const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
                     
