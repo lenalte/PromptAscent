@@ -2,7 +2,7 @@
 "use client";
 
 import type React from 'react';
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -65,7 +65,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
 
   const { handleSubmit, formState: { isValid } } = form;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
     if (isReadOnly || evaluationResult.attemptMade) return;
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
     startTransition(async () => {
@@ -88,7 +88,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         onAnswerSubmit(false);
       }
     });
-  };
+  }, [isReadOnly, evaluationResult.attemptMade, taskDescription, evaluationGuidance, onAnswerSubmit, startTransition]);
 
   useEffect(() => {
     // Reset state when the question ID changes
