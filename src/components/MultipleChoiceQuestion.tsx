@@ -6,12 +6,11 @@ import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MultipleChoiceQuestionProps {
@@ -19,11 +18,14 @@ interface MultipleChoiceQuestionProps {
   options: string[];
   correctOptionIndex: number;
   pointsForCorrect: number;
-  pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
+  isActive?: boolean;
+  registerSubmit?: (fn: () => void) => void;
+  unregisterSubmit?: () => void;
+  onValidityChange?: (isValid: boolean) => void;
 }
 
 const formSchema = z.object({
@@ -34,18 +36,19 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   question,
   options,
   correctOptionIndex,
-  pointsForCorrect,
-  pointsForIncorrect,
   onAnswerSubmit,
   title,
   id,
+  pointsForCorrect,
   isReadOnly = false,
+  isActive = false,
+  registerSubmit,
+  unregisterSubmit,
+  onValidityChange,
 }) => {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [submittedValue, setSubmittedValue] = useState<string | undefined>(undefined);
   const hasAttempted = submittedValue !== undefined;
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,23 +57,41 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     },
   });
 
-  useEffect(() => {
-    form.reset({ selectedOption: undefined });
-    setIsCorrect(null);
-    setIsLoading(false);
-    setSubmittedValue(undefined);
-  }, [id, form]);
+  const { handleSubmit, formState: { isValid } } = form;
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+    if (isReadOnly || hasAttempted) return;
+    
     setSubmittedValue(values.selectedOption);
     const selectedIndex = parseInt(values.selectedOption, 10);
     const correct = selectedIndex === correctOptionIndex;
 
     setIsCorrect(correct);
     onAnswerSubmit(correct);
-    setIsLoading(false);
   };
+  
+  useEffect(() => {
+    // Reset state when the question ID changes
+    form.reset({ selectedOption: undefined });
+    setIsCorrect(null);
+    setSubmittedValue(undefined);
+  }, [id, form]);
+
+  useEffect(() => {
+    if (isActive && !isReadOnly && registerSubmit && unregisterSubmit) {
+      registerSubmit(handleSubmit(onSubmit));
+      return () => {
+        unregisterSubmit();
+      };
+    }
+  }, [isActive, isReadOnly, registerSubmit, unregisterSubmit, handleSubmit, onSubmit]);
+
+  useEffect(() => {
+    if (isActive && !isReadOnly && onValidityChange) {
+      onValidityChange(isValid);
+    }
+  }, [isValid, isActive, isReadOnly, onValidityChange]);
+
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
@@ -80,7 +101,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="selectedOption"
@@ -92,7 +113,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                       onValueChange={field.onChange}
                       value={field.value}
                       className="flex flex-col space-y-2"
-                      disabled={isReadOnly || hasAttempted || isLoading}
+                      disabled={isReadOnly || hasAttempted}
                       aria-describedby={hasAttempted ? "feedback-alert" : undefined}
                     >
                       {options.map((option, index) => (
@@ -104,7 +125,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                         )}
                         >
                           <FormControl>
-                            <RadioGroupItem value={index.toString()} disabled={isReadOnly || hasAttempted || isLoading} />
+                            <RadioGroupItem value={index.toString()} disabled={isReadOnly || hasAttempted} />
                           </FormControl>
                           <FormLabel className={cn(
                             "font-normal cursor-pointer flex-1",
@@ -144,28 +165,13 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               </Alert>
             )}
 
-            {!isReadOnly && !hasAttempted && (
-                <Button
-                    type="submit"
-                    disabled={isLoading || !form.formState.isValid}
-                    className="w-full sm:w-auto"
-                >
-                    {isLoading ? (
-                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking...</>
-                    ) : (
-                        'Submit Answer'
-                    )}
-                </Button>
-            )}
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
         <p>Correct: +{pointsForCorrect} points</p>
-        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (max 3 attempts)</p>
+        <p>Incorrect: 0 points (max 3 attempts)</p>
       </CardFooter>
     </Card>
   );
 };
-
-    

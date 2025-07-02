@@ -16,8 +16,8 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
-import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
-import { BrainCircuit, PencilRuler, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy } from 'lucide-react';
+import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue, getUserProgress } from '@/data/lessons';
+import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +35,7 @@ type StageCompleteInfo = {
     isLastStage: boolean;
     stageStatus: StageStatusValue;
 };
-type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem' };
+type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: string; };
 
 type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo;
 
@@ -48,11 +48,9 @@ export default function LessonPage() {
 
     const { userProgress, completeStageAndProceed, isLoadingProgress: isContextLoading, currentUser } = useUserProgress();
 
-    // STATE
     const [lessonData, setLessonData] = useState<Lesson | null>(null);
     const [isLoadingLesson, setIsLoadingLesson] = useState(true);
     
-    // New state for unified content timeline
     const [contentQueue, setContentQueue] = useState<ContentQueueItem[]>([]);
     const [activeContentIndex, setActiveContentIndex] = useState(0);
 
@@ -63,11 +61,26 @@ export default function LessonPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
     const [nextLessonId, setNextLessonId] = useState<string | null>(null);
+    
+    // State for the FAB
+    const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
+    const [isFormForSubmitValid, setIsFormForSubmitValid] = useState(false);
 
     const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[lessonId]?.currentStageIndex ?? 0, [userProgress, lessonId]);
     const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
 
-    // EFFECT to load lesson data and initialize stage progress
+    const registerSubmit = useCallback((fn: () => void) => {
+        setSubmitFn(() => fn);
+    }, []);
+
+    const unregisterSubmit = useCallback(() => {
+        setSubmitFn(null);
+    }, []);
+
+    const handleFormValidity = useCallback((isValid: boolean) => {
+        setIsFormForSubmitValid(isValid);
+    }, []);
+
     useEffect(() => {
         async function loadLessonAndProgress() {
             if (!lessonId || isContextLoading || !currentUser) return;
@@ -85,22 +98,19 @@ export default function LessonPage() {
 
                 const lessonProg = userProgress?.lessonStageProgress?.[lessonId];
                 if (!lessonProg) {
-                    // Initialize first stage
                     const firstStage = loadedLesson.stages[0];
-                    setContentQueue(firstStage.items.map(item => ({ ...item, renderType: 'LessonItem' })));
+                    setContentQueue(firstStage.items.map(item => ({ ...item, renderType: 'LessonItem', key: item.id })));
                     setActiveContentIndex(0);
                     setStageItemAttempts({});
                     setPointsThisStageSession(0);
                 } else {
-                    // Reconstruct the queue from progress
                     const newQueue: ContentQueueItem[] = [];
                     
                     for (let i = 0; i < lessonProg.currentStageIndex; i++) {
                         const stage = loadedLesson.stages[i];
                         const pastStageProg = lessonProg.stages[stage.id];
-                        newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const })));
+                        newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
                         
-                        // Calculate points for this past stage
                         let stagePoints = 0;
                         if (pastStageProg?.items) {
                             stage.items.forEach(item => {
@@ -118,20 +128,18 @@ export default function LessonPage() {
                             pointsEarnedInStage: stagePoints,
                             stageItemAttempts: pastStageProg?.items || {},
                             stageItems: stage.items as LessonItem[],
-                            onNextStage: () => {}, // No-op for past stages
+                            onNextStage: () => {}, 
                             onGoHome: () => router.push('/'),
                             isLastStage: i === 5,
                             stageStatus: pastStageProg?.status || 'completed-good',
                         });
                     }
                     
-                    // Add current stage items
                     const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
                     const currentStageProgress = lessonProg.stages[currentStageData.id];
 
                     let activeItemIndex = 0;
                     if(currentStageProgress?.items){
-                        // Find the first item in this stage that isn't fully completed
                         const firstIncompleteItemIndex = currentStageData.items.findIndex(item => {
                             const status = currentStageProgress.items[item.id];
                             return !status || status.correct !== true;
@@ -139,12 +147,12 @@ export default function LessonPage() {
                         activeItemIndex = firstIncompleteItemIndex !== -1 ? firstIncompleteItemIndex : currentStageData.items.length;
                     }
                     
-                    newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const })));
+                    newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
                     setContentQueue(newQueue);
                     setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
 
                     setStageItemAttempts(currentStageProgress?.items || {});
-                    setPointsThisStageSession(0); // Reset for current stage attempt
+                    setPointsThisStageSession(0); 
                 }
 
                  setIsLessonFullyCompleted(userProgress?.completedLessons.includes(lessonId) ?? false);
@@ -185,7 +193,7 @@ export default function LessonPage() {
         if (!currentStage || isSubmitting) return;
 
         setIsSubmitting(true);
-        await completeStageAndProceed(
+        const { nextLessonIdIfAny } = await completeStageAndProceed(
             lessonId,
             currentStage.id,
             currentStageIndex,
@@ -196,20 +204,11 @@ export default function LessonPage() {
         
         if (currentStageIndex < 5) {
             const nextStage = lessonData!.stages[currentStageIndex + 1];
-            setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const }))]);
-            // The active index will automatically be the item right after the StageCompleteScreen
+            setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id }))]);
             setActiveContentIndex(prev => prev + 1); 
             setStageItemAttempts({});
             setPointsThisStageSession(0);
         } else {
-             const { nextLessonIdIfAny } = await completeStageAndProceed(
-                lessonId,
-                currentStage.id,
-                currentStageIndex,
-                stageItemAttempts,
-                pointsThisStageSession,
-                currentStage.items as LessonItem[]
-            );
              setNextLessonId(nextLessonIdIfAny);
              setIsLessonFullyCompleted(true);
         }
@@ -226,29 +225,27 @@ export default function LessonPage() {
         const itemToProcess = currentContent;
         const itemStatus = stageItemAttempts[itemToProcess.id];
         
-        // This is tricky: we need to check if we are on the last item of the "current attempt block".
-        // This means we look ahead in the queue. If there are no more lesson items for the current stage, it's the last one.
         let isLastItemInCurrentStageAttempt = true;
+        const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
+        
         for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
             if (contentQueue[i].renderType === 'LessonItem') {
                 const futureItem = contentQueue[i] as LessonItemWithRenderType;
-                // Check if future item belongs to the same stage
-                if (lessonData?.stages[currentStageIndex].items.some(stageItem => stageItem.id === futureItem.id)) {
+                if (currentStageItemIds.has(futureItem.id)) {
                     isLastItemInCurrentStageAttempt = false;
                     break;
                 }
+            } else {
+                 break;
             }
         }
         
-
-        // If incorrect and has attempts left, add to end of queue.
         if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
             if (itemToProcess.type !== 'informationalSnippet') {
                 setContentQueue(prev => [...prev, { ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
             }
         }
         
-        // If it's the last item in the current stage's attempt queue
         if (isLastItemInCurrentStageAttempt) {
             const finalStageStatusCheck = await completeStageAndProceed(
                 lessonId,
@@ -259,7 +256,6 @@ export default function LessonPage() {
                 currentStage.items as LessonItem[]
             );
             
-            // Refetch the latest progress to get the accurate status
             const latestProgress = await getUserProgress(currentUser!.uid);
             const finalStageStatus = latestProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
 
@@ -280,7 +276,6 @@ export default function LessonPage() {
             setContentQueue(prev => [...prev, completionCard]);
             setActiveContentIndex(prev => prev + 1);
         } else {
-             // Simply move to the next item in the queue
              setActiveContentIndex(prev => prev + 1);
         }
     }, [
@@ -324,37 +319,49 @@ export default function LessonPage() {
 
     const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
 
-    const canProceed = useMemo(() => {
-        if (!activeContent || isSubmitting) return false;
+    const getButtonConfig = () => {
+        if (!activeContent) {
+            return { visible: false };
+        }
 
         if (activeContent.renderType === 'StageCompleteScreen') {
-            return true;
-        }
-
-        if (activeContent.renderType === 'LessonItem') {
-            // An informational snippet is acknowledged on mount, so it updates stageItemAttempts.
-            // Therefore, we just need to check if an attempt record exists for any item.
-            return !!stageItemAttempts[activeContent.id];
-        }
-        return false;
-    }, [activeContent, stageItemAttempts, isSubmitting]);
-
-    const getButtonConfig = () => {
-        if (activeContent?.renderType === 'StageCompleteScreen') {
             return {
+                visible: true,
                 onClick: handleStartNextStage,
                 text: activeContent.isLastStage ? 'Finish Lesson' : 'Next Stage',
                 icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />,
                 disabled: isSubmitting,
+            };
+        }
+
+        if (activeContent.renderType === 'LessonItem') {
+            const item = activeContent;
+            const isQuestion = item.type !== 'informationalSnippet';
+            const isAnswered = !!stageItemAttempts[item.id];
+
+            if (isQuestion && !isAnswered) {
+                return {
+                    visible: true,
+                    onClick: submitFn || (() => {}),
+                    text: 'Submit Answer',
+                    icon: <Send className="h-5 w-5" />,
+                    disabled: !isFormForSubmitValid || isSubmitting || !submitFn,
+                };
             }
+            
+            // For answered questions or info snippets
+            return {
+                visible: true,
+                onClick: handleProceed,
+                text: 'Next',
+                icon: <ArrowRight className="h-5 w-5" />,
+                disabled: isSubmitting,
+            };
         }
-        return {
-            onClick: handleProceed,
-            text: 'Next',
-            icon: <ArrowRight className="h-5 w-5" />,
-            disabled: isSubmitting,
-        }
-    }
+
+        return { visible: false };
+    };
+    
     const buttonConfig = getButtonConfig();
 
     if (isLoadingLesson || (isContextLoading && !currentUser && !userProgress)) {
@@ -420,61 +427,66 @@ export default function LessonPage() {
                 </div>
             </div>
 
-            <div className="w-full max-w-3xl">
-                {isLessonFullyCompleted ? (
-                    <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
-                ) : (
-                    <Card className="bg-card/50 backdrop-blur-sm p-4 md:p-6 border-border/50">
-                        <CardContent className="p-0">
-                            <div className="space-y-8">
-                                {contentQueue.slice(0, activeContentIndex + 1).map((content, index) => {
-                                    const isReadOnly = index < activeContentIndex;
-                                    const key = content.key || `${(content as any).id}-${index}`; // Ensure key is unique
+            <Card className="bg-card/50 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl">
+                <CardContent className="p-0">
+                    <div className="space-y-8">
+                        {isLessonFullyCompleted ? (
+                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
+                        ) : (
+                            contentQueue.map((content, index) => {
+                                const isReadOnly = index < activeContentIndex;
+                                const isActive = index === activeContentIndex;
 
-                                    if (content.renderType === 'LessonItem') {
-                                        const item = content;
-                                        const commonProps = {
-                                            isReadOnly,
-                                            id: item.id,
-                                            title: item.title,
-                                        };
+                                if (content.renderType === 'LessonItem') {
+                                    const item = content;
+                                    const interactiveProps = isActive ? {
+                                        isActive: true,
+                                        registerSubmit,
+                                        unregisterSubmit,
+                                        onValidityChange: handleFormValidity,
+                                    } : {
+                                        isActive: false,
+                                        registerSubmit: () => {},
+                                        unregisterSubmit: () => {},
+                                        onValidityChange: () => {},
+                                    };
 
-                                        switch (item.type) {
-                                            case 'freeResponse':
-                                                return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} />;
-                                            case 'multipleChoice':
-                                                return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} />;
-                                            case 'informationalSnippet':
-                                                return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={() => handleAnswerSubmit(true, item.pointsAwarded, item.id)} />;
-                                            case 'promptingTask':
-                                                return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} />;
-                                            default:
-                                                const _exhaustiveCheck: never = item;
-                                                return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-                                        }
-                                    } else if (content.renderType === 'StageCompleteScreen') {
-                                        const { key: contentKey, renderType, ...restOfContent } = content;
-                                        return <StageCompleteScreen key={contentKey} {...restOfContent} />;
+                                    switch (item.type) {
+                                        case 'freeResponse':
+                                            return <FreeResponseQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
+                                        case 'multipleChoice':
+                                            return <MultipleChoiceQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
+                                        case 'informationalSnippet':
+                                            return <InformationalSnippet key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={() => handleAnswerSubmit(true, item.pointsAwarded, item.id)} />;
+                                        case 'promptingTask':
+                                            return <PromptingTask key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
+                                        default:
+                                            const _exhaustiveCheck: never = item;
+                                            return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                     }
-                                    return null;
-                                })}
-                                
-                                {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
-                                    <Alert variant="destructive" className="mt-4">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <AlertTitle>Stage Failed</AlertTitle>
-                                        <AlertDescription>
-                                            You did not pass this stage. You can review the items or restart the lesson.
-                                        </AlertDescription>
-                                    </Alert>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+                                } else if (content.renderType === 'StageCompleteScreen') {
+                                    const { key, renderType, ...restOfContent } = content;
+                                    return <StageCompleteScreen key={key} {...restOfContent} />;
+                                }
+                                return null;
+                            })
+                        )}
+                        
+                        {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
+                            <Alert variant="destructive" className="mt-4">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Stage Failed</AlertTitle>
+                                <AlertDescription>
+                                    You did not pass this stage. You can review the items or restart the lesson.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
 
-            {canProceed && (
+
+            {buttonConfig.visible && (
                 <div className="fixed bottom-8 right-8 z-50">
                     <Button onClick={buttonConfig.onClick} size="lg" className="shadow-lg rounded-full pl-6 pr-4 py-6 text-lg font-semibold" disabled={buttonConfig.disabled}>
                         {isSubmitting ? (
@@ -491,5 +503,3 @@ export default function LessonPage() {
         </main>
     );
 }
-
-    

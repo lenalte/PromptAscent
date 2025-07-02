@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { validateUserAnswer, type ValidateUserAnswerOutput } from '@/ai/flows/validate-user-answer';
-import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,11 +18,14 @@ interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
   pointsForCorrect: number;
-  pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
+  isActive?: boolean;
+  registerSubmit?: (fn: () => void) => void;
+  unregisterSubmit?: () => void;
+  onValidityChange?: (isValid: boolean) => void;
 }
 
 const formSchema = z.object({
@@ -36,16 +38,18 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   question,
   expectedAnswer,
   pointsForCorrect,
-  pointsForIncorrect,
   onAnswerSubmit,
   title,
   id,
   isReadOnly = false,
+  isActive = false,
+  registerSubmit,
+  unregisterSubmit,
+  onValidityChange,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
-  const [isClientMounted, setIsClientMounted] = useState(false);
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,13 +57,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-  useEffect(() => {
-    setIsClientMounted(true);
-    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
-    form.reset({ userAnswer: '' });
-  }, [id, form]);
+  const { handleSubmit, formState: { isValid } } = form;
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (isReadOnly || validationResult.attemptMade) return;
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     startTransition(async () => {
       try {
@@ -77,6 +78,28 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       }
     });
   };
+
+  useEffect(() => {
+    // Reset state when the question ID changes
+    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+    form.reset({ userAnswer: '' });
+  }, [id, form]);
+
+  useEffect(() => {
+    if (isActive && !isReadOnly && registerSubmit && unregisterSubmit) {
+      registerSubmit(handleSubmit(onSubmit));
+      // Cleanup on dismount or when props change
+      return () => {
+        unregisterSubmit();
+      };
+    }
+  }, [isActive, isReadOnly, registerSubmit, unregisterSubmit, handleSubmit, onSubmit]);
+
+  useEffect(() => {
+    if (isActive && !isReadOnly && onValidityChange) {
+      onValidityChange(isValid);
+    }
+  }, [isValid, isActive, isReadOnly, onValidityChange]);
   
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
@@ -86,7 +109,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="userAnswer"
@@ -108,7 +131,14 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {isClientMounted && validationResult.attemptMade && (
+            {isPending && (
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Validating...</span>
+              </div>
+            )}
+
+            {validationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={validationResult.isValid ? 'default' : 'destructive'}
@@ -136,30 +166,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               </Alert>
             )}
             
-            {!isReadOnly && !validationResult.attemptMade && (
-              <Button
-                type="submit"
-                disabled={isPending || !form.formState.isValid}
-                className="w-full sm:w-auto"
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validating...
-                  </>
-                ) : (
-                  'Submit Answer'
-                )}
-              </Button>
-            )}
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-muted-foreground pt-4">
         <p>Correct: +{pointsForCorrect} points</p>
-        <p>Incorrect: {pointsForIncorrect > 0 ? `-${pointsForIncorrect}` : "0"} points (max 3 attempts)</p>
+        <p>Incorrect: 0 points (max 3 attempts)</p>
       </CardFooter>
     </Card>
   );
 };
-
-    
