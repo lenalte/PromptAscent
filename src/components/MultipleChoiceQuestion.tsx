@@ -51,6 +51,8 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 }) => {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [submittedValue, setSubmittedValue] = useState<string | undefined>(undefined);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,9 +62,12 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   });
 
   useEffect(() => {
+    // Reset internal state when the question changes (identified by id)
+    // but not when isAnswerSubmitted changes, to preserve feedback.
     form.reset({ selectedOption: undefined });
     setIsCorrect(null);
     setIsLoading(false);
+    setSubmittedValue(undefined);
   }, [id, question, form]);
 
   const handleButtonClick = () => {
@@ -75,6 +80,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
+    setSubmittedValue(values.selectedOption);
     const selectedIndex = parseInt(values.selectedOption, 10);
     const correct = selectedIndex === correctOptionIndex;
 
@@ -88,8 +94,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     if (!isAnswerSubmitted) return 'Submit Answer';
     return isLastItem ? `Complete Stage` : 'Next';
   };
-
-  const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
   return (
     <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
@@ -118,7 +122,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                         <FormItem key={`${id}-option-${index}`} className={cn(
                           "flex items-center space-x-3 space-y-0 p-3 rounded-md border transition-colors",
                           isAnswerSubmitted && index === correctOptionIndex && "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700",
-                          isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700",
+                          isAnswerSubmitted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700",
                           !isAnswerSubmitted && "hover:bg-muted/50"
                         )}
                         >
@@ -128,12 +132,12 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                           <FormLabel className={cn(
                             "font-normal cursor-pointer flex-1",
                             isAnswerSubmitted && index === correctOptionIndex && "text-green-800 dark:text-green-300",
-                            isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && "text-red-800 dark:text-red-300"
+                            isAnswerSubmitted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "text-red-800 dark:text-red-300"
                           )}>
                             {option}
                           </FormLabel>
                           {isAnswerSubmitted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />}
-                          {isAnswerSubmitted && index !== correctOptionIndex && parseInt(field.value) === index && <XCircle className="h-5 w-5 text-destructive dark:text-red-400" />}
+                          {isAnswerSubmitted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && <XCircle className="h-5 w-5 text-destructive dark:text-red-400" />}
                         </FormItem>
                       ))}
                     </RadioGroup>
@@ -166,7 +170,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isReadOnly || isLoading || (isAnswerSubmitted && isCorrect === null) || isFormInvalidAndNotSubmitted}
+              disabled={isReadOnly || isLoading || (!isAnswerSubmitted && !form.formState.isValid)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
