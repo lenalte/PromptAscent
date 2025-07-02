@@ -82,7 +82,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       return {
         userId,
         username: data.username,
-        totalPoints: typeof data.totalPoints === 'number' ? data.totalPoints : 0,
+        totalPoints: typeof data.totalPoints === 'number' && !isNaN(data.totalPoints) ? data.totalPoints : 0,
         currentLessonId: currentLesson,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : [defaultLessonId],
@@ -219,13 +219,17 @@ export async function completeStageInFirestore(
       stageStatus = 'completed-good';
     }
 
+    const currentPoints = typeof currentUserProgress.totalPoints === 'number' && !isNaN(currentUserProgress.totalPoints) 
+      ? currentUserProgress.totalPoints 
+      : 0;
+
     const stageProgressPath = `lessonStageProgress.${lessonId}.stages.${completedStageId}`;
     batch.update(userDocRef, {
       [`${stageProgressPath}.status`]: stageStatus,
       [`${stageProgressPath}.items`]: stageItemsWithStatus,
-      totalPoints: (currentUserProgress.totalPoints || 0) + pointsEarnedThisStage,
+      totalPoints: currentPoints + pointsEarnedThisStage,
     });
-    console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${pointsEarnedThisStage}. New total (pending commit): ${(currentUserProgress.totalPoints || 0) + pointsEarnedThisStage}`);
+    console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${pointsEarnedThisStage}. New total (pending commit): ${currentPoints + pointsEarnedThisStage}`);
 
     let nextLessonIdIfAny: string | null = null;
 
@@ -385,7 +389,10 @@ export async function resolveBossChallenge(
   };
   
   if (finalStatus === 'passed') {
-    updates.totalPoints = (userProgress.totalPoints || 0) + boss.bonusPoints;
+    const currentPoints = typeof userProgress.totalPoints === 'number' && !isNaN(userProgress.totalPoints)
+      ? userProgress.totalPoints
+      : 0;
+    updates.totalPoints = currentPoints + boss.bonusPoints;
     updates[`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.bonusPointsAwarded`] = boss.bonusPoints;
   } else {
     // Mark failed questions as knowledge gaps
