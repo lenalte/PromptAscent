@@ -153,10 +153,11 @@ export default function LessonPage() {
 
     const handleProceed = useCallback(async () => {
         if (!currentStage || !displayedItems) return;
-
+    
         const itemToProcess = displayedItems[activeItemIndex];
         const itemStatus = stageItemAttempts[itemToProcess.id];
-
+        let wasRequeued = false;
+    
         // For informational snippets, which don't have a separate submit step.
         // We mark them as "correct" upon proceeding.
         if (itemToProcess.type === 'informationalSnippet' && !itemStatus) {
@@ -166,12 +167,16 @@ export default function LessonPage() {
         else if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
             // Re-queue the item by adding it to the end of the displayedItems array.
             setDisplayedItems(prev => [...prev, itemToProcess]);
+            wasRequeued = true;
         }
         
         const nextIndex = activeItemIndex + 1;
-
-        if (nextIndex >= displayedItems.length) {
-            // End of stage logic
+    
+        if (nextIndex < displayedItems.length || wasRequeued) {
+            // If there are more items in the queue (either originally or because we just added one), proceed.
+            setActiveItemIndex(nextIndex);
+        } else {
+            // Otherwise, it's the end of the stage.
             if (currentStageIndex < 5) {
                 setIsStageCompletedScreenVisible(true);
             } else {
@@ -181,18 +186,25 @@ export default function LessonPage() {
                     currentStage.id,
                     currentStageIndex,
                     stageItemAttempts,
-                    pointsEarnedThisStageSession,
+                    pointsEarnedThisStage,
                     currentStage.items as LessonItem[]
                 );
                 setNextLessonId(nextLessonIdIfAny);
                 setIsSubmittingStage(false);
                 setIsLessonFullyCompleted(true);
             }
-        } else {
-            setActiveItemIndex(nextIndex);
         }
-
-    }, [activeItemIndex, displayedItems, stageItemAttempts, completeStageAndProceed, lessonId, currentStageIndex, pointsEarnedThisStageSession, currentStage, handleAnswerSubmit]);
+    }, [
+        activeItemIndex, 
+        currentStage, 
+        displayedItems, 
+        stageItemAttempts, 
+        completeStageAndProceed, 
+        lessonId, 
+        currentStageIndex, 
+        pointsEarnedThisStage, 
+        handleAnswerSubmit
+    ]);
 
 
     const stageProgressUi = useMemo(() => {
@@ -325,28 +337,26 @@ export default function LessonPage() {
                         {displayedItems.map((item, index) => {
                             const isItemActive = index === activeItemIndex;
                             const isReadOnly = !isItemActive;
+                            const isLastItem = isItemActive && (activeItemIndex === displayedItems.length - 1);
                             
-                            const isLastItemInQueue = isItemActive && (activeItemIndex === displayedItems.length - 1);
-                            
-                            const key = `${item.id}-${index}`;
-
                             const commonProps = {
+                                key: `${item.id}-${index}`, // Unique key for re-queued items
                                 isReadOnly,
                                 id: item.id,
                                 title: item.title,
-                                isLastItem: isLastItemInQueue,
+                                isLastItem,
                                 lessonPoints: userProgress?.totalPoints ?? 0,
                             };
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                    return <FreeResponseQuestion {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                    return <MultipleChoiceQuestion {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
                                 case 'informationalSnippet':
-                                    return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} onNext={handleProceed} />;
+                                    return <InformationalSnippet {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} onNext={handleProceed} />;
                                 case 'promptingTask':
-                                    return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
+                                    return <PromptingTask {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
@@ -375,3 +385,5 @@ export default function LessonPage() {
         </main>
     );
 }
+
+    
