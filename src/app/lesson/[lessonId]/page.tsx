@@ -232,79 +232,87 @@ export default function LessonPage() {
 
     const handleProceed = useCallback(async () => {
         if (!currentStage || !activeContent || isSubmitting) return;
-
+    
         setIsSubmitting(true);
-
+    
         try {
             const itemToProcess = activeContent;
-            if (itemToProcess.renderType !== 'LessonItem') {
+    
+            // If it's a StageCompleteScreen, just move to the next item (which should be the start of the next stage)
+            if (itemToProcess.renderType === 'StageCompleteScreen') {
                 setActiveContentIndex(prev => prev + 1);
-                setIsSubmitting(false);
                 return;
             }
-
-            // Determine if this was the last item in the stage that was just attempted
-            const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
-            let isLastItemInCurrentStageAttempt = true;
-            for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
-                const futureItem = contentQueue[i];
-                if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
-                    isLastItemInCurrentStageAttempt = false;
-                    break;
-                }
-                if (futureItem.renderType === 'StageCompleteScreen') {
-                    break;
-                }
-            }
             
+            // It's a LessonItem
             const itemStatus = stageItemAttempts[itemToProcess.id];
             const shouldRetry = itemStatus && itemStatus.correct === false && itemStatus.attempts < 3 && itemToProcess.type !== 'informationalSnippet';
-            
-            const itemsToAdd: ContentQueueItem[] = [];
-
+    
             if (shouldRetry) {
-                // Important: Ensure unique key for retry items
-                itemsToAdd.push({ ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` });
-            }
-    
-            if (isLastItemInCurrentStageAttempt) {
-                const stageResult = await completeStageAndProceed(
-                    lessonId,
-                    currentStage.id,
-                    currentStageIndex,
-                    stageItemAttempts,
-                    pointsThisStageSession,
-                    currentStage.items as LessonItem[]
-                );
-                
-                const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
-                
-                const completionCard: StageCompleteInfo = {
-                    renderType: 'StageCompleteScreen',
-                    key: `complete-${currentStage.id}`,
-                    stageId: currentStage.id,
-                    stageTitle: currentStage.title,
-                    pointsEarnedInStage: pointsThisStageSession,
-                    stageItemAttempts: stageItemAttempts,
-                    stageItems: currentStage.items as LessonItem[],
-                    onNextStage: handleStartNextStage,
-                    onGoHome: () => router.push('/'),
-                    isLastStage: currentStageIndex === 5,
-                    stageStatus: finalStageStatus,
+                // Case 1: The user failed and should retry the item.
+                const newRetryItem: ContentQueueItem = {
+                    ...itemToProcess,
+                    key: `${itemToProcess.id}-retry-${itemStatus.attempts}`
                 };
-                itemsToAdd.push(completionCard);
-            }
+                
+                setContentQueue(prev => {
+                    const newQueue = [...prev];
+                    newQueue.splice(activeContentIndex + 1, 0, newRetryItem);
+                    return newQueue;
+                });
+                setActiveContentIndex(prev => prev + 1);
     
-            if (itemsToAdd.length > 0) {
-              setContentQueue(prev => {
-                  const newQueue = [...prev];
-                  // Insert new items right after the current one, ensures correct order
-                  newQueue.splice(activeContentIndex + 1, 0, ...itemsToAdd);
-                  return newQueue;
-              });
-            }
+            } else {
+                // Case 2: The item is "done" (either passed, or failed max attempts).
+                // Check if this was the last item of the stage.
+                const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
+                let isLastItemInCurrentStage = true;
+                for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
+                    const futureItem = contentQueue[i];
+                    if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
+                        isLastItemInCurrentStage = false;
+                        break;
+                    }
+                }
     
-            setActiveContentIndex(prev => prev + 1);
+                if (isLastItemInCurrentStage) {
+                    // It was the last item, so add the completion card.
+                    const stageResult = await completeStageAndProceed(
+                        lessonId,
+                        currentStage.id,
+                        currentStageIndex,
+                        stageItemAttempts,
+                        pointsThisStageSession,
+                        currentStage.items as LessonItem[]
+                    );
+                    
+                    const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+                    
+                    const completionCard: StageCompleteInfo = {
+                        renderType: 'StageCompleteScreen',
+                        key: `complete-${currentStage.id}`,
+                        stageId: currentStage.id,
+                        stageTitle: currentStage.title,
+                        pointsEarnedInStage: pointsThisStageSession,
+                        stageItemAttempts: stageItemAttempts,
+                        stageItems: currentStage.items as LessonItem[],
+                        onNextStage: handleStartNextStage,
+                        onGoHome: () => router.push('/'),
+                        isLastStage: currentStageIndex === 5,
+                        stageStatus: finalStageStatus,
+                    };
+                    
+                    setContentQueue(prev => {
+                        const newQueue = [...prev];
+                        newQueue.splice(activeContentIndex + 1, 0, completionCard);
+                        return newQueue;
+                    });
+                    setActiveContentIndex(prev => prev + 1);
+                } else {
+                    // Not the last item, just move to the next item in the queue.
+                    setActiveContentIndex(prev => prev + 1);
+                }
+            }
     
         } catch (error) {
             console.error("Error in handleProceed: ", error);
@@ -318,20 +326,20 @@ export default function LessonPage() {
         }
     }, [
         activeContent,
-        contentQueue,
         activeContentIndex,
-        currentStage, 
-        stageItemAttempts, 
-        completeStageAndProceed, 
-        lessonId, 
-        currentStageIndex, 
-        pointsThisStageSession,
-        router,
-        lessonData,
+        completeStageAndProceed,
+        contentQueue,
+        currentStage,
+        currentStageIndex,
         currentUser,
         handleStartNextStage,
         isSubmitting,
-        toast
+        lessonData,
+        lessonId,
+        pointsThisStageSession,
+        router,
+        stageItemAttempts,
+        toast,
     ]);
 
 
@@ -493,19 +501,28 @@ export default function LessonPage() {
                                     };
 
                                     switch (item.type) {
-                                        case 'freeResponse':
-                                            return <FreeResponseQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                        case 'multipleChoice':
-                                            return <MultipleChoiceQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                        case 'informationalSnippet':
-                                            return <InformationalSnippet key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} content={item.content} pointsAwarded={item.pointsAwarded} />;
-                                        case 'promptingTask':
-                                            return <PromptingTask key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                        default:
+                                        case 'freeResponse': {
+                                            const { key, ...rest } = item;
+                                            return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                        }
+                                        case 'multipleChoice': {
+                                            const { key, ...rest } = item;
+                                            return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                        }
+                                        case 'informationalSnippet': {
+                                            const { key, ...rest } = item;
+                                            return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
+                                        }
+                                        case 'promptingTask': {
+                                            const { key, ...rest } = item;
+                                            return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                        }
+                                        default: {
                                             const _exhaustiveCheck: never = item;
                                             return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                                        }
                                     }
-                                } else if (content.renderType === 'StageCompleteScreen') {
+                                } else if (content.renderType === 'StageCompleteScreen' && index <= activeContentIndex) {
                                     const { key, ...restOfContent } = content;
                                     return <StageCompleteScreen key={key} {...restOfContent} />;
                                 }
