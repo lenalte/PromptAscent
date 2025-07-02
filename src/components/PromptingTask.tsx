@@ -67,9 +67,11 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   });
 
   useEffect(() => {
+    // Only reset form and local feedback state when the item ID changes.
+    // This preserves feedback across re-renders caused by parent state updates.
     form.reset({ userPrompt: '' });
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
-  }, [id, taskDescription, form]);
+  }, [id, form]);
 
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
@@ -108,8 +110,6 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     if (!isAnswerSubmitted) return 'Submit Prompt';
     return isLastItem ? `Complete Stage` : 'Next';
   };
-
-  const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
@@ -186,7 +186,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isReadOnly || isPending || (isAnswerSubmitted && !evaluationResult.isCorrect) || isFormInvalidAndNotSubmitted}
+              disabled={isReadOnly || isPending || (!isAnswerSubmitted && !form.formState.isValid)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "bg-secondary hover:bg-secondary/90 text-secondary-foreground",

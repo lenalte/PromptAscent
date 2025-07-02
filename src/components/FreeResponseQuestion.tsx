@@ -103,8 +103,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     return isLastItem ? `Complete Stage` : 'Next';
   };
   
-  const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
-
   return (
     <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
@@ -135,7 +133,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {isClientMounted && isAnswerSubmitted && (
+            {isClientMounted && validationResult.attemptMade && (
               <Alert
                 id="feedback-alert"
                 variant={validationResult.isValid ? 'default' : 'destructive'}
@@ -166,11 +164,11 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isReadOnly || isPending || (isAnswerSubmitted && !validationResult.isValid) || (!form.formState.isValid && !isAnswerSubmitted)}
+              disabled={isReadOnly || isPending || (!isAnswerSubmitted && !form.formState.isValid)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && isAnswerSubmitted && validationResult.isValid && "bg-green-600 hover:bg-green-700"
+                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
               )}
             >
               <span className="flex items-center justify-center">

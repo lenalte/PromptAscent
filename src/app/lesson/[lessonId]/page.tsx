@@ -36,7 +36,6 @@ export default function LessonPage() {
     const [activeItemIndex, setActiveItemIndex] = useState(0);
 
     const [stageItemAttempts, setStageItemAttempts] = useState<{ [itemId: string]: StageItemStatus }>({});
-    const [lessonPoints, setLessonPoints] = useState(0);
     const [pointsEarnedThisStageSession, setPointsEarnedThisStageSession] = useState(0);
 
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
@@ -75,7 +74,6 @@ export default function LessonPage() {
                     console.warn(`No specific progress found for lesson ${lessonId}, defaulting to stage 0.`);
                     setCurrentStageIndex(0);
                     setStageItemAttempts({});
-                    setLessonPoints(0);
                     setPointsEarnedThisStageSession(0);
                 } else {
                     setCurrentStageIndex(lessonProg.currentStageIndex);
@@ -127,7 +125,6 @@ export default function LessonPage() {
         }));
         
         if (isCorrect) {
-            setLessonPoints(prev => prev + pointsChange);
             setPointsEarnedThisStageSession(prev => prev + pointsChange);
         }
     }, [currentStage, stageItemAttempts]);
@@ -159,54 +156,29 @@ export default function LessonPage() {
 
     const handleNext = useCallback(async () => {
         if (!currentStage) return;
-
-        const item = currentStage.items[activeItemIndex];
-        const status = stageItemAttempts[item.id];
         
-        // This is the core logic change.
-        // A question is considered "done" and we can move to the next one if:
-        // 1. It's an informational snippet (which is auto-completed).
-        // 2. It has been answered correctly at any point.
-        // 3. The user has reached the maximum number of attempts (e.g., 3).
-        const isCorrect = status?.correct === true;
-        const attemptsReached = (status?.attempts || 0) >= 3;
-
-        // Auto-complete informational snippets on first view
-        if (item.type === 'informationalSnippet' && !status) {
-            handleAnswerSubmit(true, item.pointsAwarded, item.id);
-        }
-        
-        // Proceed if the item is "done"
-        if (item.type === 'informationalSnippet' || isCorrect || attemptsReached) {
-            if (activeItemIndex < currentStage.items.length - 1) {
-                setActiveItemIndex(prev => prev + 1);
-            } else { // End of stage
-                console.log("End of stage queue. Evaluating stage completion.");
-                if (currentStageIndex < 5) { // Not the final stage
-                    setIsStageCompletedScreenVisible(true);
-                } else { // Final stage
-                    setIsSubmittingStage(true);
-                    const { nextLessonIdIfAny } = await completeStageAndProceed(
-                        lessonId,
-                        currentStage.id,
-                        currentStageIndex,
-                        stageItemAttempts,
-                        pointsEarnedThisStageSession,
-                        currentStage.items as LessonItem[]
-                    );
-                    setNextLessonId(nextLessonIdIfAny);
-                    setIsSubmittingStage(false);
-                    setIsLessonFullyCompleted(true);
-                    toast({ title: "Lektion abgeschlossen!", description: `Glückwunsch! Du hast ${lessonPoints} Punkte in dieser Lektion erreicht.` });
-                }
+        if (activeItemIndex < currentStage.items.length - 1) {
+            setActiveItemIndex(prev => prev + 1);
+        } else { // End of stage
+            console.log("End of stage queue. Evaluating stage completion.");
+            if (currentStageIndex < 5) { // Not the final stage
+                setIsStageCompletedScreenVisible(true);
+            } else { // Final stage
+                setIsSubmittingStage(true);
+                const { nextLessonIdIfAny } = await completeStageAndProceed(
+                    lessonId,
+                    currentStage.id,
+                    currentStageIndex,
+                    stageItemAttempts,
+                    pointsEarnedThisStageSession,
+                    currentStage.items as LessonItem[]
+                );
+                setNextLessonId(nextLessonIdIfAny);
+                setIsSubmittingStage(false);
+                setIsLessonFullyCompleted(true);
             }
-        } else {
-             // If the question was answered incorrectly but there are attempts left,
-             // the user needs to correct it. The UI should just re-render to allow another try.
-             // No need to explicitly do anything here as the component will just stay active.
-             console.log(`Item ${item.id} answered incorrectly, attempts: ${status?.attempts}. Awaiting re-submission.`);
         }
-    }, [activeItemIndex, currentStage, stageItemAttempts, handleAnswerSubmit, completeStageAndProceed, lessonId, currentStageIndex, pointsEarnedThisStageSession, toast, lessonPoints]);
+    }, [activeItemIndex, currentStage, stageItemAttempts, completeStageAndProceed, lessonId, currentStageIndex, pointsEarnedThisStageSession, toast]);
 
 
     const stageProgressUi = useMemo(() => {
@@ -333,7 +305,7 @@ export default function LessonPage() {
 
             <div className="w-full max-w-4xl">
                 {isLessonFullyCompleted ? (
-                    <LessonCompleteScreen points={lessonPoints} lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} />
+                    <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} />
                 ) : (
                     <div className="space-y-8">
                         {currentStage.items.map((item, index) => {
@@ -341,20 +313,17 @@ export default function LessonPage() {
 
                             const isItemActive = index === activeItemIndex;
                             const itemStatus = stageItemAttempts[item.id];
-                            const isSubmitted = !!itemStatus && itemStatus.attempts > 0;
-
-                            let pointsForThisAttempt = item.pointsAwarded;
-                            if (itemStatus && itemStatus.attempts > 0 && itemStatus.correct !== true) {
-                                pointsForThisAttempt = Math.max(0, item.pointsAwarded - itemStatus.attempts);
-                            }
+                            
+                            // A question is "completed" and should show a "Next" button if it's correct OR max attempts are reached.
+                            const isCompleted = itemStatus ? (itemStatus.correct === true || (item.type !== 'informationalSnippet' && itemStatus.attempts >= 3)) : false;
 
                             const commonProps = {
                                 isReadOnly: !isItemActive,
                                 id: item.id,
                                 title: item.title,
-                                pointsForCorrect: pointsForThisAttempt,
+                                pointsForCorrect: item.pointsAwarded, // Points should be fixed, not calculated dynamically here
                                 pointsForIncorrect: 0,
-                                isAnswerSubmitted: isSubmitted,
+                                isAnswerSubmitted: isCompleted, // This prop now correctly represents if the item is "done"
                                 isLastItem: isItemActive && (activeItemIndex === currentStage.items.length - 1),
                                 onNext: handleNext,
                                 lessonPoints: userProgress?.totalPoints ?? 0,
@@ -362,13 +331,13 @@ export default function LessonPage() {
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextQuestion={handleNext} />;
+                                    return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextQuestion={handleNext} />;
+                                    return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'informationalSnippet':
                                     return <InformationalSnippet key={`${item.id}-${index}`} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} />;
                                 case 'promptingTask':
-                                    return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextTask={handleNext} />;
+                                    return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
