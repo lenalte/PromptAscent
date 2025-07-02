@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
@@ -60,6 +60,7 @@ export default function LessonPage() {
 
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const isProcessing = useRef(false);
     const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
     const [nextLessonId, setNextLessonId] = useState<string | null>(null);
     
@@ -192,7 +193,6 @@ export default function LessonPage() {
 
     const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
     
-    // Effect to auto-submit informational snippets
     useEffect(() => {
         if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet') {
             const hasBeenAttempted = !!stageItemAttempts[activeContent.id];
@@ -204,52 +204,54 @@ export default function LessonPage() {
 
 
     const handleStartNextStage = useCallback(async () => {
-        if (!currentStage || isSubmitting) return;
+        if (isProcessing.current || !currentStage) return;
 
+        isProcessing.current = true;
         setIsSubmitting(true);
-        const { nextLessonIdIfAny } = await completeStageAndProceed(
-            lessonId,
-            currentStage.id,
-            currentStageIndex,
-            stageItemAttempts,
-            pointsThisStageSession,
-            currentStage.items as LessonItem[]
-        );
-        
-        if (currentStageIndex < 5) {
-            const nextStage = lessonData!.stages[currentStageIndex + 1];
-            setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id }))]);
-            setActiveContentIndex(prev => prev + 1); 
-            setStageItemAttempts({});
-            setPointsThisStageSession(0);
-        } else {
-             setNextLessonId(nextLessonIdIfAny);
-             setIsLessonFullyCompleted(true);
+        try {
+            const { nextLessonIdIfAny } = await completeStageAndProceed(
+                lessonId,
+                currentStage.id,
+                currentStageIndex,
+                stageItemAttempts,
+                pointsThisStageSession,
+                currentStage.items as LessonItem[]
+            );
+            
+            if (currentStageIndex < 5) {
+                const nextStage = lessonData!.stages[currentStageIndex + 1];
+                setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id }))]);
+                setActiveContentIndex(prev => prev + 1); 
+                setStageItemAttempts({});
+                setPointsThisStageSession(0);
+            } else {
+                 setNextLessonId(nextLessonIdIfAny);
+                 setIsLessonFullyCompleted(true);
+            }
+        } finally {
+            isProcessing.current = false;
+            setIsSubmitting(false);
         }
-        
-        setIsSubmitting(false);
-    }, [completeStageAndProceed, currentStage, currentStageIndex, isSubmitting, lessonData, lessonId, pointsThisStageSession, stageItemAttempts]);
+    }, [completeStageAndProceed, currentStage, currentStageIndex, lessonData, lessonId, pointsThisStageSession, stageItemAttempts]);
 
     const handleProceed = useCallback(async () => {
-        if (!currentStage || !activeContent || isSubmitting) return;
+        if (isProcessing.current || !currentStage || !activeContent) return;
     
+        isProcessing.current = true;
         setIsSubmitting(true);
     
         try {
             const itemToProcess = activeContent;
     
-            // If it's a StageCompleteScreen, just move to the next item (which should be the start of the next stage)
             if (itemToProcess.renderType === 'StageCompleteScreen') {
                 setActiveContentIndex(prev => prev + 1);
                 return;
             }
             
-            // It's a LessonItem
             const itemStatus = stageItemAttempts[itemToProcess.id];
             const shouldRetry = itemStatus && itemStatus.correct === false && itemStatus.attempts < 3 && itemToProcess.type !== 'informationalSnippet';
     
             if (shouldRetry) {
-                // Case 1: The user failed and should retry the item.
                 const newRetryItem: ContentQueueItem = {
                     ...itemToProcess,
                     key: `${itemToProcess.id}-retry-${itemStatus.attempts}`
@@ -263,8 +265,6 @@ export default function LessonPage() {
                 setActiveContentIndex(prev => prev + 1);
     
             } else {
-                // Case 2: The item is "done" (either passed, or failed max attempts).
-                // Check if this was the last item of the stage.
                 const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
                 let isLastItemInCurrentStage = true;
                 for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
@@ -276,7 +276,6 @@ export default function LessonPage() {
                 }
     
                 if (isLastItemInCurrentStage) {
-                    // It was the last item, so add the completion card.
                     const stageResult = await completeStageAndProceed(
                         lessonId,
                         currentStage.id,
@@ -309,7 +308,6 @@ export default function LessonPage() {
                     });
                     setActiveContentIndex(prev => prev + 1);
                 } else {
-                    // Not the last item, just move to the next item in the queue.
                     setActiveContentIndex(prev => prev + 1);
                 }
             }
@@ -322,6 +320,7 @@ export default function LessonPage() {
                variant: "destructive"
             });
         } finally {
+            isProcessing.current = false;
             setIsSubmitting(false);
         }
     }, [
@@ -331,9 +330,7 @@ export default function LessonPage() {
         contentQueue,
         currentStage,
         currentStageIndex,
-        currentUser,
         handleStartNextStage,
-        isSubmitting,
         lessonData,
         lessonId,
         pointsThisStageSession,
@@ -398,7 +395,6 @@ export default function LessonPage() {
                 };
             }
             
-            // For answered questions or info snippets
             return {
                 visible: true,
                 onClick: handleProceed,
