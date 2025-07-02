@@ -96,15 +96,21 @@ export default function LessonPage() {
 
     // EFFECT to reset stage-specific state when stage changes
     useEffect(() => {
-        if (!lessonData) return;
-        setActiveItemIndex(0);
-        setPointsEarnedThisStageSession(0);
-        const stageId = lessonData.stages[currentStageIndex]?.id;
-        if (stageId) {
-            const existingAttempts = userProgress?.lessonStageProgress?.[lessonId]?.stages?.[stageId]?.items;
-            setStageItemAttempts(existingAttempts || {});
+        if (!lessonData || !userProgress) return;
+        const previousStageIndex = userProgress.lessonStageProgress?.[lessonId]?.currentStageIndex;
+
+        // Only reset if the stage has actually changed
+        if (previousStageIndex !== undefined && currentStageIndex !== previousStageIndex) {
+            setActiveItemIndex(0);
+            setPointsEarnedThisStageSession(0);
+            const stageId = lessonData.stages[currentStageIndex]?.id;
+            if (stageId) {
+                const existingAttempts = userProgress?.lessonStageProgress?.[lessonId]?.stages?.[stageId]?.items;
+                setStageItemAttempts(existingAttempts || {});
+            }
         }
     }, [currentStageIndex, lessonData, lessonId, userProgress]);
+
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
         if (!currentStage) return;
@@ -157,22 +163,28 @@ export default function LessonPage() {
         const item = currentStage.items[activeItemIndex];
         const status = stageItemAttempts[item.id];
         
+        // This is the core logic change.
+        // A question is considered "done" and we can move to the next one if:
+        // 1. It's an informational snippet (which is auto-completed).
+        // 2. It has been answered correctly at any point.
+        // 3. The user has reached the maximum number of attempts (e.g., 3).
         const isCorrect = status?.correct === true;
-        const attemptsReached = status?.attempts >= 3;
+        const attemptsReached = (status?.attempts || 0) >= 3;
 
-        // An informational snippet was just "viewed". Mark it as correct to award points and proceed.
+        // Auto-complete informational snippets on first view
         if (item.type === 'informationalSnippet' && !status) {
             handleAnswerSubmit(true, item.pointsAwarded, item.id);
         }
         
+        // Proceed if the item is "done"
         if (item.type === 'informationalSnippet' || isCorrect || attemptsReached) {
             if (activeItemIndex < currentStage.items.length - 1) {
                 setActiveItemIndex(prev => prev + 1);
-            } else {
+            } else { // End of stage
                 console.log("End of stage queue. Evaluating stage completion.");
-                if (currentStageIndex < 5) {
+                if (currentStageIndex < 5) { // Not the final stage
                     setIsStageCompletedScreenVisible(true);
-                } else {
+                } else { // Final stage
                     setIsSubmittingStage(true);
                     const { nextLessonIdIfAny } = await completeStageAndProceed(
                         lessonId,
@@ -188,8 +200,14 @@ export default function LessonPage() {
                     toast({ title: "Lektion abgeschlossen!", description: `Glückwunsch! Du hast ${lessonPoints} Punkte in dieser Lektion erreicht.` });
                 }
             }
+        } else {
+             // If the question was answered incorrectly but there are attempts left,
+             // the user needs to correct it. The UI should just re-render to allow another try.
+             // No need to explicitly do anything here as the component will just stay active.
+             console.log(`Item ${item.id} answered incorrectly, attempts: ${status?.attempts}. Awaiting re-submission.`);
         }
     }, [activeItemIndex, currentStage, stageItemAttempts, handleAnswerSubmit, completeStageAndProceed, lessonId, currentStageIndex, pointsEarnedThisStageSession, toast, lessonPoints]);
+
 
     const stageProgressUi = useMemo(() => {
         if (!lessonData || !userProgress?.lessonStageProgress?.[lessonId]) return null;
@@ -331,7 +349,6 @@ export default function LessonPage() {
                             }
 
                             const commonProps = {
-                                key: `${item.id}-${index}`, // Unique key for each rendered item
                                 isReadOnly: !isItemActive,
                                 id: item.id,
                                 title: item.title,
@@ -345,13 +362,13 @@ export default function LessonPage() {
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextQuestion={handleNext} />;
+                                    return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextQuestion={handleNext} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextQuestion={handleNext} />;
+                                    return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextQuestion={handleNext} />;
                                 case 'informationalSnippet':
-                                    return <InformationalSnippet {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} />;
+                                    return <InformationalSnippet key={`${item.id}-${index}`} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} />;
                                 case 'promptingTask':
-                                    return <PromptingTask {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextTask={handleNext} />;
+                                    return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, pointsForThisAttempt, item.id)} onNextTask={handleNext} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
