@@ -220,7 +220,7 @@ export default function LessonPage() {
         if (itemToProcess.type === 'informationalSnippet' && !itemStatus) {
             handleAnswerSubmit(true, itemToProcess.pointsAwarded, itemToProcess.id);
         } else if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
-            setContentQueue(prev => [...prev, { ...itemToProcess, renderType: 'LessonItem' as const }]);
+            setContentQueue(prev => [...prev, { ...itemToProcess, renderType: 'LessonItem' as const, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
         }
         
         const nextIndex = activeContentIndex + 1;
@@ -375,7 +375,7 @@ export default function LessonPage() {
 
                              if (content.renderType === 'LessonItem') {
                                 const item = content;
-                                const key = `${item.id}-${index}`;
+                                const key = `${item.id}-${index}`; // Key needs to be unique for re-renders
                                 const commonProps = {
                                     isReadOnly,
                                     id: item.id,
@@ -399,8 +399,8 @@ export default function LessonPage() {
                                 }
                             } else if (content.renderType === 'StageCompleteScreen') {
                                 const isInteractive = index === activeContentIndex;
-                                const { key, ...restOfContent } = content;
-                                return isInteractive ? <StageCompleteScreen key={key} {...restOfContent} /> : null; // Only show the active one
+                                const { key, renderType, ...restOfContent } = content;
+                                return <StageCompleteScreen key={key} {...restOfContent} isInteractive={isInteractive} />;
                             }
                             return null;
                         })}
@@ -427,5 +427,3 @@ export default function LessonPage() {
         </main>
     );
 }
-
-    
