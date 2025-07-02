@@ -19,16 +19,16 @@ import { cn } from '@/lib/utils';
 interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
-  pointsForCorrect: number; // Points for *this specific attempt*
-  pointsForIncorrect: number; // Typically 0, handled by reduced pointsForCorrect on retry
+  pointsForCorrect: number;
+  pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastItem: boolean; // Is this the very last item to complete the lesson
+  isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
-  id: number | string; // Original ID of the question item
-  lessonPoints: number; // Total points for the lesson so far
-  // Note: pointsAwarded from schema is now passed as pointsForCorrect for the current attempt
+  id: number | string;
+  lessonPoints: number;
+  isReadOnly?: boolean;
 }
 
 const formSchema = z.object({
@@ -41,14 +41,15 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   question,
   expectedAnswer,
   pointsForCorrect,
-  pointsForIncorrect, // Usually 0 for this design
+  pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
   isLastItem,
   onNextQuestion,
   lessonPoints,
-  title, // Used for card title or could be displayed above if parent doesn't
+  title,
   id,
+  isReadOnly = false,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
@@ -66,10 +67,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     },
   });
 
-  // Removed the useEffect that explicitly called form.reset() and reset other state.
-  // The component relies on being re-mounted by the parent (due to key change)
-  // for its form and state to be reset to initial values.
-
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
       form.handleSubmit(onSubmit)();
@@ -79,7 +76,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setValidationResult({ isValid: false, feedback: '', attemptMade: false }); // Clear previous results
+    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     setShowHint(false);
     startTransition(async () => {
       try {
@@ -93,7 +90,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       } catch (error) {
         console.error('Validation error:', error);
         setValidationResult({ isValid: false, feedback: 'Error validating answer. Please try again.', attemptMade: true });
-        onAnswerSubmit(false); // Assume incorrect on error
+        onAnswerSubmit(false);
       }
     });
   };
@@ -103,16 +100,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const getButtonText = () => {
     if (isPending) return 'Validating...';
     if (!isAnswerSubmitted) return 'Submit Answer';
-    if (isLastItem) return `View Score (${lessonPoints} Points)`;
-    return 'Next';
+    return isLastItem ? `Complete Stage` : 'Next';
   };
-
-  const isButtonDisabled = isPending || (isLastItem && isAnswerSubmitted && !validationResult.attemptMade);
+  
   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
-
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
+    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle>Question</CardTitle> 
         <CardDescription>{question}</CardDescription>
@@ -133,7 +127,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                       rows={4}
                       {...field}
                       aria-describedby={validationResult.attemptMade ? "feedback-alert" : undefined}
-                      disabled={isPending || isAnswerSubmitted}
+                      disabled={isReadOnly || isPending || isAnswerSubmitted}
                     />
                   </FormControl>
                   <FormMessage />
@@ -141,7 +135,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               )}
             />
 
-            {isClientMounted && validationResult.attemptMade && (
+            {isClientMounted && isAnswerSubmitted && (
               <Alert
                 id="feedback-alert"
                 variant={validationResult.isValid ? 'default' : 'destructive'}
@@ -166,35 +160,17 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                     </p>
                   )}
                 </AlertDescription>
-                {!validationResult.isValid && validationResult.feedback && !expectedAnswer && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleHint}
-                    className="mt-2 text-accent-foreground hover:bg-accent/80"
-                    disabled={isPending}
-                  >
-                    <Lightbulb className="mr-2 h-4 w-4" />
-                    {showHint ? 'Hide Hint' : 'Show Hint'}
-                  </Button>
-                )}
-                {showHint && !validationResult.isValid && ( 
-                  <p className="text-sm text-muted-foreground mt-2 p-2 border rounded bg-muted">
-                    Hint: {validationResult.feedback}
-                  </p>
-                )}
               </Alert>
             )}
             
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
+              disabled={isReadOnly || isPending || (isAnswerSubmitted && !validationResult.isValid) || (!form.formState.isValid && !isAnswerSubmitted)}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
-                isLastItem && isAnswerSubmitted && "bg-green-600 hover:bg-green-700"
+                isLastItem && isAnswerSubmitted && validationResult.isValid && "bg-green-600 hover:bg-green-700"
               )}
             >
               <span className="flex items-center justify-center">

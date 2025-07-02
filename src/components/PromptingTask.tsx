@@ -13,21 +13,22 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, Loader2, ArrowRight, FilePenLine, Trophy } from 'lucide-react'; // Removed Lightbulb
+import { CheckCircle2, XCircle, Loader2, ArrowRight, FilePenLine, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PromptingTaskProps {
   taskDescription: string;
   evaluationGuidance: string;
-  pointsForCorrect: number; // Points for *this specific attempt*
-  pointsForIncorrect: number; // Typically 0, handled by reduced pointsForCorrect on retry
+  pointsForCorrect: number;
+  pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastItem: boolean; // Is this the very last item to complete the lesson
+  isLastItem: boolean;
   onNextTask: () => void;
   title: string;
-  id: number | string; // Original ID of the task item
-  lessonPoints: number; // Total points for the lesson so far
+  id: number | string;
+  lessonPoints: number;
+  isReadOnly?: boolean;
 }
 
 const formSchema = z.object({
@@ -40,14 +41,15 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   taskDescription,
   evaluationGuidance,
   pointsForCorrect,
-  pointsForIncorrect, // Usually 0
+  pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
   isLastItem,
   onNextTask,
-  title, // Used for card title or could be displayed above if parent doesn't
+  title,
   id,
   lessonPoints,
+  isReadOnly = false,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResultWithAttempt>({
@@ -64,11 +66,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     },
   });
 
-  // Reset component state when the item ID changes
   useEffect(() => {
     form.reset({ userPrompt: '' });
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
-  }, [id, taskDescription, form]); // id here refers to originalItemId or unique key from parent
+  }, [id, taskDescription, form]);
 
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
@@ -79,12 +80,12 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false }); // Clear previous
+    setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
     startTransition(async () => {
       try {
         const result = await evaluatePrompt({
           prompt: values.userPrompt,
-          context: taskDescription, // Provide task description as context
+          context: taskDescription,
           evaluationGuidance: evaluationGuidance,
         });
         setEvaluationResult({ ...result, attemptMade: true });
@@ -97,7 +98,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
           isCorrect: false,
           attemptMade: true,
         });
-        onAnswerSubmit(false); // Assume incorrect on error
+        onAnswerSubmit(false);
       }
     });
   };
@@ -105,22 +106,13 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   const getButtonText = () => {
     if (isPending) return 'Evaluating...';
     if (!isAnswerSubmitted) return 'Submit Prompt';
-    return isLastItem ? `View Score (${lessonPoints} Points)` : 'Next';
+    return isLastItem ? `Complete Stage` : 'Next';
   };
 
-  // const getButtonIcon = () => { // Combined into button text span
-  //   if (isPending) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-  //   if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
-  //   if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
-  //   return null;
-  // };
-  
-  const isButtonDisabled = isPending || (isLastItem && isAnswerSubmitted && !evaluationResult.attemptMade);
   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
-
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700">
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-purple-800 dark:text-purple-300 flex items-center">
           <FilePenLine className="mr-2 h-5 w-5" /> Prompting Task
@@ -129,7 +121,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <div className="space-y-6"> {/* Changed from form to div for button placement */}
+          <div className="space-y-6">
             <FormField
               control={form.control}
               name="userPrompt"
@@ -143,7 +135,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                       rows={6}
                       {...field}
                       aria-describedby={evaluationResult.attemptMade ? "feedback-alert" : undefined}
-                      disabled={isPending || isAnswerSubmitted}
+                      disabled={isReadOnly || isPending || isAnswerSubmitted}
                     />
                   </FormControl>
                   <FormDescription className="text-purple-600 dark:text-purple-500">
@@ -191,11 +183,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               <p className="whitespace-pre-line">{evaluationGuidance}</p>
             </div>
 
-
             <Button
-              type="button" // Changed from submit
+              type="button"
               onClick={handleButtonClick}
-              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
+              disabled={isReadOnly || isPending || (isAnswerSubmitted && !evaluationResult.isCorrect) || isFormInvalidAndNotSubmitted}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90 text-primary-foreground" : "bg-secondary hover:bg-secondary/90 text-secondary-foreground",

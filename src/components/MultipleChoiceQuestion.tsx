@@ -18,15 +18,16 @@ interface MultipleChoiceQuestionProps {
   question: string;
   options: string[];
   correctOptionIndex: number;
-  pointsForCorrect: number; // Points for *this specific attempt*
-  pointsForIncorrect: number; // Typically 0, handled by reduced pointsForCorrect on retry
+  pointsForCorrect: number;
+  pointsForIncorrect: number;
   onAnswerSubmit: (isCorrect: boolean) => void;
   isAnswerSubmitted: boolean;
-  isLastItem: boolean; // Is this the very last item to complete the lesson
+  isLastItem: boolean;
   onNextQuestion: () => void;
   title: string;
-  id: number | string; // Original ID of the question item
-  lessonPoints: number; // Total points for the lesson so far
+  id: number | string;
+  lessonPoints: number;
+  isReadOnly?: boolean;
 }
 
 const formSchema = z.object({
@@ -38,17 +39,18 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   options,
   correctOptionIndex,
   pointsForCorrect,
-  pointsForIncorrect, // Usually 0
+  pointsForIncorrect,
   onAnswerSubmit,
   isAnswerSubmitted,
   isLastItem,
   onNextQuestion,
   lessonPoints,
-  title, // Used for card title or could be displayed above if parent doesn't
+  title,
   id,
+  isReadOnly = false,
 }) => {
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null); // Tracks correctness of the submitted answer
-  const [isLoading, setIsLoading] = useState(false); // For brief visual feedback if needed
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,12 +59,11 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     },
   });
 
-  // Reset component state when the item ID changes (new question or new attempt)
   useEffect(() => {
     form.reset({ selectedOption: undefined });
     setIsCorrect(null);
     setIsLoading(false);
-  }, [id, question, form]); // id here refers to originalItemId or unique key from parent
+  }, [id, question, form]);
 
   const handleButtonClick = () => {
     if (!isAnswerSubmitted) {
@@ -73,38 +74,25 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true); // Start loading (optional visual)
+    setIsLoading(true);
     const selectedIndex = parseInt(values.selectedOption, 10);
     const correct = selectedIndex === correctOptionIndex;
 
     setIsCorrect(correct);
-    onAnswerSubmit(correct); // Notify parent of correctness
-
-    // Simulate a short delay for AI processing if desired, then set loading to false
-    // For simple MCQs, immediate feedback is often fine.
-    setIsLoading(false); // End loading
+    onAnswerSubmit(correct);
+    setIsLoading(false);
   };
 
   const getButtonText = () => {
     if (isLoading) return 'Checking...';
     if (!isAnswerSubmitted) return 'Submit Answer';
-    if (isLastItem) return `View Score (${lessonPoints} Points)`;
-    return 'Next';
+    return isLastItem ? `Complete Stage` : 'Next';
   };
 
-  // const getButtonIcon = () => { // Combined into button text span
-  //   if (isLoading) return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-  //   if (isAnswerSubmitted && isLastItem) return <Trophy className="mr-2 h-4 w-4" />;
-  //   if (isAnswerSubmitted && !isLastItem) return <ArrowRight className="ml-2 h-4 w-4" />;
-  //   return null;
-  // };
-  
-  const isButtonDisabled = isLoading || (isLastItem && isAnswerSubmitted && isCorrect === null); // Avoid premature navigation on last item
   const isFormInvalidAndNotSubmitted = !form.formState.isValid && !isAnswerSubmitted;
 
-
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg">
+    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle>Question</CardTitle>
         <CardDescription>{question}</CardDescription>
@@ -121,9 +109,9 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      value={field.value} // Controlled component
+                      value={field.value}
                       className="flex flex-col space-y-2"
-                      disabled={isAnswerSubmitted || isLoading} // Disable after submission
+                      disabled={isReadOnly || isAnswerSubmitted || isLoading}
                       aria-describedby={isAnswerSubmitted ? "feedback-alert" : undefined}
                     >
                       {options.map((option, index) => (
@@ -135,7 +123,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                         )}
                         >
                           <FormControl>
-                            <RadioGroupItem value={index.toString()} disabled={isAnswerSubmitted || isLoading} />
+                            <RadioGroupItem value={index.toString()} disabled={isReadOnly || isAnswerSubmitted || isLoading} />
                           </FormControl>
                           <FormLabel className={cn(
                             "font-normal cursor-pointer flex-1",
@@ -164,11 +152,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                   isCorrect ? "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700" : "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700"
                 )}
               >
-                {isCorrect ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-                ) : (
-                  <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
-                )}
                 <AlertTitle className={cn(isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
                   {isCorrect ? 'Correct!' : 'Incorrect'}
                 </AlertTitle>
@@ -183,7 +166,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={isButtonDisabled || isFormInvalidAndNotSubmitted}
+              disabled={isReadOnly || isLoading || (isAnswerSubmitted && isCorrect === null) || isFormInvalidAndNotSubmitted}
               className={cn(
                 "w-full sm:w-auto disabled:opacity-50",
                 !isAnswerSubmitted ? "bg-primary hover:bg-primary/90" : "bg-secondary hover:bg-secondary/90",
