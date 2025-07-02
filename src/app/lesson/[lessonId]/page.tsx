@@ -68,6 +68,8 @@ export default function LessonPage() {
     const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
     const [isFormForSubmitValid, setIsFormForSubmitValid] = useState(false);
 
+    const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
     const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[lessonId]?.currentStageIndex ?? 0, [userProgress, lessonId]);
     const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
 
@@ -82,6 +84,19 @@ export default function LessonPage() {
     const handleFormValidity = useCallback((isValid: boolean) => {
         setIsFormForSubmitValid(isValid);
     }, []);
+    
+    useEffect(() => {
+        const activeItemRef = itemRefs.current[activeContentIndex];
+        if (activeItemRef) {
+            // A short timeout can help ensure the element is fully rendered before scrolling
+            setTimeout(() => {
+                activeItemRef.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }, 100);
+        }
+    }, [activeContentIndex]);
 
     useEffect(() => {
         async function loadLessonAndProgress() {
@@ -490,7 +505,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                     return null;
                                 }
 
-                                const isReadOnly = index !== activeContentIndex;
+                                const isReadOnly = index < activeContentIndex;
                                 const isActive = index === activeContentIndex;
 
                                 const interactiveProps = isActive ? {
@@ -504,37 +519,43 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                     unregisterSubmit: () => {},
                                     onValidityChange: () => {},
                                 };
+                                
+                                return (
+                                    <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
+                                        {(() => {
+                                             if (content.renderType === 'LessonItem') {
+                                                const item = content;
 
-                                if (content.renderType === 'LessonItem') {
-                                    const item = content;
-
-                                    switch (item.type) {
-                                        case 'freeResponse': {
-                                            const { key, ...rest } = item;
-                                            return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                        }
-                                        case 'multipleChoice': {
-                                            const { key, ...rest } = item;
-                                            return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                        }
-                                        case 'informationalSnippet': {
-                                            const { key, ...rest } = item;
-                                            return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                                        }
-                                        case 'promptingTask': {
-                                            const { key, ...rest } = item;
-                                            return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                        }
-                                        default: {
-                                            const _exhaustiveCheck: never = item;
-                                            return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-                                        }
-                                    }
-                                } else if (content.renderType === 'StageCompleteScreen') {
-                                    const { key, ...restOfContent } = content;
-                                    return <StageCompleteScreen key={key} {...restOfContent} />;
-                                }
-                                return null;
+                                                switch (item.type) {
+                                                    case 'freeResponse': {
+                                                        const { key, ...rest } = item;
+                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                    }
+                                                    case 'multipleChoice': {
+                                                        const { key, ...rest } = item;
+                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                    }
+                                                    case 'informationalSnippet': {
+                                                        const { key, ...rest } = item;
+                                                        return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
+                                                    }
+                                                    case 'promptingTask': {
+                                                        const { key, ...rest } = item;
+                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                    }
+                                                    default: {
+                                                        const _exhaustiveCheck: never = item;
+                                                        return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                                                    }
+                                                }
+                                            } else if (content.renderType === 'StageCompleteScreen') {
+                                                const { key, ...restOfContent } = content;
+                                                return <StageCompleteScreen key={key} {...restOfContent} />;
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
+                                );
                             })
                         )}
                         
