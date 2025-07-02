@@ -2,7 +2,7 @@
 "use client";
 
 import type React from 'react';
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -59,7 +59,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   const { handleSubmit, formState: { isValid } } = form;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
     if (isReadOnly || validationResult.attemptMade) return;
     setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     startTransition(async () => {
@@ -77,7 +77,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         onAnswerSubmit(false);
       }
     });
-  };
+  }, [isReadOnly, validationResult.attemptMade, question, expectedAnswer, onAnswerSubmit, startTransition]);
 
   useEffect(() => {
     // Reset state when the question ID changes

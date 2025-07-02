@@ -2,7 +2,7 @@
 "use client";
 
 import type React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -59,7 +59,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
   const { handleSubmit, formState: { isValid } } = form;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
     if (isReadOnly || hasAttempted) return;
     
     setSubmittedValue(values.selectedOption);
@@ -68,7 +68,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
     setIsCorrect(correct);
     onAnswerSubmit(correct);
-  };
+  }, [isReadOnly, hasAttempted, correctOptionIndex, onAnswerSubmit]);
   
   useEffect(() => {
     // Reset state when the question ID changes
