@@ -35,6 +35,11 @@ export default function LessonPage() {
     const [currentStageIndex, setCurrentStageIndex] = useState(0);
     const [activeItemIndex, setActiveItemIndex] = useState(0);
 
+    // New state for dynamic item queue
+    const [displayedItems, setDisplayedItems] = useState<LessonItem[]>([]);
+    const [loadedStageId, setLoadedStageId] = useState<string | null>(null);
+
+
     const [stageItemAttempts, setStageItemAttempts] = useState<{ [itemId: string]: StageItemStatus }>({});
     const [pointsEarnedThisStageSession, setPointsEarnedThisStageSession] = useState(0);
 
@@ -49,16 +54,14 @@ export default function LessonPage() {
         return lessonData.stages[currentStageIndex];
     }, [lessonData, currentStageIndex]);
 
-    // EFFECT to load lesson data and progress
+    // EFFECT to load lesson data and initialize stage progress
     useEffect(() => {
         async function loadLessonAndProgress() {
-            if (!lessonId || !userProgress || !currentUser) {
-                if (!currentUser && !isContextLoading) setIsLoadingLesson(false);
+            if (!lessonId || isContextLoading || !currentUser) {
                 return;
             }
             setIsLoadingLesson(true);
             setErrorLoadingLesson(null);
-            setActiveItemIndex(0); // Reset on lesson load
 
             try {
                 const loadedLesson = await getGeneratedLessonById(lessonId);
@@ -69,18 +72,24 @@ export default function LessonPage() {
                 }
                 setLessonData(loadedLesson);
 
-                const lessonProg = userProgress.lessonStageProgress?.[lessonId];
-                if (!lessonProg) {
-                    console.warn(`No specific progress found for lesson ${lessonId}, defaulting to stage 0.`);
-                    setCurrentStageIndex(0);
-                    setStageItemAttempts({});
+                const lessonProg = userProgress?.lessonStageProgress?.[lessonId];
+                const stageIdx = lessonProg?.currentStageIndex ?? 0;
+                const stage = loadedLesson.stages[stageIdx];
+
+                // Only initialize stage if it's new or not loaded yet
+                if (stage && stage.id !== loadedStageId) {
+                    setLoadedStageId(stage.id);
+                    setCurrentStageIndex(stageIdx);
+                    setDisplayedItems(stage.items);
+                    setActiveItemIndex(0);
                     setPointsEarnedThisStageSession(0);
-                } else {
-                    setCurrentStageIndex(lessonProg.currentStageIndex);
-                    const stageId = loadedLesson.stages[lessonProg.currentStageIndex]?.id;
-                    setStageItemAttempts(lessonProg.stages[stageId]?.items || {});
+                    setStageItemAttempts(lessonProg?.stages?.[stage.id]?.items || {});
+                } else if (stage) {
+                    // Sync progress if already on this stage
+                    setStageItemAttempts(lessonProg?.stages?.[stage.id]?.items || {});
                 }
-                setIsLessonFullyCompleted(userProgress.completedLessons.includes(lessonId));
+
+                setIsLessonFullyCompleted(userProgress?.completedLessons.includes(lessonId) ?? false);
 
             } catch (err) {
                 console.error("[LessonPage] Error loading lesson/progress:", err);
@@ -90,24 +99,7 @@ export default function LessonPage() {
             }
         }
         loadLessonAndProgress();
-    }, [lessonId, userProgress, currentUser, isContextLoading]);
-
-    // EFFECT to reset stage-specific state when stage changes
-    useEffect(() => {
-        if (!lessonData || !userProgress) return;
-        const previousStageIndex = userProgress.lessonStageProgress?.[lessonId]?.currentStageIndex;
-
-        // Only reset if the stage has actually changed
-        if (previousStageIndex !== undefined && currentStageIndex !== previousStageIndex) {
-            setActiveItemIndex(0);
-            setPointsEarnedThisStageSession(0);
-            const stageId = lessonData.stages[currentStageIndex]?.id;
-            if (stageId) {
-                const existingAttempts = userProgress?.lessonStageProgress?.[lessonId]?.stages?.[stageId]?.items;
-                setStageItemAttempts(existingAttempts || {});
-            }
-        }
-    }, [currentStageIndex, lessonData, lessonId, userProgress]);
+    }, [lessonId, userProgress, currentUser, isContextLoading, loadedStageId]);
 
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
@@ -115,16 +107,17 @@ export default function LessonPage() {
 
         const currentAttemptsForThisItem = stageItemAttempts[itemId]?.attempts || 0;
         const newAttemptsCount = currentAttemptsForThisItem + 1;
+        const hasBeenCorrectBefore = stageItemAttempts[itemId]?.correct === true;
         
         setStageItemAttempts(prev => ({
             ...prev,
             [itemId]: {
                 attempts: newAttemptsCount,
-                correct: isCorrect,
+                correct: hasBeenCorrectBefore || isCorrect,
             }
         }));
         
-        if (isCorrect) {
+        if (isCorrect && !hasBeenCorrectBefore) {
             setPointsEarnedThisStageSession(prev => prev + pointsChange);
         }
     }, [currentStage, stageItemAttempts]);
@@ -134,7 +127,7 @@ export default function LessonPage() {
         setIsStageCompletedScreenVisible(false);
         setIsSubmittingStage(true);
         
-        const { nextLessonIdIfAny } = await completeStageAndProceed(
+        await completeStageAndProceed(
             lessonId,
             currentStage.id,
             currentStageIndex,
@@ -143,6 +136,7 @@ export default function LessonPage() {
             currentStage.items as LessonItem[]
         );
         setIsSubmittingStage(false);
+        setLoadedStageId(null); // Allow the next stage to be loaded by the effect
 
          if (userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage') {
             toast({ title: "Stufe nicht bestanden", description: "Du hast zu viele Fehler gemacht. Versuche diese Stufe erneut oder starte die Lektion neu.", variant: "destructive" });
@@ -155,15 +149,28 @@ export default function LessonPage() {
     };
 
     const handleNext = useCallback(async () => {
-        if (!currentStage) return;
+        if (!currentStage || !displayedItems) return;
+
+        const itemToProcess = displayedItems[activeItemIndex];
+        const itemStatus = stageItemAttempts[itemToProcess.id];
+
+        // For informational snippets, ensure they are marked as "attempted"
+        if (itemToProcess.type === 'informationalSnippet' && !itemStatus) {
+            handleAnswerSubmit(true, itemToProcess.pointsAwarded, itemToProcess.id);
+        }
+
+        // Re-queue if incorrect and attempts are left
+        if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
+            setDisplayedItems(prev => [...prev, itemToProcess]);
+        }
         
-        if (activeItemIndex < currentStage.items.length - 1) {
-            setActiveItemIndex(prev => prev + 1);
-        } else { // End of stage
-            console.log("End of stage queue. Evaluating stage completion.");
-            if (currentStageIndex < 5) { // Not the final stage
+        const nextIndex = activeItemIndex + 1;
+
+        if (nextIndex >= displayedItems.length) {
+            // End of stage logic
+            if (currentStageIndex < 5) {
                 setIsStageCompletedScreenVisible(true);
-            } else { // Final stage
+            } else {
                 setIsSubmittingStage(true);
                 const { nextLessonIdIfAny } = await completeStageAndProceed(
                     lessonId,
@@ -177,8 +184,11 @@ export default function LessonPage() {
                 setIsSubmittingStage(false);
                 setIsLessonFullyCompleted(true);
             }
+        } else {
+            setActiveItemIndex(nextIndex);
         }
-    }, [activeItemIndex, currentStage, stageItemAttempts, completeStageAndProceed, lessonId, currentStageIndex, pointsEarnedThisStageSession, toast]);
+
+    }, [activeItemIndex, displayedItems, stageItemAttempts, completeStageAndProceed, lessonId, currentStageIndex, pointsEarnedThisStageSession, currentStage, handleAnswerSubmit]);
 
 
     const stageProgressUi = useMemo(() => {
@@ -208,7 +218,7 @@ export default function LessonPage() {
                 </div>
             );
         });
-    }, [lessonData, userProgress, lessonId, currentStageIndex]);
+    }, [lessonData, userProgress, lessonId]);
 
     if (isLoadingLesson || (isContextLoading && !currentUser && !userProgress)) {
         return (
@@ -245,7 +255,7 @@ export default function LessonPage() {
         );
     }
 
-    if (!lessonData || !currentStage) {
+    if (!lessonData || !currentStage || displayedItems.length === 0) {
         return (
             <div className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -308,36 +318,35 @@ export default function LessonPage() {
                     <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} />
                 ) : (
                     <div className="space-y-8">
-                        {currentStage.items.map((item, index) => {
-                            if (index > activeItemIndex) return null;
-
+                        {displayedItems.map((item, index) => {
                             const isItemActive = index === activeItemIndex;
                             const itemStatus = stageItemAttempts[item.id];
                             
-                            // A question is "completed" and should show a "Next" button if it's correct OR max attempts are reached.
-                            const isCompleted = itemStatus ? (itemStatus.correct === true || (item.type !== 'informationalSnippet' && itemStatus.attempts >= 3)) : false;
+                            // A question is "completed" and should show a "Next" button if it has been attempted.
+                            const isAnswered = !!itemStatus;
+                            // The component is locked if it's not the active item.
+                            const isReadOnly = !isItemActive;
+                            
+                            const isLastItemInQueue = isItemActive && (activeItemIndex === displayedItems.length - 1);
 
                             const commonProps = {
-                                isReadOnly: !isItemActive,
+                                isReadOnly,
                                 id: item.id,
                                 title: item.title,
-                                pointsForCorrect: item.pointsAwarded, // Points should be fixed, not calculated dynamically here
-                                pointsForIncorrect: 0,
-                                isAnswerSubmitted: isCompleted, // This prop now correctly represents if the item is "done"
-                                isLastItem: isItemActive && (activeItemIndex === currentStage.items.length - 1),
-                                onNext: handleNext,
+                                isAnswerSubmitted: isAnswered, // This prop now correctly represents if the item has been attempted at all
+                                isLastItem: isLastItemInQueue,
                                 lessonPoints: userProgress?.totalPoints ?? 0,
                             };
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <FreeResponseQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <MultipleChoiceQuestion key={`${item.id}-${index}`} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'informationalSnippet':
-                                    return <InformationalSnippet key={`${item.id}-${index}`} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} />;
+                                    return <InformationalSnippet key={`${item.id}-${index}`} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
                                 case 'promptingTask':
-                                    return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
+                                    return <PromptingTask key={`${item.id}-${index}`} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
@@ -366,3 +375,5 @@ export default function LessonPage() {
         </main>
     );
 }
+
+    
