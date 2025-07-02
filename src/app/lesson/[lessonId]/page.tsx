@@ -186,7 +186,7 @@ export default function LessonPage() {
                     currentStage.id,
                     currentStageIndex,
                     stageItemAttempts,
-                    pointsEarnedThisStage,
+                    pointsEarnedThisStageSession,
                     currentStage.items as LessonItem[]
                 );
                 setNextLessonId(nextLessonIdIfAny);
@@ -202,7 +202,7 @@ export default function LessonPage() {
         completeStageAndProceed, 
         lessonId, 
         currentStageIndex, 
-        pointsEarnedThisStage, 
+        pointsEarnedThisStageSession,
         handleAnswerSubmit
     ]);
 
