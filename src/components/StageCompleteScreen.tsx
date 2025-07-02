@@ -4,9 +4,10 @@
 import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { CheckCircle, HomeIcon, ArrowRight, Trophy, XCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, HomeIcon, ArrowRight, Trophy, XCircle, AlertCircle, Loader2 } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 interface StageCompleteScreenProps {
   stageTitle: string;
@@ -29,6 +30,8 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   isLastStage,
   stageStatus,
 }) => {
+  const [isProceeding, setIsProceeding] = useState(false);
+
   const totalItemsInStage = stageItems.length;
   let firstTrySuccesses = 0;
   let itemsWithRetries = 0;
@@ -53,7 +56,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
 
   const getTitle = () => {
     if (stageFailed) return "Stufe nicht geschafft";
-    return `${stageTitle} abgeschlossen!`;
+    return isLastStage ? "Lektion abgeschlossen!" : `${stageTitle} abgeschlossen!`;
   };
 
   const getDescription = () => {
@@ -69,9 +72,15 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     return <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400 mb-4" />;
   }
 
+  const handleNextStageClick = async () => {
+      setIsProceeding(true);
+      await onNextStage();
+      // isProceeding will remain true as the component might unmount.
+  };
+
   return (
     <Card className={cn(
-        "w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center",
+        "w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center my-8", // Added margin for inline display
         stageFailed ? "border-destructive bg-red-50 dark:border-red-700 dark:bg-red-900/20" :
         allPerfect ? "border-yellow-500 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20" :
         "border-green-500 bg-green-50 dark:border-green-700 dark:bg-green-900/20"
@@ -103,17 +112,19 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
-        <Button variant="outline" onClick={onGoHome}>
+        <Button variant="outline" onClick={onGoHome} disabled={isProceeding}>
           <HomeIcon className="mr-2 h-4 w-4" /> Zur Lektionsübersicht
         </Button>
-        {!isLastStage && !stageFailed && (
-          <Button onClick={onNextStage}>
-            Nächste Stufe <ArrowRight className="ml-2 h-4 w-4" />
+        {!stageFailed && (
+          <Button onClick={handleNextStageClick} disabled={isProceeding}>
+            {isProceeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (isLastStage ? <Trophy className="mr-2 h-4 w-4" /> : <ArrowRight className="ml-2 h-4 w-4" />)}
+            {isProceeding ? 'Laden...' : (isLastStage ? 'Zur Lektionsübersicht' : 'Nächste Stufe')}
           </Button>
         )}
          {stageFailed && (
-            <Button onClick={onNextStage} variant="outline"> {/* onNextStage would trigger retry logic if implemented or just acknowledge */}
-                 Stufe Wiederholen (Feature TBD)
+            <Button onClick={onNextStage} variant="outline" disabled={isProceeding}>
+                 {isProceeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                 Stufe Wiederholen
             </Button>
         )}
       </CardFooter>
