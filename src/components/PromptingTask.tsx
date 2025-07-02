@@ -19,7 +19,7 @@ interface PromptingTaskProps {
   taskDescription: string;
   evaluationGuidance: string;
   pointsForCorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void;
+  onAnswerSubmit: (isCorrect: boolean, pointsChange: number, itemId: string) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
@@ -76,7 +76,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
           evaluationGuidance: evaluationGuidance,
         });
         setEvaluationResult({ ...result, attemptMade: true });
-        onAnswerSubmit(result.isCorrect);
+        onAnswerSubmit(result.isCorrect, pointsForCorrect, id.toString());
       } catch (error) {
         console.error('Prompt evaluation error:', error);
         setEvaluationResult({
@@ -85,10 +85,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
           isCorrect: false,
           attemptMade: true,
         });
-        onAnswerSubmit(false);
+        onAnswerSubmit(false, 0, id.toString());
       }
     });
-  }, [isReadOnly, evaluationResult.attemptMade, taskDescription, evaluationGuidance, onAnswerSubmit, startTransition]);
+  }, [isReadOnly, evaluationResult.attemptMade, taskDescription, evaluationGuidance, onAnswerSubmit, pointsForCorrect, id]);
 
   useEffect(() => {
     // Reset state when the question ID changes

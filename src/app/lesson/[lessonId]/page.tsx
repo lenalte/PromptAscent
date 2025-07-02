@@ -195,7 +195,8 @@ export default function LessonPage() {
     // Effect to auto-submit informational snippets
     useEffect(() => {
         if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet') {
-            if (!stageItemAttempts[activeContent.id]) {
+            const hasBeenAttempted = !!stageItemAttempts[activeContent.id];
+            if (!hasBeenAttempted) {
                 handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
             }
         }
@@ -466,13 +467,13 @@ export default function LessonPage() {
 
                                     switch (item.type) {
                                         case 'freeResponse':
-                                            return <FreeResponseQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
+                                            return <FreeResponseQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
                                         case 'multipleChoice':
-                                            return <MultipleChoiceQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
+                                            return <MultipleChoiceQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
                                         case 'informationalSnippet':
                                             return <InformationalSnippet key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} content={item.content} pointsAwarded={item.pointsAwarded} />;
                                         case 'promptingTask':
-                                            return <PromptingTask key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
+                                            return <PromptingTask key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
                                         default:
                                             const _exhaustiveCheck: never = item;
                                             return <div key={`error-${index}`}>Error: Unknown item type.</div>;

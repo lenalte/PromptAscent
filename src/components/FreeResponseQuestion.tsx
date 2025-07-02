@@ -18,7 +18,7 @@ interface FreeResponseQuestionProps {
   question: string;
   expectedAnswer: string;
   pointsForCorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void;
+  onAnswerSubmit: (isCorrect: boolean, pointsChange: number, itemId: string) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
@@ -70,14 +70,14 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           userAnswer: values.userAnswer,
         });
         setValidationResult({ ...result, attemptMade: true });
-        onAnswerSubmit(result.isValid);
+        onAnswerSubmit(result.isValid, pointsForCorrect, id.toString());
       } catch (error) {
         console.error('Validation error:', error);
         setValidationResult({ isValid: false, feedback: 'Error validating answer. Please try again.', attemptMade: true });
-        onAnswerSubmit(false);
+        onAnswerSubmit(false, 0, id.toString());
       }
     });
-  }, [isReadOnly, validationResult.attemptMade, question, expectedAnswer, onAnswerSubmit, startTransition]);
+  }, [isReadOnly, validationResult.attemptMade, question, expectedAnswer, onAnswerSubmit, pointsForCorrect, id]);
 
   useEffect(() => {
     // Reset state when the question ID changes
