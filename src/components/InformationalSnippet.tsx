@@ -15,7 +15,6 @@ interface InformationalSnippetProps {
   onAcknowledged: () => void;
   isLastItem: boolean;
   id: number | string;
-  isAnswerSubmitted: boolean;
   onNext: () => void;
   lessonPoints: number;
   isReadOnly?: boolean;
@@ -27,7 +26,6 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   pointsAwarded,
   onAcknowledged,
   isLastItem,
-  lessonPoints,
   isReadOnly = false,
   id,
 }) => {
@@ -42,8 +40,14 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
     return <ArrowRight className="ml-2 h-4 w-4" />;
   };
 
+  useEffect(() => {
+    if (!isReadOnly) {
+        onAcknowledged();
+    }
+  }, [id, isReadOnly, onAcknowledged]);
+
   return (
-    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg border-blue-300 bg-blue-50 dark:bg-blue-900/20", isReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-blue-300 bg-blue-50 dark:bg-blue-900/20", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-blue-800 dark:text-blue-200 flex items-center">
           <Info className="mr-2 h-5 w-5" /> {title}
@@ -51,7 +55,6 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
         <CardDescription className="text-blue-700 dark:text-blue-300 pt-2 whitespace-pre-line">{content}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* The button is only shown for the active snippet */}
         {!isReadOnly && (
             <Button
                 type="button"
@@ -72,5 +75,3 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
     </Card>
   );
 };
-
-    

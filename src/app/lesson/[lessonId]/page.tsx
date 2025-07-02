@@ -347,7 +347,7 @@ export default function LessonPage() {
     
     return (
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
-            <div className="w-full max-w-4xl flex justify-between items-center">
+            <div className="w-full max-w-3xl flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                     <Link href="/" passHref legacyBehavior><Button variant="outline" size="icon" aria-label="Back to Lessons"><HomeIcon className="h-5 w-5" /></Button></Link>
                     <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
@@ -355,16 +355,16 @@ export default function LessonPage() {
                 <PointsDisplay points={userProgress?.totalPoints ?? 0} />
             </div>
 
-            <Separator className="my-6 w-full max-w-4xl" />
+            <Separator className="my-6 w-full max-w-3xl" />
 
-            <div className="w-full max-w-2xl mb-4">
+            <div className="w-full max-w-3xl mb-4">
                 <p className="text-sm text-center text-muted-foreground mb-1">Lesson Stage {currentStageIndex + 1} of {lessonData.stages.length}: {currentStage.title}</p>
                 <div className="flex w-full h-3 rounded-full bg-muted overflow-hidden">
                     {stageProgressUi}
                 </div>
             </div>
 
-            <div className="w-full max-w-4xl">
+            <div className="w-full max-w-3xl">
                 {isLessonFullyCompleted ? (
                     <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStage} />
                 ) : (

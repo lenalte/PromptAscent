@@ -74,7 +74,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
 
   return (
     <Card className={cn(
-        "w-full max-w-2xl mx-auto shadow-md rounded-lg my-4",
+        "w-full max-w-3xl mx-auto shadow-md rounded-lg my-4",
         stageFailed ? "border-destructive/50 bg-red-50 dark:border-red-700 dark:bg-red-900/20" :
         allPerfect ? "border-yellow-400 bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-900/20" :
         "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-900/20"

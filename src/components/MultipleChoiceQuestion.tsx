@@ -94,7 +94,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   };
 
   return (
-    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{question}</CardDescription>

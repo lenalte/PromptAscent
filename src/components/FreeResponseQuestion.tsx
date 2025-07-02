@@ -52,7 +52,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const [isPending, startTransition] = useTransition();
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
   const [isClientMounted, setIsClientMounted] = useState(false);
-
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,7 +101,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   };
   
   return (
-    <Card className={cn("w-full max-w-2xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle>{title}</CardTitle> 
         <CardDescription>{question}</CardDescription>
