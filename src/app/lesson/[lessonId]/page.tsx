@@ -20,6 +20,7 @@ import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemSt
 import { BrainCircuit, PencilRuler, HomeIcon, Loader2, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
 
 type StageCompleteInfo = {
     renderType: 'StageCompleteScreen';
@@ -56,7 +57,7 @@ export default function LessonPage() {
     const [activeContentIndex, setActiveContentIndex] = useState(0);
 
     const [stageItemAttempts, setStageItemAttempts] = useState<{ [itemId: string]: StageItemStatus }>({});
-    const [pointsThisStage, setPointsThisStage] = useState(0);
+    const [pointsThisStageSession, setPointsThisStageSession] = useState(0);
 
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,7 +90,7 @@ export default function LessonPage() {
                     setContentQueue(firstStage.items.map(item => ({ ...item, renderType: 'LessonItem' })));
                     setActiveContentIndex(0);
                     setStageItemAttempts({});
-                    setPointsThisStage(0);
+                    setPointsThisStageSession(0);
                 } else {
                     // Reconstruct the queue from progress
                     const newQueue: ContentQueueItem[] = [];
@@ -143,7 +144,7 @@ export default function LessonPage() {
                     setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
 
                     setStageItemAttempts(currentStageProgress?.items || {});
-                    setPointsThisStage(0); // Reset for current stage attempt
+                    setPointsThisStageSession(0); // Reset for current stage attempt
                 }
 
                  setIsLessonFullyCompleted(userProgress?.completedLessons.includes(lessonId) ?? false);
@@ -167,9 +168,9 @@ export default function LessonPage() {
             const isNowCorrect = wasCorrectBefore || isCorrect;
 
             if (isCorrect && !wasCorrectBefore) {
-                setPointsThisStage(p => p + pointsChange);
+                 setPointsThisStageSession(p => p + pointsChange);
             }
-
+            
             return {
                 ...prev,
                 [itemId]: {
@@ -184,12 +185,12 @@ export default function LessonPage() {
         if (!currentStage || isSubmitting) return;
 
         setIsSubmitting(true);
-        const { nextLessonIdIfAny } = await completeStageAndProceed(
+        await completeStageAndProceed(
             lessonId,
             currentStage.id,
             currentStageIndex,
             stageItemAttempts,
-            pointsThisStage,
+            pointsThisStageSession,
             currentStage.items as LessonItem[]
         );
         
@@ -197,10 +198,18 @@ export default function LessonPage() {
             const nextStage = lessonData!.stages[currentStageIndex + 1];
             setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const }))]);
             // The active index will automatically be the item right after the StageCompleteScreen
-            setActiveContentIndex(contentQueue.length + 1); 
+            setActiveContentIndex(prev => prev + 1); 
             setStageItemAttempts({});
-            setPointsThisStage(0);
+            setPointsThisStageSession(0);
         } else {
+             const { nextLessonIdIfAny } = await completeStageAndProceed(
+                lessonId,
+                currentStage.id,
+                currentStageIndex,
+                stageItemAttempts,
+                pointsThisStageSession,
+                currentStage.items as LessonItem[]
+            );
              setNextLessonId(nextLessonIdIfAny);
              setIsLessonFullyCompleted(true);
         }
@@ -210,44 +219,43 @@ export default function LessonPage() {
 
     const handleProceed = useCallback(async () => {
         if (!currentStage || !contentQueue[activeContentIndex]) return;
-    
+
         const currentContent = contentQueue[activeContentIndex];
         if (currentContent.renderType !== 'LessonItem') return;
 
         const itemToProcess = currentContent;
         const itemStatus = stageItemAttempts[itemToProcess.id];
-    
-        if (itemToProcess.type === 'informationalSnippet' && !itemStatus) {
-            handleAnswerSubmit(true, itemToProcess.pointsAwarded, itemToProcess.id);
-        } else if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
-            setContentQueue(prev => [...prev, { ...itemToProcess, renderType: 'LessonItem' as const, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
+        
+        const isLastItemInCurrentStageAttempt = activeContentIndex === contentQueue.length - 1;
+
+        // If incorrect and has attempts left, add to end of queue.
+        if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3) {
+            if (itemToProcess.type !== 'informationalSnippet') {
+                setContentQueue(prev => [...prev, { ...itemToProcess, renderType: 'LessonItem' as const, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` }]);
+            }
         }
         
-        const nextIndex = activeContentIndex + 1;
-        
-        const isLastItemOfStage = !contentQueue.slice(nextIndex).some(item => 
-            item.renderType === 'LessonItem' && lessonData?.stages[currentStageIndex].items.some(stageItem => stageItem.id === item.id)
-        );
-
-        if (isLastItemOfStage) {
-             // End of the current stage attempt queue. Show completion screen.
-            const updatedProgress = await completeStageAndProceed(
+        // If it's the last item in the current stage's attempt queue
+        if (isLastItemInCurrentStageAttempt) {
+            const finalStageStatusCheck = await completeStageAndProceed(
                 lessonId,
                 currentStage.id,
                 currentStageIndex,
                 stageItemAttempts,
-                pointsThisStage,
+                pointsThisStageSession,
                 currentStage.items as LessonItem[]
             );
-
-            const finalStageStatus = userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
             
+            // Refetch the latest progress to get the accurate status
+            const latestProgress = await getUserProgress(currentUser!.uid);
+            const finalStageStatus = latestProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+
             const completionCard: StageCompleteInfo = {
                 renderType: 'StageCompleteScreen',
                 key: `complete-${currentStage.id}`,
                 stageId: currentStage.id,
                 stageTitle: currentStage.title,
-                pointsEarnedInStage: pointsThisStage,
+                pointsEarnedInStage: pointsThisStageSession,
                 stageItemAttempts: stageItemAttempts,
                 stageItems: currentStage.items as LessonItem[],
                 onNextStage: handleStartNextStage,
@@ -255,11 +263,12 @@ export default function LessonPage() {
                 isLastStage: currentStageIndex === 5,
                 stageStatus: finalStageStatus,
             };
-
+            
             setContentQueue(prev => [...prev, completionCard]);
-            setActiveContentIndex(nextIndex);
+            setActiveContentIndex(prev => prev + 1);
         } else {
-            setActiveContentIndex(nextIndex);
+             // Simply move to the next item in the queue
+             setActiveContentIndex(prev => prev + 1);
         }
     }, [
         activeContentIndex, 
@@ -269,11 +278,11 @@ export default function LessonPage() {
         completeStageAndProceed, 
         lessonId, 
         currentStageIndex, 
-        pointsThisStage,
+        pointsThisStageSession,
         handleAnswerSubmit,
         router,
-        userProgress,
-        lessonData
+        lessonData,
+        currentUser
     ]);
 
 
@@ -366,62 +375,65 @@ export default function LessonPage() {
 
             <div className="w-full max-w-3xl">
                 {isLessonFullyCompleted ? (
-                    <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStage} />
+                    <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
                 ) : (
-                    <div className="space-y-8">
-                        {contentQueue.slice(0, activeContentIndex + 1).map((content, index) => {
-                             const isReadOnly = index < activeContentIndex;
-                             const isLastItemInStage = index === contentQueue.length - 1 && content.renderType === 'LessonItem';
+                    <Card className="bg-card/50 backdrop-blur-sm p-4 md:p-6 border-border/50">
+                        <CardContent className="p-0">
+                            <div className="space-y-8">
+                                {contentQueue.slice(0, activeContentIndex + 1).map((content, index) => {
+                                    const isReadOnly = index < activeContentIndex;
 
-                             if (content.renderType === 'LessonItem') {
-                                const item = content;
-                                const key = `${item.id}-${index}`; // Key needs to be unique for re-renders
-                                const commonProps = {
-                                    isReadOnly,
-                                    id: item.id,
-                                    title: item.title,
-                                    isLastItem: isLastItemInStage,
-                                    lessonPoints: userProgress?.totalPoints ?? 0,
-                                };
+                                    if (content.renderType === 'LessonItem') {
+                                        const item = content;
+                                        const key = `${item.id}-${index}-${isReadOnly}`; // Key needs to be unique for re-renders
+                                        const commonProps = {
+                                            isReadOnly,
+                                            id: item.id,
+                                            title: item.title,
+                                            isLastItem: false, // This is complex to determine here, handled inside component
+                                            lessonPoints: userProgress?.totalPoints ?? 0,
+                                        };
 
-                                switch (item.type) {
-                                    case 'freeResponse':
-                                        return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
-                                    case 'multipleChoice':
-                                        return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
-                                    case 'informationalSnippet':
-                                        return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} onNext={handleProceed} />;
-                                    case 'promptingTask':
-                                        return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
-                                    default:
-                                        const _exhaustiveCheck: never = item;
-                                        return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-                                }
-                            } else if (content.renderType === 'StageCompleteScreen') {
-                                const isInteractive = index === activeContentIndex;
-                                const { key, renderType, ...restOfContent } = content;
-                                return <StageCompleteScreen key={key} {...restOfContent} isInteractive={isInteractive} />;
-                            }
-                            return null;
-                        })}
+                                        switch (item.type) {
+                                            case 'freeResponse':
+                                                return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                            case 'multipleChoice':
+                                                return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleProceed} />;
+                                            case 'informationalSnippet':
+                                                return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleProceed} />;
+                                            case 'promptingTask':
+                                                return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleProceed} />;
+                                            default:
+                                                const _exhaustiveCheck: never = item;
+                                                return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                                        }
+                                    } else if (content.renderType === 'StageCompleteScreen') {
+                                        const isInteractive = index === activeContentIndex;
+                                        const { key, renderType, ...restOfContent } = content;
+                                        return <StageCompleteScreen key={key} {...restOfContent} isInteractive={isInteractive} />;
+                                    }
+                                    return null;
+                                })}
 
-                        {isSubmitting && (
-                            <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
-                                <Loader2 className="inline-block mr-2 h-5 w-5 animate-spin" />
-                                <span>Saving progress...</span>
+                                {isSubmitting && (
+                                    <div className="mt-6 p-4 border rounded-lg bg-muted border-border text-muted-foreground text-center">
+                                        <Loader2 className="inline-block mr-2 h-5 w-5 animate-spin" />
+                                        <span>Saving progress...</span>
+                                    </div>
+                                )}
+                                
+                                {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
+                                    <Alert variant="destructive" className="mt-4">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertTitle>Stage Failed</AlertTitle>
+                                        <AlertDescription>
+                                            You did not pass this stage. You can review the items or restart the lesson.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
                             </div>
-                        )}
-                        
-                        {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
-                            <Alert variant="destructive" className="mt-4">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Stage Failed</AlertTitle>
-                                <AlertDescription>
-                                    You did not pass this stage. You can review the items or restart the lesson.
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                    </div>
+                        </CardContent>
+                    </Card>
                 )}
             </div>
         </main>
