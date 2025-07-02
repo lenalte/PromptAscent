@@ -119,7 +119,7 @@ export default function LessonPage() {
         }));
         
         if (isCorrect && !wasCorrectBefore) {
-            setPointsEarnedThisStage(prev => prev + pointsChange);
+            setPointsEarnedThisStageSession(prev => prev + pointsChange);
         }
     }, [currentStage, stageItemAttempts]);
 
@@ -325,9 +325,10 @@ export default function LessonPage() {
                             const isReadOnly = !isItemActive;
                             
                             const isLastItemInQueue = isItemActive && (activeItemIndex === displayedItems.length - 1);
+                            
+                            const key = `${item.id}-${index}`;
 
                             const commonProps = {
-                                key: `${item.id}-${index}`,
                                 isReadOnly,
                                 id: item.id,
                                 title: item.title,
@@ -337,13 +338,13 @@ export default function LessonPage() {
 
                             switch (item.type) {
                                 case 'freeResponse':
-                                    return <FreeResponseQuestion {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <FreeResponseQuestion key={key} {...commonProps} question={item.question} expectedAnswer={item.expectedAnswer} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'multipleChoice':
-                                    return <MultipleChoiceQuestion {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
+                                    return <MultipleChoiceQuestion key={key} {...commonProps} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextQuestion={handleNext} />;
                                 case 'informationalSnippet':
-                                    return <InformationalSnippet {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
+                                    return <InformationalSnippet key={key} {...commonProps} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={handleNext} onNext={handleNext} />;
                                 case 'promptingTask':
-                                    return <PromptingTask {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
+                                    return <PromptingTask key={key} {...commonProps} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} pointsForIncorrect={0} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} onNextTask={handleNext} />;
                                 default:
                                     const _exhaustiveCheck: never = item;
                                     return <div key={`error-${index}`}>Error: Unknown item type.</div>;
