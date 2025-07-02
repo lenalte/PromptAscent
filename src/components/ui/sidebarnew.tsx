@@ -7,7 +7,7 @@ import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
-import { Button } from "./button"; // Assuming Button is in the same folder or accessible path
+import { EightbitButton } from './eightbit-button';
 import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new ProfilIcon
 import { LockClosedIcon } from "@/components/icons/lock_closed";
 import { LockOpenIcon } from "@/components/icons/lock_open";
@@ -138,14 +138,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
                 <div className="flex flex-col items-center space-y-4">
                     {isAuthenticated ? (
-                        <Button variant="ghost" size="icon" onClick={logOut} className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Logout">
+                        <EightbitButton onClick={logOut} className="!p-2" aria-label="Logout">
                             <LogoutIcon />
-                        </Button>
+                        </EightbitButton>
                     ) : (
-                         <Link href="/auth/login" passHref legacyBehavior>
-                            <Button variant="ghost" size="icon" className="text-[hsl(var(--sidebar-foreground))] hover:bg-sidebar-accent" aria-label="Login">
+                         <Link href="/auth/login" passHref>
+                            <EightbitButton as="a" className="!p-2" aria-label="Login">
                                 <LoginIcon />
-                            </Button>
+                            </EightbitButton>
                         </Link>
                     )}
                 </div>

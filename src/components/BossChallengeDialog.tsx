@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Loader2, ShieldQuestion, Trophy, XCircle } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { Boss, BossQuestion } from '@/data/lessons';
@@ -198,7 +198,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
               <p>Besiege <span className="font-bold">{bossInfo.name}</span>, um fortzufahren und einen Bonus zu erhalten!</p>
             </div>
             <DialogFooter className="mt-6">
-              <Button onClick={() => setView('challenge')} size="lg">Herausforderung annehmen</Button>
+              <EightbitButton onClick={() => setView('challenge')}>Herausforderung annehmen</EightbitButton>
             </DialogFooter>
           </>
         );
@@ -237,7 +237,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                 </DialogHeader>
               </>
             )}
-            <Button onClick={onClose} className="mt-8">Weiter</Button>
+            <EightbitButton onClick={onClose} className="mt-8">Weiter</EightbitButton>
           </div>
         );
     }
