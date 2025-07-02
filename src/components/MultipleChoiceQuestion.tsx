@@ -18,7 +18,7 @@ interface MultipleChoiceQuestionProps {
   options: string[];
   correctOptionIndex: number;
   pointsForCorrect: number;
-  onAnswerSubmit: (isCorrect: boolean) => void;
+  onAnswerSubmit: (isCorrect: boolean, pointsChange: number, itemId: string) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
@@ -67,8 +67,8 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     const correct = selectedIndex === correctOptionIndex;
 
     setIsCorrect(correct);
-    onAnswerSubmit(correct);
-  }, [isReadOnly, hasAttempted, correctOptionIndex, onAnswerSubmit]);
+    onAnswerSubmit(correct, pointsForCorrect, id.toString());
+  }, [isReadOnly, hasAttempted, correctOptionIndex, onAnswerSubmit, pointsForCorrect, id]);
   
   useEffect(() => {
     // Reset state when the question ID changes
