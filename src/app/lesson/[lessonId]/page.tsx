@@ -21,6 +21,7 @@ import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy, Send 
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
+import { getUserProgress } from '@/services/userProgressService';
 
 type StageCompleteInfo = {
     renderType: 'StageCompleteScreen';
@@ -484,22 +485,28 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                             <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
                         ) : (
                             contentQueue.map((content, index) => {
+                                // Hide any content that is beyond the active item.
+                                if (index > activeContentIndex) {
+                                    return null;
+                                }
+
                                 const isReadOnly = index !== activeContentIndex;
                                 const isActive = index === activeContentIndex;
 
+                                const interactiveProps = isActive ? {
+                                    isActive: true,
+                                    registerSubmit,
+                                    unregisterSubmit,
+                                    onValidityChange: handleFormValidity,
+                                } : {
+                                    isActive: false,
+                                    registerSubmit: () => {},
+                                    unregisterSubmit: () => {},
+                                    onValidityChange: () => {},
+                                };
+
                                 if (content.renderType === 'LessonItem') {
                                     const item = content;
-                                    const interactiveProps = isActive ? {
-                                        isActive: true,
-                                        registerSubmit,
-                                        unregisterSubmit,
-                                        onValidityChange: handleFormValidity,
-                                    } : {
-                                        isActive: false,
-                                        registerSubmit: () => {},
-                                        unregisterSubmit: () => {},
-                                        onValidityChange: () => {},
-                                    };
 
                                     switch (item.type) {
                                         case 'freeResponse': {
@@ -523,7 +530,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                             return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                         }
                                     }
-                                } else if (content.renderType === 'StageCompleteScreen' && index <= activeContentIndex) {
+                                } else if (content.renderType === 'StageCompleteScreen') {
                                     const { key, ...restOfContent } = content;
                                     return <StageCompleteScreen key={key} {...restOfContent} />;
                                 }
@@ -562,3 +569,5 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         </main>
     );
 }
+
+    
