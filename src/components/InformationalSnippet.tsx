@@ -11,7 +11,6 @@ interface InformationalSnippetProps {
   title: string;
   content: string;
   pointsAwarded: number;
-  onAcknowledged: () => void;
   id: number | string;
   isReadOnly?: boolean;
 }
@@ -20,16 +19,8 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   title,
   content,
   pointsAwarded,
-  onAcknowledged,
   isReadOnly = false,
-  id,
 }) => {
-  useEffect(() => {
-    if (!isReadOnly) {
-        onAcknowledged();
-    }
-  }, [id, isReadOnly, onAcknowledged]);
-
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-blue-300 bg-blue-50 dark:bg-blue-900/20", isReadOnly && "bg-muted/50")}>
       <CardHeader>
@@ -44,5 +35,3 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
     </Card>
   );
 };
-
-    

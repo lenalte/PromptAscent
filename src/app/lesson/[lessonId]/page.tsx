@@ -190,7 +190,19 @@ export default function LessonPage() {
         });
     }, []);
 
-    const handleStartNextStage = async () => {
+    const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
+    
+    // Effect to auto-submit informational snippets
+    useEffect(() => {
+        if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet') {
+            if (!stageItemAttempts[activeContent.id]) {
+                handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
+            }
+        }
+    }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
+
+
+    const handleStartNextStage = useCallback(async () => {
         if (!currentStage || isSubmitting) return;
 
         setIsSubmitting(true);
@@ -215,7 +227,7 @@ export default function LessonPage() {
         }
         
         setIsSubmitting(false);
-    };
+    }, [completeStageAndProceed, currentStage, currentStageIndex, isSubmitting, lessonData, lessonId, pointsThisStageSession, stageItemAttempts]);
 
     const handleProceed = useCallback(async () => {
         if (!currentStage || !contentQueue[activeContentIndex]) return;
@@ -290,7 +302,8 @@ export default function LessonPage() {
         pointsThisStageSession,
         router,
         lessonData,
-        currentUser
+        currentUser,
+        handleStartNextStage
     ]);
 
 
@@ -318,7 +331,6 @@ export default function LessonPage() {
         });
     }, [lessonData, userProgress, lessonId]);
 
-    const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
 
     const getButtonConfig = () => {
         if (!activeContent) {
@@ -458,7 +470,7 @@ export default function LessonPage() {
                                         case 'multipleChoice':
                                             return <MultipleChoiceQuestion key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} question={item.question} options={item.options} correctOptionIndex={item.correctOptionIndex} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
                                         case 'informationalSnippet':
-                                            return <InformationalSnippet key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} content={item.content} pointsAwarded={item.pointsAwarded} onAcknowledged={() => handleAnswerSubmit(true, item.pointsAwarded, item.id)} />;
+                                            return <InformationalSnippet key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} content={item.content} pointsAwarded={item.pointsAwarded} />;
                                         case 'promptingTask':
                                             return <PromptingTask key={item.key} isReadOnly={isReadOnly} id={item.id} title={item.title} taskDescription={item.taskDescription} evaluationGuidance={item.evaluationGuidance} pointsForCorrect={item.pointsAwarded} onAnswerSubmit={(isCorrect) => handleAnswerSubmit(isCorrect, item.pointsAwarded, item.id)} {...interactiveProps} />;
                                         default:
