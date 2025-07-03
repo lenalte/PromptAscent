@@ -69,7 +69,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
          </p>
       </CardContent>
        <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
-           <Link href="/" passHref>
+           <Link href="/" passHref legacyBehavior>
                 <EightbitButton as="a">
                    <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Lektionsübersicht
                 </EightbitButton>
