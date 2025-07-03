@@ -29,7 +29,7 @@ import BossChallengeDialog from '@/components/BossChallengeDialog';
 type LessonListing = Omit<Lesson, 'stages'>; // Lesson listing doesn't need full stages
 
 export default function Home() {
-  const { userProgress, currentUser, isLoadingAuth } = useUserProgress();
+  const { userProgress, currentUser, isLoadingAuth, isLoadingProgress } = useUserProgress();
   const totalPoints = userProgress?.totalPoints ?? 0;
   
   const [isSidebarContentAreaOpen, setIsSidebarContentAreaOpen] = useState(true);
@@ -197,7 +197,7 @@ export default function Home() {
         </header>
 
         <main className="flex-1 p-8 pt-30">
-          {isLoadingAuth || (isLoadingLessons && !selectedLesson) ? (
+          {isLoadingAuth || isLoadingProgress || (isLoadingLessons && !selectedLesson) ? (
             <div className="w-full max-w-4xl text-center py-10 flex flex-col items-center justify-center">
               <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
               <p className="text-muted-foreground">Loading...</p>
