@@ -4,10 +4,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Loader2, ShieldQuestion, Trophy, XCircle } from 'lucide-react';
+import { Loader2, ShieldQuestion, Trophy, XCircle, Skull, ShieldAlert, Sword } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
-import type { Boss, BossQuestion } from '@/data/lessons';
-import type { Boss as BossInfo } from '@/data/boss-data';
+import type { BossQuestion } from '@/data/lessons';
+import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 import { FreeResponseQuestion } from './FreeResponseQuestion';
 import { Separator } from './ui/separator';
@@ -18,6 +18,20 @@ interface BossChallengeDialogProps {
   lessonId: string;
   stageId: string;
 }
+
+// Helper component to render the correct icon based on the string identifier
+const BossIcon = ({ icon, className }: { icon: BossIconType, className?: string }) => {
+  switch (icon) {
+    case 'ShieldAlert':
+      return <ShieldAlert className={className} />;
+    case 'Skull':
+      return <Skull className={className} />;
+    case 'Sword':
+      return <Sword className={className} />;
+    default:
+      return <ShieldQuestion className={className} />; // Fallback icon
+  }
+};
 
 const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, lessonId, stageId }) => {
   const { currentUser, userProgress, setUserProgress } = useUserProgress();
@@ -190,7 +204,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         return (
           <>
             <DialogHeader className="items-center text-center">
-              <bossInfo.visual className="h-20 w-20 text-primary mb-4" />
+              <BossIcon icon={bossInfo.visual} className="h-20 w-20 text-primary mb-4" />
               <DialogTitle className="text-2xl">Ein Herausforderer erscheint!</DialogTitle>
               <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">"{bossInfo.quote}"</DialogDescription>
             </DialogHeader>
