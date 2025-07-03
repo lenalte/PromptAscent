@@ -95,6 +95,7 @@ export default function Home() {
   const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
   const [isFormForSubmitValid, setIsFormForSubmitValid] = useState(false);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const retryKeyCounter = useRef(0);
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
   const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
 
@@ -316,7 +317,7 @@ export default function Home() {
         
         const itemStatus = stageItemAttempts[itemToProcess.id];
         if (itemStatus && itemStatus.correct === false && itemStatus.attempts < 3 && itemToProcess.type !== 'informationalSnippet') {
-            const newRetryItem: ContentQueueItem = { ...itemToProcess, key: `${itemToProcess.id}-retry-${itemStatus.attempts}` };
+            const newRetryItem: ContentQueueItem = { ...itemToProcess, key: `${itemToProcess.id}-retry-${retryKeyCounter.current++}` };
             setContentQueue(prev => {
                 const newQueue = [...prev];
                 newQueue.splice(activeContentIndex + 1, 0, newRetryItem);
@@ -579,3 +580,6 @@ export default function Home() {
   );
 }
 
+
+
+    
