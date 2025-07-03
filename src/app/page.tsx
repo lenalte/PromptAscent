@@ -4,7 +4,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue } from '@/data/lessons';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Loader2, LogIn, UserPlus, Skull } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
@@ -69,8 +68,10 @@ export default function Home() {
       }
       setIsLoadingLessons(false);
     }
-    fetchLessons();
-  }, [userProgress]);
+    if (!isLoadingAuth) {
+        fetchLessons();
+    }
+  }, [isLoadingAuth, userProgress?.currentLessonId]);
 
   // Effect to update current overall level based on selected lesson
   useEffect(() => {
@@ -86,6 +87,9 @@ export default function Home() {
     }
   }, [selectedLesson, userProgress?.currentLessonId, lessonList]);
 
+  // Use a stringified version of completedLessons for stable dependency check
+  const completedLessonsString = JSON.stringify(userProgress?.completedLessons);
+
   // Effect to calculate overall level progress percentage
   useEffect(() => {
     if (currentOverallLevel && userProgress?.completedLessons && currentOverallLevel.lessonIds.length > 0) {
@@ -97,7 +101,8 @@ export default function Home() {
     } else {
       setOverallLevelProgressPercentage(0);
     }
-  }, [currentOverallLevel, userProgress?.completedLessons]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentOverallLevel, completedLessonsString]);
 
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => {
@@ -108,7 +113,7 @@ export default function Home() {
     setSelectedLesson(lesson);
   }, []);
 
-  const handleStartLesson = (lessonId: string) => {
+  const handleStartLesson = useCallback((lessonId: string) => {
     if (!userProgress?.lessonStageProgress?.[lessonId]) {
         router.push(`/lesson/${lessonId}`);
         return;
@@ -124,7 +129,7 @@ export default function Home() {
         setIsStartingLesson(true);
         router.push(`/lesson/${lessonId}`);
     }
-  };
+  }, [userProgress, router]);
 
   const ICON_BAR_WIDTH_PX = 64;
   const CONTENT_AREA_WIDTH_PX = 256;
@@ -228,8 +233,8 @@ export default function Home() {
                   Please log in or register to save your progress and access all lessons.
                 </p>
                 <div className="flex justify-center space-x-4">
-                  <Link href="/auth/login" passHref legacyBehavior><EightbitButton><LogIn className="mr-2 h-5 w-5" /> Login</EightbitButton></Link>
-                  <Link href="/auth/register" passHref legacyBehavior><EightbitButton><UserPlus className="mr-2 h-5 w-5" /> Register</EightbitButton></Link>
+                  <Link href="/auth/login" passHref legacyBehavior><EightbitButton as="a"><LogIn className="mr-2 h-5 w-5" /> Login</EightbitButton></Link>
+                  <Link href="/auth/register" passHref legacyBehavior><EightbitButton as="a"><UserPlus className="mr-2 h-5 w-5" /> Register</EightbitButton></Link>
                 </div>
               </div>
           ) : (
