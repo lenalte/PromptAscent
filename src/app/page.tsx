@@ -118,10 +118,10 @@ export default function Home() {
       }
       setIsLoadingLessons(false);
     }
-    if (!isLoadingAuth) {
+    if (!isLoadingProgress && !isLoadingAuth) {
         fetchLessons();
     }
-  }, [isLoadingAuth, userProgress?.currentLessonId]);
+  }, [isLoadingAuth, isLoadingProgress, userProgress?.currentLessonId]);
 
   // Effect to update overall level info
   useEffect(() => {
@@ -137,7 +137,7 @@ export default function Home() {
     }
   }, [selectedLesson, userProgress?.currentLessonId, lessonList]);
 
-  const completedLessonsString = JSON.stringify(userProgress?.completedLessons);
+  const completedLessonsString = useMemo(() => JSON.stringify(userProgress?.completedLessons), [userProgress?.completedLessons]);
   useEffect(() => {
     if (currentOverallLevel && userProgress?.completedLessons && currentOverallLevel.lessonIds.length > 0) {
       const completedInLevelCount = currentOverallLevel.lessonIds.filter(id => userProgress.completedLessons.includes(id)).length;
@@ -414,7 +414,7 @@ export default function Home() {
         return <div className="flex flex-col items-center justify-center h-full"><Loader2 className="h-16 w-16 animate-spin text-primary" /><p className="mt-4 text-muted-foreground">Preparing Lesson...</p></div>;
     }
     return (
-        <div className="w-full">
+        <div className="w-full p-8">
             <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4">
                 <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
                 <EightbitButton onClick={handleExitLesson}>BEENDEN</EightbitButton>
@@ -490,44 +490,46 @@ export default function Home() {
           <LevelAndInformationBar className="mt-2" sidebarWidth={0} totalPoints={totalPoints} currentLevel={currentOverallLevel} />
         </header>
 
-        <main className="flex-1 p-8 flex flex-col items-center">
+        <main className="flex-1 flex flex-col">
             {isLessonViewActive ? (
                 renderLessonView()
             ) : (
                 <>
-                    <div className="w-full max-w-4xl flex-grow">
-                        {isLoadingAuth || isLoadingProgress || (isLoadingLessons && !selectedLesson) ? (
-                            <div className="w-full text-center py-10 flex flex-col items-center justify-center">
-                                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                                <p className="text-muted-foreground">Loading...</p>
-                            </div>
-                        ) : selectedLesson ? (
-                            <div className="w-full max-w-4xl text-left mb-8">
-                                <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
-                                <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
-                                {isLessonUnlocked(selectedLesson.id) ? (
-                                    <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
-                                        {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Starting...</> : <>Start Lesson <ArrowRight className="ml-2 h-5 w-5" /></>}
-                                    </EightbitButton>
-                                ) : (
-                                    <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lesson Locked <ArrowRight className="ml-2 h-5 w-5" /></EightbitButton>
-                                )}
-                            </div>
-                        ) : !currentUser && !isLoadingAuth ? (
-                            <div className="w-full max-w-4xl text-center py-10">
-                                <h2 className="text-2xl font-semibold text-foreground mb-4">Welcome to Prompt Ascent!</h2>
-                                <p className="text-muted-foreground mb-6">Please log in or register to save your progress and access all lessons.</p>
-                                <div className="flex justify-center space-x-4">
-                                    <Link href="/auth/login" passHref legacyBehavior><EightbitButton as="a"><LogIn className="mr-2 h-5 w-5" /> Login</EightbitButton></Link>
-                                    <Link href="/auth/register" passHref legacyBehavior><EightbitButton as="a"><UserPlus className="mr-2 h-5 w-5" /> Register</EightbitButton></Link>
+                    <div className="flex-grow p-8">
+                        <div className="w-full max-w-4xl mx-auto">
+                            {isLoadingAuth || isLoadingProgress || (isLoadingLessons && !selectedLesson) ? (
+                                <div className="text-center py-10 flex flex-col items-center justify-center">
+                                    <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                                    <p className="text-muted-foreground">Loading...</p>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="w-full max-w-4xl text-center py-10">
-                                <h2 className="text-2xl font-semibold text-foreground mb-2">Welcome to Prompt Ascent!</h2>
-                                <p className="text-muted-foreground">Please select a lesson from the sidebar to begin.</p>
-                            </div>
-                        )}
+                            ) : selectedLesson ? (
+                                <div className="text-left mb-8">
+                                    <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
+                                    <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
+                                    {isLessonUnlocked(selectedLesson.id) ? (
+                                        <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
+                                            {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Starting...</> : <>Start Lesson <ArrowRight className="ml-2 h-5 w-5" /></>}
+                                        </EightbitButton>
+                                    ) : (
+                                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lesson Locked <ArrowRight className="ml-2 h-5 w-5" /></EightbitButton>
+                                    )}
+                                </div>
+                            ) : !currentUser && !isLoadingAuth ? (
+                                <div className="text-center py-10">
+                                    <h2 className="text-2xl font-semibold text-foreground mb-4">Welcome to Prompt Ascent!</h2>
+                                    <p className="text-muted-foreground mb-6">Please log in or register to save your progress and access all lessons.</p>
+                                    <div className="flex justify-center space-x-4">
+                                        <Link href="/auth/login" passHref legacyBehavior><EightbitButton as="a"><LogIn className="mr-2 h-5 w-5" /> Login</EightbitButton></Link>
+                                        <Link href="/auth/register" passHref legacyBehavior><EightbitButton as="a"><UserPlus className="mr-2 h-5 w-5" /> Register</EightbitButton></Link>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-10">
+                                    <h2 className="text-2xl font-semibold text-foreground mb-2">Welcome to Prompt Ascent!</h2>
+                                    <p className="text-muted-foreground">Please select a lesson from the sidebar to begin.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex w-full items-end mt-auto">
@@ -576,3 +578,4 @@ export default function Home() {
     </>
   );
 }
+
