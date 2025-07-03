@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 import type { Level } from '@/data/level-structure';
-import { Award } from 'lucide-react';
+import { Zap, Shield } from 'lucide-react'; // Example icons
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     sidebarWidth: number;
@@ -16,9 +16,15 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebar
             <div>
                 <span className="text-primary-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
             </div>
-            <div className="flex items-center gap-2">
-                <span className="text-primary-foreground font-semibold">{totalPoints} Pts</span>
-                <Award className="h-5 w-5 text-yellow-400" />
+            <div className="flex items-center gap-4">
+                 <div className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary-foreground" />
+                    <span className="text-primary-foreground font-semibold">Level {currentLevel?.id.split('-')[1] || 1}</span>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-yellow-400" />
+                    <span className="text-primary-foreground font-semibold">{totalPoints} km</span>
+                </div>
             </div>
         </div>
     );
