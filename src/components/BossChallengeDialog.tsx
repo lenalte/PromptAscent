@@ -93,7 +93,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     }
   }, [isOpen, loadChallenge]);
 
-  const handleAnswerSubmit = (isCorrect: boolean, pointsChange: number, itemId: string) => {
+  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return;
 
@@ -110,7 +110,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     setQuestionStatus(newStatus);
     unregisterSubmit();
     setIsSubmitting(false); // Mark submission as complete
-  };
+  }, [questions, currentQuestionIndex, questionStatus, unregisterSubmit]);
   
   const handleNextQuestion = () => {
       if (currentQuestionIndex < questions.length - 1) {
