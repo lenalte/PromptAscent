@@ -445,7 +445,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                 <BrainCircuit className="h-16 w-16 text-destructive mb-4" />
                 <h1 className="text-2xl font-semibold text-destructive mb-2">Authentication Required</h1>
                 <p className="text-muted-foreground mb-6">Please log in to access lessons.</p>
-                <Link href="/auth/login" passHref>
+                <Link href="/auth/login" passHref legacyBehavior>
                     <EightbitButton as="a">
                         <HomeIcon className="mr-2 h-4 w-4" /> Login
                     </EightbitButton>
@@ -460,7 +460,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                 <BrainCircuit className="h-16 w-16 text-destructive mb-4" />
                 <h1 className="text-2xl font-semibold text-destructive mb-2">Error Loading Lesson</h1>
                 <p className="text-muted-foreground mb-6">{errorLoadingLesson}</p>
-                <Link href="/" passHref><EightbitButton as="a"><HomeIcon className="mr-2 h-4 w-4" /> Back to Lessons</EightbitButton></Link>
+                <Link href="/" passHref legacyBehavior><EightbitButton as="a"><HomeIcon className="mr-2 h-4 w-4" /> Back to Lessons</EightbitButton></Link>
             </div>
         );
     }
@@ -478,7 +478,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
             <div className="w-full max-w-3xl flex justify-between items-center">
                 <div className="flex items-center space-x-4">
-                    <Link href="/" passHref>
+                    <Link href="/" passHref legacyBehavior>
                         <EightbitButton as="a" aria-label="Back to Lessons" className="p-2 h-10 w-10 flex items-center justify-center">
                            <HomeIcon className="h-5 w-5" />
                         </EightbitButton>
