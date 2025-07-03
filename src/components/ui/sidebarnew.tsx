@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
@@ -142,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <LogoutIcon />
                         </EightbitButton>
                     ) : (
-                         <Link href="/auth/login" passHref>
+                         <Link href="/auth/login" passHref legacyBehavior>
                             <EightbitButton as="a" className="!p-2" aria-label="Login">
                                 <LoginIcon />
                             </EightbitButton>
