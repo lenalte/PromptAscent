@@ -34,7 +34,7 @@ import { PromptingTask } from '@/components/PromptingTask';
 import { PointsDisplay } from '@/components/PointsDisplay';
 import { LessonCompleteScreen } from '@/components/LessonCompleteScreen';
 import { StageCompleteScreen } from '@/components/StageCompleteScreen';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -147,7 +147,7 @@ export default function Home() {
     } else {
       setOverallLevelProgressPercentage(0);
     }
-  }, [currentOverallLevel, completedLessonsString, userProgress?.completedLessons]);
+  }, [currentOverallLevel, completedLessonsString]);
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => setIsSidebarContentAreaOpen(isOpen), []);
   const handleLessonSelect = useCallback((lesson: LessonListing) => setSelectedLesson(lesson), []);
@@ -384,9 +384,9 @@ export default function Home() {
         const isQuestion = item.type !== 'informationalSnippet';
         const isAnswered = !!stageItemAttempts[item.id];
         if (isQuestion && !isAnswered) {
-            return { visible: true, onClick: submitFn || (() => {}), text: 'Weiter', icon: <Send className="h-5 w-5" />, disabled: !isFormForSubmitValid || isSubmitting || !submitFn };
+            return { visible: true, onClick: submitFn || (() => {}), text: 'Antwort prüfen', icon: <Send className="h-5 w-5" />, disabled: !isFormForSubmitValid || isSubmitting || !submitFn };
         }
-        return { visible: true, onClick: handleProceed, text: 'Weiter', icon: <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
+        return { visible: true, onClick: handleProceed, text: 'Nächste', icon: <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
     }
     return { visible: false };
   }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, submitFn, isFormForSubmitValid, handleProceed]);
@@ -431,17 +431,16 @@ export default function Home() {
                                 if (index > activeContentIndex) return null;
                                 const isReadOnly = index < activeContentIndex;
                                 const isActive = index === activeContentIndex;
-                                const interactiveProps = isActive ? { isActive, registerSubmit, unregisterSubmit, onValidityChange: handleFormValidity } : { isActive: false, registerSubmit: () => {}, unregisterSubmit: () => {}, onValidityChange: () => {} };
                                 
                                 return (
                                     <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
                                         {content.renderType === 'LessonItem' && (() => {
                                             const { key, ...rest } = content;
                                             switch (content.type) {
-                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
-                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} isActive={isActive} registerSubmit={registerSubmit} unregisterSubmit={unregisterSubmit} onValidityChange={handleFormValidity} />;
+                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} isActive={isActive} registerSubmit={registerSubmit} unregisterSubmit={unregisterSubmit} onValidityChange={handleFormValidity} />;
                                                 case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} isActive={isActive} registerSubmit={registerSubmit} unregisterSubmit={unregisterSubmit} onValidityChange={handleFormValidity} />;
                                                 default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                             }
                                         })()}
