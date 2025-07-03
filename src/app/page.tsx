@@ -147,7 +147,7 @@ export default function Home() {
     } else {
       setOverallLevelProgressPercentage(0);
     }
-  }, [currentOverallLevel, completedLessonsString]);
+  }, [currentOverallLevel, completedLessonsString, userProgress?.completedLessons]);
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => setIsSidebarContentAreaOpen(isOpen), []);
   const handleLessonSelect = useCallback((lesson: LessonListing) => setSelectedLesson(lesson), []);
@@ -188,6 +188,12 @@ export default function Home() {
     setIsLessonViewActive(false);
     setIsStartingLesson(false);
     resetLessonState();
+  };
+
+  const handleBossChallengeClick = (stageId: string) => {
+    if (selectedLesson) {
+      setBossChallengeInfo({ lessonId: selectedLesson.id, stageId });
+    }
   };
 
   // === Logic for embedded lesson view ===
@@ -354,7 +360,7 @@ export default function Home() {
         isProcessing.current = false;
         setIsSubmitting(false);
     }
-  }, [activeContent, activeContentIndex, completeStageAndProceed, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast]);
+  }, [activeContent, activeContentIndex, completeStageAndProceed, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson]);
 
   const stageProgressUi = useMemo(() => {
     if (!lessonData || !userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']) return null;
@@ -425,7 +431,7 @@ export default function Home() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} onGoHome={handleExitLesson} onGoToNextLesson={() => handleExitLesson()} />
+                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} onGoHome={handleExitLesson} onGoToNextLesson={() => handleStartLesson(nextLessonId!)} />
                         ) : (
                             contentQueue.map((content, index) => {
                                 if (index > activeContentIndex) return null;
@@ -536,15 +542,16 @@ export default function Home() {
                         {stageHeights.map((heightClass, index) => {
                             const stageId = `stage${index + 1}`;
                             const stageProgress = getStageProgressForSelectedLesson(stageId);
-                            const status = stageProgress?.status || 'default';
+                            const status = stageProgress?.status || 'locked';
                             const { title, icon: StageIcon } = stageDetails[index];
                             let contentColorClass = 'text-primary-foreground';
                             let showCheckIcon = false;
                             let showBossIcon = stageProgress?.hasBoss && !stageProgress?.bossDefeated;
-                            if (status === 'completed-perfect' || status === 'completed-good') {
+                            if (status.startsWith('completed')) {
                                 showCheckIcon = true;
                                 contentColorClass = 'text-green-400';
                             }
+                            const isLocked = status === 'locked';
                             return (
                                 <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
                                     {currentStageIndexOfSelectedLesson === index && <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
@@ -555,7 +562,21 @@ export default function Home() {
                                                 <span className="font-semibold text-xs md:text-sm">{title}</span>
                                             </div>
                                             {showCheckIcon && <CheckIcon className="h-12 w-12 text-green-400 mt-4" />}
-                                            {showBossIcon && <Skull className="h-12 w-12 text-red-500 mt-4 animate-pulse" />}
+                                            {showBossIcon && (
+                                                <button
+                                                  onClick={() => handleBossChallengeClick(stageId)}
+                                                  disabled={isLocked}
+                                                  className={cn(
+                                                    "mt-4",
+                                                    isLocked
+                                                      ? "cursor-not-allowed opacity-50"
+                                                      : "cursor-pointer hover:scale-110 transition-transform"
+                                                  )}
+                                                  aria-label={`Start boss challenge for ${title}`}
+                                                >
+                                                  <Skull className="h-12 w-12 text-red-500 animate-pulse" />
+                                                </button>
+                                              )}
                                         </div>
                                     </div>
                                 </div>
