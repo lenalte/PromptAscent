@@ -38,6 +38,7 @@ function createDefaultLessonProgress(isFirstLesson: boolean): { currentStageInde
     stagesProgress[stageId] = {
       status: i === 0 ? 'unlocked' : 'locked', // Unlock first stage
       items: {}, // Item attempts will be populated as user interacts
+      pointsEarned: 0,
     };
     if (i === bossStageIndex && !isFirstLesson) { // No boss on the very first lesson
       const boss = getRandomBoss();
@@ -226,6 +227,7 @@ export async function completeStageInFirestore(
     const updates: { [key: string]: any } = {
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.status`]: stageStatus,
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.items`]: stageItemsWithStatus,
+      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.pointsEarned`]: pointsEarnedThisStage,
       totalPoints: currentPoints + pointsEarnedThisStage,
     };
     
@@ -323,7 +325,7 @@ export async function populateBossChallengeQuestions(
   );
 
   if (questions.length === 0) {
-    console.warn("No questions could be fetched for the boss. Passing boss by default.");
+    console.warn("[getQuestionsForBossChallenge] No questions could be fetched for the boss. Passing boss by default.");
     const updates: { [key: string]: any } = {
         [`lessonStageProgress.${lessonId}.stages.${stageId}.bossDefeated`]: true,
         [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'passed',

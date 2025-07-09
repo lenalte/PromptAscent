@@ -92,7 +92,6 @@ export default function Home() {
   const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
   const [nextLessonId, setNextLessonId] = useState<string | null>(null);
   const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
-  const [isFormForSubmitValid, setIsFormForSubmitValid] = useState(false);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const retryKeyCounter = useRef(0);
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
@@ -164,7 +163,6 @@ export default function Home() {
     setIsLessonFullyCompleted(false);
     setNextLessonId(null);
     setSubmitFn(null);
-    setIsFormForSubmitValid(false);
     itemRefs.current = [];
   };
 
@@ -198,7 +196,6 @@ export default function Home() {
   // === Logic for embedded lesson view ===
   const registerSubmit = useCallback((fn: () => void) => setSubmitFn(() => fn), []);
   const unregisterSubmit = useCallback(() => setSubmitFn(null), []);
-  const handleFormValidity = useCallback((isValid: boolean) => setIsFormForSubmitValid(isValid), []);
 
   useEffect(() => {
     const activeItemRef = itemRefs.current[activeContentIndex];
@@ -237,8 +234,17 @@ export default function Home() {
                     const pastStageProg = lessonProg.stages[stage.id];
                     newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
                     
-                    let stagePoints = 0;
-                    if (pastStageProg?.items) stage.items.forEach(item => { if (pastStageProg.items[item.id]?.correct) stagePoints += item.pointsAwarded; });
+                    let stagePoints = pastStageProg?.pointsEarned;
+                    if (typeof stagePoints !== 'number') {
+                        stagePoints = 0;
+                        if (pastStageProg?.items) {
+                            stage.items.forEach(item => {
+                                if (pastStageProg.items[item.id]?.correct) {
+                                    stagePoints += item.pointsAwarded;
+                                }
+                            });
+                        }
+                    }
 
                     newQueue.push({
                         renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title, pointsEarnedInStage: stagePoints,
@@ -381,20 +387,28 @@ export default function Home() {
 
   const buttonConfig = useMemo(() => {
     if (!activeContent) return { visible: false };
+
     if (activeContent.renderType === 'StageCompleteScreen') {
         return { visible: true, onClick: handleStartNextStage, text: activeContent.isLastStage ? 'Beenden' : 'Nächste Stufe', icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
     }
+
     if (activeContent.renderType === 'LessonItem') {
         const item = activeContent;
         const isQuestion = item.type !== 'informationalSnippet';
         const isAnswered = !!stageItemAttempts[item.id];
-        if (isQuestion && !isAnswered) {
-            return { visible: true, onClick: submitFn || (() => {}), text: 'Antwort prüfen', icon: <Send className="h-5 w-5" />, disabled: !isFormForSubmitValid || isSubmitting || !submitFn };
+        const hasSubmitted = isAnswered && (stageItemAttempts[item.id].correct !== null);
+
+        // Submit Answer Button (moved from component to here)
+        if (isQuestion && !hasSubmitted) {
+             return { visible: true, onClick: submitFn || (() => {}), text: 'Antwort prüfen', icon: <Send className="h-5 w-5" />, disabled: isSubmitting || !submitFn };
         }
+        
+        // Next/Proceed Button
         return { visible: true, onClick: handleProceed, text: 'Nächste', icon: <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
     }
+
     return { visible: false };
-  }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, submitFn, isFormForSubmitValid, handleProceed]);
+  }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, submitFn, handleProceed]);
 
 
   const ICON_BAR_WIDTH_PX = 64;
@@ -436,16 +450,18 @@ export default function Home() {
                                 if (index > activeContentIndex) return null;
                                 const isReadOnly = index < activeContentIndex;
                                 const isActive = index === activeContentIndex;
+                                const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
+                                const hasSubmitted = itemStatus && itemStatus.correct !== null;
                                 
                                 return (
                                     <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
                                         {content.renderType === 'LessonItem' && (() => {
                                             const { key, ...rest } = content;
                                             switch (content.type) {
-                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} isActive={isActive} registerSubmit={registerSubmit} unregisterSubmit={unregisterSubmit} onValidityChange={handleFormValidity} />;
-                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} isActive={isActive} registerSubmit={registerSubmit} unregisterSubmit={unregisterSubmit} onValidityChange={handleFormValidity} />;
+                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
+                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
                                                 case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} isActive={isActive} registerSubmit={registerSubmit} unregisterSubmit={unregisterSubmit} onValidityChange={handleFormValidity} />;
+                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
                                                 default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                             }
                                         })()}
@@ -492,7 +508,7 @@ export default function Home() {
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <ProgressBar progress={overallLevelProgressPercentage} progressText={`${overallLevelProgressPercentage}% Complete - ${currentOverallLevel?.title || 'Current Level'}`} />
-          <LevelAndInformationBar className="mt-2" sidebarWidth={0} currentLevel={currentOverallLevel} />
+          <LevelAndInformationBar currentLevel={currentOverallLevel} />
         </header>
 
         <main className="flex-1 flex flex-col">
