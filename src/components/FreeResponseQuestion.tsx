@@ -57,7 +57,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         onAnswerSubmit(validation.isValid, validation.isValid ? pointsAwarded : 0, id.toString());
       } catch (error) {
         console.error('Validation error:', error);
-        setResult({ isValid: false, feedback: 'Error validating answer. Please try again.' });
+        setResult({ isValid: false, feedback: error instanceof Error ? error.message : 'Bei der Überprüfung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.' });
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
         onAnswerSubmit(false, 0, id.toString());

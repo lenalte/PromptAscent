@@ -82,8 +82,15 @@ const evaluatePromptFlow = ai.defineFlow(
         return { ...output, score };
       } catch (error) {
         console.error(`[evaluatePromptFlow] Attempt ${attempt} failed:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        // Check for non-retryable quota errors
+        if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
+            throw new Error('API-Kontingent überschritten. Bitte versuchen Sie es später erneut.');
+        }
+
         if (attempt === MAX_RETRIES) {
-          throw new Error(`Failed to evaluate prompt after ${MAX_RETRIES} attempts: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          throw new Error(`Failed to evaluate prompt after ${MAX_RETRIES} attempts: ${errorMessage}`);
         }
         // Wait before retrying with exponential backoff
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, attempt - 1)));
