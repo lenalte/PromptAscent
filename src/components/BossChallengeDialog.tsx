@@ -4,13 +4,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Loader2, ShieldQuestion, Trophy, XCircle, Skull, ShieldAlert, Sword, ArrowRight, Send } from 'lucide-react';
+import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Send } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
 import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 import { FreeResponseQuestion } from './FreeResponseQuestion';
 import { Separator } from './ui/separator';
+import { BossIcon as NewBossIcon } from '@/components/icons/BossIcon';
 
 interface BossChallengeDialogProps {
   isOpen: boolean;
@@ -24,8 +25,8 @@ const BossIcon = ({ icon, className }: { icon: BossIconType, className?: string 
   switch (icon) {
     case 'ShieldAlert':
       return <ShieldAlert className={className} />;
-    case 'Skull':
-      return <Skull className={className} />;
+    case 'BossIcon':
+      return <NewBossIcon className={className} />;
     case 'Sword':
       return <Sword className={className} />;
     default:
@@ -47,21 +48,6 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
 
   // State for form submission
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
-  const [isFormForSubmitValid, setIsFormForSubmitValid] = useState(false);
-
-  const registerSubmit = useCallback((fn: () => void) => {
-    setSubmitFn(() => fn);
-  }, []);
-
-  const unregisterSubmit = useCallback(() => {
-    setSubmitFn(null);
-  }, []);
-  
-  const handleFormValidity = useCallback((isValid: boolean) => {
-    setIsFormForSubmitValid(isValid);
-  }, []);
-
 
   const loadChallenge = useCallback(async () => {
     if (!currentUser) return;
@@ -97,6 +83,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return;
 
+    setIsSubmitting(true);
     const currentStatus = questionStatus[itemId] || { correct: null, attempts: 0 };
     
     const newStatus = {
@@ -108,14 +95,12 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         }
     };
     setQuestionStatus(newStatus);
-    unregisterSubmit();
     setIsSubmitting(false); // Mark submission as complete
-  }, [questions, currentQuestionIndex, questionStatus, unregisterSubmit]);
+  }, [questions, currentQuestionIndex, questionStatus]);
   
   const handleNextQuestion = () => {
       if (currentQuestionIndex < questions.length - 1) {
           setCurrentQuestionIndex(prev => prev + 1);
-          setIsFormForSubmitValid(false);
       } else {
           finishChallenge();
       }
@@ -152,17 +137,14 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     const question = questions[currentQuestionIndex];
     if (!question) return <p>No question to display.</p>;
     
+    const isAnswered = (questionStatus[question.item.id]?.attempts ?? 0) > 0;
+    
     const props = {
       ...question.item,
-      pointsForCorrect: question.item.pointsAwarded,
       id: question.item.id,
       title: `Frage ${currentQuestionIndex + 1} von ${questions.length}`,
       onAnswerSubmit: handleAnswerSubmit,
-      isReadOnly: false,
-      isActive: true,
-      registerSubmit,
-      unregisterSubmit,
-      onValidityChange: handleFormValidity,
+      isReadOnly: isAnswered, // Make it read-only if answered
     };
 
     switch (question.item.type) {
@@ -228,12 +210,6 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         const currentQuestion = questions[currentQuestionIndex];
         const isAnswered = currentQuestion && (questionStatus[currentQuestion.item.id]?.attempts ?? 0) > 0;
         
-        const handleSubmitClick = () => {
-          if (!submitFn || isSubmitting) return;
-          setIsSubmitting(true);
-          submitFn();
-        };
-
         return (
           <>
             <DialogHeader>
@@ -244,21 +220,10 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             </DialogHeader>
             <div className="p-4">{renderQuestion()}</div>
             <DialogFooter className="mt-4 p-4 border-t">
-              {isAnswered ? (
+              {isAnswered && (
                 <EightbitButton onClick={handleNextQuestion}>
                   {currentQuestionIndex < questions.length - 1 ? 'Nächste Frage' : 'Herausforderung beenden'}
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </EightbitButton>
-              ) : (
-                <EightbitButton onClick={handleSubmitClick} disabled={!isFormForSubmitValid || isSubmitting || !submitFn}>
-                  {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      Antwort prüfen
-                      <Send className="ml-2 h-4 w-4" />
-                    </>
-                  )}
                 </EightbitButton>
               )}
             </DialogFooter>
