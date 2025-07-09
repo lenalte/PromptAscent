@@ -3,13 +3,14 @@
 
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CheckCircle, Trophy, XCircle } from 'lucide-react';
+import { CheckCircle, Trophy, XCircle, Zap } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
 
 interface StageCompleteScreenProps {
   stageTitle: string;
-  pointsEarnedInStage: number;
+  pointsEarnedInStage: number; // This is the final, boosted amount
+  basePointsAdded: number; // This is the base points before booster
   stageItemAttempts: { [itemId: string]: StageItemStatus };
   stageItems: LessonItem[];
   isLastStage: boolean;
@@ -19,6 +20,7 @@ interface StageCompleteScreenProps {
 export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   stageTitle,
   pointsEarnedInStage,
+  basePointsAdded,
   stageItemAttempts,
   stageItems,
   isLastStage,
@@ -39,6 +41,9 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
 
   const allPerfect = stageStatus === 'completed-perfect';
   const stageFailed = stageStatus === 'failed-stage';
+
+  const boosterMultiplier = basePointsAdded > 0 ? pointsEarnedInStage / basePointsAdded : 1;
+  const isBoosterActive = boosterMultiplier > 1;
 
   const getTitle = () => {
     if (stageFailed) return "Stufe nicht geschafft";
@@ -81,8 +86,16 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
               </div>
               {!stageFailed && (
                 <div className="text-right">
-                    <p className="font-bold text-lg text-green-700 dark:text-green-300">+{pointsEarnedInStage} Punkte</p>
-                    <p className="text-xs text-muted-foreground">{firstTrySuccesses}/{totalItemsInStage} perfekt</p>
+                    <p className="font-bold text-lg text-green-700 dark:text-green-300 flex items-center justify-end gap-2">
+                      {isBoosterActive && <Zap className="h-5 w-5 text-yellow-500" />}
+                      +{pointsEarnedInStage} Punkte
+                    </p>
+                    {isBoosterActive && (
+                        <p className="text-xs text-muted-foreground">
+                            (inkl. {boosterMultiplier.toFixed(1)}x Booster)
+                        </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">{firstTrySuccesses}/{totalItemsInStage} perfekt</p>
                 </div>
               )}
           </div>
@@ -90,5 +103,3 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     </Card>
   );
 };
-
-    

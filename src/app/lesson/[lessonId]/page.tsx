@@ -29,6 +29,7 @@ type StageCompleteInfo = {
     stageId: string;
     stageTitle: string;
     pointsEarnedInStage: number;
+    basePointsAdded: number;
     stageItemAttempts: { [itemId: string]: StageItemStatus };
     stageItems: LessonItem[];
     onNextStage: () => void;
@@ -130,6 +131,7 @@ export default function LessonPage() {
                             stageId: stage.id,
                             stageTitle: stage.title,
                             pointsEarnedInStage: stagePoints,
+                            basePointsAdded: stagePoints,
                             stageItemAttempts: pastStageProg?.items || {},
                             stageItems: stage.items as LessonItem[],
                             onNextStage: () => {}, 
@@ -276,6 +278,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                 }
 
                 const pointsActuallyAdded = stageResult.pointsAdded;
+                const basePoints = stageResult.basePointsAdded;
                 setNextLessonId(stageResult.nextLessonIdIfAny);
                 
                 const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
@@ -286,6 +289,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                     stageId: currentStage.id,
                     stageTitle: currentStage.title,
                     pointsEarnedInStage: pointsActuallyAdded,
+                    basePointsAdded: basePoints,
                     stageItemAttempts: stageItemAttempts,
                     stageItems: currentStage.items as LessonItem[],
                     onNextStage: handleStartNextStage,

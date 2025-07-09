@@ -200,7 +200,7 @@ export async function completeStageInFirestore(
   stageItemsWithStatus: { [itemId: string]: StageItemStatus },
   pointsEarnedThisStage: number, // This is now IGNORED in favor of server calculation
   stageItems: LessonItem[]
-): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData; pointsAdded: number }> {
+): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData; pointsAdded: number; basePointsAdded: number }> {
   if (!db) {
     console.error("[userProgressService.completeStageInFirestore] Firestore (db) is not available.");
     throw new Error("Firestore not initialized");
@@ -321,7 +321,7 @@ export async function completeStageInFirestore(
       throw new Error(`Failed to fetch updated user progress for ${userId} after stage completion.`);
     }
     console.log(`[UserProgress] Returning updated progress and next lesson ID (if any): ${nextLessonIdIfAny}`);
-    return { nextLessonIdIfAny, updatedProgress, pointsAdded: finalPointsToAdd };
+    return { nextLessonIdIfAny, updatedProgress, pointsAdded: finalPointsToAdd, basePointsAdded: serverCalculatedBasePointsDelta };
   } catch (error) {
     console.error(`[UserProgress] Error completing stage ${completedStageId} for lesson ${lessonId}, UID ${userId}:`, error);
     throw error;
@@ -335,7 +335,7 @@ export async function populateBossChallengeQuestions(
   userId: string,
   lessonId: string,
   stageId: string
-): Promise<{ boss: Boss; questions: BossQuestion[]; challenge: StageProgress['bossChallenge'] }> {
+): Promise<{ boss: Boss; questions: BossQuestion[]; challenge: any }> {
   const userProgress = await getUserProgress(userId);
   if (!userProgress) throw new Error("User progress not found.");
 

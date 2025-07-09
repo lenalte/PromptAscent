@@ -50,6 +50,7 @@ type StageCompleteInfo = {
     stageId: string;
     stageTitle: string;
     pointsEarnedInStage: number;
+    basePointsAdded: number;
     stageItemAttempts: { [itemId: string]: StageItemStatus };
     stageItems: LessonItem[];
     onNextStage: () => void;
@@ -244,6 +245,7 @@ export default function Home() {
 
                     newQueue.push({
                         renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title, pointsEarnedInStage: stagePoints,
+                        basePointsAdded: stagePoints,
                         stageItemAttempts: pastStageProg?.items || {}, stageItems: stage.items as LessonItem[], onNextStage: () => {}, onGoHome: handleExitLesson,
                         isLastStage: i === 5, stageStatus: pastStageProg?.status || 'completed-good',
                     });
@@ -343,11 +345,12 @@ export default function Home() {
                 return;
             }
             const pointsActuallyAdded = stageResult.pointsAdded;
+            const basePoints = stageResult.basePointsAdded;
             setNextLessonId(stageResult.nextLessonIdIfAny);
             const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson!.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
             const completionCard: StageCompleteInfo = {
                 renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
-                pointsEarnedInStage: pointsActuallyAdded, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
+                pointsEarnedInStage: pointsActuallyAdded, basePointsAdded: basePoints, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
                 onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus,
             };
             setContentQueue(prev => [...prev.slice(0, activeContentIndex + 1), completionCard]);
