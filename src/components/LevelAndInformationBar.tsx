@@ -25,7 +25,7 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebar
                 <div className="flex space-x-8">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center">
-                            <span className="text-primary-foreground">{totalPoints} km</span>
+                            <span className="text-primary-foreground">{totalPoints} Punkte</span>
                         </div>
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary-foreground" viewBox="0 0 790.000000 790.000000"
                             preserveAspectRatio="xMidYMid meet">
