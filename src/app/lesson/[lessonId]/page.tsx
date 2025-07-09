@@ -17,7 +17,7 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
-import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy } from 'lucide-react';
+import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,6 +36,7 @@ type StageCompleteInfo = {
     onGoHome: () => void;
     isLastStage: boolean;
     stageStatus: StageStatusValue;
+    onRestart: () => void;
 };
 type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: string; };
 
@@ -48,7 +49,7 @@ export default function LessonPage() {
     const { toast } = useToast();
     const lessonId = params.lessonId as string;
 
-    const { userProgress, completeStageAndProceed, isLoadingProgress: isContextLoading, currentUser } = useUserProgress();
+    const { userProgress, completeStageAndProceed, isLoadingProgress: isContextLoading, currentUser, restartStage } = useUserProgress();
 
     const [lessonData, setLessonData] = useState<Lesson | null>(null);
     const [isLoadingLesson, setIsLoadingLesson] = useState(true);
@@ -138,11 +139,36 @@ export default function LessonPage() {
                             onGoHome: () => router.push('/'),
                             isLastStage: i === 5,
                             stageStatus: pastStageProg?.status || 'completed-good',
+                            onRestart: () => {}, // Placeholder for past stages
                         });
                     }
                     
                     const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
                     const currentStageProgress = lessonProg.stages[currentStageData.id];
+                    
+                    // Handle case where a stage was failed. Show the completion screen first.
+                    if (currentStageProgress?.status === 'failed-stage') {
+                        const completionCard: StageCompleteInfo = {
+                            renderType: 'StageCompleteScreen',
+                            key: `complete-${currentStageData.id}`,
+                            stageId: currentStageData.id,
+                            stageTitle: currentStageData.title,
+                            pointsEarnedInStage: 0,
+                            basePointsAdded: 0,
+                            stageItemAttempts: currentStageProgress.items,
+                            stageItems: currentStageData.items as LessonItem[],
+                            onNextStage: () => {}, // Should not be called
+                            onGoHome: () => router.push('/'),
+                            isLastStage: currentStageIndex === 5,
+                            stageStatus: 'failed-stage',
+                            onRestart: () => handleRestartStage(),
+                        };
+                        newQueue.push(completionCard);
+                        setContentQueue(newQueue);
+                        setActiveContentIndex(newQueue.length -1);
+                        return; // Stop processing further for this load
+                    }
+
 
                     let activeItemIndex = 0;
                     if(currentStageProgress?.items){
@@ -155,7 +181,7 @@ export default function LessonPage() {
                     
                     newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
                     setContentQueue(newQueue);
-setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
+                    setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
 
                     setStageItemAttempts(currentStageProgress?.items || {});
                     setPointsThisStageSession(0); 
@@ -171,7 +197,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
             }
         }
         loadLessonAndProgress();
-    }, [lessonId, currentUser, isContextLoading, router, userProgress?.lessonStageProgress, userProgress?.completedLessons]);
+    }, [lessonId, currentUser, isContextLoading, router, userProgress]);
 
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
@@ -205,6 +231,12 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
             }
         }
     }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
+
+    const handleRestartStage = useCallback(async () => {
+        if (!currentStage) return;
+        await restartStage(lessonId, currentStage.id);
+        // The useEffect watching userProgress will handle the refresh.
+    }, [lessonId, currentStage, restartStage]);
 
 
     const handleStartNextStage = useCallback(() => {
@@ -296,6 +328,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                     onGoHome: () => router.push('/'),
                     isLastStage: currentStageIndex === 5,
                     stageStatus: finalStageStatus,
+                    onRestart: handleRestartStage,
                 };
                 
                 setContentQueue(prev => {
@@ -333,6 +366,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         router,
         stageItemAttempts,
         toast,
+        handleRestartStage,
     ]);
 
 
@@ -367,6 +401,15 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         }
 
         if (activeContent.renderType === 'StageCompleteScreen') {
+            if (activeContent.stageStatus === 'failed-stage') {
+                return {
+                    visible: true,
+                    onClick: handleRestartStage,
+                    text: 'Stufe wiederholen',
+                    icon: <RefreshCw className="h-5 w-5" />,
+                    disabled: isSubmitting,
+                };
+            }
             return {
                 visible: true,
                 onClick: handleStartNextStage,
@@ -380,8 +423,9 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
             const item = activeContent;
             const itemStatus = stageItemAttempts[item.id];
             const isAnsweredCorrectly = itemStatus?.correct === true;
+            const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
 
-            if (isAnsweredCorrectly || item.type === 'informationalSnippet') {
+            if (isAnsweredCorrectly || item.type === 'informationalSnippet' || maxAttemptsReached) {
               return {
                   visible: true,
                   onClick: handleProceed,
@@ -518,16 +562,6 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                 );
                             })
                         )}
-                        
-                        {userProgress?.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status === 'failed-stage' && (
-                            <Alert variant="destructive" className="mt-4">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Stage Failed</AlertTitle>
-                                <AlertDescription>
-                                    You did not pass this stage. You can review the items or restart the lesson.
-                                </AlertDescription>
-                            </Alert>
-                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -550,5 +584,3 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         </main>
     );
 }
-
-    
