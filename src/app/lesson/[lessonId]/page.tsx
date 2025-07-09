@@ -243,81 +243,64 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                 return;
             }
             
-            const itemStatus = stageItemAttempts[itemToProcess.id];
-            const shouldRetry = itemStatus && itemStatus.correct === false && itemStatus.attempts < 3 && itemToProcess.type !== 'informationalSnippet';
-    
-            if (shouldRetry) {
-                const newRetryItem: ContentQueueItem = {
-                    ...itemToProcess,
-                    key: `${itemToProcess.id}-retry-${itemStatus.attempts}`
+            // The retry logic is removed. We only proceed if correct.
+            const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
+            let isLastItemInCurrentStage = true;
+            for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
+                const futureItem = contentQueue[i];
+                if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
+                    isLastItemInCurrentStage = false;
+                    break;
+                }
+            }
+
+            if (isLastItemInCurrentStage) {
+                const stageResult = await completeStageAndProceed(
+                    lessonId,
+                    currentStage.id,
+                    currentStageIndex,
+                    stageItemAttempts,
+                    pointsThisStageSession,
+                    currentStage.items as LessonItem[]
+                );
+                
+                if (!stageResult || !stageResult.updatedProgress) {
+                    toast({
+                        title: "Error",
+                        description: "Could not save your progress. Please try again.",
+                        variant: "destructive"
+                    });
+                    isProcessing.current = false;
+                    setIsSubmitting(false);
+                    return; // Abort on failure
+                }
+
+                setNextLessonId(stageResult.nextLessonIdIfAny);
+                
+                const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+                
+                const completionCard: StageCompleteInfo = {
+                    renderType: 'StageCompleteScreen',
+                    key: `complete-${currentStage.id}`,
+                    stageId: currentStage.id,
+                    stageTitle: currentStage.title,
+                    pointsEarnedInStage: pointsThisStageSession,
+                    stageItemAttempts: stageItemAttempts,
+                    stageItems: currentStage.items as LessonItem[],
+                    onNextStage: handleStartNextStage,
+                    onGoHome: () => router.push('/'),
+                    isLastStage: currentStageIndex === 5,
+                    stageStatus: finalStageStatus,
                 };
                 
                 setContentQueue(prev => {
                     const newQueue = [...prev];
-                    newQueue.splice(activeContentIndex + 1, 0, newRetryItem);
+                    newQueue.splice(activeContentIndex + 1, 0, completionCard);
                     return newQueue;
                 });
                 setActiveContentIndex(prev => prev + 1);
-    
             } else {
-                const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
-                let isLastItemInCurrentStage = true;
-                for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
-                    const futureItem = contentQueue[i];
-                    if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
-                        isLastItemInCurrentStage = false;
-                        break;
-                    }
-                }
-    
-                if (isLastItemInCurrentStage) {
-                    const stageResult = await completeStageAndProceed(
-                        lessonId,
-                        currentStage.id,
-                        currentStageIndex,
-                        stageItemAttempts,
-                        pointsThisStageSession,
-                        currentStage.items as LessonItem[]
-                    );
-                    
-                    if (!stageResult || !stageResult.updatedProgress) {
-                        toast({
-                            title: "Error",
-                            description: "Could not save your progress. Please try again.",
-                            variant: "destructive"
-                        });
-                        isProcessing.current = false;
-                        setIsSubmitting(false);
-                        return; // Abort on failure
-                    }
-
-                    setNextLessonId(stageResult.nextLessonIdIfAny);
-                    
-                    const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
-                    
-                    const completionCard: StageCompleteInfo = {
-                        renderType: 'StageCompleteScreen',
-                        key: `complete-${currentStage.id}`,
-                        stageId: currentStage.id,
-                        stageTitle: currentStage.title,
-                        pointsEarnedInStage: pointsThisStageSession,
-                        stageItemAttempts: stageItemAttempts,
-                        stageItems: currentStage.items as LessonItem[],
-                        onNextStage: handleStartNextStage,
-                        onGoHome: () => router.push('/'),
-                        isLastStage: currentStageIndex === 5,
-                        stageStatus: finalStageStatus,
-                    };
-                    
-                    setContentQueue(prev => {
-                        const newQueue = [...prev];
-                        newQueue.splice(activeContentIndex + 1, 0, completionCard);
-                        return newQueue;
-                    });
-                    setActiveContentIndex(prev => prev + 1);
-                } else {
-                    setActiveContentIndex(prev => prev + 1);
-                }
+                setActiveContentIndex(prev => prev + 1);
             }
     
         } catch (error) {
@@ -391,9 +374,9 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         if (activeContent.renderType === 'LessonItem') {
             const item = activeContent;
             const itemStatus = stageItemAttempts[item.id];
-            const hasSubmitted = (itemStatus?.attempts ?? 0) > 0;
+            const isAnsweredCorrectly = itemStatus?.correct === true;
 
-            if (hasSubmitted || item.type === 'informationalSnippet') {
+            if (isAnsweredCorrectly || item.type === 'informationalSnippet') {
               return {
                   visible: true,
                   onClick: handleProceed,
@@ -496,16 +479,16 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                              if (content.renderType === 'LessonItem') {
                                                 const item = content;
                                                 const itemStatus = stageItemAttempts[item.id];
-                                                const hasSubmitted = (itemStatus?.attempts ?? 0) > 0;
+                                                const hasSubmittedCorrectly = itemStatus?.correct === true;
 
                                                 switch (item.type) {
                                                     case 'freeResponse': {
                                                         const { key, ...rest } = item;
-                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
+                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
                                                     }
                                                     case 'multipleChoice': {
                                                         const { key, ...rest } = item;
-                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
+                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
                                                     }
                                                     case 'informationalSnippet': {
                                                         const { key, ...rest } = item;
@@ -513,7 +496,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                                     }
                                                     case 'promptingTask': {
                                                         const { key, ...rest } = item;
-                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
+                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
                                                     }
                                                     default: {
                                                         const _exhaustiveCheck: never = item;
@@ -562,3 +545,5 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
         </main>
     );
 }
+
+    

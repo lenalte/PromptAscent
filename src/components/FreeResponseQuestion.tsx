@@ -23,8 +23,6 @@ interface FreeResponseQuestionProps {
   isReadOnly?: boolean;
 }
 
-type ValidationResult = ValidateUserAnswerOutput & { attemptMade: boolean };
-
 export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   question,
   expectedAnswer,
@@ -34,42 +32,50 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   id,
   isReadOnly = false,
 }) => {
-  const [isPending, startTransition] = useTransition();
-  const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: false, feedback: '', attemptMade: false });
   const [userAnswer, setUserAnswer] = useState('');
+  const [isPending, startTransition] = useTransition();
+  const [result, setResult] = useState<ValidateUserAnswerOutput | null>(null);
+  const [attempts, setAttempts] = useState(0);
 
-  const hasAttempted = validationResult.attemptMade;
-  const isInputValid = userAnswer.trim().length > 0;
+  const MAX_ATTEMPTS = 3;
+  const isCorrect = result?.isValid === true;
+  const canAttempt = !isCorrect && attempts < MAX_ATTEMPTS;
 
   const handleSubmit = useCallback(() => {
-    if (isReadOnly || hasAttempted || !isInputValid) return;
+    if (isReadOnly || !canAttempt || userAnswer.trim().length === 0) return;
 
-    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
     startTransition(async () => {
       try {
-        const result = await validateUserAnswer({
+        const validation = await validateUserAnswer({
           question,
           expectedAnswer,
           userAnswer,
         });
-        setValidationResult({ ...result, attemptMade: true });
-        onAnswerSubmit(result.isValid, pointsAwarded, id.toString());
+        setResult(validation);
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+        onAnswerSubmit(validation.isValid, validation.isValid ? pointsAwarded : 0, id.toString());
       } catch (error) {
         console.error('Validation error:', error);
-        setValidationResult({ isValid: false, feedback: 'Error validating answer. Please try again.', attemptMade: true });
+        setResult({ isValid: false, feedback: 'Error validating answer. Please try again.' });
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
         onAnswerSubmit(false, 0, id.toString());
       }
     });
-  }, [isReadOnly, hasAttempted, isInputValid, question, expectedAnswer, userAnswer, onAnswerSubmit, pointsAwarded, id]);
+  }, [isReadOnly, canAttempt, userAnswer, question, expectedAnswer, onAnswerSubmit, pointsAwarded, id, attempts]);
 
   useEffect(() => {
     // Reset state when the question ID changes
-    setValidationResult({ isValid: false, feedback: '', attemptMade: false });
+    setResult(null);
     setUserAnswer('');
+    setAttempts(0);
   }, [id]);
 
+  const isComponentReadOnly = isReadOnly || isCorrect;
+
   return (
-    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{question}</CardDescription>
@@ -85,8 +91,8 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               rows={4}
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
-              aria-describedby={validationResult.attemptMade ? "feedback-alert" : undefined}
-              disabled={isReadOnly || isPending || hasAttempted}
+              aria-describedby={result ? "feedback-alert" : undefined}
+              disabled={isComponentReadOnly || isPending}
             />
           </div>
 
@@ -97,26 +103,26 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             </div>
           )}
 
-          {validationResult.attemptMade && (
+          {result && (
             <Alert
               id="feedback-alert"
-              variant={validationResult.isValid ? 'default' : 'destructive'}
+              variant={result.isValid ? 'default' : 'destructive'}
               className={cn(
                 "transition-opacity duration-300 ease-in-out",
-                validationResult.isValid ? "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700" : "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700"
+                result.isValid ? "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700" : "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700"
               )}
             >
-              {validationResult.isValid ? (
+              {result.isValid ? (
                 <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
               ) : (
                 <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
               )}
-              <AlertTitle className={cn(validationResult.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {validationResult.isValid ? 'Correct!' : 'Incorrect'}
+              <AlertTitle className={cn(result.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
+                {result.isValid ? 'Correct!' : 'Incorrect'}
               </AlertTitle>
-              <AlertDescription className={cn(validationResult.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
-                {validationResult.feedback}
-                {!validationResult.isValid && expectedAnswer && (
+              <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
+                {result.feedback}
+                {!result.isValid && expectedAnswer && (
                   <p className="mt-2">
                     Expected answer guidance: <span className="font-semibold">{expectedAnswer}</span>
                   </p>
@@ -127,16 +133,18 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
-        {!hasAttempted && !isReadOnly && (
-          <EightbitButton onClick={handleSubmit} disabled={!isInputValid || isPending}>
+        {!isComponentReadOnly && canAttempt && (
+          <EightbitButton onClick={handleSubmit} disabled={userAnswer.trim().length === 0 || isPending}>
             {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-muted-foreground">
             <p>Correct: +{pointsAwarded} points</p>
-            <p>Incorrect: 0 points (max 3 attempts)</p>
+            <p>Attempts remaining: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
     </Card>
   );
 };
+
+    
