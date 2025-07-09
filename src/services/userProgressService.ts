@@ -183,23 +183,39 @@ export async function completeStageInFirestore(
   completedStageId: string, // e.g., "stage1"
   completedStageIndex: number, // 0-5
   stageItemsWithStatus: { [itemId: string]: StageItemStatus },
-  pointsEarnedThisStage: number,
+  pointsEarnedThisStage: number, // This is now IGNORED in favor of server calculation
   stageItems: LessonItem[]
 ): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData; pointsAdded: number }> {
   if (!db) {
     console.error("[userProgressService.completeStageInFirestore] Firestore (db) is not available.");
     throw new Error("Firestore not initialized");
   }
-  console.log(`[UserProgress] Completing stage ${completedStageId} (index ${completedStageIndex}) for lesson ${lessonId}, user ${userId}. Points for stage: ${pointsEarnedThisStage}`);
-
+  
   const userDocRef = doc(db, USERS_COLLECTION, userId);
   const batch = writeBatch(db);
 
   try {
-    const currentUserProgress = await getUserProgress(userId);
-    if (!currentUserProgress) {
+    const userProgressBefore = await getUserProgress(userId);
+    if (!userProgressBefore) {
       throw new Error(`User progress not found for ${userId} when trying to complete stage.`);
     }
+
+    // --- Server-side points calculation for security and accuracy ---
+    const stageProgressBefore = userProgressBefore?.lessonStageProgress?.[lessonId]?.stages?.[completedStageId];
+    let serverCalculatedBasePointsDelta = 0;
+    for (const item of stageItems) {
+        const statusAfter = stageItemsWithStatus[item.id];
+        const statusBefore = stageProgressBefore?.items?.[item.id];
+
+        const wasCorrectBefore = statusBefore?.correct === true;
+        const isCorrectAfter = statusAfter?.correct === true;
+
+        if (isCorrectAfter && !wasCorrectBefore) {
+            serverCalculatedBasePointsDelta += item.pointsAwarded;
+        }
+    }
+    console.log(`[UserProgress] Completing stage ${completedStageId}. Server calculated base points delta: ${serverCalculatedBasePointsDelta}`);
+
 
     let stageStatus: StageProgress['status'] = 'completed-perfect';
     let allPerfect = true;
@@ -229,24 +245,23 @@ export async function completeStageInFirestore(
       stageStatus = 'completed-good';
     }
 
-    let finalPointsToAdd = pointsEarnedThisStage;
-    if (currentUserProgress.activeBooster && Date.now() < currentUserProgress.activeBooster.expiresAt) {
-      finalPointsToAdd = Math.round(finalPointsToAdd * currentUserProgress.activeBooster.multiplier);
-      console.log(`[UserProgress] Active booster found (${currentUserProgress.activeBooster.multiplier}x). Adjusted points from ${pointsEarnedThisStage} to ${finalPointsToAdd}.`);
+    let finalPointsToAdd = serverCalculatedBasePointsDelta;
+    if (userProgressBefore.activeBooster && Date.now() < userProgressBefore.activeBooster.expiresAt) {
+      finalPointsToAdd = Math.round(finalPointsToAdd * userProgressBefore.activeBooster.multiplier);
+      console.log(`[UserProgress] Active booster found (${userProgressBefore.activeBooster.multiplier}x). Adjusted points from ${serverCalculatedBasePointsDelta} to ${finalPointsToAdd}.`);
     }
 
-    const currentPoints = typeof currentUserProgress.totalPoints === 'number' && !isNaN(currentUserProgress.totalPoints) 
-      ? currentUserProgress.totalPoints 
-      : 0;
+    const currentTotalPoints = userProgressBefore.totalPoints;
+    const previousStagePoints = stageProgressBefore?.pointsEarned ?? 0;
 
     const updates: { [key: string]: any } = {
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.status`]: stageStatus,
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.items`]: stageItemsWithStatus,
-      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.pointsEarned`]: pointsEarnedThisStage, // Store original points
-      totalPoints: currentPoints + finalPointsToAdd,
+      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.pointsEarned`]: previousStagePoints + serverCalculatedBasePointsDelta, // Cumulative
+      totalPoints: currentTotalPoints + finalPointsToAdd,
     };
     
-    console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${finalPointsToAdd}. New total (pending commit): ${currentPoints + finalPointsToAdd}`);
+    console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added to total: ${finalPointsToAdd}. New total (pending commit): ${currentTotalPoints + finalPointsToAdd}`);
 
     let nextLessonIdIfAny: string | null = null;
 
@@ -270,7 +285,7 @@ export async function completeStageInFirestore(
           updates.unlockedLessons = arrayUnion(nextLessonToUnlock.id);
           updates.currentLessonId = nextLessonToUnlock.id;
 
-          if (!currentUserProgress.lessonStageProgress[nextLessonToUnlock.id]) {
+          if (!userProgressBefore.lessonStageProgress[nextLessonToUnlock.id]) {
             updates[`lessonStageProgress.${nextLessonToUnlock.id}`] = createDefaultLessonProgress(false);
           }
           console.log(`[UserProgress] Unlocked and set current to next lesson: ${nextLessonToUnlock.id}.`);
@@ -448,3 +463,5 @@ export async function resolveBossChallenge(
 
   return finalProgress;
 }
+
+    
