@@ -12,6 +12,7 @@ import {
   completeStageInFirestore as serverCompleteStage,
   populateBossChallengeQuestions as serverPopulateBoss,
   resolveBossChallenge as serverResolveBoss,
+  restartStageInFirestore as serverRestartStage,
   type UserProgressData
 } from '@/services/userProgressService';
 import type { StageItemStatus, LessonItem, BossQuestion } from '@/ai/schemas/lesson-schemas';
@@ -42,6 +43,7 @@ interface UserProgressContextType {
   signUpWithEmail: (email: string, password: string, username: string) => Promise<AuthResult>;
   signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
   logOut: () => Promise<void>;
+  restartStage: (lessonId: string, stageId: string) => Promise<void>;
 }
 
 const UserProgressContext = createContext<UserProgressContextType | undefined>(undefined);
@@ -238,6 +240,23 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, []);
 
+  const restartStage = useCallback(async (lessonId: string, stageId: string) => {
+    if (!currentUser) {
+      console.error("[UserProgressContext] restartStage: Cannot restart - no current user.");
+      return;
+    }
+    setIsLoadingProgress(true);
+    try {
+      const updatedProgress = await serverRestartStage(currentUser.uid, lessonId, stageId);
+      setUserProgress(updatedProgress);
+      console.log(`[UserProgressContext] Stage ${stageId} restarted. Context state updated.`);
+    } catch (error) {
+      console.error(`[UserProgressContext] Error restarting stage ${stageId}:`, error);
+    } finally {
+      setIsLoadingProgress(false);
+    }
+  }, [currentUser]);
+
   const value = useMemo(() => ({
     currentUser,
     userProgress,
@@ -248,7 +267,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     signUpWithEmail,
     signInWithEmail,
     logOut,
-  }), [currentUser, userProgress, isLoadingAuth, isLoadingProgress, completeStageAndProceed, signUpWithEmail, signInWithEmail, logOut]);
+    restartStage,
+  }), [currentUser, userProgress, isLoadingAuth, isLoadingProgress, completeStageAndProceed, signUpWithEmail, signInWithEmail, logOut, restartStage]);
 
   return (
     <UserProgressContext.Provider value={value}>
@@ -283,4 +303,12 @@ export const resolveBossChallenge = async (
   finalQuestionStatus: { [itemId: string]: { correct: boolean | null; attempts: number } }
 ): Promise<UserProgressData> => {
   return serverResolveBoss(userId, lessonId, stageId, finalStatus, finalQuestionStatus);
+};
+
+export const restartStage = async (
+  userId: string,
+  lessonId: string,
+  stageId: string
+): Promise<UserProgressData> => {
+  return serverRestartStage(userId, lessonId, stageId);
 };

@@ -40,7 +40,7 @@ function createDefaultLessonProgress(isFirstLesson: boolean): { currentStageInde
   for (let i = 0; i < 6; i++) {
     const stageId = `stage${i + 1}`;
     stagesProgress[stageId] = {
-      status: i === 0 ? 'unlocked' : 'locked', // Unlock first stage
+      status: i === 0 ? 'in-progress' : 'locked', // Unlock first stage
       items: {}, // Item attempts will be populated as user interacts
       pointsEarned: 0,
     };
@@ -477,4 +477,44 @@ export async function resolveBossChallenge(
   if (!finalProgress) throw new Error("Failed to get final progress after resolving boss.");
 
   return finalProgress;
+}
+
+
+export async function restartStageInFirestore(
+  userId: string,
+  lessonId: string,
+  stageId: string
+): Promise<UserProgressData> {
+  if (!db) {
+    console.error("[userProgressService.restartStageInFirestore] Firestore (db) is not available.");
+    throw new Error("Firestore not initialized");
+  }
+  const userDocRef = doc(db, USERS_COLLECTION, userId);
+
+  try {
+    const userProgressBefore = await getUserProgress(userId);
+    if (!userProgressBefore) {
+      throw new Error(`User progress not found for ${userId} when trying to restart stage.`);
+    }
+
+    // Resetting the specific stage progress
+    const updates = {
+      [`lessonStageProgress.${lessonId}.stages.${stageId}.status`]: 'in-progress',
+      [`lessonStageProgress.${lessonId}.stages.${stageId}.items`]: {},
+      [`lessonStageProgress.${lessonId}.stages.${stageId}.pointsEarned`]: 0,
+    };
+
+    await updateDoc(userDocRef, updates);
+    console.log(`[UserProgress] Stage ${stageId} of lesson ${lessonId} restarted for user ${userId}.`);
+
+    const updatedProgress = await getUserProgress(userId);
+    if (!updatedProgress) {
+        throw new Error("Failed to fetch user progress after restarting stage.");
+    }
+    return updatedProgress;
+
+  } catch (error) {
+    console.error(`[UserProgress] Error restarting stage ${stageId} for lesson ${lessonId}, UID ${userId}:`, error);
+    throw error;
+  }
 }
