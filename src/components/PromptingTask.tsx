@@ -23,8 +23,6 @@ interface PromptingTaskProps {
   isReadOnly?: boolean;
 }
 
-type EvaluationResultWithAttempt = EvaluatePromptOutput & { attemptMade: boolean };
-
 export const PromptingTask: React.FC<PromptingTaskProps> = ({
   taskDescription,
   evaluationGuidance,
@@ -34,21 +32,18 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   id,
   isReadOnly = false,
 }) => {
-  const [isPending, startTransition] = useTransition();
-  const [evaluationResult, setEvaluationResult] = useState<EvaluationResultWithAttempt>({
-    score: 0,
-    explanation: '',
-    isCorrect: false,
-    attemptMade: false,
-  });
   const [userPrompt, setUserPrompt] = useState('');
+  const [isPending, startTransition] = useTransition();
+  const [evaluationResult, setEvaluationResult] = useState<EvaluatePromptOutput | null>(null);
+  const [attempts, setAttempts] = useState(0);
 
-  const hasAttempted = evaluationResult.attemptMade;
-  const isInputValid = userPrompt.trim().length >= 10;
+  const MAX_ATTEMPTS = 3;
+  const isCorrect = evaluationResult?.isCorrect === true;
+  const canAttempt = !isCorrect && attempts < MAX_ATTEMPTS;
 
   const handleSubmit = useCallback(() => {
-    if (isReadOnly || hasAttempted || !isInputValid) return;
-    setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
+    if (isReadOnly || !canAttempt || userPrompt.trim().length < 10) return;
+
     startTransition(async () => {
       try {
         const result = await evaluatePrompt({
@@ -56,29 +51,37 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
           context: taskDescription,
           evaluationGuidance: evaluationGuidance,
         });
-        setEvaluationResult({ ...result, attemptMade: true });
-        onAnswerSubmit(result.isCorrect, pointsAwarded, id.toString());
+        setEvaluationResult(result);
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+        onAnswerSubmit(result.isCorrect, result.isCorrect ? pointsAwarded : 0, id.toString());
       } catch (error) {
         console.error('Prompt evaluation error:', error);
-        setEvaluationResult({
+        const errorResult: EvaluatePromptOutput = {
           score: 0,
           explanation: 'Error evaluating prompt. Please try again.',
           isCorrect: false,
-          attemptMade: true,
-        });
+        };
+        setEvaluationResult(errorResult);
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
         onAnswerSubmit(false, 0, id.toString());
       }
     });
-  }, [isReadOnly, hasAttempted, isInputValid, userPrompt, taskDescription, evaluationGuidance, onAnswerSubmit, pointsAwarded, id]);
+  }, [isReadOnly, canAttempt, userPrompt, taskDescription, evaluationGuidance, onAnswerSubmit, pointsAwarded, id, attempts]);
 
   useEffect(() => {
     // Reset state when the question ID changes
     setUserPrompt('');
-    setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
+    setEvaluationResult(null);
+    setAttempts(0);
   }, [id]);
 
+  const isComponentReadOnly = isReadOnly || isCorrect;
+  const isInputValid = userPrompt.trim().length >= 10;
+
   return (
-    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-purple-800 dark:text-purple-300 flex items-center">
           <FilePenLine className="mr-2 h-5 w-5" /> {title}
@@ -96,8 +99,8 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 rows={6}
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
-                aria-describedby={evaluationResult.attemptMade ? "feedback-alert" : undefined}
-                disabled={isReadOnly || isPending || evaluationResult.attemptMade}
+                aria-describedby={evaluationResult ? "feedback-alert" : undefined}
+                disabled={isComponentReadOnly || isPending}
               />
               <p className="text-sm text-purple-600 dark:text-purple-500">
                 Craft a prompt based on the task description above. Minimum 10 characters.
@@ -111,7 +114,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 </div>
             )}
 
-            {evaluationResult.attemptMade && (
+            {evaluationResult && (
               <Alert
                 id="feedback-alert"
                 variant={evaluationResult.isCorrect ? 'default' : 'destructive'}
@@ -150,16 +153,18 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
-        {!hasAttempted && !isReadOnly && (
+        {!isComponentReadOnly && canAttempt && (
           <EightbitButton onClick={handleSubmit} disabled={!isInputValid || isPending}>
             {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-purple-600 dark:text-purple-500">
             <p>Effective: +{pointsAwarded} points</p>
-            <p>Needs Improvement: 0 points (max 3 attempts)</p>
+            <p>Attempts remaining: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
     </Card>
   );
 };
+
+    
