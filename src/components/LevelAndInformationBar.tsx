@@ -5,11 +5,10 @@ import type { Level } from '@/data/level-structure';
 import { useUserProgress } from '@/context/UserProgressContext';
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
-    sidebarWidth: number;
     currentLevel: Level | null;
 }
 
-const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebarWidth, currentLevel, className }) => {
+const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ currentLevel, className }) => {
     const { userProgress } = useUserProgress();
     const totalPoints = userProgress?.totalPoints ?? 0;
 

@@ -85,6 +85,7 @@ export type BossChallenge = {
 export type StageProgress = {
   status: StageStatusValue;
   items: { [itemId: string]: StageItemStatus }; // Status of each item within the stage
+  pointsEarned?: number; // Points earned in this specific stage
   hasBoss?: boolean;
   bossDefeated?: boolean;
   bossChallenge?: BossChallenge;

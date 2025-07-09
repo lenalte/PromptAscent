@@ -64,9 +64,7 @@ export default function LessonPage() {
     const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
     const [nextLessonId, setNextLessonId] = useState<string | null>(null);
     
-    // State for the FAB
     const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
-    const [isFormForSubmitValid, setIsFormForSubmitValid] = useState(false);
 
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -79,10 +77,6 @@ export default function LessonPage() {
 
     const unregisterSubmit = useCallback(() => {
         setSubmitFn(null);
-    }, []);
-
-    const handleFormValidity = useCallback((isValid: boolean) => {
-        setIsFormForSubmitValid(isValid);
     }, []);
     
     useEffect(() => {
@@ -128,13 +122,16 @@ export default function LessonPage() {
                         const pastStageProg = lessonProg.stages[stage.id];
                         newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
                         
-                        let stagePoints = 0;
-                        if (pastStageProg?.items) {
-                            stage.items.forEach(item => {
-                                if (pastStageProg.items[item.id]?.correct) {
-                                    stagePoints += item.pointsAwarded;
-                                }
-                            });
+                        let stagePoints = pastStageProg?.pointsEarned;
+                        if (typeof stagePoints !== 'number') {
+                            stagePoints = 0;
+                            if (pastStageProg?.items) {
+                                stage.items.forEach(item => {
+                                    if (pastStageProg.items[item.id]?.correct) {
+                                        stagePoints += item.pointsAwarded;
+                                    }
+                                });
+                            }
                         }
 
                         newQueue.push({
@@ -405,21 +402,24 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
             const item = activeContent;
             const isQuestion = item.type !== 'informationalSnippet';
             const isAnswered = !!stageItemAttempts[item.id];
+            const hasSubmitted = isAnswered && (stageItemAttempts[item.id].correct !== null);
 
-            if (isQuestion && !isAnswered) {
+            // Button to submit answer (only for question types)
+            if (isQuestion && !hasSubmitted) {
                 return {
                     visible: true,
                     onClick: submitFn || (() => {}),
-                    text: 'Submit Answer',
+                    text: 'Antwort prüfen',
                     icon: <Send className="h-5 w-5" />,
-                    disabled: !isFormForSubmitValid || isSubmitting || !submitFn,
+                    disabled: isSubmitting || !submitFn,
                 };
             }
             
+            // Button to proceed to the next item
             return {
                 visible: true,
                 onClick: handleProceed,
-                text: 'Next',
+                text: 'Nächste',
                 icon: <ArrowRight className="h-5 w-5" />,
                 disabled: isSubmitting,
             };
@@ -485,7 +485,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                     </Link>
                     <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
                 </div>
-                <PointsDisplay points={userProgress?.totalPoints ?? 0} />
+                <PointsDisplay />
             </div>
 
             <Separator className="my-6 w-full max-w-3xl" />
@@ -511,33 +511,23 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
 
                                 const isReadOnly = index < activeContentIndex;
                                 const isActive = index === activeContentIndex;
-
-                                const interactiveProps = isActive ? {
-                                    isActive: true,
-                                    registerSubmit,
-                                    unregisterSubmit,
-                                    onValidityChange: handleFormValidity,
-                                } : {
-                                    isActive: false,
-                                    registerSubmit: () => {},
-                                    unregisterSubmit: () => {},
-                                    onValidityChange: () => {},
-                                };
                                 
                                 return (
                                     <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
                                         {(() => {
                                              if (content.renderType === 'LessonItem') {
                                                 const item = content;
+                                                const itemStatus = stageItemAttempts[item.id];
+                                                const hasSubmitted = itemStatus && itemStatus.correct !== null;
 
                                                 switch (item.type) {
                                                     case 'freeResponse': {
                                                         const { key, ...rest } = item;
-                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
                                                     }
                                                     case 'multipleChoice': {
                                                         const { key, ...rest } = item;
-                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
                                                     }
                                                     case 'informationalSnippet': {
                                                         const { key, ...rest } = item;
@@ -545,7 +535,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                                     }
                                                     case 'promptingTask': {
                                                         const { key, ...rest } = item;
-                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly} onAnswerSubmit={handleAnswerSubmit} {...interactiveProps} />;
+                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
                                                     }
                                                     default: {
                                                         const _exhaustiveCheck: never = item;
