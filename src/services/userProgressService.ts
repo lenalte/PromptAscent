@@ -223,12 +223,12 @@ export async function completeStageInFirestore(
       ? currentUserProgress.totalPoints 
       : 0;
 
-    const stageProgressPath = `lessonStageProgress.${lessonId}.stages.${completedStageId}`;
-    batch.update(userDocRef, {
-      [`${stageProgressPath}.status`]: stageStatus,
-      [`${stageProgressPath}.items`]: stageItemsWithStatus,
+    const updates: { [key: string]: any } = {
+      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.status`]: stageStatus,
+      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.items`]: stageItemsWithStatus,
       totalPoints: currentPoints + pointsEarnedThisStage,
-    });
+    };
+    
     console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${pointsEarnedThisStage}. New total (pending commit): ${currentPoints + pointsEarnedThisStage}`);
 
     let nextLessonIdIfAny: string | null = null;
@@ -237,15 +237,11 @@ export async function completeStageInFirestore(
       if (completedStageIndex < 5) {
         const nextStageIndex = completedStageIndex + 1;
         const nextStageId = `stage${nextStageIndex + 1}`;
-        batch.update(userDocRef, {
-          [`lessonStageProgress.${lessonId}.currentStageIndex`]: nextStageIndex,
-          [`lessonStageProgress.${lessonId}.stages.${nextStageId}.status`]: 'unlocked',
-        });
+        updates[`lessonStageProgress.${lessonId}.currentStageIndex`] = nextStageIndex;
+        updates[`lessonStageProgress.${lessonId}.stages.${nextStageId}.status`] = 'unlocked';
         console.log(`[UserProgress] Advancing to stage ${nextStageId} (index ${nextStageIndex}) in lesson ${lessonId}.`);
       } else {
-        batch.update(userDocRef, {
-          completedLessons: arrayUnion(lessonId),
-        });
+        updates.completedLessons = arrayUnion(lessonId);
         console.log(`[UserProgress] Lesson ${lessonId} fully completed.`);
 
         const allLessonsManifest = await getAvailableLessons();
@@ -254,18 +250,12 @@ export async function completeStageInFirestore(
           const nextLessonToUnlock = allLessonsManifest[currentLessonManifestIndex + 1];
           nextLessonIdIfAny = nextLessonToUnlock.id;
 
-          const lessonProgressForNextLessonPath = `lessonStageProgress.${nextLessonToUnlock.id}`;
-          const currentProgressForNextLesson = currentUserProgress.lessonStageProgress[nextLessonToUnlock.id];
-          
-          const updatesForNextLesson: any = {
-              unlockedLessons: arrayUnion(nextLessonToUnlock.id),
-              currentLessonId: nextLessonToUnlock.id,
-          };
+          updates.unlockedLessons = arrayUnion(nextLessonToUnlock.id);
+          updates.currentLessonId = nextLessonToUnlock.id;
 
-          if (!currentProgressForNextLesson) {
-              updatesForNextLesson[lessonProgressForNextLessonPath] = createDefaultLessonProgress(false);
+          if (!currentUserProgress.lessonStageProgress[nextLessonToUnlock.id]) {
+            updates[`lessonStageProgress.${nextLessonToUnlock.id}`] = createDefaultLessonProgress(false);
           }
-          batch.update(userDocRef, updatesForNextLesson);
           console.log(`[UserProgress] Unlocked and set current to next lesson: ${nextLessonToUnlock.id}.`);
         } else {
           console.log(`[UserProgress] Lesson ${lessonId} was the last lesson, or next lesson not found in manifest.`);
@@ -275,6 +265,7 @@ export async function completeStageInFirestore(
       console.log(`[UserProgress] Stage ${completedStageId} of lesson ${lessonId} failed. User remains on this stage.`);
     }
 
+    batch.update(userDocRef, updates);
     await batch.commit();
     console.log(`[UserProgress] Firestore batch commit successful for stage completion of ${completedStageId}, lesson ${lessonId}.`);
 
