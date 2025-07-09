@@ -356,7 +356,7 @@ export default function Home() {
   }, [currentStageIndex, lessonData]);
 
   const handleProceed = useCallback(async () => {
-    if (isProcessing.current || !currentStage || !activeContent) return;
+    if (isProcessing.current || !currentStage || !activeContent || !selectedLesson) return;
     isProcessing.current = true;
     setIsSubmitting(true);
     try {
@@ -370,7 +370,7 @@ export default function Home() {
         const isLastItemInCurrentStage = !contentQueue.slice(activeContentIndex + 1).some(futureItem => futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id));
 
         if (isLastItemInCurrentStage) {
-            const stageResult = await completeStageAndProceed(selectedLesson!.id, currentStage.id, currentStageIndex, stageItemAttempts, pointsThisStageSession, currentStage.items as LessonItem[]);
+            const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, stageItemAttempts, pointsThisStageSession, currentStage.items as LessonItem[]);
             if (!stageResult || !stageResult.updatedProgress) {
                 toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
                 isProcessing.current = false;
@@ -380,14 +380,37 @@ export default function Home() {
             const pointsActuallyAdded = stageResult.pointsAdded;
             const basePoints = stageResult.basePointsAdded;
             setNextLessonId(stageResult.nextLessonIdIfAny);
-            const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson!.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+            const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+            
             const completionCard: StageCompleteInfo = {
                 renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
                 pointsEarnedInStage: pointsActuallyAdded, basePointsAdded: basePoints, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
                 onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
             };
-            setContentQueue(prev => [...prev.slice(0, activeContentIndex + 1), completionCard]);
-            setActiveContentIndex(prev => prev + 1);
+            
+            if (finalStageStatus === 'failed-stage') {
+                const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
+                const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
+                
+                if (firstItemOfStageIndex !== -1) {
+                    setContentQueue(prev => {
+                        const newQueue = prev.slice(0, firstItemOfStageIndex);
+                        newQueue.push(completionCard);
+                        return newQueue;
+                    });
+                    setActiveContentIndex(firstItemOfStageIndex);
+                } else {
+                    setContentQueue(prev => [...prev, completionCard]);
+                    setActiveContentIndex(prev => prev + 1);
+                }
+            } else {
+                setContentQueue(prev => {
+                    const newQueue = [...prev];
+                    newQueue.splice(activeContentIndex + 1, 0, completionCard);
+                    return newQueue;
+                });
+                setActiveContentIndex(prev => prev + 1);
+            }
         } else {
             setActiveContentIndex(prev => prev + 1);
         }
@@ -663,6 +686,8 @@ export default function Home() {
     </>
   );
 }
+
+    
 
     
 

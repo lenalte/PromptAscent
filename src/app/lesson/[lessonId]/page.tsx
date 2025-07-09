@@ -277,7 +277,6 @@ export default function LessonPage() {
                 return;
             }
             
-            // The retry logic is removed. We only proceed if correct.
             const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
             let isLastItemInCurrentStage = true;
             for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
@@ -331,12 +330,29 @@ export default function LessonPage() {
                     onRestart: handleRestartStage,
                 };
                 
-                setContentQueue(prev => {
-                    const newQueue = [...prev];
-                    newQueue.splice(activeContentIndex + 1, 0, completionCard);
-                    return newQueue;
-                });
-                setActiveContentIndex(prev => prev + 1);
+                if (finalStageStatus === 'failed-stage') {
+                    const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
+                    const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
+                    
+                    if (firstItemOfStageIndex !== -1) {
+                        setContentQueue(prev => {
+                            const newQueue = prev.slice(0, firstItemOfStageIndex);
+                            newQueue.push(completionCard);
+                            return newQueue;
+                        });
+                        setActiveContentIndex(firstItemOfStageIndex);
+                    } else {
+                        setContentQueue(prev => [...prev, completionCard]);
+                        setActiveContentIndex(prev => prev + 1);
+                    }
+                } else {
+                    setContentQueue(prev => {
+                        const newQueue = [...prev];
+                        newQueue.splice(activeContentIndex + 1, 0, completionCard);
+                        return newQueue;
+                    });
+                    setActiveContentIndex(prev => prev + 1);
+                }
             } else {
                 setActiveContentIndex(prev => prev + 1);
             }
@@ -584,3 +600,5 @@ export default function LessonPage() {
         </main>
     );
 }
+
+    
