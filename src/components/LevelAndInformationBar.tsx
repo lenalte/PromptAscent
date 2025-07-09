@@ -1,24 +1,24 @@
 
 import React from 'react';
-import Image from "next/image";
 import { cn } from "@/lib/utils";
-import type { Level } from '@/data/level-structure'; // Import Level type
-
+import type { Level } from '@/data/level-structure';
+import { useUserProgress } from '@/context/UserProgressContext';
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     sidebarWidth: number;
-    totalPoints: number; // Renamed from points
-    currentLevel: Level | null; // Added currentLevel prop
+    currentLevel: Level | null;
 }
 
-const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebarWidth, totalPoints, currentLevel, className }) => {
+const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ sidebarWidth, currentLevel, className }) => {
+    const { userProgress } = useUserProgress();
+    const totalPoints = userProgress?.totalPoints ?? 0;
+
     return (
         <>
             <div
                 className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4", className)}
             >
                 <div>
-                    {/* Display current level title or fallback */}
                     <span className="text-primary-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
                 </div>
 
