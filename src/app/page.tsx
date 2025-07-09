@@ -4,7 +4,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue, getGeneratedLessonById, type LessonStage, type StageItemStatus, type LessonItem } from '@/data/lessons';
-import { ArrowRight, Loader2, LogIn, UserPlus, Skull, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -38,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
+import { BossIcon } from '@/components/icons/BossIcon';
 
 
 type LessonListing = Omit<Lesson, 'stages'>;
@@ -588,7 +589,7 @@ export default function Home() {
                                                   )}
                                                   aria-label={`Start boss challenge for ${title}`}
                                                 >
-                                                  <Skull className="h-12 w-12 text-red-500 animate-pulse" />
+                                                  <BossIcon className="h-12 w-12 text-red-500 animate-pulse" />
                                                 </button>
                                               )}
                                         </div>

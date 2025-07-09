@@ -1,5 +1,5 @@
 
-export type BossIconType = 'ShieldAlert' | 'Skull' | 'Sword';
+export type BossIconType = 'ShieldAlert' | 'BossIcon' | 'Sword';
 
 export interface Boss {
   id: string;
@@ -20,7 +20,7 @@ export const BOSS_LIBRARY: Boss[] = [
   {
     id: 'boss-2',
     name: 'Der Logik-Lord',
-    visual: 'Skull',
+    visual: 'BossIcon',
     quote: "Worte sind leicht, aber wahre Logik ist eine scharfe Klinge. Zeig mir deine Schärfe!",
     bonusPoints: 75,
   },
