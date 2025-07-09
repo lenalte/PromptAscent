@@ -91,7 +91,7 @@ export default function Home() {
   const isProcessing = useRef(false);
   const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
   const [nextLessonId, setNextLessonId] = useState<string | null>(null);
-  const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
+  
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const retryKeyCounter = useRef(0);
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
@@ -162,7 +162,6 @@ export default function Home() {
     isProcessing.current = false;
     setIsLessonFullyCompleted(false);
     setNextLessonId(null);
-    setSubmitFn(null);
     itemRefs.current = [];
   };
 
@@ -194,9 +193,6 @@ export default function Home() {
   };
 
   // === Logic for embedded lesson view ===
-  const registerSubmit = useCallback((fn: () => void) => setSubmitFn(() => fn), []);
-  const unregisterSubmit = useCallback(() => setSubmitFn(null), []);
-
   useEffect(() => {
     const activeItemRef = itemRefs.current[activeContentIndex];
     if (activeItemRef) {
@@ -280,10 +276,19 @@ export default function Home() {
     setStageItemAttempts(prev => {
         const currentAttemptsForThisItem = prev[itemId]?.attempts || 0;
         const wasCorrectBefore = prev[itemId]?.correct === true;
+        const isNowCorrect = wasCorrectBefore || isCorrect;
+        
         if (isCorrect && !wasCorrectBefore) {
              setPointsThisStageSession(p => p + pointsChange);
         }
-        return { ...prev, [itemId]: { attempts: currentAttemptsForThisItem + 1, correct: wasCorrectBefore || isCorrect } };
+        
+        return { 
+            ...prev, 
+            [itemId]: { 
+                attempts: currentAttemptsForThisItem + 1, 
+                correct: isNowCorrect,
+            } 
+        };
     });
   }, []);
   
@@ -394,21 +399,16 @@ export default function Home() {
 
     if (activeContent.renderType === 'LessonItem') {
         const item = activeContent;
-        const isQuestion = item.type !== 'informationalSnippet';
-        const isAnswered = !!stageItemAttempts[item.id];
-        const hasSubmitted = isAnswered && (stageItemAttempts[item.id].correct !== null);
-
-        // Submit Answer Button (moved from component to here)
-        if (isQuestion && !hasSubmitted) {
-             return { visible: true, onClick: submitFn || (() => {}), text: 'Antwort prüfen', icon: <Send className="h-5 w-5" />, disabled: isSubmitting || !submitFn };
-        }
+        const itemStatus = stageItemAttempts[item.id];
+        const hasSubmitted = (itemStatus?.attempts ?? 0) > 0;
         
-        // Next/Proceed Button
-        return { visible: true, onClick: handleProceed, text: 'Nächste', icon: <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
+        if (hasSubmitted || item.type === 'informationalSnippet') {
+          return { visible: true, onClick: handleProceed, text: 'Nächste', icon: <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
+        }
     }
 
-    return { visible: false };
-  }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, submitFn, handleProceed]);
+    return { visible: false }; // No button if question is not answered
+  }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, handleProceed]);
 
 
   const ICON_BAR_WIDTH_PX = 64;
@@ -449,19 +449,18 @@ export default function Home() {
                             contentQueue.map((content, index) => {
                                 if (index > activeContentIndex) return null;
                                 const isReadOnly = index < activeContentIndex;
-                                const isActive = index === activeContentIndex;
                                 const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
-                                const hasSubmitted = itemStatus && itemStatus.correct !== null;
+                                const hasSubmitted = (itemStatus?.attempts ?? 0) > 0;
                                 
                                 return (
                                     <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
                                         {content.renderType === 'LessonItem' && (() => {
                                             const { key, ...rest } = content;
                                             switch (content.type) {
-                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
-                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
+                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
+                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
                                                 case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
+                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
                                                 default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                             }
                                         })()}
@@ -614,7 +613,3 @@ export default function Home() {
     </>
   );
 }
-
-
-
-    
