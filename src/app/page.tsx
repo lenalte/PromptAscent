@@ -338,13 +338,16 @@ export default function Home() {
             const stageResult = await completeStageAndProceed(selectedLesson!.id, currentStage.id, currentStageIndex, stageItemAttempts, pointsThisStageSession, currentStage.items as LessonItem[]);
             if (!stageResult || !stageResult.updatedProgress) {
                 toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
+                isProcessing.current = false;
+                setIsSubmitting(false);
                 return;
             }
+            const pointsActuallyAdded = stageResult.pointsAdded;
             setNextLessonId(stageResult.nextLessonIdIfAny);
             const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson!.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
             const completionCard: StageCompleteInfo = {
                 renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
-                pointsEarnedInStage: pointsThisStageSession, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
+                pointsEarnedInStage: pointsActuallyAdded, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
                 onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus,
             };
             setContentQueue(prev => [...prev.slice(0, activeContentIndex + 1), completionCard]);

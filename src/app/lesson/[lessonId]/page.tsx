@@ -275,6 +275,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                     return; // Abort on failure
                 }
 
+                const pointsActuallyAdded = stageResult.pointsAdded;
                 setNextLessonId(stageResult.nextLessonIdIfAny);
                 
                 const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
@@ -284,7 +285,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                     key: `complete-${currentStage.id}`,
                     stageId: currentStage.id,
                     stageTitle: currentStage.title,
-                    pointsEarnedInStage: pointsThisStageSession,
+                    pointsEarnedInStage: pointsActuallyAdded,
                     stageItemAttempts: stageItemAttempts,
                     stageItems: currentStage.items as LessonItem[],
                     onNextStage: handleStartNextStage,

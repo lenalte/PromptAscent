@@ -38,7 +38,7 @@ interface UserProgressContextType {
     stageItemsWithStatus: { [itemId: string]: StageItemStatus },
     pointsEarnedThisStage: number,
     stageItems: LessonItem[]
-  ) => Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null }>;
+  ) => Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null; pointsAdded: number }>;
   signUpWithEmail: (email: string, password: string, username: string) => Promise<AuthResult>;
   signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
   logOut: () => Promise<void>;
@@ -130,15 +130,15 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     stageItemsWithStatus: { [itemId: string]: StageItemStatus },
     pointsEarnedThisStage: number,
     stageItems: LessonItem[]
-  ): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null }> => {
+  ): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null; pointsAdded: number }> => {
     if (!currentUser || !db) {
       console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - no current user or db unavailable.");
       if(!db) console.error("[UserProgressContext] Firestore (db) is not available.");
-      return { nextLessonIdIfAny: null, updatedProgress: null };
+      return { nextLessonIdIfAny: null, updatedProgress: null, pointsAdded: 0 };
     }
     if (!userProgress) {
         console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - userProgress not loaded for user", currentUser.uid);
-        return { nextLessonIdIfAny: null, updatedProgress: null };
+        return { nextLessonIdIfAny: null, updatedProgress: null, pointsAdded: 0 };
     }
 
     console.log(`[UserProgressContext] completeStageAndProceed called for lesson ${lessonId}, stage ${stageId} (index ${stageIndex}), user ${currentUser.uid}, pointsEarned: ${pointsEarnedThisStage}`);
@@ -159,7 +159,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       return result;
     } catch (error) {
       console.error(`[UserProgressContext] Error in completeStageAndProceed for lesson ${lessonId}, stage ${stageId}, UID ${currentUser.uid}:`, error);
-      return { nextLessonIdIfAny: null, updatedProgress: null };
+      return { nextLessonIdIfAny: null, updatedProgress: null, pointsAdded: 0 };
     } finally {
       setIsLoadingProgress(false);
     }
