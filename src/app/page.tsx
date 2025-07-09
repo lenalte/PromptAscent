@@ -63,7 +63,6 @@ type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo;
 
 export default function Home() {
   const { userProgress, currentUser, isLoadingAuth, isLoadingProgress, completeStageAndProceed } = useUserProgress();
-  const totalPoints = userProgress?.totalPoints ?? 0;
   
   const [isSidebarContentAreaOpen, setIsSidebarContentAreaOpen] = useState(true);
   const [lessonList, setLessonList] = useState<LessonListing[]>([]);
@@ -493,7 +492,7 @@ export default function Home() {
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <ProgressBar progress={overallLevelProgressPercentage} progressText={`${overallLevelProgressPercentage}% Complete - ${currentOverallLevel?.title || 'Current Level'}`} />
-          <LevelAndInformationBar className="mt-2" sidebarWidth={0} totalPoints={totalPoints} currentLevel={currentOverallLevel} />
+          <LevelAndInformationBar className="mt-2" sidebarWidth={0} currentLevel={currentOverallLevel} />
         </header>
 
         <main className="flex-1 flex flex-col">
