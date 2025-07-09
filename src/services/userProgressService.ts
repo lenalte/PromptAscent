@@ -185,7 +185,7 @@ export async function completeStageInFirestore(
   stageItemsWithStatus: { [itemId: string]: StageItemStatus },
   pointsEarnedThisStage: number,
   stageItems: LessonItem[]
-): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData }> {
+): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData; pointsAdded: number }> {
   if (!db) {
     console.error("[userProgressService.completeStageInFirestore] Firestore (db) is not available.");
     throw new Error("Firestore not initialized");
@@ -291,7 +291,7 @@ export async function completeStageInFirestore(
       throw new Error(`Failed to fetch updated user progress for ${userId} after stage completion.`);
     }
     console.log(`[UserProgress] Returning updated progress and next lesson ID (if any): ${nextLessonIdIfAny}`);
-    return { nextLessonIdIfAny, updatedProgress };
+    return { nextLessonIdIfAny, updatedProgress, pointsAdded: finalPointsToAdd };
   } catch (error) {
     console.error(`[UserProgress] Error completing stage ${completedStageId} for lesson ${lessonId}, UID ${userId}:`, error);
     throw error;
