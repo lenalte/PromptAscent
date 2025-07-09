@@ -22,6 +22,10 @@ export interface UserProgressData {
       };
     };
   };
+  activeBooster?: {
+    multiplier: number;
+    expiresAt: number; // timestamp in milliseconds
+  };
   knowledgeGaps?: { lessonId: string; itemId: string }[]; // For failed boss questions
 }
 
@@ -88,6 +92,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : [defaultLessonId],
         lessonStageProgress: lessonStageProgress,
+        activeBooster: data.activeBooster,
         knowledgeGaps: data.knowledgeGaps ?? [],
       };
     } else {
@@ -124,6 +129,7 @@ export async function createUserProgressDocument(userId: string, initialData?: P
         ? initialData.unlockedLessons
         : [defaultLessonId],
       username: initialData?.username,
+      activeBooster: initialData?.activeBooster,
       lessonStageProgress: initialData?.lessonStageProgress ?? initialLessonStageProgress,
       knowledgeGaps: initialData?.knowledgeGaps ?? [],
     };
@@ -133,6 +139,9 @@ export async function createUserProgressDocument(userId: string, initialData?: P
 
     if ('username' in firestoreData && firestoreData.username === undefined) {
       delete firestoreData.username;
+    }
+    if ('activeBooster' in firestoreData && firestoreData.activeBooster === undefined) {
+        delete firestoreData.activeBooster;
     }
 
     await setDoc(userDocRef, firestoreData);
@@ -220,6 +229,12 @@ export async function completeStageInFirestore(
       stageStatus = 'completed-good';
     }
 
+    let finalPointsToAdd = pointsEarnedThisStage;
+    if (currentUserProgress.activeBooster && Date.now() < currentUserProgress.activeBooster.expiresAt) {
+      finalPointsToAdd = Math.round(finalPointsToAdd * currentUserProgress.activeBooster.multiplier);
+      console.log(`[UserProgress] Active booster found (${currentUserProgress.activeBooster.multiplier}x). Adjusted points from ${pointsEarnedThisStage} to ${finalPointsToAdd}.`);
+    }
+
     const currentPoints = typeof currentUserProgress.totalPoints === 'number' && !isNaN(currentUserProgress.totalPoints) 
       ? currentUserProgress.totalPoints 
       : 0;
@@ -227,11 +242,11 @@ export async function completeStageInFirestore(
     const updates: { [key: string]: any } = {
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.status`]: stageStatus,
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.items`]: stageItemsWithStatus,
-      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.pointsEarned`]: pointsEarnedThisStage,
-      totalPoints: currentPoints + pointsEarnedThisStage,
+      [`lessonStageProgress.${lessonId}.stages.${completedStageId}.pointsEarned`]: pointsEarnedThisStage, // Store original points
+      totalPoints: currentPoints + finalPointsToAdd,
     };
     
-    console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${pointsEarnedThisStage}. New total (pending commit): ${currentPoints + pointsEarnedThisStage}`);
+    console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added: ${finalPointsToAdd}. New total (pending commit): ${currentPoints + finalPointsToAdd}`);
 
     let nextLessonIdIfAny: string | null = null;
 
@@ -382,11 +397,33 @@ export async function resolveBossChallenge(
   };
   
   if (finalStatus === 'passed') {
-    const currentPoints = typeof userProgress.totalPoints === 'number' && !isNaN(userProgress.totalPoints)
-      ? userProgress.totalPoints
-      : 0;
-    updates.totalPoints = currentPoints + boss.bonusPoints;
-    updates[`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.bonusPointsAwarded`] = boss.bonusPoints;
+    // 1. Calculate performance
+    let laterTryCorrect = 0;
+    const questionStatuses = Object.values(finalQuestionStatus);
+    for (const status of questionStatuses) {
+        if (status.correct && status.attempts > 1) {
+            laterTryCorrect++;
+        }
+    }
+
+    // 2. Determine booster
+    let boosterMultiplier: number | null = null;
+    if (laterTryCorrect === 0) {
+        boosterMultiplier = 3; // Perfect
+    } else if (laterTryCorrect === 1) {
+        boosterMultiplier = 2; // Good
+    } else {
+        boosterMultiplier = 1.5; // Okay
+    }
+
+    // 3. Set booster in updates
+    if (boosterMultiplier) {
+        updates.activeBooster = {
+            multiplier: boosterMultiplier,
+            expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+        };
+        console.log(`[UserProgress] Awarded ${boosterMultiplier}x booster to user ${userId}.`);
+    }
   } else {
     // Mark failed questions as knowledge gaps
     const gapsToAdd: { lessonId: string; itemId: string }[] = [];

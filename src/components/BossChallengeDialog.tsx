@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Send } from 'lucide-react';
+import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Zap } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
 import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
@@ -45,6 +45,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionStatus, setQuestionStatus] = useState<{ [itemId: string]: { correct: boolean | null; attempts: number } }>({});
   const [challengeResult, setChallengeResult] = useState<'passed' | 'failed' | null>(null);
+  const [awardedBooster, setAwardedBooster] = useState<number | null>(null);
 
   // State for form submission
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +54,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     if (!currentUser) return;
     setIsLoading(true);
     setError(null);
+    setAwardedBooster(null);
     try {
       const { boss, questions: fetchedQuestions, challenge } = await populateBossChallengeQuestions(currentUser.uid, lessonId, stageId);
       setBossInfo(boss);
@@ -125,6 +127,9 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
       if(currentUser){
           const finalProgress = await resolveBossChallenge(currentUser.uid, lessonId, stageId, result, questionStatus);
           setUserProgress(finalProgress); // Update global context
+          if (result === 'passed' && finalProgress.activeBooster && finalProgress.activeBooster.expiresAt > Date.now()) {
+            setAwardedBooster(finalProgress.activeBooster.multiplier);
+          }
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save challenge result.");
@@ -199,7 +204,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
               <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">"{bossInfo.quote}"</DialogDescription>
             </DialogHeader>
             <div className="text-center mt-4">
-              <p>Besiege <span className="font-bold">{bossInfo.name}</span>, um fortzufahren und einen Bonus zu erhalten!</p>
+              <p>Besiege <span className="font-bold">{bossInfo.name}</span>, um einen Booster zu erhalten und fortzufahren!</p>
             </div>
             <DialogFooter className="mt-6">
               <EightbitButton onClick={() => setView('challenge')}>Herausforderung annehmen</EightbitButton>
@@ -239,7 +244,16 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                   <DialogTitle className="text-2xl font-bold text-yellow-400">Herausforderung gemeistert!</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">Du hast {bossInfo.name} besiegt!</DialogDescription>
                 </DialogHeader>
-                <p className="mt-4 text-lg font-semibold">Bonus: +{bossInfo.bonusPoints} XP</p>
+                {awardedBooster ? (
+                  <div className="mt-4 text-center">
+                      <p className="text-lg font-semibold flex items-center justify-center gap-2">
+                         <Zap className="h-6 w-6 text-yellow-500" /> {awardedBooster}x Punkte-Booster aktiviert!
+                      </p>
+                      <p className="text-muted-foreground">Sammle in den nächsten 10 Minuten mehr Punkte!</p>
+                  </div>
+                ) : (
+                   <p className="mt-4 text-lg font-semibold">Du hast die Herausforderung abgeschlossen!</p>
+                )}
               </>
             ) : (
               <>
