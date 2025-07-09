@@ -108,7 +108,10 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
                   </CardDescription>
               </div>
               <div className="text-right">
-                  <p className="font-bold text-lg text-green-700 dark:text-green-300 flex items-center justify-end gap-2">
+                  <p className={cn(
+                    "font-bold text-lg flex items-center justify-end gap-2",
+                    isBoosterActive ? "text-yellow-500 dark:text-yellow-400" : "text-green-700 dark:text-green-300"
+                  )}>
                     {isBoosterActive && <Zap className="h-5 w-5 text-yellow-500" />}
                     +{pointsEarnedInStage} Punkte
                   </p>
