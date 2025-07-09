@@ -59,7 +59,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         console.error('Prompt evaluation error:', error);
         const errorResult: EvaluatePromptOutput = {
           score: 0,
-          explanation: 'Error evaluating prompt. Please try again.',
+          explanation: error instanceof Error ? error.message : 'Bei der Bewertung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
           isCorrect: false,
         };
         setEvaluationResult(errorResult);
