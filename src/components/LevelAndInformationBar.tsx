@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import type { Level } from '@/data/level-structure';
 import { useUserProgress } from '@/context/UserProgressContext';
+import { Zap } from 'lucide-react';
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     currentLevel: Level | null;
@@ -11,6 +12,32 @@ interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElemen
 const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ currentLevel, className }) => {
     const { userProgress } = useUserProgress();
     const totalPoints = userProgress?.totalPoints ?? 0;
+    const activeBooster = userProgress?.activeBooster;
+    const [timeLeft, setTimeLeft] = useState('');
+
+    useEffect(() => {
+        if (!activeBooster || activeBooster.expiresAt < Date.now()) {
+            setTimeLeft('');
+            return;
+        }
+
+        const intervalId = setInterval(() => {
+            const now = Date.now();
+            const remaining = activeBooster.expiresAt - now;
+
+            if (remaining <= 0) {
+                setTimeLeft('');
+                clearInterval(intervalId);
+                // Optional: Force a re-fetch of user progress to clear the booster from the backend view
+            } else {
+                const minutes = Math.floor(remaining / 1000 / 60);
+                const seconds = Math.floor((remaining / 1000) % 60);
+                setTimeLeft(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+            }
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, [activeBooster]);
 
     return (
         <>
@@ -21,11 +48,15 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
                     <span className="text-primary-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
                 </div>
 
-                <div className="flex space-x-8">
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center">
-                            <span className="text-primary-foreground">{totalPoints} Punkte</span>
+                <div className="flex items-center space-x-4 md:space-x-8">
+                    {activeBooster && timeLeft && (
+                        <div className="flex items-center gap-2 text-yellow-400 font-bold">
+                            <Zap className="h-5 w-5" />
+                            <span className="hidden sm:inline">{activeBooster.multiplier}x Boost</span>
+                            <span className="text-sm">({timeLeft})</span>
                         </div>
+                    )}
+                    <div className="flex items-center gap-2">
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary-foreground" viewBox="0 0 790.000000 790.000000"
                             preserveAspectRatio="xMidYMid meet">
                             <g transform="translate(0.000000,790.000000) scale(0.100000,-0.100000)"
@@ -39,8 +70,9 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
 -315 0 0 -390z"/>
                             </g>
                         </svg>
+                        <span className="text-primary-foreground">{totalPoints} Punkte</span>
                     </div>
-                    <div className="flex items-center">
+                    <div className="hidden sm:flex items-center">
                         <span className="text-primary-foreground">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary-foreground" viewBox="0 0 790.000000 790.000000"
                                 preserveAspectRatio="xMidYMid meet">
