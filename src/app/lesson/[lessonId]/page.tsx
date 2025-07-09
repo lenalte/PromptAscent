@@ -146,7 +146,6 @@ export default function LessonPage() {
                     const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
                     const currentStageProgress = lessonProg.stages[currentStageData.id];
                     
-                    // Handle case where a stage was failed. Show the completion screen first.
                     if (currentStageProgress?.status === 'failed-stage') {
                         const completionCard: StageCompleteInfo = {
                             renderType: 'StageCompleteScreen',
@@ -166,6 +165,7 @@ export default function LessonPage() {
                         newQueue.push(completionCard);
                         setContentQueue(newQueue);
                         setActiveContentIndex(newQueue.length -1);
+                        setIsLoadingLesson(false); // Manually set loading to false here
                         return; // Stop processing further for this load
                     }
 
@@ -335,10 +335,9 @@ export default function LessonPage() {
                     const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
                     
                     if (firstItemOfStageIndex !== -1) {
-                        setContentQueue(prev => {
-                            const newQueue = prev.slice(0, firstItemOfStageIndex);
-                            newQueue.push(completionCard);
-                            return newQueue;
+                         setContentQueue(prev => {
+                            const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
+                            return [...queueBeforeCurrentStage, completionCard];
                         });
                         setActiveContentIndex(firstItemOfStageIndex);
                     } else {
@@ -500,6 +499,10 @@ export default function LessonPage() {
             </div>
         );
     }
+
+    // Determine if we should only show the failed screen.
+    const activeContentItem = contentQueue[activeContentIndex];
+    const showOnlyFailedScreen = activeContentItem?.renderType === 'StageCompleteScreen' && activeContentItem.stageStatus === 'failed-stage';
     
     return (
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
@@ -531,7 +534,11 @@ export default function LessonPage() {
                             <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
                         ) : (
                             contentQueue.map((content, index) => {
-                                // Hide any content that is beyond the active item.
+                                // If we are only showing the failed screen, hide everything that comes before it.
+                                if (showOnlyFailedScreen && index < activeContentIndex) {
+                                  return null;
+                                }
+                                // And hide everything that comes after it.
                                 if (index > activeContentIndex) {
                                     return null;
                                 }

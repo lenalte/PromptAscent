@@ -394,9 +394,8 @@ export default function Home() {
                 
                 if (firstItemOfStageIndex !== -1) {
                     setContentQueue(prev => {
-                        const newQueue = prev.slice(0, firstItemOfStageIndex);
-                        newQueue.push(completionCard);
-                        return newQueue;
+                        const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
+                        return [...queueBeforeCurrentStage, completionCard];
                     });
                     setActiveContentIndex(firstItemOfStageIndex);
                 } else {
@@ -506,6 +505,11 @@ export default function Home() {
     if (!lessonData || !currentStage || contentQueue.length === 0) {
         return <div className="flex flex-col items-center justify-center h-full"><Loader2 className="h-16 w-16 animate-spin text-primary" /><p className="mt-4 text-muted-foreground">Preparing Lesson...</p></div>;
     }
+    
+    // Determine if only the "failed" screen should be shown
+    const activeContentItem = contentQueue[activeContentIndex];
+    const showOnlyFailedScreen = activeContentItem?.renderType === 'StageCompleteScreen' && activeContentItem.stageStatus === 'failed-stage';
+
     return (
         <div className="w-full p-8">
             <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4">
@@ -520,7 +524,13 @@ export default function Home() {
                             <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} onGoHome={handleExitLesson} onGoToNextLesson={() => handleStartLesson(nextLessonId!)} />
                         ) : (
                             contentQueue.map((content, index) => {
+                                // If we are only showing the failed screen, hide everything that comes before it.
+                                if (showOnlyFailedScreen && index < activeContentIndex) {
+                                  return null;
+                                }
+                                // And hide everything that comes after it.
                                 if (index > activeContentIndex) return null;
+
                                 const isReadOnly = index < activeContentIndex;
                                 const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
                                 const hasSubmittedCorrectly = itemStatus?.correct === true;
