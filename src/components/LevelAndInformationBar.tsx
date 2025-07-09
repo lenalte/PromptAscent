@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import type { Level } from '@/data/level-structure';
 import { useUserProgress } from '@/context/UserProgressContext';
-import { Zap } from 'lucide-react';
+import { BossIcon } from '@/components/icons/BossIcon';
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     currentLevel: Level | null;
@@ -51,7 +51,7 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
                 <div className="flex items-center space-x-4 md:space-x-8">
                     {activeBooster && timeLeft && (
                         <div className="flex items-center gap-2 text-yellow-400 font-bold">
-                            <Zap className="h-5 w-5" />
+                            <BossIcon className="h-5 w-5" />
                             <span className="hidden sm:inline">{activeBooster.multiplier}x Boost</span>
                             <span className="text-sm">({timeLeft})</span>
                         </div>
