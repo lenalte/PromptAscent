@@ -127,37 +127,49 @@ const generateLessonItemsFlow = ai.defineFlow(
     outputSchema: LessonSchema,
   },
   async (input) => {
-    console.log(`Generating lesson items with 6 stages for: ${input.lessonTitle}`);
-    const { output } = await lessonGenerationPrompt(input);
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 2000; // Lesson generation can be slow, so a longer delay is fine.
 
-    if (!output) {
-      console.error('AI did not return an output for lesson generation with stages.');
-      throw new Error('Failed to generate lesson items with stages: No output from AI.');
-    }
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        console.log(`[generateLessonItemsFlow] Attempt ${attempt}/${MAX_RETRIES} for lesson: ${input.lessonTitle}`);
+        const { output } = await lessonGenerationPrompt(input);
 
-    // Additional validation for 6 stages and unique item IDs across stages
-    if (output.stages.length !== 6) {
-        console.error(`AI did not return exactly 6 stages. Got: ${output.stages.length}`);
-        throw new Error(`AI generation error: Expected 6 stages, but received ${output.stages.length}.`);
-    }
-
-    const allItemIds = new Set<string>();
-    output.stages.forEach(stage => {
-        if(!stage.items) {
-            console.warn(`Stage ${stage.id} has no items array.`);
-            stage.items = []; // Ensure items array exists
+        if (!output) {
+          throw new Error('AI did not return an output for lesson generation.');
         }
-        stage.items.forEach(item => {
+
+        // Additional validation for 6 stages and unique item IDs across stages
+        if (output.stages.length !== 6) {
+          console.error(`[generateLessonItemsFlow] AI did not return exactly 6 stages. Got: ${output.stages.length}`);
+          throw new Error(`AI generation error: Expected 6 stages, but received ${output.stages.length}.`);
+        }
+
+        const allItemIds = new Set<string>();
+        output.stages.forEach(stage => {
+          if (!stage.items) {
+            console.warn(`[generateLessonItemsFlow] Stage ${stage.id} has no items array.`);
+            stage.items = []; // Ensure items array exists
+          }
+          stage.items.forEach(item => {
             if (allItemIds.has(item.id)) {
-                console.warn(`Duplicate item ID found: ${item.id} in stage ${stage.id}. This might cause issues.`);
-                // Potentially re-assign ID or throw error. For now, log warning.
-                // item.id = `${item.id}_dup_${Math.random().toString(36).substring(7)}`; // Simple fix, but ideally AI gets it right
+              // This is a critical data integrity issue, better to fail and retry.
+              throw new Error(`Duplicate item ID found: ${item.id} in stage ${stage.id}. Retrying for a valid structure.`);
             }
             allItemIds.add(item.id);
+          });
         });
-    });
-    
-    console.log(`Successfully generated lesson ${input.lessonId} with ${output.stages.length} stages and a total of ${allItemIds.size} items.`);
-    return output;
+
+        console.log(`[generateLessonItemsFlow] Successfully generated lesson ${input.lessonId} with ${output.stages.length} stages and ${allItemIds.size} items on attempt ${attempt}.`);
+        return output;
+      } catch (error) {
+        console.error(`[generateLessonItemsFlow] Attempt ${attempt} failed:`, error);
+        if (attempt === MAX_RETRIES) {
+          throw new Error(`Failed to generate lesson items after ${MAX_RETRIES} attempts: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, attempt - 1)));
+      }
+    }
+    throw new Error('Flow failed to produce an output after all retries.');
   }
 );

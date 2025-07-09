@@ -58,15 +58,31 @@ const validateUserAnswerPrompt = ai.definePrompt({
   `,
 });
 
-const validateUserAnswerFlow = ai.defineFlow<
-  typeof ValidateUserAnswerInputSchema,
-  typeof ValidateUserAnswerOutputSchema
->({
-  name: 'validateUserAnswerFlow',
-  inputSchema: ValidateUserAnswerInputSchema,
-  outputSchema: ValidateUserAnswerOutputSchema,
-},
-async input => {
-  const {output} = await validateUserAnswerPrompt(input);
-  return output!;
-});
+const validateUserAnswerFlow = ai.defineFlow(
+  {
+    name: 'validateUserAnswerFlow',
+    inputSchema: ValidateUserAnswerInputSchema,
+    outputSchema: ValidateUserAnswerOutputSchema,
+  },
+  async (input) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 1000;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const { output } = await validateUserAnswerPrompt(input);
+        if (!output) {
+          throw new Error('The AI did not return an output. Please try again.');
+        }
+        return output;
+      } catch (error) {
+        console.error(`[validateUserAnswerFlow] Attempt ${attempt} failed:`, error);
+        if (attempt === MAX_RETRIES) {
+          throw new Error(`Failed to validate answer after ${MAX_RETRIES} attempts: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, attempt - 1)));
+      }
+    }
+    throw new Error('Flow failed to produce an output after all retries.');
+  }
+);

@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A prompt evaluation AI agent.
@@ -62,22 +61,34 @@ Output in JSON format:
 `,
 });
 
-const evaluatePromptFlow = ai.defineFlow<
-  typeof EvaluatePromptInputSchema,
-  typeof EvaluatePromptOutputSchema
->(
+const evaluatePromptFlow = ai.defineFlow(
   {
     name: 'evaluatePromptFlow',
     inputSchema: EvaluatePromptInputSchema,
     outputSchema: EvaluatePromptOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-        throw new Error("The AI did not return an output. Please try again.");
+  async (input) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 1000;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const { output } = await prompt(input);
+        if (!output) {
+          throw new Error('The AI did not return an output. Please try again.');
+        }
+        // Ensure the score is within the 0-100 range, clamp if necessary.
+        const score = Math.max(0, Math.min(100, output.score));
+        return { ...output, score };
+      } catch (error) {
+        console.error(`[evaluatePromptFlow] Attempt ${attempt} failed:`, error);
+        if (attempt === MAX_RETRIES) {
+          throw new Error(`Failed to evaluate prompt after ${MAX_RETRIES} attempts: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+        // Wait before retrying with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * Math.pow(2, attempt - 1)));
+      }
     }
-    // Ensure the score is within the 0-100 range, clamp if necessary.
-    const score = Math.max(0, Math.min(100, output.score));
-    return { ...output, score };
+    throw new Error('Flow failed to produce an output after all retries.');
   }
 );
