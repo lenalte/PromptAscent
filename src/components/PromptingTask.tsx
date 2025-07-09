@@ -3,50 +3,36 @@
 
 import type React from 'react';
 import { useState, useTransition, useEffect, useCallback } from 'react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { evaluatePrompt, type EvaluatePromptOutput } from '@/ai/flows/evaluate-prompt';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, XCircle, Loader2, FilePenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Label } from './ui/label';
+import { EightbitButton } from './ui/eightbit-button';
 
 interface PromptingTaskProps {
   taskDescription: string;
   evaluationGuidance: string;
-  pointsForCorrect: number;
+  pointsAwarded: number;
   onAnswerSubmit: (isCorrect: boolean, pointsChange: number, itemId: string) => void;
   title: string;
   id: number | string;
   isReadOnly?: boolean;
-  isActive?: boolean;
-  registerSubmit?: (fn: () => void) => void;
-  unregisterSubmit?: () => void;
-  onValidityChange?: (isValid: boolean) => void;
 }
-
-const formSchema = z.object({
-  userPrompt: z.string().min(10, { message: 'Prompt must be at least 10 characters.' }),
-});
 
 type EvaluationResultWithAttempt = EvaluatePromptOutput & { attemptMade: boolean };
 
 export const PromptingTask: React.FC<PromptingTaskProps> = ({
   taskDescription,
   evaluationGuidance,
-  pointsForCorrect,
+  pointsAwarded,
   onAnswerSubmit,
   title,
   id,
   isReadOnly = false,
-  isActive = false,
-  registerSubmit,
-  unregisterSubmit,
-  onValidityChange,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResultWithAttempt>({
@@ -55,28 +41,23 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     isCorrect: false,
     attemptMade: false,
   });
+  const [userPrompt, setUserPrompt] = useState('');
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      userPrompt: '',
-    },
-  });
+  const hasAttempted = evaluationResult.attemptMade;
+  const isInputValid = userPrompt.trim().length >= 10;
 
-  const { handleSubmit, formState: { isValid } } = form;
-
-  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
-    if (isReadOnly || evaluationResult.attemptMade) return;
+  const handleSubmit = useCallback(() => {
+    if (isReadOnly || hasAttempted || !isInputValid) return;
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
     startTransition(async () => {
       try {
         const result = await evaluatePrompt({
-          prompt: values.userPrompt,
+          prompt: userPrompt,
           context: taskDescription,
           evaluationGuidance: evaluationGuidance,
         });
         setEvaluationResult({ ...result, attemptMade: true });
-        onAnswerSubmit(result.isCorrect, pointsForCorrect, id.toString());
+        onAnswerSubmit(result.isCorrect, pointsAwarded, id.toString());
       } catch (error) {
         console.error('Prompt evaluation error:', error);
         setEvaluationResult({
@@ -88,29 +69,13 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         onAnswerSubmit(false, 0, id.toString());
       }
     });
-  }, [isReadOnly, evaluationResult.attemptMade, taskDescription, evaluationGuidance, onAnswerSubmit, pointsForCorrect, id]);
+  }, [isReadOnly, hasAttempted, isInputValid, userPrompt, taskDescription, evaluationGuidance, onAnswerSubmit, pointsAwarded, id]);
 
   useEffect(() => {
     // Reset state when the question ID changes
-    form.reset({ userPrompt: '' });
+    setUserPrompt('');
     setEvaluationResult({ score: 0, explanation: '', isCorrect: false, attemptMade: false });
-  }, [id, form]);
-
-  useEffect(() => {
-    if (isActive && !isReadOnly && registerSubmit && unregisterSubmit) {
-      registerSubmit(handleSubmit(onSubmit));
-      return () => {
-        unregisterSubmit();
-      };
-    }
-  }, [isActive, isReadOnly, registerSubmit, unregisterSubmit, handleSubmit, onSubmit]);
-
-  useEffect(() => {
-    if (isActive && !isReadOnly && onValidityChange) {
-      onValidityChange(isValid);
-    }
-  }, [isValid, isActive, isReadOnly, onValidityChange]);
-
+  }, [id]);
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isReadOnly && "bg-muted/50")}>
@@ -121,31 +86,23 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="userPrompt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-purple-800 dark:text-purple-300">Your Prompt</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Write your prompt here to solve the task..."
-                      className="resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400"
-                      rows={6}
-                      {...field}
-                      aria-describedby={evaluationResult.attemptMade ? "feedback-alert" : undefined}
-                      disabled={isReadOnly || isPending || evaluationResult.attemptMade}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-purple-600 dark:text-purple-500">
-                    Craft a prompt based on the task description above.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor={`pt-${id}`} className="text-purple-800 dark:text-purple-300">Your Prompt</Label>
+              <Textarea
+                id={`pt-${id}`}
+                placeholder="Write your prompt here to solve the task..."
+                className="resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400"
+                rows={6}
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
+                aria-describedby={evaluationResult.attemptMade ? "feedback-alert" : undefined}
+                disabled={isReadOnly || isPending || evaluationResult.attemptMade}
+              />
+              <p className="text-sm text-purple-600 dark:text-purple-500">
+                Craft a prompt based on the task description above. Minimum 10 characters.
+              </p>
+            </div>
 
             {isPending && (
                 <div className="flex items-center space-x-2 text-muted-foreground">
@@ -190,12 +147,18 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               <h4 className="font-semibold mb-1 text-purple-800 dark:text-purple-300">Evaluation Guidance:</h4>
               <p className="whitespace-pre-line">{evaluationGuidance}</p>
             </div>
-          </form>
-        </Form>
+        </div>
       </CardContent>
-      <CardFooter className="flex justify-between text-xs text-purple-600 dark:text-purple-500 pt-4">
-        <p>Effective: +{pointsForCorrect} points</p>
-        <p>Needs Improvement: 0 points (max 3 attempts)</p>
+      <CardFooter className="flex flex-col items-start space-y-4 pt-4">
+        {!hasAttempted && !isReadOnly && (
+          <EightbitButton onClick={handleSubmit} disabled={!isInputValid || isPending}>
+            {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
+          </EightbitButton>
+        )}
+        <div className="flex justify-between w-full text-xs text-purple-600 dark:text-purple-500">
+            <p>Effective: +{pointsAwarded} points</p>
+            <p>Needs Improvement: 0 points (max 3 attempts)</p>
+        </div>
       </CardFooter>
     </Card>
   );

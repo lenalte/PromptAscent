@@ -17,7 +17,7 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
-import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy, Send } from 'lucide-react';
+import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -64,21 +64,11 @@ export default function LessonPage() {
     const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
     const [nextLessonId, setNextLessonId] = useState<string | null>(null);
     
-    const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
-
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[lessonId]?.currentStageIndex ?? 0, [userProgress, lessonId]);
     const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
 
-    const registerSubmit = useCallback((fn: () => void) => {
-        setSubmitFn(() => fn);
-    }, []);
-
-    const unregisterSubmit = useCallback(() => {
-        setSubmitFn(null);
-    }, []);
-    
     useEffect(() => {
         const activeItemRef = itemRefs.current[activeContentIndex];
         if (activeItemRef) {
@@ -400,29 +390,18 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
 
         if (activeContent.renderType === 'LessonItem') {
             const item = activeContent;
-            const isQuestion = item.type !== 'informationalSnippet';
-            const isAnswered = !!stageItemAttempts[item.id];
-            const hasSubmitted = isAnswered && (stageItemAttempts[item.id].correct !== null);
+            const itemStatus = stageItemAttempts[item.id];
+            const hasSubmitted = (itemStatus?.attempts ?? 0) > 0;
 
-            // Button to submit answer (only for question types)
-            if (isQuestion && !hasSubmitted) {
-                return {
-                    visible: true,
-                    onClick: submitFn || (() => {}),
-                    text: 'Antwort prüfen',
-                    icon: <Send className="h-5 w-5" />,
-                    disabled: isSubmitting || !submitFn,
-                };
+            if (hasSubmitted || item.type === 'informationalSnippet') {
+              return {
+                  visible: true,
+                  onClick: handleProceed,
+                  text: 'Nächste',
+                  icon: <ArrowRight className="h-5 w-5" />,
+                  disabled: isSubmitting,
+              };
             }
-            
-            // Button to proceed to the next item
-            return {
-                visible: true,
-                onClick: handleProceed,
-                text: 'Nächste',
-                icon: <ArrowRight className="h-5 w-5" />,
-                disabled: isSubmitting,
-            };
         }
 
         return { visible: false };
@@ -485,7 +464,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                     </Link>
                     <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
                 </div>
-                <PointsDisplay />
+                <PointsDisplay points={userProgress?.totalPoints ?? 0} />
             </div>
 
             <Separator className="my-6 w-full max-w-3xl" />
@@ -510,7 +489,6 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                 }
 
                                 const isReadOnly = index < activeContentIndex;
-                                const isActive = index === activeContentIndex;
                                 
                                 return (
                                     <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
@@ -518,16 +496,16 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                              if (content.renderType === 'LessonItem') {
                                                 const item = content;
                                                 const itemStatus = stageItemAttempts[item.id];
-                                                const hasSubmitted = itemStatus && itemStatus.correct !== null;
+                                                const hasSubmitted = (itemStatus?.attempts ?? 0) > 0;
 
                                                 switch (item.type) {
                                                     case 'freeResponse': {
                                                         const { key, ...rest } = item;
-                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
+                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
                                                     }
                                                     case 'multipleChoice': {
                                                         const { key, ...rest } = item;
-                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
+                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
                                                     }
                                                     case 'informationalSnippet': {
                                                         const { key, ...rest } = item;
@@ -535,7 +513,7 @@ setActiveContentIndex(newQueue.length - currentStageData.items.length + activeIt
                                                     }
                                                     case 'promptingTask': {
                                                         const { key, ...rest } = item;
-                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} registerSubmit={isActive ? registerSubmit : undefined} />;
+                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmitted} onAnswerSubmit={handleAnswerSubmit} />;
                                                     }
                                                     default: {
                                                         const _exhaustiveCheck: never = item;
