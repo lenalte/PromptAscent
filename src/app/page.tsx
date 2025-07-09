@@ -589,7 +589,7 @@ export default function Home() {
                                                   )}
                                                   aria-label={`Start boss challenge for ${title}`}
                                                 >
-                                                  <BossIcon className="h-12 w-12 text-red-500 animate-pulse" />
+                                                  <BossIcon className="h-12 w-12 text-accent animate-pulse" />
                                                 </button>
                                               )}
                                         </div>
