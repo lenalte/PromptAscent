@@ -51,7 +51,7 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
                 <div className="flex items-center space-x-4 md:space-x-8">
                     {activeBooster && timeLeft && (
                         <div className="flex items-center gap-2 text-accent font-bold">
-                            <BossIcon className="h-5 w-5" />
+                            <BossIcon className="h-7 w-7" />
                             <span className="hidden sm:inline">{activeBooster.multiplier}x Boost</span>
                             <span className="text-sm">({timeLeft})</span>
                         </div>
