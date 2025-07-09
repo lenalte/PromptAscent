@@ -72,13 +72,28 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
     const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
-      const data = userDocSnap.data() as Partial<Omit<UserProgressData, 'userId'>>;
+      const data = userDocSnap.data(); // DocumentData
       const defaultLessonId = "lesson1";
+
+      // Process booster specifically to handle Firestore Timestamps
+      let activeBooster: UserProgressData['activeBooster'] | undefined = undefined;
+      if (data.activeBooster) {
+        const rawBooster = data.activeBooster;
+        const rawExpiresAt = rawBooster.expiresAt;
+        // Check if it's a Firestore Timestamp object and convert it, otherwise assume it's a number
+        const expiresAtMillis = typeof rawExpiresAt?.toMillis === 'function' ? rawExpiresAt.toMillis() : rawExpiresAt;
+        
+        if (typeof expiresAtMillis === 'number') {
+            activeBooster = {
+                multiplier: rawBooster.multiplier,
+                expiresAt: expiresAtMillis,
+            };
+        }
+      }
 
       let lessonStageProgress = data.lessonStageProgress || {};
       const currentLesson = data.currentLessonId || defaultLessonId;
       
-      // If an existing user doesn't have progress for their current lesson, initialize it in memory.
       if (!lessonStageProgress[currentLesson]) {
         console.warn(`[UserProgress] Progress for lesson ${currentLesson} not found for user ${userId}. Creating in-memory placeholder.`);
         lessonStageProgress[currentLesson] = createDefaultLessonProgress(currentLesson === defaultLessonId);
@@ -92,7 +107,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : [defaultLessonId],
         lessonStageProgress: lessonStageProgress,
-        activeBooster: data.activeBooster,
+        activeBooster: activeBooster,
         knowledgeGaps: data.knowledgeGaps ?? [],
       };
     } else {
@@ -463,5 +478,3 @@ export async function resolveBossChallenge(
 
   return finalProgress;
 }
-
-    
