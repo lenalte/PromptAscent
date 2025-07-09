@@ -262,7 +262,7 @@ export async function completeStageInFirestore(
 
     let finalPointsToAdd = serverCalculatedBasePointsDelta;
     if (userProgressBefore.activeBooster && Date.now() < userProgressBefore.activeBooster.expiresAt) {
-      finalPointsToAdd = Math.round(finalPointsToAdd * userProgressBefore.activeBooster.multiplier);
+      finalPointsToAdd = Math.round(serverCalculatedBasePointsDelta * userProgressBefore.activeBooster.multiplier);
       console.log(`[UserProgress] Active booster found (${userProgressBefore.activeBooster.multiplier}x). Adjusted points from ${serverCalculatedBasePointsDelta} to ${finalPointsToAdd}.`);
     }
 
