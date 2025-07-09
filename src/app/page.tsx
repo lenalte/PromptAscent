@@ -4,7 +4,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue, getGeneratedLessonById, type LessonStage, type StageItemStatus, type LessonItem } from '@/data/lessons';
-import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send, RefreshCw } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -57,6 +57,7 @@ type StageCompleteInfo = {
     onGoHome: () => void;
     isLastStage: boolean;
     stageStatus: StageStatusValue;
+    onRestart: () => void;
 };
 type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: string; };
 
@@ -64,7 +65,7 @@ type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo;
 
 
 export default function Home() {
-  const { userProgress, currentUser, isLoadingAuth, isLoadingProgress, completeStageAndProceed } = useUserProgress();
+  const { userProgress, currentUser, isLoadingAuth, isLoadingProgress, completeStageAndProceed, restartStage } = useUserProgress();
   
   const [isSidebarContentAreaOpen, setIsSidebarContentAreaOpen] = useState(true);
   const [lessonList, setLessonList] = useState<LessonListing[]>([]);
@@ -201,6 +202,14 @@ export default function Home() {
     }
   }, [activeContentIndex]);
 
+  const handleRestartStage = useCallback(async () => {
+      if (!currentStage || !selectedLesson) return;
+      await restartStage(selectedLesson.id, currentStage.id);
+      // The reload is handled by the main useEffect watching userProgress,
+      // which will re-run loadLessonAndProgress.
+  }, [selectedLesson, currentStage, restartStage]);
+
+
   useEffect(() => {
     async function loadLessonAndProgress() {
         if (!isLessonViewActive || !selectedLesson || !currentUser) return;
@@ -247,11 +256,35 @@ export default function Home() {
                         renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title, pointsEarnedInStage: stagePoints,
                         basePointsAdded: stagePoints,
                         stageItemAttempts: pastStageProg?.items || {}, stageItems: stage.items as LessonItem[], onNextStage: () => {}, onGoHome: handleExitLesson,
-                        isLastStage: i === 5, stageStatus: pastStageProg?.status || 'completed-good',
+                        isLastStage: i === 5, stageStatus: pastStageProg?.status || 'completed-good', onRestart: () => {},
                     });
                 }
                 const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
                 const currentStageProgress = lessonProg.stages[currentStageData.id];
+
+                if (currentStageProgress?.status === 'failed-stage') {
+                    const completionCard: StageCompleteInfo = {
+                        renderType: 'StageCompleteScreen',
+                        key: `complete-${currentStageData.id}`,
+                        stageId: currentStageData.id,
+                        stageTitle: currentStageData.title,
+                        pointsEarnedInStage: 0,
+                        basePointsAdded: 0,
+                        stageItemAttempts: currentStageProgress.items,
+                        stageItems: currentStageData.items as LessonItem[],
+                        onNextStage: () => {}, // Should not be called
+                        onGoHome: handleExitLesson,
+                        isLastStage: lessonProg.currentStageIndex === 5,
+                        stageStatus: 'failed-stage',
+                        onRestart: handleRestartStage,
+                    };
+                    newQueue.push(completionCard);
+                    setContentQueue(newQueue);
+                    setActiveContentIndex(newQueue.length -1);
+                    setIsLoadingLesson(false);
+                    return; // Stop processing further for this load
+                }
+
                 let activeItemIndex = 0;
                 if(currentStageProgress?.items){
                     const firstIncompleteItemIndex = currentStageData.items.findIndex(item => !currentStageProgress.items[item.id]?.correct);
@@ -351,7 +384,7 @@ export default function Home() {
             const completionCard: StageCompleteInfo = {
                 renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
                 pointsEarnedInStage: pointsActuallyAdded, basePointsAdded: basePoints, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
-                onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus,
+                onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
             };
             setContentQueue(prev => [...prev.slice(0, activeContentIndex + 1), completionCard]);
             setActiveContentIndex(prev => prev + 1);
@@ -365,7 +398,7 @@ export default function Home() {
         isProcessing.current = false;
         setIsSubmitting(false);
     }
-  }, [activeContent, activeContentIndex, completeStageAndProceed, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson]);
+  }, [activeContent, activeContentIndex, completeStageAndProceed, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
 
   const stageProgressUi = useMemo(() => {
     if (!lessonData || !userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']) return null;
@@ -389,21 +422,43 @@ export default function Home() {
     if (!activeContent) return { visible: false };
 
     if (activeContent.renderType === 'StageCompleteScreen') {
-        return { visible: true, onClick: handleStartNextStage, text: activeContent.isLastStage ? 'Beenden' : 'Nächste Stufe', icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
+        if (activeContent.stageStatus === 'failed-stage') {
+            return {
+                visible: true,
+                onClick: handleRestartStage,
+                text: 'Stufe wiederholen',
+                icon: <RefreshCw className="h-5 w-5" />,
+                disabled: isSubmitting,
+            };
+        }
+        return { 
+            visible: true, 
+            onClick: handleStartNextStage, 
+            text: activeContent.isLastStage ? 'Beenden' : 'Nächste Stufe', 
+            icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />, 
+            disabled: isSubmitting 
+        };
     }
 
     if (activeContent.renderType === 'LessonItem') {
         const item = activeContent;
         const itemStatus = stageItemAttempts[item.id];
         const isAnsweredCorrectly = itemStatus?.correct === true;
+        const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
         
-        if (isAnsweredCorrectly || item.type === 'informationalSnippet') {
-          return { visible: true, onClick: handleProceed, text: 'Nächste', icon: <ArrowRight className="h-5 w-5" />, disabled: isSubmitting };
+        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || maxAttemptsReached) {
+          return { 
+              visible: true, 
+              onClick: handleProceed, 
+              text: 'Nächste', 
+              icon: <ArrowRight className="h-5 w-5" />, 
+              disabled: isSubmitting 
+            };
         }
     }
 
-    return { visible: false }; // No button if question is not answered
-  }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, handleProceed]);
+    return { visible: false }; // No button if question is not answered or max attempts not reached
+  }, [activeContent, handleStartNextStage, isSubmitting, stageItemAttempts, handleProceed, handleRestartStage]);
 
 
   const ICON_BAR_WIDTH_PX = 64;
@@ -608,5 +663,7 @@ export default function Home() {
     </>
   );
 }
+
+    
 
     
