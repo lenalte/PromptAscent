@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react';
@@ -29,26 +28,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   stageStatus,
   onRestart,
 }) => {
-
-  const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet').length;
-  let firstTrySuccesses = 0;
-
-  stageItems.forEach(item => {
-    const attemptData = stageItemAttempts[item.id];
-    if (attemptData && item.type !== 'informationalSnippet') {
-      if (attemptData.correct && attemptData.attempts === 1) {
-        firstTrySuccesses++;
-      }
-    }
-  });
-
-  const allPerfect = stageStatus === 'completed-perfect';
-  const stageFailed = stageStatus === 'failed-stage';
-
-  const boosterMultiplier = basePointsAdded > 0 ? pointsEarnedInStage / basePointsAdded : 1;
-  const isBoosterActive = boosterMultiplier > 1;
-
-  if (stageFailed) {
+  if (stageStatus === 'failed-stage') {
     return (
       <Card className={cn(
         "w-full max-w-3xl mx-auto shadow-md rounded-lg my-4",
@@ -68,6 +48,28 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
       </Card>
     );
   }
+
+  if (stageStatus !== 'completed-perfect' && stageStatus !== 'completed-good') {
+    // Don't render anything if the stage isn't actually completed in a "success" state.
+    // This prevents showing a success screen for 'in-progress', 'locked' etc.
+    return null;
+  }
+
+  const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet').length;
+  let firstTrySuccesses = 0;
+
+  stageItems.forEach(item => {
+    const attemptData = stageItemAttempts[item.id];
+    if (attemptData && item.type !== 'informationalSnippet') {
+      if (attemptData.correct && attemptData.attempts === 1) {
+        firstTrySuccesses++;
+      }
+    }
+  });
+
+  const allPerfect = stageStatus === 'completed-perfect';
+  const boosterMultiplier = basePointsAdded > 0 ? pointsEarnedInStage / basePointsAdded : 1;
+  const isBoosterActive = boosterMultiplier > 1;
 
   const getTitle = () => {
     if (allPerfect) return "Stufe Perfekt abgeschlossen!";
@@ -105,20 +107,18 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
                       {getDescription()}
                   </CardDescription>
               </div>
-              {!stageFailed && (
-                <div className="text-right">
-                    <p className="font-bold text-lg text-green-700 dark:text-green-300 flex items-center justify-end gap-2">
-                      {isBoosterActive && <Zap className="h-5 w-5 text-yellow-500" />}
-                      +{pointsEarnedInStage} Punkte
-                    </p>
-                    {isBoosterActive && (
-                        <p className="text-xs text-muted-foreground">
-                            (inkl. {boosterMultiplier.toFixed(1)}x Booster)
-                        </p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-1">{firstTrySuccesses}/{totalItemsInStage} perfekt</p>
-                </div>
-              )}
+              <div className="text-right">
+                  <p className="font-bold text-lg text-green-700 dark:text-green-300 flex items-center justify-end gap-2">
+                    {isBoosterActive && <Zap className="h-5 w-5 text-yellow-500" />}
+                    +{pointsEarnedInStage} Punkte
+                  </p>
+                  {isBoosterActive && (
+                      <p className="text-xs text-muted-foreground">
+                          (inkl. {boosterMultiplier.toFixed(1)}x Booster)
+                      </p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">{firstTrySuccesses}/{totalItemsInStage} perfekt</p>
+              </div>
           </div>
       </CardContent>
     </Card>
