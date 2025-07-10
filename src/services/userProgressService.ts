@@ -113,7 +113,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       return {
         userId,
         username: data.username,
-        avatarId: data.avatarId ?? 'avatar1',
+        avatarId: data.avatarId || 'avatar1',
         totalPoints: typeof data.totalPoints === 'number' && !isNaN(data.totalPoints) ? data.totalPoints : 0,
         currentLessonId: currentLesson,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
@@ -162,18 +162,15 @@ export async function createUserProgressDocument(userId: string, initialData?: P
       knowledgeGaps: initialData?.knowledgeGaps ?? [],
     };
     
-    const { userId: _, ...firestoreDataWithMaybeUndefined } = dataToSet;
-    const firestoreData: {[key: string]: any} = firestoreDataWithMaybeUndefined;
+    // Create a version of the data for Firestore, excluding userId and handling potential undefined values.
+    const { userId: _, ...firestoreData } = dataToSet;
 
-    if ('username' in firestoreData && firestoreData.username === undefined) {
-      delete firestoreData.username;
-    }
-    if ('avatarId' in firestoreData && firestoreData.avatarId === undefined) {
-      delete firestoreData.avatarId;
-    }
-    if ('activeBooster' in firestoreData && firestoreData.activeBooster === undefined) {
-        delete firestoreData.activeBooster;
-    }
+    // Filter out any top-level undefined properties before sending to Firestore
+    Object.keys(firestoreData).forEach(key => {
+      if ((firestoreData as any)[key] === undefined) {
+        delete (firestoreData as any)[key];
+      }
+    });
 
     await setDoc(userDocRef, firestoreData);
     console.log(`[SERVER LOG] [userProgressService.createUserProgressDocument] User progress document created for ${userId} with data:`, firestoreData);
@@ -551,13 +548,13 @@ export async function getLeaderboardData(): Promise<LeaderboardEntry[]> {
     const leaderboard: LeaderboardEntry[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      // Only include users with a username and points > 0
-      if (data.username && typeof data.totalPoints === 'number') {
+      // Only include users with a username
+      if (data.username) {
         leaderboard.push({
           userId: doc.id,
           username: data.username,
           avatarId: data.avatarId ?? 'avatar1',
-          totalPoints: data.totalPoints,
+          totalPoints: data.totalPoints ?? 0,
         });
       }
     });
