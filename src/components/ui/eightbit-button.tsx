@@ -26,8 +26,8 @@ export function EightbitButton({
     text-white
     px-4
     py-2
-    hover:bg-[#D0B3FF]
-    hover:text-[hsl(var(--background))]
+    hover:bg-[hsl(var(--background))]
+    hover:text-[hsl(var(--foreground))]
     
     transition-all
     duration-100
@@ -63,7 +63,7 @@ export function EightbitButton({
           -top-[6px]
           h-[calc(100%+12px)]
           border-t-[6px] border-b-[6px] border-[hsl(var(--foreground))]
-          hover:border-[#D0B3FF]
+          group-hover:border-[hsl(var(--background))]
           border-solid
           z-10
         "
@@ -80,7 +80,7 @@ export function EightbitButton({
           w-[calc(100%+12px)]
           border-l-[6px] border-r-[6px] border-[hsl(var(--foreground))]
           border-solid
-          hover:border-[#D0B3FF]
+          group-hover:border-[hsl(var(--background))]
           z-10
         "
                 aria-hidden="true"
