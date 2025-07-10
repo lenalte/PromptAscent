@@ -7,40 +7,36 @@ import { CheckCircle, Trophy, XCircle, Zap, RefreshCw } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
 import { EightbitButton } from './ui/eightbit-button';
+import { useUserProgress } from '@/context/UserProgressContext';
 
 interface StageCompleteScreenProps {
   stageTitle: string;
-  basePointsAdded: number; // Base points earned in this stage before any multipliers
-  activeBoosterMultiplier: number | null; // e.g., 2 for a 2x booster, null if no booster
+  basePointsAdded: number;
   stageItemAttempts: { [itemId: string]: StageItemStatus };
   stageItems: LessonItem[];
   isLastStage: boolean;
   stageStatus: StageStatusValue;
   onRestart: () => void;
+  // activeBoosterMultiplier is removed as we get it from context now
 }
 
 export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   stageTitle,
   basePointsAdded,
-  activeBoosterMultiplier,
   stageItemAttempts,
   stageItems,
   isLastStage,
   stageStatus,
   onRestart,
 }) => {
+  const { userProgress } = useUserProgress();
+  const activeBoosterMultiplier = userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt
+    ? userProgress.activeBooster.multiplier
+    : null;
+
   const isBoosterActive = activeBoosterMultiplier !== null && activeBoosterMultiplier > 1;
   const pointsEarnedInStage = isBoosterActive ? Math.round(basePointsAdded * activeBoosterMultiplier) : basePointsAdded;
   
-  console.log('[StageCompleteScreen Debug]', {
-    basePointsAdded,
-    activeBoosterMultiplier,
-    pointsEarnedInStage,
-    isBoosterActive,
-    stageStatus,
-  });
-
-
   if (stageStatus === 'failed-stage') {
     return (
       <Card className={cn(
