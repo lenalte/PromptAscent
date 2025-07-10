@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
@@ -283,7 +284,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                             <span className={cn("w-8 text-center font-bold", getMedalColor(index))}>
                                                 {index < 3 ? <Crown className="h-5 w-5 mx-auto" /> : index + 1}
                                             </span>
-                                            <span className="flex-1 truncate text-sm text-foreground" title={user.username}>
+                                            <span className="flex-1 truncate text-sm font-semibold text-foreground" title={user.username}>
                                                 {user.username}
                                             </span>
                                             <span className="flex items-center text-sm font-semibold text-foreground">
