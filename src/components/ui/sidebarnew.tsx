@@ -284,7 +284,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         )}>
                                             <div className="w-6 text-center font-bold mr-2 shrink-0">
                                             {index < 3 ? (
-                                                <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center", getMedalColor(index))}>
+                                                <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center", getMedalColor(index))}>
                                                     {index + 1}
                                                 </div>
                                             ) : (
