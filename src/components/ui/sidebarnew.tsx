@@ -280,15 +280,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     {leaderboardData.map((user, index) => (
                                         <li key={user.userId} className={cn(
                                             "flex items-center p-2 rounded-lg",
-                                            user.userId === currentUser?.uid ? 'bg-foreground' : ''
+                                            user.userId === currentUser?.uid ? 'bg-[#3B0099]' : ''
                                         )}>
                                             <span className={cn("w-10 text-center font-bold mr-2", getMedalColor(index))}>
                                                 {index < 3 ? <AvatarDisplay avatarId={user.avatarId} className="h-8 w-8 mx-auto text-white" /> : index + 1}
                                             </span>
-                                            <span className="flex-1 truncate text-sm font-semibold text-white" title={user.username}>
+                                            <span className="flex-1 truncate text-white text-sm" title={user.username}>
                                                 {user.username}
                                             </span>
-                                            <span className="flex items-center text-sm font-semibold text-white">
+                                            <span className="flex items-center font-semibold text-white text-sm">
                                                 <PointsIcon className="h-8 w-8 mr-1"/>
                                                 {user.totalPoints}
                                             </span>
