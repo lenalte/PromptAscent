@@ -25,7 +25,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ poin
 
     if (nextLessonId) {
       console.log(`[LessonCompleteScreen] Navigating to next lesson: /lesson/${nextLessonId}`);
-      router.push(`/lesson/${nextLessonId}`);
+      router.push(`/`);
     } else {
       console.log("[LessonCompleteScreen] No specific next lesson ID, navigating to home '/'.");
       router.push('/');
