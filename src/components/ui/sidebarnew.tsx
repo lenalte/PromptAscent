@@ -281,7 +281,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                             "flex items-center p-2 rounded-lg",
                                             user.userId === currentUser?.uid ? 'bg-[var(--sidebar-accent)]' : ''
                                         )}>
-                                            <span className={cn("w-8 text-center font-bold", getMedalColor(index))}>
+                                            <span className={cn("w-8 text-center font-bold mr-2", getMedalColor(index))}>
                                                 {index < 3 ? <AvatarDisplay avatarId={user.avatarId} className="h-8 w-8 mx-auto text-white" /> : index + 1}
                                             </span>
                                             <span className="flex-1 truncate text-sm font-semibold text-white" title={user.username}>
