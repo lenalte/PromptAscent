@@ -100,7 +100,7 @@ export default function Home() {
 
   // Effect to handle redirection for anonymous users
   useEffect(() => {
-    if (!isLoadingAuth && currentUser?.isAnonymous) {
+    if (!isLoadingAuth && (!currentUser || currentUser.isAnonymous)) {
       router.push('/auth/login');
     }
   }, [currentUser, isLoadingAuth, router]);
@@ -531,7 +531,7 @@ export default function Home() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                            <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={() => {
+                             <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={() => {
                                 handleExitLesson();
                                 if(nextLessonId){
                                     const lesson = lessonList.find(l => l.id === nextLessonId);
@@ -593,6 +593,17 @@ export default function Home() {
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </div>
     );
+  }
+
+  // After loading, if user is not properly authenticated, the effect will redirect.
+  // We can render the main layout while waiting for redirect or for content to load for an auth'd user.
+  if (!currentUser || currentUser.isAnonymous) {
+      return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+              <BirdsBackground />
+              <Loader2 className="h-16 w-16 animate-spin text-primary" />
+          </div>
+      );
   }
 
   return (
