@@ -521,7 +521,7 @@ export default function Home() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} onGoHome={handleExitLesson} onGoToNextLesson={() => handleStartLesson(nextLessonId!)} />
+                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
                         ) : (
                             contentQueue.map((content, index) => {
                                 // If we are only showing the failed screen, hide everything that comes before it.
