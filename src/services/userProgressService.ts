@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from '@/lib/firebase/index';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, type FieldValue } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, type FieldValue } from 'firebase/firestore';
 import { getAvailableLessons, getQuestionsForBossChallenge, getGeneratedLessonById, type Lesson, type StageProgress, type StageItemStatus, type LessonItem, type BossQuestion } from '@/data/lessons';
 import { getRandomBoss, getBossById, type Boss } from '@/data/boss-data';
 
@@ -28,6 +28,13 @@ export interface UserProgressData {
   };
   knowledgeGaps?: { lessonId: string; itemId: string }[]; // For failed boss questions
 }
+
+export interface LeaderboardEntry {
+  userId: string;
+  username: string;
+  totalPoints: number;
+}
+
 
 const USERS_COLLECTION = 'users';
 
@@ -515,6 +522,36 @@ export async function restartStageInFirestore(
 
   } catch (error) {
     console.error(`[UserProgress] Error restarting stage ${stageId} for lesson ${lessonId}, UID ${userId}:`, error);
+    throw error;
+  }
+}
+
+export async function getLeaderboardData(): Promise<LeaderboardEntry[]> {
+  if (!db) {
+    console.error("[SERVER LOG] [userProgressService.getLeaderboardData] Firestore (db) is not available.");
+    throw new Error("Firestore not initialized");
+  }
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const q = query(usersRef, orderBy("totalPoints", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    const leaderboard: LeaderboardEntry[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Only include users with a username and points > 0
+      if (data.username && typeof data.totalPoints === 'number') {
+        leaderboard.push({
+          userId: doc.id,
+          username: data.username,
+          totalPoints: data.totalPoints,
+        });
+      }
+    });
+
+    return leaderboard;
+  } catch (error) {
+    console.error(`[SERVER LOG] [userProgressService.getLeaderboardData] Error fetching leaderboard data:`, error);
     throw error;
   }
 }

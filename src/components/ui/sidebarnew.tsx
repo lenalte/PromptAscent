@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus } from 'lucide-react';
+import { getLeaderboardData } from '@/services/userProgressService';
+import type { LeaderboardEntry } from '@/services/userProgressService';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { EightbitButton } from './eightbit-button';
@@ -43,6 +45,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
     const { logOut, currentUser, userProgress } = useUserProgress(); // Added userProgress
 
+    const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
+
 
     useEffect(() => {
         if (isContentOpen && !activeCategory) {
@@ -52,20 +57,31 @@ const Sidebar: React.FC<SidebarProps> = ({
     }, [isContentOpen, activeCategory, onContentToggle]);
 
     useEffect(() => {
-        async function fetchLessonsData() {
-            setIsLoadingLessons(true);
-            try {
-                const availableLessons = await getAvailableLessons();
-                setLessons(availableLessons);
-            } catch (error) {
-                console.error("Failed to fetch lessons for sidebar:", error);
+        async function fetchSidebarData() {
+            if (activeCategory === 'profil') {
+                setIsLoadingLessons(true);
+                try {
+                    const availableLessons = await getAvailableLessons();
+                    setLessons(availableLessons);
+                } catch (error) {
+                    console.error("Failed to fetch lessons for sidebar:", error);
+                }
+                setIsLoadingLessons(false);
+            } else if (activeCategory === 'leaderboard') {
+                setIsLoadingLeaderboard(true);
+                try {
+                    const data = await getLeaderboardData();
+                    setLeaderboardData(data);
+                } catch (error) {
+                    console.error("Failed to fetch leaderboard data:", error);
+                }
+                setIsLoadingLeaderboard(false);
             }
-            setIsLoadingLessons(false);
         }
-        if (activeCategory === 'profil') {
-            fetchLessonsData();
+        if (isContentOpen) {
+            fetchSidebarData();
         }
-    }, [activeCategory]);
+    }, [activeCategory, isContentOpen]);
 
     const handleCategoryClick = (category: string) => {
         if (activeCategory === category && isContentOpen) {
@@ -100,6 +116,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
 
     const userDisplayName = userProgress?.username || (currentUser && !currentUser.isAnonymous && currentUser.email) || "Profil & Lektionen";
+    
+    const getMedalColor = (rank: number) => {
+        if (rank === 0) return 'text-yellow-400';
+        if (rank === 1) return 'text-gray-400';
+        if (rank === 2) return 'text-yellow-600';
+        return 'text-foreground/60';
+    };
+
 
     return (
         <div className="flex h-screen fixed top-0 left-0 z-40">
@@ -243,7 +267,34 @@ const Sidebar: React.FC<SidebarProps> = ({
                     {activeCategory === 'leaderboard' && (
                         <div>
                             <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4">Leaderboard</h2>
-                            <p className="text-foreground/80 p-2 text-sm">Leaderboard-Inhalt kommt bald!</p>
+                             {isLoadingLeaderboard ? (
+                                <div className="flex items-center p-2 rounded-lg text-foreground">
+                                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                    <span className="ms-3 text-sm">Lade Leaderboard...</span>
+                                </div>
+                            ) : leaderboardData.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {leaderboardData.map((user, index) => (
+                                        <li key={user.userId} className={cn(
+                                            "flex items-center p-2 rounded-lg",
+                                            user.userId === currentUser?.uid ? 'bg-[var(--sidebar-accent)]' : ''
+                                        )}>
+                                            <span className={cn("w-8 text-center font-bold", getMedalColor(index))}>
+                                                {index < 3 ? <Crown className="h-5 w-5 mx-auto" /> : index + 1}
+                                            </span>
+                                            <span className="flex-1 truncate text-sm text-foreground" title={user.username}>
+                                                {user.username}
+                                            </span>
+                                            <span className="flex items-center text-sm font-semibold text-foreground">
+                                                <Award className="h-4 w-4 mr-1 text-yellow-500"/>
+                                                {user.totalPoints}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-foreground/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
+                            )}
                         </div>
                     )}
                 </div>
