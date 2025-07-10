@@ -280,7 +280,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     {leaderboardData.map((user, index) => (
                                         <li key={user.userId} className={cn(
                                             "flex items-center p-2 rounded-lg",
-                                            user.userId === currentUser?.uid ? 'bg-foreground/70' : ''
+                                            user.userId === currentUser?.uid ? 'bg-foreground' : ''
                                         )}>
                                             <span className={cn("w-10 text-center font-bold mr-2", getMedalColor(index))}>
                                                 {index < 3 ? <AvatarDisplay avatarId={user.avatarId} className="h-8 w-8 mx-auto text-white" /> : index + 1}
