@@ -10,8 +10,8 @@ import { EightbitButton } from './ui/eightbit-button';
 
 interface StageCompleteScreenProps {
   stageTitle: string;
-  pointsEarnedInStage: number; // This is the final, boosted amount
-  basePointsAdded: number; // This is the base points before booster
+  basePointsAdded: number; // Base points earned in this stage before any multipliers
+  activeBoosterMultiplier: number | null; // e.g., 2 for a 2x booster, null if no booster
   stageItemAttempts: { [itemId: string]: StageItemStatus };
   stageItems: LessonItem[];
   isLastStage: boolean;
@@ -21,26 +21,25 @@ interface StageCompleteScreenProps {
 
 export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   stageTitle,
-  pointsEarnedInStage,
   basePointsAdded,
+  activeBoosterMultiplier,
   stageItemAttempts,
   stageItems,
   isLastStage,
   stageStatus,
   onRestart,
 }) => {
-  const boosterMultiplier = basePointsAdded > 0 && pointsEarnedInStage > basePointsAdded 
-    ? pointsEarnedInStage / basePointsAdded 
-    : 1;
-  const isBoosterActive = boosterMultiplier > 1;
-
+  const isBoosterActive = activeBoosterMultiplier !== null && activeBoosterMultiplier > 1;
+  const pointsEarnedInStage = isBoosterActive ? Math.round(basePointsAdded * activeBoosterMultiplier) : basePointsAdded;
+  
   console.log('[StageCompleteScreen Debug]', {
-    pointsEarnedInStage,
     basePointsAdded,
-    boosterMultiplier,
+    activeBoosterMultiplier,
+    pointsEarnedInStage,
     isBoosterActive,
     stageStatus,
   });
+
 
   if (stageStatus === 'failed-stage') {
     return (
@@ -64,11 +63,8 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   }
 
   if (stageStatus !== 'completed-perfect' && stageStatus !== 'completed-good') {
-    // Return null if the stage is not in a 'completed' state to avoid rendering
     return null;
   }
-  
-  // --- Start of robust logic ---
   
   const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet').length;
   let firstTrySuccesses = 0;
@@ -107,7 +103,6 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     ? "Perfekt! Alle Aufgaben im ersten Versuch gelöst."
     : "Gut gemacht! Du hast die Stufe abgeschlossen.";
 
-  // --- End of new logic ---
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-md rounded-lg my-4", cardContainerClass)}>
@@ -129,7 +124,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
                   </p>
                   {isBoosterActive && (
                       <p className="text-xs text-muted-foreground">
-                          (inkl. {boosterMultiplier.toFixed(1)}x Booster)
+                          (inkl. {activeBoosterMultiplier.toFixed(1)}x Booster)
                       </p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">{firstTrySuccesses}/{totalItemsInStage} perfekt</p>

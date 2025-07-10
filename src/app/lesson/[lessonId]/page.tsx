@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React from 'react';
@@ -28,8 +29,8 @@ type StageCompleteInfo = {
     key: string;
     stageId: string;
     stageTitle: string;
-    pointsEarnedInStage: number;
     basePointsAdded: number;
+    activeBoosterMultiplier: number | null;
     stageItemAttempts: { [itemId: string]: StageItemStatus };
     stageItems: LessonItem[];
     onNextStage: () => void;
@@ -38,9 +39,17 @@ type StageCompleteInfo = {
     stageStatus: StageStatusValue;
     onRestart: () => void;
 };
+
+type LessonCompleteInfo = {
+    renderType: 'LessonCompleteScreen';
+    key: string;
+    onGoHome: () => void;
+    onGoToNextLesson: () => void;
+};
+
 type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: string; };
 
-type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo;
+type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo | LessonCompleteInfo;
 
 
 export default function LessonPage() {
@@ -63,8 +72,6 @@ export default function LessonPage() {
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isProcessing = useRef(false);
-    const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
-    const [nextLessonId, setNextLessonId] = useState<string | null>(null);
     
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -83,6 +90,10 @@ export default function LessonPage() {
             }, 100);
         }
     }, [activeContentIndex]);
+
+    const handleGoHome = useCallback(() => {
+        router.push('/');
+    }, [router]);
 
     useEffect(() => {
         async function loadLessonAndProgress() {
@@ -131,12 +142,12 @@ export default function LessonPage() {
                             key: `complete-${stage.id}`,
                             stageId: stage.id,
                             stageTitle: stage.title,
-                            pointsEarnedInStage: stagePoints,
                             basePointsAdded: stagePoints,
+                            activeBoosterMultiplier: null,
                             stageItemAttempts: pastStageProg?.items || {},
                             stageItems: stage.items as LessonItem[],
                             onNextStage: () => {}, 
-                            onGoHome: () => router.push('/'),
+                            onGoHome: handleGoHome,
                             isLastStage: i === 5,
                             stageStatus: pastStageProg?.status || 'completed-good',
                             onRestart: () => {}, // Placeholder for past stages
@@ -152,12 +163,12 @@ export default function LessonPage() {
                             key: `complete-${currentStageData.id}`,
                             stageId: currentStageData.id,
                             stageTitle: currentStageData.title,
-                            pointsEarnedInStage: 0,
                             basePointsAdded: 0,
+                            activeBoosterMultiplier: null,
                             stageItemAttempts: currentStageProgress.items,
                             stageItems: currentStageData.items as LessonItem[],
                             onNextStage: () => {}, // Should not be called
-                            onGoHome: () => router.push('/'),
+                            onGoHome: handleGoHome,
                             isLastStage: currentStageIndex === 5,
                             stageStatus: 'failed-stage',
                             onRestart: () => handleRestartStage(),
@@ -180,14 +191,16 @@ export default function LessonPage() {
                     }
                     
                     newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
+                    
+                    if (userProgress?.completedLessons.includes(lessonId)) {
+                        newQueue.push({ renderType: 'LessonCompleteScreen', key: `lesson-complete-${lessonId}`, onGoHome: handleGoHome, onGoToNextLesson: handleGoHome });
+                    }
+
                     setContentQueue(newQueue);
                     setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
-
                     setStageItemAttempts(currentStageProgress?.items || {});
                     setPointsThisStageSession(0); 
                 }
-
-                 setIsLessonFullyCompleted(userProgress?.completedLessons.includes(lessonId) ?? false);
 
             } catch (err) {
                 console.error("[LessonPage] Error loading lesson/progress:", err);
@@ -197,7 +210,7 @@ export default function LessonPage() {
             }
         }
         loadLessonAndProgress();
-    }, [lessonId, currentUser, isContextLoading, router, userProgress]);
+    }, [lessonId, currentUser, isContextLoading, router, userProgress, handleGoHome]);
 
 
     const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
@@ -253,15 +266,17 @@ export default function LessonPage() {
                 setStageItemAttempts({});
                 setPointsThisStageSession(0);
             } else {
-                // This was the last stage, so the lesson is fully complete.
-                // nextLessonId is already set from handleProceed.
-                setIsLessonFullyCompleted(true);
+                setContentQueue(prev => {
+                    const newQueue = [...prev, { renderType: 'LessonCompleteScreen', key: `lesson-complete-${lessonId}`, onGoHome: handleGoHome, onGoToNextLesson: handleGoHome }];
+                    return newQueue;
+                });
+                setActiveContentIndex(prev => prev + 1);
             }
         } finally {
             isProcessing.current = false;
             setIsSubmitting(false);
         }
-    }, [currentStageIndex, lessonData]);
+    }, [currentStageIndex, lessonData, lessonId, handleGoHome]);
 
     const handleProceed = useCallback(async () => {
         if (isProcessing.current || !currentStage || !activeContent) return;
@@ -272,7 +287,7 @@ export default function LessonPage() {
         try {
             const itemToProcess = activeContent;
     
-            if (itemToProcess.renderType === 'StageCompleteScreen') {
+            if (itemToProcess.renderType === 'StageCompleteScreen' || itemToProcess.renderType === 'LessonCompleteScreen') {
                 setActiveContentIndex(prev => prev + 1);
                 return;
             }
@@ -308,23 +323,25 @@ export default function LessonPage() {
                     return; // Abort on failure
                 }
 
-                const pointsActuallyAdded = stageResult.pointsAdded;
                 const basePoints = stageResult.basePointsAdded;
-                setNextLessonId(stageResult.nextLessonIdIfAny);
                 
                 const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
                 
+                 const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
+                    ? userProgress.activeBooster.multiplier
+                    : null;
+
                 const completionCard: StageCompleteInfo = {
                     renderType: 'StageCompleteScreen',
                     key: `complete-${currentStage.id}`,
                     stageId: currentStage.id,
                     stageTitle: currentStage.title,
-                    pointsEarnedInStage: pointsActuallyAdded,
                     basePointsAdded: basePoints,
+                    activeBoosterMultiplier: activeBoosterMultiplier,
                     stageItemAttempts: stageItemAttempts,
                     stageItems: currentStage.items as LessonItem[],
                     onNextStage: handleStartNextStage,
-                    onGoHome: () => router.push('/'),
+                    onGoHome: handleGoHome,
                     isLastStage: currentStageIndex === 5,
                     stageStatus: finalStageStatus,
                     onRestart: handleRestartStage,
@@ -382,6 +399,8 @@ export default function LessonPage() {
         stageItemAttempts,
         toast,
         handleRestartStage,
+        handleGoHome,
+        userProgress
     ]);
 
 
@@ -414,6 +433,17 @@ export default function LessonPage() {
         if (!activeContent) {
             return { visible: false };
         }
+        
+        if (activeContent.renderType === 'LessonCompleteScreen') {
+            return {
+                visible: true,
+                onClick: activeContent.onGoToNextLesson,
+                text: 'Zurück zur Übersicht',
+                icon: <HomeIcon className="h-5 w-5" />,
+                disabled: isSubmitting,
+            }
+        }
+
 
         if (activeContent.renderType === 'StageCompleteScreen') {
             if (activeContent.stageStatus === 'failed-stage') {
@@ -530,61 +560,61 @@ export default function LessonPage() {
             <Card className="bg-card/50 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl">
                 <CardContent className="p-0">
                     <div className="space-y-8">
-                        {isLessonFullyCompleted ? (
-                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
-                        ) : (
-                            contentQueue.map((content, index) => {
-                                // If we are only showing the failed screen, hide everything that comes before it.
-                                if (showOnlyFailedScreen && index < activeContentIndex) {
-                                  return null;
-                                }
-                                // And hide everything that comes after it.
-                                if (index > activeContentIndex) {
-                                    return null;
-                                }
+                       
+                        {contentQueue.map((content, index) => {
+                            // If we are only showing the failed screen, hide everything that comes before it.
+                            if (showOnlyFailedScreen && index < activeContentIndex) {
+                              return null;
+                            }
+                            // And hide everything that comes after it.
+                            if (index > activeContentIndex) {
+                                return null;
+                            }
 
-                                const isReadOnly = index < activeContentIndex;
-                                
-                                return (
-                                    <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
-                                        {(() => {
-                                             if (content.renderType === 'LessonItem') {
-                                                const item = content;
-                                                const itemStatus = stageItemAttempts[item.id];
-                                                const hasSubmittedCorrectly = itemStatus?.correct === true;
+                            const isReadOnly = index < activeContentIndex;
+                            
+                            return (
+                                <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
+                                    {(() => {
+                                         if (content.renderType === 'LessonItem') {
+                                            const item = content;
+                                            const itemStatus = stageItemAttempts[item.id];
+                                            const hasSubmittedCorrectly = itemStatus?.correct === true;
 
-                                                switch (item.type) {
-                                                    case 'freeResponse': {
-                                                        const { key, ...rest } = item;
-                                                        return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
-                                                    }
-                                                    case 'multipleChoice': {
-                                                        const { key, ...rest } = item;
-                                                        return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
-                                                    }
-                                                    case 'informationalSnippet': {
-                                                        const { key, ...rest } = item;
-                                                        return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                                                    }
-                                                    case 'promptingTask': {
-                                                        const { key, ...rest } = item;
-                                                        return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
-                                                    }
-                                                    default: {
-                                                        const _exhaustiveCheck: never = item;
-                                                        return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-                                                    }
+                                            switch (item.type) {
+                                                case 'freeResponse': {
+                                                    const { key, ...rest } = item;
+                                                    return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
                                                 }
-                                            } else if (content.renderType === 'StageCompleteScreen') {
-                                                const { key, ...restOfContent } = content;
-                                                return <StageCompleteScreen key={key} {...restOfContent} />;
+                                                case 'multipleChoice': {
+                                                    const { key, ...rest } = item;
+                                                    return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
+                                                }
+                                                case 'informationalSnippet': {
+                                                    const { key, ...rest } = item;
+                                                    return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
+                                                }
+                                                case 'promptingTask': {
+                                                    const { key, ...rest } = item;
+                                                    return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
+                                                }
+                                                default: {
+                                                    const _exhaustiveCheck: never = item;
+                                                    return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                                                }
                                             }
-                                            return null;
-                                        })()}
-                                    </div>
-                                );
-                            })
-                        )}
+                                        } else if (content.renderType === 'StageCompleteScreen') {
+                                            const { key, ...restOfContent } = content;
+                                            return <StageCompleteScreen key={key} {...restOfContent} />;
+                                        } else if (content.renderType === 'LessonCompleteScreen') {
+                                            const { key, ...restOfContent } = content;
+                                            return <LessonCompleteScreen key={key} {...restOfContent} />;
+                                        }
+                                        return null;
+                                    })()}
+                                </div>
+                            );
+                        })}
                     </div>
                 </CardContent>
             </Card>
@@ -609,3 +639,4 @@ export default function LessonPage() {
 }
 
     
+

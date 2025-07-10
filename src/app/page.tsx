@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
@@ -43,14 +44,13 @@ import { BossIcon } from '@/components/icons/BossIcon';
 
 type LessonListing = Omit<Lesson, 'stages'>;
 
-// Types from former lesson page
 type StageCompleteInfo = {
     renderType: 'StageCompleteScreen';
     key: string;
     stageId: string;
     stageTitle: string;
-    pointsEarnedInStage: number;
     basePointsAdded: number;
+    activeBoosterMultiplier: number | null;
     stageItemAttempts: { [itemId: string]: StageItemStatus };
     stageItems: LessonItem[];
     onNextStage: () => void;
@@ -253,8 +253,9 @@ export default function Home() {
                     }
 
                     newQueue.push({
-                        renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title, pointsEarnedInStage: stagePoints,
+                        renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title,
                         basePointsAdded: stagePoints,
+                        activeBoosterMultiplier: null, // Booster not relevant for past stages display
                         stageItemAttempts: pastStageProg?.items || {}, stageItems: stage.items as LessonItem[], onNextStage: () => {}, onGoHome: handleExitLesson,
                         isLastStage: i === 5, stageStatus: pastStageProg?.status || 'completed-good', onRestart: () => {},
                     });
@@ -268,8 +269,8 @@ export default function Home() {
                         key: `complete-${currentStageData.id}`,
                         stageId: currentStageData.id,
                         stageTitle: currentStageData.title,
-                        pointsEarnedInStage: 0,
                         basePointsAdded: 0,
+                        activeBoosterMultiplier: null,
                         stageItemAttempts: currentStageProgress.items,
                         stageItems: currentStageData.items as LessonItem[],
                         onNextStage: () => {}, // Should not be called
@@ -377,14 +378,17 @@ export default function Home() {
                 setIsSubmitting(false);
                 return;
             }
-            const pointsActuallyAdded = stageResult.pointsAdded;
             const basePoints = stageResult.basePointsAdded;
             setNextLessonId(stageResult.nextLessonIdIfAny);
             const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
             
+            const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
+                ? userProgress.activeBooster.multiplier
+                : null;
+
             const completionCard: StageCompleteInfo = {
                 renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
-                pointsEarnedInStage: pointsActuallyAdded, basePointsAdded: basePoints, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
+                basePointsAdded: basePoints, activeBoosterMultiplier, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
                 onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
             };
             
@@ -420,7 +424,7 @@ export default function Home() {
         isProcessing.current = false;
         setIsSubmitting(false);
     }
-  }, [activeContent, activeContentIndex, completeStageAndProceed, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
+  }, [activeContent, activeContentIndex, completeStageAndProceed, userProgress, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
 
   const stageProgressUi = useMemo(() => {
     if (!lessonData || !userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']) return null;
@@ -521,7 +525,7 @@ export default function Home() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                            <LessonCompleteScreen lessonTitle={lessonData.title} lessonId={lessonData.id} nextLessonId={nextLessonId} points={pointsThisStageSession} />
+                            <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={handleExitLesson} />
                         ) : (
                             contentQueue.map((content, index) => {
                                 // If we are only showing the failed screen, hide everything that comes before it.
@@ -702,3 +706,4 @@ export default function Home() {
     
 
     
+
