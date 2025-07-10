@@ -15,12 +15,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, UserPlus, User as UserIcon } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { AVATARS, type AvatarId } from '@/data/avatars';
+import { AvatarDisplay } from '@/components/AvatarDisplay';
+import { cn } from '@/lib/utils';
 
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string(),
+  avatarId: z.string().optional(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match.",
   path: ["confirmPassword"], // path of error
@@ -42,14 +46,17 @@ export default function RegistrationForm() {
       email: '',
       password: '',
       confirmPassword: '',
+      avatarId: 'avatar1'
     },
   });
+
+  const selectedAvatarId = form.watch('avatarId');
 
   const onSubmit = async (data: RegistrationFormValues) => {
     setIsLoading(true);
     setError(null);
 
-    const result = await signUpWithEmail(data.email, data.password, data.username);
+    const result = await signUpWithEmail(data.email, data.password, data.username, data.avatarId as AvatarId);
 
     if (result.error) {
       setError(result.error);
@@ -133,6 +140,39 @@ export default function RegistrationForm() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="avatarId"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>Choose Your Avatar</Label>
+                  <FormControl>
+                    <div className="flex justify-center space-x-4 pt-2">
+                      {AVATARS.map(avatar => (
+                        <button
+                          key={avatar.id}
+                          type="button"
+                          onClick={() => field.onChange(avatar.id)}
+                          className={cn(
+                            'p-2 rounded-full transition-all duration-200',
+                            selectedAvatarId === avatar.id
+                              ? 'ring-2 ring-primary ring-offset-2 bg-primary/20'
+                              : 'hover:bg-muted'
+                          )}
+                          disabled={isLoading}
+                        >
+                          <AvatarDisplay avatarId={avatar.id} className="h-12 w-12" />
+                          <span className="sr-only">{avatar.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
             <EightbitButton type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}

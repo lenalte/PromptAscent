@@ -10,7 +10,7 @@ import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award,
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { EightbitButton } from './eightbit-button';
-import { ProfilIcon } from '@/components/icons/ProfilIcon'; // Import the new ProfilIcon
+import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { LockClosedIcon } from "@/components/icons/lock_closed";
 import { LockOpenIcon } from "@/components/icons/lock_open";
 import { LeaderboardIcon } from "@/components/icons/LeaderboardIcon";
@@ -141,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         aria-label="Profil und Lektionen"
                     >
-                        <ProfilIcon className={cn(
+                        <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className={cn(
                             "h-8 w-8 shrink-0",
                              activeCategory === 'profil' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
                         )} />
@@ -282,7 +282,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                             user.userId === currentUser?.uid ? 'bg-[var(--sidebar-accent)]' : ''
                                         )}>
                                             <span className={cn("w-8 text-center font-bold", getMedalColor(index))}>
-                                                {index < 3 ? <ProfilIcon className="h-5 w-5 mx-auto" /> : index + 1}
+                                                {index < 3 ? <AvatarDisplay avatarId={user.avatarId} className="h-5 w-5 mx-auto" /> : index + 1}
                                             </span>
                                             <span className="flex-1 truncate text-sm font-semibold text-white" title={user.username}>
                                                 {user.username}

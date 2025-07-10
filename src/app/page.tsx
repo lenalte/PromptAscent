@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
@@ -14,7 +13,7 @@ import BirdsBackground from '@/components/BirdsBackground';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import type { Level as OverallLevel } from '@/data/level-structure';
 import { getLevelForLessonId, LEVELS as OVERALL_LEVELS } from '@/data/level-structure';
-import { ProfilIcon } from '@/components/icons/ProfilIcon';
+import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
 import { MagnifyingGlassIcon } from '@/components/icons/MagnifyingGlassIcon';
 import { ApplyIcon } from '@/components/icons/ApplyIcon';
@@ -655,7 +654,7 @@ export default function Home() {
                             const isLocked = status === 'locked';
                             return (
                                 <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
-                                    {currentStageIndexOfSelectedLesson === index && <ProfilIcon className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
+                                    {currentStageIndexOfSelectedLesson === index && <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
                                     <div className={cn("w-full relative flex flex-col items-center justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
                                         <div className="flex flex-col items-center w-full">
                                             <div className={cn("flex items-center gap-2", contentColorClass)}>
@@ -700,10 +699,3 @@ export default function Home() {
     </>
   );
 }
-
-    
-
-    
-
-    
-
