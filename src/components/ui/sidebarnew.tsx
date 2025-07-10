@@ -15,6 +15,7 @@ import { LockOpenIcon } from "@/components/icons/lock_open";
 import { LeaderboardIcon } from "@/components/icons/LeaderboardIcon";
 import { LogoutIcon } from "@/components/icons/LogoutIcon";
 import { LoginIcon } from "@/components/icons/LoginIcon";
+import { PointsIcon } from '@/components/icons/PointsIcon';
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -286,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                 {user.username}
                                             </span>
                                             <span className="flex items-center text-sm font-semibold text-foreground">
-                                                <Award className="h-4 w-4 mr-1 text-yellow-500"/>
+                                                <PointsIcon className="h-4 w-4 mr-1 text-yellow-500"/>
                                                 {user.totalPoints}
                                             </span>
                                         </li>
