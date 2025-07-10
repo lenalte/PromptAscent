@@ -123,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         if (rank === 0) return 'text-yellow-400';
         if (rank === 1) return 'text-gray-400';
         if (rank === 2) return 'text-yellow-600';
-        return 'text-foreground/60';
+        return 'text-white/60';
     };
 
 
@@ -181,11 +181,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="w-64 sidebar-background h-full pr-3 pl-2 py-4 overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
                     {activeCategory === 'profil' && (
                         <div>
-                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4 truncate" title={userDisplayName}>
+                            <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
                                 {userDisplayName}
                             </h2>
                             {isLoadingLessons && (
-                                <div className={`flex items-center p-2 rounded-lg text-foreground`}>
+                                <div className={`flex items-center p-2 rounded-lg text-white`}>
                                     <Loader2 className="h-5 w-5 animate-spin shrink-0" />
                                     <span className="ms-3 text-sm">Lade Lektionen...</span>
                                 </div>
@@ -212,7 +212,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                     onClick={() => onLessonSelect(lesson)}
                                                     disabled={!isLessonEffectivelyUnlocked(lesson.id)}
                                                     className={cn(
-                                                        `flex flex-col p-2 rounded-lg group sidebar-foreground w-full text-left`,
+                                                        `flex flex-col p-2 rounded-lg group text-white w-full text-left`,
                                                         isLessonEffectivelySelected(lesson.id) && "bg-[var(--sidebar-accent)]",
                                                         isLessonEffectivelyUnlocked(lesson.id) ? "hover:bg-[var(--sidebar-accent)] cursor-pointer" : "opacity-50 cursor-not-allowed"
                                                     )}
@@ -221,9 +221,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                         <div className="flex items-center overflow-hidden">
                                                             <span className={cn("mr-3 h-8 w-8 relative z-20 flex items-center justify-center rounded-full bg-[hsl(var(--sidebar-background))]")}>
                                                                 {isLessonEffectivelyUnlocked(lesson.id) ? (
-                                                                    <LockOpenIcon className="shrink-0 text-[hsl(var(--foreground))]" />
+                                                                    <LockOpenIcon className="shrink-0 text-white" />
                                                                 ) : (
-                                                                    <LockClosedIcon className="shrink-0 text-[hsl(var(--foreground))]" />
+                                                                    <LockClosedIcon className="shrink-0 text-white" />
                                                                 )}
                                                             </span>
                                                             <span className={cn(
@@ -241,13 +241,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                                 role="button"
                                                                 tabIndex={0}
                                                             >
-                                                                {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-foreground/70" /> : <ChevronDown className="h-4 w-4 text-foreground/70" />}
+                                                                {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-white/70" /> : <ChevronDown className="h-4 w-4 text-white/70" />}
                                                             </div>
                                                         )}
                                                     </div>
                                                     {expandedLessonId === lesson.id && lesson.description && (
                                                         <p
-                                                            className="mt-2 text-xs text-foreground/80 whitespace-normal break-words"
+                                                            className="mt-2 text-xs text-white/80 whitespace-normal break-words"
                                                             style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
                                                         >
                                                             {lesson.description}
@@ -260,7 +260,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 </div>
                             )}
                             {!isLoadingLessons && lessons.length === 0 && (
-                                <div className="p-2 text-sm text-foreground/70">
+                                <div className="p-2 text-sm text-white/70">
                                     Keine Lektionen verfügbar.
                                 </div>
                             )}
@@ -268,9 +268,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                     )}
                     {activeCategory === 'leaderboard' && (
                         <div>
-                            <h2 className="text-xl font-semibold text-foreground mb-4 px-1 pt-4">Leaderboard</h2>
+                            <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
                              {isLoadingLeaderboard ? (
-                                <div className="flex items-center p-2 rounded-lg text-foreground">
+                                <div className="flex items-center p-2 rounded-lg text-white">
                                     <Loader2 className="h-5 w-5 animate-spin shrink-0" />
                                     <span className="ms-3 text-sm">Lade Leaderboard...</span>
                                 </div>
@@ -284,10 +284,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                                             <span className={cn("w-8 text-center font-bold", getMedalColor(index))}>
                                                 {index < 3 ? <Crown className="h-5 w-5 mx-auto" /> : index + 1}
                                             </span>
-                                            <span className="flex-1 truncate text-sm font-semibold text-foreground" title={user.username}>
+                                            <span className="flex-1 truncate text-sm font-semibold text-white" title={user.username}>
                                                 {user.username}
                                             </span>
-                                            <span className="flex items-center text-sm font-semibold text-foreground">
+                                            <span className="flex items-center text-sm font-semibold text-white">
                                                 <PointsIcon className="h-4 w-4 mr-1 text-yellow-500"/>
                                                 {user.totalPoints}
                                             </span>
@@ -295,7 +295,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-foreground/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
+                                <p className="text-white/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
                             )}
                         </div>
                     )}
