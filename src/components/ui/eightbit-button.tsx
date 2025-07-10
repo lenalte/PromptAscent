@@ -27,7 +27,6 @@ export function EightbitButton({
     px-4
     py-2
     hover:bg-[hsl(var(--background))]
-    hover:text-[hsl(var(--foreground))]
     
     transition-all
     duration-100
