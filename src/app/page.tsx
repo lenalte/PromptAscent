@@ -98,6 +98,13 @@ export default function Home() {
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
   const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
 
+  // Effect to handle redirection for anonymous users
+  useEffect(() => {
+    if (!isLoadingAuth && currentUser?.isAnonymous) {
+      router.push('/auth/login');
+    }
+  }, [currentUser, isLoadingAuth, router]);
+
   // Effect to fetch available lessons
   useEffect(() => {
     async function fetchLessons() {
@@ -118,10 +125,10 @@ export default function Home() {
       }
       setIsLoadingLessons(false);
     }
-    if (!isLoadingProgress && !isLoadingAuth) {
+    if (!isLoadingProgress && !isLoadingAuth && currentUser && !currentUser.isAnonymous) {
         fetchLessons();
     }
-  }, [isLoadingAuth, isLoadingProgress, userProgress?.currentLessonId]);
+  }, [isLoadingAuth, isLoadingProgress, userProgress?.currentLessonId, currentUser]);
 
   // Effect to update overall level info
   useEffect(() => {
@@ -524,7 +531,13 @@ export default function Home() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                            <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={handleExitLesson} />
+                            <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={() => {
+                                handleExitLesson();
+                                if(nextLessonId){
+                                    const lesson = lessonList.find(l => l.id === nextLessonId);
+                                    if(lesson) handleLessonSelect(lesson);
+                                }
+                            }} />
                         ) : (
                             contentQueue.map((content, index) => {
                                 // If we are only showing the failed screen, hide everything that comes before it.
@@ -562,7 +575,7 @@ export default function Home() {
                 </CardContent>
             </Card>
 
-            {buttonConfig.visible && (
+            {buttonConfig.visible && !isLessonFullyCompleted && (
                 <div className="fixed bottom-8 right-8 z-50">
                     <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
                         {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> {buttonConfig.text} <span className="ml-2">{buttonConfig.icon}</span> </>}
@@ -573,6 +586,14 @@ export default function Home() {
     );
   };
 
+  if (isLoadingAuth || (!currentUser && !userProgress)) {
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+            <BirdsBackground />
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+    );
+  }
 
   return (
     <>
@@ -603,7 +624,7 @@ export default function Home() {
                 <>
                     <div className="flex-grow p-8">
                         <div className="w-full max-w-4xl mx-auto">
-                            {isLoadingAuth || isLoadingProgress || (isLoadingLessons && !selectedLesson) ? (
+                            {(isLoadingLessons && !selectedLesson) ? (
                                 <div className="text-center py-10 flex flex-col items-center justify-center">
                                     <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
                                     <p className="text-muted-foreground">Loading...</p>
@@ -619,15 +640,6 @@ export default function Home() {
                                     ) : (
                                         <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lesson Locked <ArrowRight className="ml-2 h-5 w-5" /></EightbitButton>
                                     )}
-                                </div>
-                            ) : !currentUser && !isLoadingAuth ? (
-                                <div className="text-center py-10">
-                                    <h2 className="text-2xl font-semibold text-foreground mb-4">Welcome to Prompt Ascent!</h2>
-                                    <p className="text-muted-foreground mb-6">Please log in or register to save your progress and access all lessons.</p>
-                                    <div className="flex justify-center space-x-4">
-                                        <Link href="/auth/login" passHref legacyBehavior><EightbitButton as="a"><LogIn className="mr-2 h-5 w-5" /> Login</EightbitButton></Link>
-                                        <Link href="/auth/register" passHref legacyBehavior><EightbitButton as="a"><UserPlus className="mr-2 h-5 w-5" /> Register</EightbitButton></Link>
-                                    </div>
                                 </div>
                             ) : (
                                 <div className="text-center py-10">
@@ -699,3 +711,5 @@ export default function Home() {
     </>
   );
 }
+
+    
