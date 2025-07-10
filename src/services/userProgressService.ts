@@ -5,10 +5,13 @@ import { db } from '@/lib/firebase/index';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, type FieldValue } from 'firebase/firestore';
 import { getAvailableLessons, getQuestionsForBossChallenge, getGeneratedLessonById, type Lesson, type StageProgress, type StageItemStatus, type LessonItem, type BossQuestion } from '@/data/lessons';
 import { getRandomBoss, getBossById, type Boss } from '@/data/boss-data';
+import type { AvatarId } from '@/data/avatars';
+
 
 export interface UserProgressData {
   userId: string;
   username?: string;
+  avatarId?: AvatarId;
   totalPoints: number;
   currentLessonId: string; // The ID of the lesson the user is currently on or last accessed
   completedLessons: string[]; // List of lesson IDs fully completed
@@ -32,6 +35,7 @@ export interface UserProgressData {
 export interface LeaderboardEntry {
   userId: string;
   username: string;
+  avatarId?: AvatarId;
   totalPoints: number;
 }
 
@@ -109,6 +113,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       return {
         userId,
         username: data.username,
+        avatarId: data.avatarId ?? 'avatar1',
         totalPoints: typeof data.totalPoints === 'number' && !isNaN(data.totalPoints) ? data.totalPoints : 0,
         currentLessonId: currentLesson,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
@@ -144,13 +149,14 @@ export async function createUserProgressDocument(userId: string, initialData?: P
 
     const dataToSet: UserProgressData = {
       userId,
+      username: initialData?.username,
+      avatarId: initialData?.avatarId ?? 'avatar1',
       totalPoints: initialData?.totalPoints ?? 0,
       currentLessonId: currentLessonToInit,
       completedLessons: initialData?.completedLessons ?? [],
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
         : [defaultLessonId],
-      username: initialData?.username,
       activeBooster: initialData?.activeBooster,
       lessonStageProgress: initialData?.lessonStageProgress ?? initialLessonStageProgress,
       knowledgeGaps: initialData?.knowledgeGaps ?? [],
@@ -161,6 +167,9 @@ export async function createUserProgressDocument(userId: string, initialData?: P
 
     if ('username' in firestoreData && firestoreData.username === undefined) {
       delete firestoreData.username;
+    }
+    if ('avatarId' in firestoreData && firestoreData.avatarId === undefined) {
+      delete firestoreData.avatarId;
     }
     if ('activeBooster' in firestoreData && firestoreData.activeBooster === undefined) {
         delete firestoreData.activeBooster;
@@ -189,6 +198,9 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
     const cleanDataToUpdate: { [key: string]: any } = { ...dataToUpdate };
     if ('username' in cleanDataToUpdate && cleanDataToUpdate.username === undefined) {
        delete cleanDataToUpdate.username;
+    }
+     if ('avatarId' in cleanDataToUpdate && cleanDataToUpdate.avatarId === undefined) {
+       delete cleanDataToUpdate.avatarId;
     }
 
     await updateDoc(userDocRef, cleanDataToUpdate);
@@ -544,6 +556,7 @@ export async function getLeaderboardData(): Promise<LeaderboardEntry[]> {
         leaderboard.push({
           userId: doc.id,
           username: data.username,
+          avatarId: data.avatarId ?? 'avatar1',
           totalPoints: data.totalPoints,
         });
       }

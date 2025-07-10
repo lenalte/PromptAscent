@@ -17,6 +17,7 @@ import {
 } from '@/services/userProgressService';
 import type { StageItemStatus, LessonItem, BossQuestion } from '@/ai/schemas/lesson-schemas';
 import type { Boss } from '@/data/boss-data';
+import type { AvatarId } from '@/data/avatars';
 
 const USERS_COLLECTION = 'users';
 
@@ -40,7 +41,7 @@ interface UserProgressContextType {
     pointsEarnedThisStage: number,
     stageItems: LessonItem[]
   ) => Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null; pointsAdded: number; basePointsAdded: number }>;
-  signUpWithEmail: (email: string, password: string, username: string) => Promise<AuthResult>;
+  signUpWithEmail: (email: string, password: string, username: string, avatarId?: AvatarId) => Promise<AuthResult>;
   signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
   logOut: () => Promise<void>;
   restartStage: (lessonId: string, stageId: string) => Promise<void>;
@@ -68,6 +69,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
             let progress = await getUserProgress(userId);
             if (!progress) {
                 console.log('[UserProgressContext] No progress found, creating new document for UID:', userId, 'with username:', usernameForNewUser);
+                // The avatarId for a new user signed up via email/password will be handled in signUpWithEmail
+                // For anonymous users or users whose doc doesn't exist for some reason, a default will be created.
                 progress = await createUserProgressDocument(userId, {
                     username: usernameForNewUser ?? undefined,
                 });
@@ -130,7 +133,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     stageId: string,
     stageIndex: number,
     stageItemsWithStatus: { [itemId: string]: StageItemStatus },
-    pointsEarnedThisStage: number,
+    pointsEarnedThisStage: number, // This is now IGNORED in favor of server calculation
     stageItems: LessonItem[]
   ): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null; pointsAdded: number; basePointsAdded: number }> => {
     if (!currentUser || !db) {
@@ -167,7 +170,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, [currentUser, userProgress]);
 
-  const signUpWithEmail = useCallback(async (email: string, password: string, username: string): Promise<AuthResult> => {
+  const signUpWithEmail = useCallback(async (email: string, password: string, username: string, avatarId: AvatarId = 'avatar1'): Promise<AuthResult> => {
     if (!auth) {
       console.error("[UserProgressContext] Firebase Auth not initialized for sign up");
       return { user: null, error: "Authentication service not available." };
@@ -180,9 +183,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       // Update the user's profile in Firebase Auth. onAuthStateChanged will pick this up.
       await updateProfile(userCredential.user, { displayName: username });
 
-      // Explicitly create the progress document here to ensure the username is captured immediately.
+      // Explicitly create the progress document here to ensure the username and avatar are captured immediately.
       // onAuthStateChanged will later fetch this same document.
-      await createUserProgressDocument(userCredential.user.uid, { username });
+      await createUserProgressDocument(userCredential.user.uid, { username, avatarId });
 
       return { user: userCredential.user, error: undefined };
     } catch (error) {
