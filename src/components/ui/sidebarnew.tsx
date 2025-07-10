@@ -121,9 +121,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     const userDisplayName = userProgress?.username || currentUser?.displayName || "Profil & Lektionen";
     
     const getMedalColor = (rank: number) => {
-        if (rank === 0) return 'text-yellow-400';
-        if (rank === 1) return 'text-gray-400';
-        if (rank === 2) return 'text-yellow-600';
+        if (rank === 0) return 'text-yellow-400 border-yellow-400';
+        if (rank === 1) return 'text-gray-400 border-gray-400';
+        if (rank === 2) return 'text-yellow-600 border-yellow-600';
         return 'text-white/60';
     };
 
@@ -282,9 +282,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                                             "flex items-center p-2 rounded-lg",
                                             user.userId === currentUser?.uid ? 'bg-[#3B0099]' : ''
                                         )}>
-                                            <span className={cn("w-6 text-center font-bold mr-2", getMedalColor(index))}>
-                                                {index + 1}
-                                            </span>
+                                            <div className="w-6 text-center font-bold mr-2 shrink-0">
+                                            {index < 3 ? (
+                                                <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center", getMedalColor(index))}>
+                                                    {index + 1}
+                                                </div>
+                                            ) : (
+                                                <span className={cn(getMedalColor(index))}>{index + 1}</span>
+                                            )}
+                                            </div>
                                             <AvatarDisplay avatarId={user.avatarId} className="h-6 w-6 mr-2 shrink-0 text-white" />
                                             <span className="flex-1 truncate text-white text-sm" title={user.username}>
                                                 {user.username}
