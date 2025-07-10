@@ -29,6 +29,19 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   stageStatus,
   onRestart,
 }) => {
+  const boosterMultiplier = basePointsAdded > 0 && pointsEarnedInStage > basePointsAdded 
+    ? pointsEarnedInStage / basePointsAdded 
+    : 1;
+  const isBoosterActive = boosterMultiplier > 1;
+
+  console.log('[StageCompleteScreen Debug]', {
+    pointsEarnedInStage,
+    basePointsAdded,
+    boosterMultiplier,
+    isBoosterActive,
+    stageStatus,
+  });
+
   if (stageStatus === 'failed-stage') {
     return (
       <Card className={cn(
@@ -51,16 +64,12 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   }
 
   if (stageStatus !== 'completed-perfect' && stageStatus !== 'completed-good') {
+    // Return null if the stage is not in a 'completed' state to avoid rendering
     return null;
   }
   
-  // --- Start of new, robust logic ---
+  // --- Start of robust logic ---
   
-  const boosterMultiplier = basePointsAdded > 0 && pointsEarnedInStage > basePointsAdded 
-    ? pointsEarnedInStage / basePointsAdded 
-    : 1;
-  const isBoosterActive = boosterMultiplier > 1;
-
   const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet').length;
   let firstTrySuccesses = 0;
   stageItems.forEach(item => {
@@ -74,7 +83,6 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
 
   const allPerfect = stageStatus === 'completed-perfect';
 
-  // Define visual styles based on booster and perfection
   const pointsColorClass = isBoosterActive 
     ? "text-yellow-500 dark:text-yellow-400" 
     : "text-green-700 dark:text-green-300";
