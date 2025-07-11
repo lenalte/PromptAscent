@@ -175,7 +175,7 @@ export default function RegistrationForm() {
                     <FormItem>
                       <Label>Choose Your Avatar</Label>
                       <FormControl>
-                        <div className="grid grid-cols-3 gap-4 justify-items-center pt-2">
+                        <div className="grid grid-cols-4 gap-4 justify-items-center pt-2">
                           {AVATARS.map(avatar => (
                             <button
                               key={avatar.id}
