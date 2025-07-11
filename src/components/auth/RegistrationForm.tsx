@@ -60,7 +60,7 @@ export default function RegistrationForm() {
     const result = await signUpWithEmail(data.email, data.password, data.username, data.avatarId as AvatarId);
 
     if (result.error) {
-      if (result.error.includes("email-already-in-use")) {
+      if (result.error.includes("auth/email-already-in-use")) {
         form.setError("email", { type: "manual", message: "This email is already registered." });
         setStep(1); // Go back to step 1 to show the error
       } else {
@@ -175,7 +175,7 @@ export default function RegistrationForm() {
                     <FormItem>
                       <Label>Choose Your Avatar</Label>
                       <FormControl>
-                        <div className="flex justify-center space-x-4 pt-2">
+                        <div className="grid grid-cols-3 gap-4 justify-items-center pt-2">
                           {AVATARS.map(avatar => (
                             <button
                               key={avatar.id}
@@ -189,7 +189,7 @@ export default function RegistrationForm() {
                               )}
                               disabled={isLoading}
                             >
-                              <AvatarDisplay avatarId={avatar.id} className="h-12 w-12" />
+                              <AvatarDisplay avatarId={avatar.id} className="h-16 w-16" />
                               <span className="sr-only">{avatar.name}</span>
                             </button>
                           ))}
@@ -202,7 +202,7 @@ export default function RegistrationForm() {
 
                 {error && <p className="text-sm font-medium text-destructive">{error}</p>}
                 
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-2 pt-4">
                     <EightbitButton type="button" onClick={() => setStep(1)} disabled={isLoading} className="w-full sm:w-auto">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back
