@@ -9,11 +9,11 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, useFormContext } from '@/components/ui/form';
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, UserPlus, User as UserIcon } from 'lucide-react';
+import { Loader2, UserPlus, User as UserIcon, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
@@ -33,6 +33,7 @@ const registrationSchema = z.object({
 type RegistrationFormValues = z.infer<typeof registrationSchema>;
 
 export default function RegistrationForm() {
+  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signUpWithEmail } = useUserProgress();
@@ -52,19 +53,24 @@ export default function RegistrationForm() {
 
   const selectedAvatarId = form.watch('avatarId');
 
-  const onSubmit = async (data: RegistrationFormValues) => {
+  const onFinalSubmit = async (data: RegistrationFormValues) => {
     setIsLoading(true);
     setError(null);
 
     const result = await signUpWithEmail(data.email, data.password, data.username, data.avatarId as AvatarId);
 
     if (result.error) {
-      setError(result.error);
-      toast({
-        title: "Registration Failed",
-        description: result.error,
-        variant: "destructive",
-      });
+      if (result.error.includes("email-already-in-use")) {
+        form.setError("email", { type: "manual", message: "This email is already registered." });
+        setStep(1); // Go back to step 1 to show the error
+      } else {
+        setError(result.error);
+        toast({
+          title: "Registration Failed",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Registration Successful",
@@ -75,109 +81,139 @@ export default function RegistrationForm() {
     
     setIsLoading(false);
   };
+  
+  const handleNextStep = async () => {
+    const fieldsToValidate: ('username' | 'email' | 'password' | 'confirmPassword')[] = ['username', 'email', 'password', 'confirmPassword'];
+    const isValid = await form.trigger(fieldsToValidate);
+    
+    if (isValid) {
+      setStep(2);
+    }
+  };
+
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-2xl">Register</CardTitle>
-        <CardDescription>Create an account to save your progress.</CardDescription>
+        <CardDescription>
+          {step === 1 ? 'Step 1: Enter your account details.' : 'Step 2: Choose your avatar.'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="username">Username</Label>
-                  <FormControl>
-                    <div className="relative">
-                      <UserIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input id="username" placeholder="your_username" {...field} disabled={isLoading} className="pl-8" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="email">Email</Label>
-                  <FormControl>
-                    <Input id="email" type="email" placeholder="m@example.com" {...field} disabled={isLoading} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="password">Password</Label>
-                  <FormControl>
-                    <Input id="password" type="password" {...field} disabled={isLoading} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <FormControl>
-                    <Input id="confirmPassword" type="password" {...field} disabled={isLoading} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onFinalSubmit)} className="space-y-4">
+            {step === 1 && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="username">Username</Label>
+                      <FormControl>
+                        <div className="relative">
+                          <UserIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                          <Input id="username" placeholder="your_username" {...field} disabled={isLoading} className="pl-8" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="email">Email</Label>
+                      <FormControl>
+                        <Input id="email" type="email" placeholder="m@example.com" {...field} disabled={isLoading} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="password">Password</Label>
+                      <FormControl>
+                        <Input id="password" type="password" {...field} disabled={isLoading} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <FormControl>
+                        <Input id="confirmPassword" type="password" {...field} disabled={isLoading} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <EightbitButton type="button" className="w-full" onClick={handleNextStep}>
+                    Next
+                 </EightbitButton>
+              </>
+            )}
 
-            <FormField
-              control={form.control}
-              name="avatarId"
-              render={({ field }) => (
-                <FormItem>
-                  <Label>Choose Your Avatar</Label>
-                  <FormControl>
-                    <div className="flex justify-center space-x-4 pt-2">
-                      {AVATARS.map(avatar => (
-                        <button
-                          key={avatar.id}
-                          type="button"
-                          onClick={() => field.onChange(avatar.id)}
-                          className={cn(
-                            'p-2 rounded-full transition-all duration-200',
-                            selectedAvatarId === avatar.id
-                              ? 'ring-2 ring-primary ring-offset-2 bg-primary/20'
-                              : 'hover:bg-muted'
-                          )}
-                          disabled={isLoading}
-                        >
-                          <AvatarDisplay avatarId={avatar.id} className="h-12 w-12" />
-                          <span className="sr-only">{avatar.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {step === 2 && (
+              <>
+                 <FormField
+                  control={form.control}
+                  name="avatarId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>Choose Your Avatar</Label>
+                      <FormControl>
+                        <div className="flex justify-center space-x-4 pt-2">
+                          {AVATARS.map(avatar => (
+                            <button
+                              key={avatar.id}
+                              type="button"
+                              onClick={() => field.onChange(avatar.id)}
+                              className={cn(
+                                'p-2 rounded-full transition-all duration-200',
+                                selectedAvatarId === avatar.id
+                                  ? 'ring-2 ring-primary ring-offset-2 bg-primary/20'
+                                  : 'hover:bg-muted'
+                              )}
+                              disabled={isLoading}
+                            >
+                              <AvatarDisplay avatarId={avatar.id} className="h-12 w-12" />
+                              <span className="sr-only">{avatar.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-              Create Account
-            </EightbitButton>
+                {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+                
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <EightbitButton type="button" onClick={() => setStep(1)} disabled={isLoading} className="w-full sm:w-auto">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
+                    </EightbitButton>
+                    <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                      Create Account
+                    </EightbitButton>
+                </div>
+              </>
+            )}
           </form>
         </Form>
       </CardContent>
