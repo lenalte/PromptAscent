@@ -66,10 +66,12 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         try {
             let progress = await getUserProgress(userId);
             if (!progress) {
+                console.log(`[UserProgressContext] No progress found for ${userId}, creating new document.`);
                 progress = await createUserProgressDocument(userId, {
                     username: usernameForNewUser ?? undefined,
                 });
             } else if (usernameForNewUser && !progress.username) {
+                console.log(`[UserProgressContext] Progress found but no username, updating for ${userId}.`);
                 await updateUserDocument(userId, { username: usernameForNewUser });
                 progress.username = usernameForNewUser;
             }
@@ -156,7 +158,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       await updateProfile(userCredential.user, { displayName: username });
-
+      
+      // THIS IS THE CRUCIAL PART: Create the user document in Firestore after registration
       await createUserProgressDocument(userCredential.user.uid, { username, avatarId });
 
       return { user: userCredential.user, error: undefined };
