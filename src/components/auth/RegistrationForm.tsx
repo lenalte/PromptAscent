@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
-import { getAuth } from "firebase/auth";
+import { getAuth, sendEmailVerification } from "firebase/auth";
 
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
@@ -72,6 +72,24 @@ export default function RegistrationForm() {
             setStep(1); // Go back to step 1 to show the error
         }
     } else {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (user) {
+        try {
+          await sendEmailVerification(user);
+          console.log('Verfication email sent to:', data.email);
+        } catch (verificationError) {
+          console.error('Error sending verification email:', verificationError);
+          toast({
+            title: "Error",
+            description: "An error occurred while sending the verification email.",
+            variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      }
         toast({
             title: "Registration Successful",
             description: "Welcome! You can now log in.",
