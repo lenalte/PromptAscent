@@ -82,7 +82,13 @@ export default function RegistrationForm() {
             title: "Registration Successful",
             description: "A verification email has been sent. Please check your inbox and confirm your email address.",
           });
-          router.push('/auth/verify-email');
+          onAuthStateChanged(auth, (user) => {
+            if (user && user.emailVerified) {
+              // Wenn die E-Mail bereits verifiziert wurde, leite zur Hauptseite weiter
+              console.log('Email is verified. Redirecting to home...');
+              router.push('/'); // Leitet zur Hauptseite weiter
+            }
+          });
         } catch (verificationError) {
           console.error('Error sending verification email:', verificationError);
           toast({
