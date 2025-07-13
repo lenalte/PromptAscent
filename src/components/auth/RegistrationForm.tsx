@@ -95,7 +95,7 @@ export default function RegistrationForm() {
             title: "Registration Successful",
             description: "A verification email has been sent. Please check your inbox and confirm your email address.",
         });
-        router.push('/auth/login');
+        router.push('/auth/verify-email');
     }
     
     setIsLoading(false);
