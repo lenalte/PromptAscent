@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
@@ -57,29 +58,43 @@ export default function RegistrationForm() {
     setIsLoading(true);
     setError(null);
 
-    const result = await signUpWithEmail(data.email, data.password, data.username, data.avatarId as AvatarId);
+    // Firebase Authentication
+    const auth = getAuth();
+    try {
+      // Create the user
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
 
-    if (result.error) {
-      if (result.error.includes("auth/email-already-in-use")) {
+      // Send email verification
+      await sendEmailVerification(user);
+
+      // Inform the user that a verification link has been sent
+      toast({
+        title: "Registration Successful",
+        description: "A verification email has been sent. Please check your inbox!",
+      });
+
+      // Redirect the user
+      router.push('/');
+
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      
+      if (errorCode === "auth/email-already-in-use") {
         form.setError("email", { type: "manual", message: "This email is already registered." });
         setStep(1); // Go back to step 1 to show the error
       } else {
-        setError(result.error);
+        setError(errorMessage);
         toast({
           title: "Registration Failed",
-          description: result.error,
+          description: errorMessage,
           variant: "destructive",
         });
       }
-    } else {
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created. Welcome!",
-      });
-      router.push('/');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
   
   const handleNextStep = async () => {
