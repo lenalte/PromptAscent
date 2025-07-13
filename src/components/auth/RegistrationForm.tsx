@@ -9,7 +9,7 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormMessage, useFormContext } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
-import { getAuth, sendEmailVerification } from "firebase/auth";
+import { getAuth, sendEmailVerification, onAuthStateChanged } from "firebase/auth";
 
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
@@ -78,24 +78,20 @@ export default function RegistrationForm() {
       if (user) {
         try {
           await sendEmailVerification(user);
-          console.log('Verfication email sent to:', data.email);
-
+          toast({
+            title: "Registration Successful",
+            description: "A verification email has been sent. Please check your inbox and confirm your email address.",
+          });
+          router.push('/auth/verify-email');
         } catch (verificationError) {
           console.error('Error sending verification email:', verificationError);
           toast({
             title: "Error",
             description: "An error occurred while sending the verification email.",
             variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+          });
+        }
       }
-      }
-        toast({
-            title: "Registration Successful",
-            description: "A verification email has been sent. Please check your inbox and confirm your email address.",
-        });
-        router.push('/auth/verify-email');
     }
     
     setIsLoading(false);
