@@ -79,6 +79,7 @@ export default function RegistrationForm() {
         try {
           await sendEmailVerification(user);
           console.log('Verfication email sent to:', data.email);
+
         } catch (verificationError) {
           console.error('Error sending verification email:', verificationError);
           toast({
@@ -92,7 +93,7 @@ export default function RegistrationForm() {
       }
         toast({
             title: "Registration Successful",
-            description: "Welcome! You can now log in.",
+            description: "A verification email has been sent. Please check your inbox and confirm your email address.",
         });
         router.push('/auth/login');
     }
