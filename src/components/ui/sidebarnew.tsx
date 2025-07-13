@@ -118,8 +118,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2);
     const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
 
+    console.log("[sidebarnew] currentUser:", currentUser);
+    console.log("[sidebarnew] userProgress:", userProgress);
     // Correctly prioritize username display
     const userDisplayName = userProgress?.username || currentUser?.displayName || "Profil & Lektionen";
+    console.log("[sidebarnew] Determined userDisplayName:", userDisplayName);
+
     
     const getMedalColor = (rank: number) => {
         if (rank === 0) return 'text-yellow-400 border-yellow-400';
