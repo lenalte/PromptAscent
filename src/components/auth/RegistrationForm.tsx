@@ -96,6 +96,24 @@ export default function RegistrationForm() {
       setIsLoading(false);
     }
   };
+
+   // Funktion zur Überprüfung der E-Mail-Verifizierung
+   const checkEmailVerification = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      console.log('Checking email verification status...');
+      // Überprüfen, ob die E-Mail bestätigt wurde
+      const emailVerified = user.emailVerified;
+      console.log('Email Verified:', emailVerified);
+      return emailVerified;
+    } else {
+      console.log('No user found.');
+      return false;
+    }
+  };
+
   
   const handleNextStep = async () => {
     const fieldsToValidate: ('username' | 'email' | 'password' | 'confirmPassword')[] = ['username', 'email', 'password', 'confirmPassword'];

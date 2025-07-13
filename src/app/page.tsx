@@ -63,7 +63,7 @@ type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: st
 type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo;
 
 
-export default function Home() {
+function HomePageContent() {
   const { userProgress, currentUser, isLoadingAuth, isLoadingProgress, completeStageAndProceed, restartStage } = useUserProgress();
   
   const [isSidebarContentAreaOpen, setIsSidebarContentAreaOpen] = useState(true);
@@ -98,13 +98,6 @@ export default function Home() {
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
   const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
 
-  // Effect to handle redirection for anonymous users
-  useEffect(() => {
-    if (!isLoadingAuth && (!currentUser || currentUser.isAnonymous)) {
-      router.push('/auth/login');
-    }
-  }, [currentUser, isLoadingAuth, router]);
-
   // Effect to fetch available lessons
   useEffect(() => {
     async function fetchLessons() {
@@ -125,7 +118,7 @@ export default function Home() {
       }
       setIsLoadingLessons(false);
     }
-    if (!isLoadingProgress && !isLoadingAuth && currentUser && !currentUser.isAnonymous) {
+    if (!isLoadingProgress && !isLoadingAuth && currentUser) {
         fetchLessons();
     }
   }, [isLoadingAuth, isLoadingProgress, userProgress?.currentLessonId, currentUser]);
@@ -496,7 +489,7 @@ export default function Home() {
   const ICON_BAR_WIDTH_PX = 64;
   const CONTENT_AREA_WIDTH_PX = 256;
   const currentSidebarTotalWidth = isSidebarContentAreaOpen ? ICON_BAR_WIDTH_PX + CONTENT_AREA_WIDTH_PX : ICON_BAR_WIDTH_PX;
-  const isLessonUnlocked = (lessonId: string) => currentUser?.isAnonymous || (userProgress?.unlockedLessons?.includes(lessonId) ?? false);
+  const isLessonUnlocked = (lessonId: string) => userProgress?.unlockedLessons?.includes(lessonId) ?? false;
   const currentStageIndexOfSelectedLesson = selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex : -1;
   const getStageProgressForSelectedLesson = (stageId: string) => selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.stages?.[stageId];
   const stageHeights = ['h-[6.5rem]', 'h-[9rem]', 'h-[11.5rem]', 'h-[14rem]', 'h-[16.5rem]', 'h-[19rem]'];
@@ -585,28 +578,8 @@ export default function Home() {
         </div>
     );
   };
-
-  if (isLoadingAuth || (!currentUser && !userProgress)) {
+  
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-            <BirdsBackground />
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-    );
-  }
-
-  // After loading, if user is not properly authenticated, the effect will redirect.
-  // We can render the main layout while waiting for redirect or for content to load for an auth'd user.
-  if (!currentUser || currentUser.isAnonymous) {
-      return (
-          <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-              <BirdsBackground />
-              <Loader2 className="h-16 w-16 animate-spin text-primary" />
-          </div>
-      );
-  }
-
-  return (
     <>
       <BirdsBackground />
       <Sidebar
@@ -723,4 +696,35 @@ export default function Home() {
   );
 }
 
+export default function Home() {
+    const { isLoadingAuth, currentUser } = useUserProgress();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isLoadingAuth && !currentUser) {
+            router.push('/auth/login');
+        }
+    }, [isLoadingAuth, currentUser, router]);
+
+    if (isLoadingAuth || !currentUser) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+                <BirdsBackground />
+                <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            </div>
+        );
+    }
     
+    // Explicitly check for isAnonymous if it's a property you care about
+    if (currentUser.isAnonymous) {
+        router.push('/auth/login');
+        return (
+             <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+                <BirdsBackground />
+                <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    return <HomePageContent />;
+}
