@@ -51,6 +51,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
 
+    // DEBUGGING LOGS
+    console.log("[sidebarnew] currentUser:", currentUser);
+    console.log("[sidebarnew] userProgress:", userProgress);
+
 
     useEffect(() => {
         if (isContentOpen && !activeCategory) {
@@ -117,12 +121,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2);
     const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
-
-    console.log("[sidebarnew] currentUser:", currentUser);
-    console.log("[sidebarnew] userProgress:", userProgress);
+    
     // Correctly prioritize username display
     const userDisplayName = userProgress?.username || currentUser?.displayName || "Profil & Lektionen";
-    console.log("[sidebarnew] Determined userDisplayName:", userDisplayName);
 
     
     const getMedalColor = (rank: number) => {
