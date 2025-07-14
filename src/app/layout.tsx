@@ -18,8 +18,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Prompt Ascent - Master AI Prompting', // Updated Title
-  description: 'Interactive lessons and AI-powered tools to master prompt engineering skills, with stage-based progress and feedback.', // Updated description
+  title: 'Prompt Ascent - Meistere das KI-Prompting', // Updated Title
+  description: 'Interaktive Lektionen und KI-gestützte Werkzeuge, um das Prompt Engineering zu meistern, mit stufenbasiertem Fortschritt und Feedback.', // Updated description
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       {/* 
         If you want to apply UntitledSans globally via a CSS variable from next/font (requires font file setup):
         <body className={`${untitledSans.variable} ${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
