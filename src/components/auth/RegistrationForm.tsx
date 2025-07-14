@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -18,13 +17,13 @@ import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
-import { getAuth, sendSignInLinkToEmail, sendEmailVerification, onAuthStateChanged } from "firebase/auth";
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
   email: z.string().email({ message: "Invalid email address." }),
   avatarId: z.string().optional(),
-}).refine(data => data.username === data.username !== "", {
+}).refine(data => data.username !== "", {
   message: "Username is required.",
   path: ["username"], // path of error
 });
@@ -35,10 +34,7 @@ export default function RegistrationForm() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { signUpWithEmail } = useUserProgress();
-  const router = useRouter();
   const { toast } = useToast();
-
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
@@ -50,50 +46,64 @@ export default function RegistrationForm() {
 
   const selectedAvatarId = form.watch('avatarId');
 
-  const onFinalSubmit = async (data: RegistrationFormValues) => {
-    setIsLoading(true);
-    setError(null);
-
-    const auth = getAuth();
-    try {
-      // Verwende `sendSignInLinkToEmail` für die E-Mail-basierte Anmeldung
-      await sendSignInLinkToEmail(auth, data.email, {
-        // Optionen für den Link (zum Beispiel eine URL zur Bestätigungsseite)
-        url: `https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev/auth/verify-email`,
-        handleCodeInApp: true,
-      });
-
-      // Speichern der E-Mail im lokalen Speicher, um sie später zu verwenden, falls der Benutzer auf dem gleichen Gerät ist
-      window.localStorage.setItem('emailForSignIn', data.email);
-
-      // Zeige die Toast-Nachricht an
-      toast({
-        title: "Registration Successful",
-        description: "A verification email has been sent. Please check your inbox and confirm your email address.",
-      });
-
-      router.push('/'); // Weiterleitung zur Hauptseite, nachdem der Link gesendet wurde
-    } catch (error) {
-      console.error('Error sending verification email:', error);
-      toast({
-        title: "Error",
-        description: "An error occurred while sending the verification email.",
-        variant: "destructive",
-      });
-    }
-
-    setIsLoading(false);
-  };
-  
-  const handleNextStep = async () => {
+  // Handle next step, this validates the form and sends verification email
+  const handleNextStep = async (data: RegistrationFormValues) => {
     const fieldsToValidate: ('username' | 'email')[] = ['username', 'email'];
     const isValid = await form.trigger(fieldsToValidate);
-    
+
     if (isValid) {
-      setStep(2);
+      const email = form.getValues('email');
+      const auth = getAuth();
+
+      const actionCodeSettings = {
+        url: 'https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev/auth/verify-email',
+        handleCodeInApp: true,
+      };
+
+      try {
+        // Sende den Verifizierungslink per E-Mail
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        window.localStorage.setItem('emailForSignIn', email);
+
+        toast({
+          title: "Registration Successful",
+          description: "A verification email has been sent. Please check your inbox and confirm your email address.",
+        });
+
+        // Überprüfe den Link und melde den Benutzer an, wenn er den Link öffnet
+        const url = window.location.href;
+        if (isSignInWithEmailLink(auth, url)) {
+          let storedEmail = window.localStorage.getItem('emailForSignIn');
+          if (!storedEmail) {
+            storedEmail = window.prompt('Please provide your email for confirmation');
+          }
+
+          // Verwende den Anmeldelink, um den Benutzer anzumelden
+          await signInWithEmailLink(auth, storedEmail!, url);
+
+          // Lösche die E-Mail aus dem Speicher
+          window.localStorage.removeItem('emailForSignIn');
+
+          // Gehe zu Schritt 2
+          setStep(2); // Weiter zu Schritt 2 (z.B. Avatar auswählen)
+        } else {
+          // Falls die E-Mail nicht verifiziert ist
+          toast({
+            title: "Email Not Verified",
+            description: "Please verify your email before proceeding.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error sending verification email:', error);
+        toast({
+          title: "Error",
+          description: "An error occurred while sending the verification email.",
+          variant: "destructive",
+        });
+      }
     }
   };
-
 
   return (
     <Card className="w-full">
@@ -105,7 +115,7 @@ export default function RegistrationForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onFinalSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleNextStep)} className="space-y-4">
             {step === 1 && (
               <>
                 <FormField
@@ -137,18 +147,16 @@ export default function RegistrationForm() {
                     </FormItem>
                   )}
                 />
-                
-                  )}
-                />
-                 <EightbitButton type="button" className="w-full" onClick={handleNextStep}>
-                    Next
-                 </EightbitButton>
+                <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                  Create Account
+                </EightbitButton>
               </>
             )}
 
             {step === 2 && (
               <>
-                 <FormField
+                <FormField
                   control={form.control}
                   name="avatarId"
                   render={({ field }) => (
@@ -179,18 +187,16 @@ export default function RegistrationForm() {
                     </FormItem>
                   )}
                 />
-
                 {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-                
                 <div className="flex flex-col sm:flex-row gap-2 pt-4">
-                    <EightbitButton type="button" onClick={() => setStep(1)} disabled={isLoading} className="w-full sm:w-auto">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back
-                    </EightbitButton>
-                    <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                      Create Account
-                    </EightbitButton>
+                  <EightbitButton type="button" onClick={() => setStep(1)} disabled={isLoading} className="w-full sm:w-auto">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </EightbitButton>
+                  <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                    Create Account
+                  </EightbitButton>
                 </div>
               </>
             )}
