@@ -13,7 +13,7 @@ export default function RegisterPage() {
         <Link href="/" passHref legacyBehavior>
           <EightbitButton as="a">
             <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Home
+            Zurück zur Startseite
           </EightbitButton>
         </Link>
       </div>
