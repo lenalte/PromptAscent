@@ -18,6 +18,8 @@ import { LogoutIcon } from "@/components/icons/LogoutIcon";
 import { LoginIcon } from "@/components/icons/LoginIcon";
 import { PointsIcon } from '@/components/icons/PointsIcon';
 import { ProfilIcon } from "../icons/ProfilIcon";
+import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
+import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -248,7 +250,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                                 role="button"
                                                                 tabIndex={0}
                                                             >
-                                                                {expandedLessonId === lesson.id ? <ChevronUp className="h-4 w-4 text-white/70" /> : <ChevronDown className="h-4 w-4 text-white/70" />}
+                                                                {expandedLessonId === lesson.id ? <SimpleArrowUpIcon className="h-4 w-4 text-white/70" /> : <SimpleArrowDownIcon className="h-4 w-4 text-white/70" />}
                                                             </div>
                                                         )}
                                                     </div>
