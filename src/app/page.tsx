@@ -698,34 +698,5 @@ function HomePageContent() {
 }
 
 export default function Home() {
-    const { isLoadingAuth, currentUser } = useUserProgress();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (!isLoadingAuth && !currentUser) {
-            router.push('/auth/login');
-        }
-    }, [isLoadingAuth, currentUser, router]);
-
-    if (isLoadingAuth || !currentUser) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-                <BirdsBackground />
-                <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            </div>
-        );
-    }
-    
-    // Explicitly check for isAnonymous if it's a property you care about
-    if (currentUser.isAnonymous) {
-        router.push('/auth/login');
-        return (
-             <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-                <BirdsBackground />
-                <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            </div>
-        );
-    }
-
     return <HomePageContent />;
 }
