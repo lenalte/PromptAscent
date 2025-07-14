@@ -17,8 +17,10 @@ import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
-import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore"; 
 
+// Validation Schema
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
   email: z.string().email({ message: "Invalid email address." }),
@@ -56,12 +58,31 @@ export default function RegistrationForm() {
       const auth = getAuth();
 
       const actionCodeSettings = {
-        url: 'https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev/auth/verify-email',
+        url: 'https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev',
         handleCodeInApp: true,
       };
 
       try {
-        // Sende den Verifizierungslink per E-Mail
+        // Create user with email and temporary password
+        const tempPassword = 'temporaryPassword1234'; // Temporarily use a password
+        await createUserWithEmailAndPassword(auth, email, tempPassword);
+
+        // Log the data to check if username is correctly passed
+        console.log("Form Data:", data);
+        console.log("Username:", data.username);
+
+        // Save additional user data (username) in Firestore
+        const db = getFirestore();
+        const userRef = doc(db, "users", auth.currentUser?.uid);
+        console.log("Saving to Firestore:", userRef);
+
+        await setDoc(userRef, {
+          username: data.username,  // Save the username
+          email: email,  // Save the email address
+          avatarId: form.getValues('avatarId'), // Optionally save avatarId
+        });
+
+        // Send verification link to email
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem('emailForSignIn', email);
 
@@ -70,7 +91,7 @@ export default function RegistrationForm() {
           description: "A verification email has been sent. Please check your inbox and confirm your email address.",
         });
 
-        // Überprüfe den Link und melde den Benutzer an, wenn er den Link öffnet
+        // Check if the user clicks the link and signs in
         const url = window.location.href;
         if (isSignInWithEmailLink(auth, url)) {
           let storedEmail = window.localStorage.getItem('emailForSignIn');
@@ -78,16 +99,16 @@ export default function RegistrationForm() {
             storedEmail = window.prompt('Please provide your email for confirmation');
           }
 
-          // Verwende den Anmeldelink, um den Benutzer anzumelden
+          // Sign the user in with the link
           await signInWithEmailLink(auth, storedEmail!, url);
 
-          // Lösche die E-Mail aus dem Speicher
+          // Remove email from local storage
           window.localStorage.removeItem('emailForSignIn');
 
-          // Gehe zu Schritt 2
-          setStep(2); // Weiter zu Schritt 2 (z.B. Avatar auswählen)
+          // Go to step 2 (Avatar selection)
+          setStep(2);
         } else {
-          // Falls die E-Mail nicht verifiziert ist
+          // If the email is not verified
           toast({
             title: "Email Not Verified",
             description: "Please verify your email before proceeding.",
@@ -98,7 +119,7 @@ export default function RegistrationForm() {
         console.error('Error sending verification email:', error);
         toast({
           title: "Error",
-          description: "An error occurred while sending the verification email.",
+          description: `An error occurred: ${error.message}`, // More detailed error message
           variant: "destructive",
         });
       }
