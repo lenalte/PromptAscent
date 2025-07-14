@@ -8,6 +8,7 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { getAuth, updateProfile } from "firebase/auth";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AvatarSelection() {
   const [selectedAvatarId, setSelectedAvatarId] = useState<AvatarId | null>(null);
@@ -59,8 +60,17 @@ export default function AvatarSelection() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <h1 className="text-2xl">Choose Your Avatar</h1>
+    <div className="flex items-center justify-center min-h-screen">
+    <Card className="w-full max-w-lg">
+  <CardHeader>
+    <CardTitle className="text-2xl">Choose Your Avatar</CardTitle>
+    <CardDescription>
+      {'Step 2: Select your avatar from the options below.'}
+    </CardDescription>
+  </CardHeader>
+  
+  <CardContent>
+    <div className="space-y-4">
       <div className="grid grid-cols-4 gap-4 justify-items-center pt-2">
         {AVATARS.map((avatar) => (
           <button
@@ -74,9 +84,16 @@ export default function AvatarSelection() {
           </button>
         ))}
       </div>
-      <EightbitButton onClick={handleSaveAvatar} className="w-full">
-        Save Avatar
-      </EightbitButton>
     </div>
+  </CardContent>
+  
+  <CardFooter className="flex flex-col space-y-2">
+    <EightbitButton onClick={handleSaveAvatar} className="w-full">
+      Save Avatar
+    </EightbitButton>
+  </CardFooter>
+</Card>
+</div>
+
   );
 }
