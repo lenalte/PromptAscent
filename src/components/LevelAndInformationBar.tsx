@@ -44,7 +44,7 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
     return (
         <>
             <div
-                className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4 pt-4", className)}
+                className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4 pt-2", className)}
             >
                 <div>
                     <span className="text-primary-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
