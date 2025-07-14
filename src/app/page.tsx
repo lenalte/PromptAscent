@@ -39,6 +39,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { BossIcon } from '@/components/icons/BossIcon';
+import { ArrowIcon } from '@/components/icons/ArrowIcon';
 
 
 type LessonListing = Omit<Lesson, 'stages'>;
@@ -619,10 +620,10 @@ function HomePageContent() {
                                     <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
                                     {isLessonUnlocked(selectedLesson.id) ? (
                                         <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
-                                            {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Starting...</> : <>Start Lesson <ArrowRight className="ml-2 h-5 w-5" /></>}
+                                            {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Starting...</> : <>Start Lesson <ArrowIcon className="ml-2" /></>}
                                         </EightbitButton>
                                     ) : (
-                                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lesson Locked <ArrowRight className="ml-2 h-5 w-5" /></EightbitButton>
+                                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lesson Locked <ArrowIcon className="ml-2" /></EightbitButton>
                                     )}
                                 </div>
                             ) : (
