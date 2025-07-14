@@ -14,8 +14,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, UserPlus, User as UserIcon, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { AVATARS, type AvatarId } from '@/data/avatars';
-import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore"; 
@@ -24,7 +22,6 @@ import { getFirestore, doc, setDoc } from "firebase/firestore";
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
   email: z.string().email({ message: "Invalid email address." }),
-  avatarId: z.string().optional(),
 }).refine(data => data.username !== "", {
   message: "Username is required.",
   path: ["username"], // path of error
@@ -42,7 +39,6 @@ export default function RegistrationForm() {
     defaultValues: {
       username: '',
       email: '',
-      avatarId: 'avatar1'
     },
   });
 
@@ -58,7 +54,7 @@ export default function RegistrationForm() {
       const auth = getAuth();
 
       const actionCodeSettings = {
-        url: 'https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev',
+        url: 'https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev/auth/avatar-selection',
         handleCodeInApp: true,
       };
 
@@ -79,7 +75,6 @@ export default function RegistrationForm() {
         await setDoc(userRef, {
           username: data.username,  // Save the username
           email: email,  // Save the email address
-          avatarId: form.getValues('avatarId'), // Optionally save avatarId
         });
 
         // Send verification link to email
@@ -106,7 +101,7 @@ export default function RegistrationForm() {
           window.localStorage.removeItem('emailForSignIn');
 
           // Go to step 2 (Avatar selection)
-          setStep(2);
+          // setStep(2);
         } else {
           // If the email is not verified
           toast({
@@ -131,13 +126,12 @@ export default function RegistrationForm() {
       <CardHeader>
         <CardTitle className="text-2xl">Register</CardTitle>
         <CardDescription>
-          {step === 1 ? 'Step 1: Enter your account details.' : 'Step 2: Choose your avatar.'}
+          {'Step 1: Enter your account details.'}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleNextStep)} className="space-y-4">
-            {step === 1 && (
               <>
                 <FormField
                   control={form.control}
@@ -173,54 +167,6 @@ export default function RegistrationForm() {
                   Create Account
                 </EightbitButton>
               </>
-            )}
-
-            {step === 2 && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="avatarId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>Choose Your Avatar</Label>
-                      <FormControl>
-                        <div className="grid grid-cols-4 gap-4 justify-items-center pt-2">
-                          {AVATARS.map(avatar => (
-                            <button
-                              key={avatar.id}
-                              type="button"
-                              onClick={() => field.onChange(avatar.id)}
-                              className={cn(
-                                'p-2 rounded-full transition-all duration-200',
-                                selectedAvatarId === avatar.id
-                                  ? 'ring-2 ring-primary ring-offset-2 bg-primary/20'
-                                  : 'hover:bg-muted'
-                              )}
-                              disabled={isLoading}
-                            >
-                              <AvatarDisplay avatarId={avatar.id} className="h-16 w-16" />
-                              <span className="sr-only">{avatar.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-                <div className="flex flex-col sm:flex-row gap-2 pt-4">
-                  <EightbitButton type="button" onClick={() => setStep(1)} disabled={isLoading} className="w-full sm:w-auto">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
-                  </EightbitButton>
-                  <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                    Create Account
-                  </EightbitButton>
-                </div>
-              </>
-            )}
           </form>
         </Form>
       </CardContent>
