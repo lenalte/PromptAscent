@@ -13,8 +13,9 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useUserProgress } from '@/context/UserProgressContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, LogIn, User as UserIcon } from 'lucide-react';
+import { Loader2, User as UserIcon } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { LoginIcon } from '../icons/LoginIcon';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -99,7 +100,7 @@ export default function LoginForm() {
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
             <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LoginIcon className="mr-2 h-4 w-4" />}
               Login
             </EightbitButton>
           </form>
