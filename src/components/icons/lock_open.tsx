@@ -6,9 +6,9 @@ interface LockOpenIconProps extends React.SVGProps<SVGSVGElement> {}
 export const LockOpenIcon: React.FC<LockOpenIconProps> = ({ className, ...props }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 690 690"
+        viewBox="0 0 790 790"
         fill="currentColor"
-        className={cn("h-5 w-5", className)}
+        className={cn("h-4 w-4", className)}
         {...props}
     >
         <g transform="translate(223,12)">
