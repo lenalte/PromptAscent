@@ -1,3 +1,5 @@
+"use client";
+
 // pages/auth/verify-email.tsx
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,11 +26,14 @@ export default function VerifyEmail() {
           // Fehlerbehandlung für ungültigen oder abgelaufenen Code
           alert('The verification link is invalid or has expired.');
         });
+    } else {
+        // If there's no code, maybe redirect to login or show a message
+        router.push('/auth/login');
     }
   }, [router]);
 
   return (
-    <div>
+    <div className="flex items-center justify-center min-h-screen">
       <p>Please wait while we verify your email...</p>
     </div>
   );
