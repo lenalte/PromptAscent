@@ -18,17 +18,15 @@ import { useToast } from "@/hooks/use-toast";
 import { AVATARS, type AvatarId } from '@/data/avatars';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { cn } from '@/lib/utils';
-import { getAuth, sendEmailVerification, onAuthStateChanged } from "firebase/auth";
+import { getAuth, sendSignInLinkToEmail, sendEmailVerification, onAuthStateChanged } from "firebase/auth";
 
 const registrationSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  confirmPassword: z.string(),
   avatarId: z.string().optional(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match.",
-  path: ["confirmPassword"], // path of error
+}).refine(data => data.username === data.username !== "", {
+  message: "Username is required.",
+  path: ["username"], // path of error
 });
 
 type RegistrationFormValues = z.infer<typeof registrationSchema>;
@@ -46,8 +44,6 @@ export default function RegistrationForm() {
     defaultValues: {
       username: '',
       email: '',
-      password: '',
-      confirmPassword: '',
       avatarId: 'avatar1'
     },
   });
@@ -58,53 +54,39 @@ export default function RegistrationForm() {
     setIsLoading(true);
     setError(null);
 
-    const result = await signUpWithEmail(data.email, data.password, data.username, data.avatarId as AvatarId);
+    const auth = getAuth();
+    try {
+      // Verwende `sendSignInLinkToEmail` für die E-Mail-basierte Anmeldung
+      await sendSignInLinkToEmail(auth, data.email, {
+        // Optionen für den Link (zum Beispiel eine URL zur Bestätigungsseite)
+        url: `https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev/auth/verify-email`,
+        handleCodeInApp: true,
+      });
 
-    if (result.error) {
-        setError(result.error);
-        toast({
-            title: "Registration Failed",
-            description: result.error,
-            variant: "destructive",
-        });
-        if (result.error.includes("email")) {
-            form.setError("email", { type: "manual", message: "This email is already registered." });
-            setStep(1); // Go back to step 1 to show the error
-        }
-    } else {
-      const auth = getAuth();
-      const user = auth.currentUser;
+      // Speichern der E-Mail im lokalen Speicher, um sie später zu verwenden, falls der Benutzer auf dem gleichen Gerät ist
+      window.localStorage.setItem('emailForSignIn', data.email);
 
-      if (user) {
-        try {
-          await sendEmailVerification(user);
-          toast({
-            title: "Registration Successful",
-            description: "A verification email has been sent. Please check your inbox and confirm your email address.",
-          });
-          onAuthStateChanged(auth, (user) => {
-            if (user && user.emailVerified) {
-              // Wenn die E-Mail bereits verifiziert wurde, leite zur Hauptseite weiter
-              console.log('Email is verified. Redirecting to home...');
-              router.push('/'); // Leitet zur Hauptseite weiter
-            }
-          });
-        } catch (verificationError) {
-          console.error('Error sending verification email:', verificationError);
-          toast({
-            title: "Error",
-            description: "An error occurred while sending the verification email.",
-            variant: "destructive",
-          });
-        }
-      }
+      // Zeige die Toast-Nachricht an
+      toast({
+        title: "Registration Successful",
+        description: "A verification email has been sent. Please check your inbox and confirm your email address.",
+      });
+
+      router.push('/'); // Weiterleitung zur Hauptseite, nachdem der Link gesendet wurde
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      toast({
+        title: "Error",
+        description: "An error occurred while sending the verification email.",
+        variant: "destructive",
+      });
     }
-    
+
     setIsLoading(false);
   };
   
   const handleNextStep = async () => {
-    const fieldsToValidate: ('username' | 'email' | 'password' | 'confirmPassword')[] = ['username', 'email', 'password', 'confirmPassword'];
+    const fieldsToValidate: ('username' | 'email')[] = ['username', 'email'];
     const isValid = await form.trigger(fieldsToValidate);
     
     if (isValid) {
@@ -155,30 +137,7 @@ export default function RegistrationForm() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label htmlFor="password">Password</Label>
-                      <FormControl>
-                        <Input id="password" type="password" {...field} disabled={isLoading} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label htmlFor="confirmPassword">Confirm Password</Label>
-                      <FormControl>
-                        <Input id="confirmPassword" type="password" {...field} disabled={isLoading} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                
                   )}
                 />
                  <EightbitButton type="button" className="w-full" onClick={handleNextStep}>
