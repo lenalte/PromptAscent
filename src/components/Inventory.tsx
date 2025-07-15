@@ -87,15 +87,11 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
           <TabsContent value="allgemein">
             <div className="mt-8 p-4 rounded-lg bg-black/20">
                 <div className="flex items-start gap-8">
-                    {/* Left Side: Avatar and Progress */}
+                    {/* Left Side: Avatar */}
                     <div className="flex flex-col items-center gap-4 flex-shrink-0 w-1/3">
                         {userProgress?.avatarId && (
                            <AvatarDisplay avatarId={userProgress.avatarId} className="h-36 w-36" />
                         )}
-                        <div className="w-full text-left">
-                            <h4 className="font-semibold text-lg">Level: {currentLevel?.title ?? 'Basics'}</h4>
-                            <ProgressBar progress={levelProgressPercentage} />
-                        </div>
                     </div>
                     {/* Right Side: Stats */}
                     <div className="flex flex-col gap-4 w-2/3">
@@ -115,6 +111,11 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                             label="erledigte Lektionen"
                         />
                     </div>
+                </div>
+                {/* Progress Bar Section */}
+                <div className="w-full text-left mt-4">
+                    <h4 className="font-semibold text-lg">Level: {currentLevel?.title ?? 'Basics'}</h4>
+                    <ProgressBar progress={levelProgressPercentage} />
                 </div>
             </div>
           </TabsContent>
