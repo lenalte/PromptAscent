@@ -54,7 +54,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
               
               {userProgress?.avatarId && (
                 <div className="flex items-center gap-4">
-                  <AvatarDisplay avatarId={userProgress.avatarId} className="h-32 w-32" />
+                  <AvatarDisplay avatarId={userProgress.avatarId} className="h-36 w-36" />
                   <p className="text-white/80">Dein aktueller Avatar.</p>
                 </div>
               )}
