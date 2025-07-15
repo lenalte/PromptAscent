@@ -12,6 +12,7 @@ import { PointsIcon } from './icons/PointsIcon';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';
 import { CheckIcon } from './icons/CheckIcon';
 import ProgressBar from './ui/progressbar';
+import { CreationDateIcon } from './icons/CreationDateIcon';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -54,7 +55,10 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
   const completedInLevel = currentLevel?.lessonIds.filter(id => userProgress?.completedLessons.includes(id)).length ?? 0;
   const totalInLevel = currentLevel?.lessonIds.length ?? 1;
   const levelProgressPercentage = totalInLevel > 0 ? (completedInLevel / totalInLevel) * 100 : 0;
-
+  
+  const creationDate = currentUser?.metadata.creationTime 
+    ? new Date(currentUser.metadata.creationTime).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : '-';
 
   const tabTriggerClasses = "relative inline-block w-full text-white px-4 py-2 transition-all duration-100 no-underline text-center";
   const activeTabClasses = "!bg-white !text-black";
@@ -108,6 +112,11 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                             icon={<CheckIcon className="w-full h-full" />}
                             value={userProgress?.completedLessons.length ?? 0}
                             label="erledigte Lektionen"
+                        />
+                         <InfoCard 
+                            icon={<CreationDateIcon className="w-full h-full" />}
+                            value={creationDate}
+                            label="Mitglied seit"
                         />
                     </div>
                 </div>
