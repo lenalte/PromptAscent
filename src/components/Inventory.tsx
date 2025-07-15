@@ -5,7 +5,8 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EightbitButton } from './ui/eightbit-button';
+import { useUserProgress } from '@/context/UserProgressContext';
+import { AvatarDisplay } from './AvatarDisplay';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ interface InventoryProps {
 }
 
 const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) => {
+  const { userProgress } = useUserProgress();
+
   if (!isOpen) {
     return null;
   }
@@ -47,8 +50,16 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
           </TabsList>
           <TabsContent value="allgemein">
             <div className="mt-4 p-4 rounded-lg bg-black/20">
-              <h3 className="text-lg font-semibold">Allgemeine Gegenstände</h3>
-              <p className="mt-2 text-white/80">Hier werden deine allgemeinen Gegenstände angezeigt.</p>
+              <h3 className="text-lg font-semibold mb-4">Allgemeine Gegenstände</h3>
+              
+              {userProgress?.avatarId && (
+                <div className="flex items-center gap-4">
+                  <AvatarDisplay avatarId={userProgress.avatarId} className="h-16 w-16" />
+                  <p className="text-white/80">Dein aktueller Avatar.</p>
+                </div>
+              )}
+
+              <p className="mt-4 text-white/80">Hier werden deine allgemeinen Gegenstände angezeigt.</p>
             </div>
           </TabsContent>
           <TabsContent value="zusammenfassungen">
