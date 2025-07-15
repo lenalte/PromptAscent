@@ -5,6 +5,7 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EightbitButton } from './ui/eightbit-button';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -32,19 +33,17 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
       <div className="p-8 text-white">
         <h2 className="text-2xl font-bold mb-4">Inventar</h2>
         <Tabs defaultValue="allgemein" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 gap-2 bg-transparent p-0">
-            <TabsTrigger 
-              value="allgemein" 
-              className="!bg-[hsl(var(--foreground))] !text-white hover:!bg-[hsl(var(--background))] data-[state=active]:!bg-white data-[state=active]:!text-black"
-            >
-              Allgemein
-            </TabsTrigger>
-            <TabsTrigger 
-              value="zusammenfassungen"
-              className="!bg-[hsl(var(--foreground))] !text-white hover:!bg-[hsl(var(--background))] data-[state=active]:!bg-white data-[state=active]:!text-black"
-            >
-              Zusammenfassungen
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 gap-4 bg-transparent p-0 border-none">
+              <TabsTrigger value="allgemein" asChild>
+                <EightbitButton className="w-full data-[state=active]:!bg-white data-[state=active]:!text-black">
+                  Allgemein
+                </EightbitButton>
+              </TabsTrigger>
+              <TabsTrigger value="zusammenfassungen" asChild>
+                <EightbitButton className="w-full data-[state=active]:!bg-white data-[state=active]:!text-black">
+                    Zusammenfassungen
+                </EightbitButton>
+              </TabsTrigger>
           </TabsList>
           <TabsContent value="allgemein">
             <div className="mt-4 p-4 rounded-lg bg-black/20">
