@@ -120,7 +120,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                 </div>
                 <div className="w-full mt-4 text-left">
                     <h4 className="text-lg font-semibold">Level: {currentLevel?.title ?? 'Basics'}</h4>
-                    <ProgressBar progress={levelProgressPercentage} />
+                    <ProgressBar progress={levelProgressPercentage} backgroundClassName="bg-background" />
                     <div className="flex items-center justify-between mt-2">
                         <h3 className="text-xl font-bold">{userProgress?.username}</h3>
                         <p className="text-sm text-white/80">Beigetreten am {creationDate}</p>
@@ -129,7 +129,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
             </div>
           </TabsContent>
           <TabsContent value="zusammenfassungen">
-            <div className="p-4 mt-4 rounded-lg bg-black/20">
+            <div className="p-4 mt-4 rounded-lg">
               <h3 className="text-lg font-semibold">Zusammenfassungen</h3>
               <p className="mt-2 text-white/80">Hier werden deine gesammelten Zusammenfassungen angezeigt.</p>
             </div>
