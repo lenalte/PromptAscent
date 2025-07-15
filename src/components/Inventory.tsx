@@ -1,12 +1,18 @@
 
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { AvatarDisplay } from './AvatarDisplay';
+import { getLeaderboardData, type LeaderboardEntry } from '@/services/userProgressService';
+import { getLevelForLessonId, LEVELS } from '@/data/level-structure';
+import { PointsIcon } from './icons/PointsIcon';
+import { LeaderboardIcon } from './icons/LeaderboardIcon';
+import { CheckIcon } from './icons/CheckIcon';
+import ProgressBar from './ui/progressbar';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -14,12 +20,42 @@ interface InventoryProps {
   sidebarWidth: number;
 }
 
+const InfoCard: React.FC<{ icon: React.ReactNode; value: string | number; label: string }> = ({ icon, value, label }) => (
+    <div className="flex items-center gap-4 p-3 rounded-lg bg-black/20">
+        <div className="flex-shrink-0 w-8 h-8">{icon}</div>
+        <div className="flex flex-col">
+            <span className="text-xl font-bold">{value}</span>
+            <span className="text-xs text-white/70">{label}</span>
+        </div>
+    </div>
+);
+
+
 const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) => {
-  const { userProgress } = useUserProgress();
+  const { userProgress, currentUser } = useUserProgress();
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [userRank, setUserRank] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      getLeaderboardData().then(data => {
+        setLeaderboard(data);
+        const rank = data.findIndex(entry => entry.userId === currentUser?.uid);
+        setUserRank(rank !== -1 ? rank + 1 : null);
+      });
+    }
+  }, [isOpen, currentUser]);
+
 
   if (!isOpen) {
     return null;
   }
+  
+  const currentLevel = userProgress?.currentLessonId ? getLevelForLessonId(userProgress.currentLessonId) : LEVELS[0];
+  const completedInLevel = currentLevel?.lessonIds.filter(id => userProgress?.completedLessons.includes(id)).length ?? 0;
+  const totalInLevel = currentLevel?.lessonIds.length ?? 1;
+  const levelProgressPercentage = totalInLevel > 0 ? (completedInLevel / totalInLevel) * 100 : 0;
+
 
   const tabTriggerClasses = "relative inline-block w-full text-white px-4 py-2 transition-all duration-100 no-underline text-center";
   const activeTabClasses = "!bg-white !text-black";
@@ -49,17 +85,37 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
               </TabsTrigger>
           </TabsList>
           <TabsContent value="allgemein">
-            <div className="mt-4 p-4 rounded-lg bg-black/20">
-              <h3 className="text-lg font-semibold mb-4">Allgemeine Gegenstände</h3>
-              
-              {userProgress?.avatarId && (
-                <div className="flex items-center gap-4">
-                  <AvatarDisplay avatarId={userProgress.avatarId} className="h-36 w-36" />
-                  <p className="text-white/80">Dein aktueller Avatar.</p>
+            <div className="mt-8 p-4 rounded-lg bg-black/20">
+                <div className="flex items-start gap-8">
+                    {/* Left Side: Avatar and Progress */}
+                    <div className="flex flex-col items-center gap-4 flex-shrink-0 w-1/3">
+                        {userProgress?.avatarId && (
+                           <AvatarDisplay avatarId={userProgress.avatarId} className="h-36 w-36" />
+                        )}
+                        <div className="w-full text-left">
+                            <h4 className="font-semibold text-lg">Level: {currentLevel?.title ?? 'Basics'}</h4>
+                            <ProgressBar progress={levelProgressPercentage} />
+                        </div>
+                    </div>
+                    {/* Right Side: Stats */}
+                    <div className="flex flex-col gap-4 w-2/3">
+                        <InfoCard 
+                            icon={<PointsIcon className="w-full h-full" />}
+                            value={userProgress?.totalPoints ?? 0}
+                            label="Punkte"
+                        />
+                         <InfoCard 
+                            icon={<LeaderboardIcon className="w-full h-full" />}
+                            value={userRank ?? '-'}
+                            label="Leaderboard platz"
+                        />
+                         <InfoCard 
+                            icon={<CheckIcon className="w-full h-full" />}
+                            value={userProgress?.completedLessons.length ?? 0}
+                            label="erledigte Lektionen"
+                        />
+                    </div>
                 </div>
-              )}
-
-              <p className="mt-4 text-white/80">Hier werden deine allgemeinen Gegenstände angezeigt.</p>
             </div>
           </TabsContent>
           <TabsContent value="zusammenfassungen">
