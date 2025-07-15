@@ -93,7 +93,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
           </TabsTrigger>
           </TabsList>
           <TabsContent value="allgemein">
-            <div className="mt-8 p-4 rounded-lg bg-black/20">
+            <div className="mt-8 p-4 rounded-lg">
                 <div className="flex items-center gap-8">
                     <div className="flex flex-col items-center justify-center flex-shrink-0 w-1/3 gap-4">
                         {userProgress?.avatarId && (
