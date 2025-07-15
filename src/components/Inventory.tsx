@@ -35,6 +35,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
   const { userProgress, currentUser } = useUserProgress();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState("allgemein");
 
   useEffect(() => {
     if (isOpen) {
@@ -61,7 +62,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
     : '-';
 
   const tabTriggerBaseClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
-  const tabBorderSpanClasses = "pointer-events-none absolute border-solid border-custom-foreground";
+  const tabBorderSpanClasses = "pointer-events-none absolute border-solid";
 
   return (
     <div
@@ -76,19 +77,19 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
         <CloseIcon className="h-6 w-6" />
       </button>
       <div className="px-28 py-8 text-white">
-        <Tabs defaultValue="allgemein" className="w-full">
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
-            <TabsTrigger value="allgemein" className={cn(tabTriggerBaseClasses, "data-[state=active]:text-white data-[state=inactive]:text-custom-foreground")}>
+            <TabsTrigger value="allgemein" className={cn(tabTriggerBaseClasses, activeTab === 'allgemein' ? "text-white" : "text-custom-foreground")}>
                 <div className="relative z-20">Allgemein</div>
-                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10")}></span>
-                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10")}></span>
-                <div className="absolute inset-0 -z-10 data-[state=inactive]:bg-background group-hover:bg-background data-[state=active]:bg-custom-foreground"></div>
+                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10", activeTab === 'allgemein' ? "border-custom-foreground" : "border-background")}></span>
+                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10", activeTab === 'allgemein' ? "border-custom-foreground" : "border-background")}></span>
+                <div className={cn("absolute inset-0 -z-10 group-hover:bg-background", activeTab === 'allgemein' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
-            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerBaseClasses, "data-[state=active]:text-white data-[state=inactive]:text-custom-foreground")}>
+            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerBaseClasses, activeTab === 'zusammenfassungen' ? "text-white" : "text-custom-foreground")}>
                 <div className="relative z-20">Zusammenfassungen</div>
-                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10")}></span>
-                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10")}></span>
-                <div className="absolute inset-0 -z-10 data-[state=inactive]:bg-background group-hover:bg-background data-[state=active]:bg-custom-foreground"></div>
+                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10", activeTab === 'zusammenfassungen' ? "border-custom-foreground" : "border-background")}></span>
+                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10", activeTab === 'zusammenfassungen' ? "border-custom-foreground" : "border-background")}></span>
+                <div className={cn("absolute inset-0 -z-10 group-hover:bg-background", activeTab === 'zusammenfassungen' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="allgemein">
