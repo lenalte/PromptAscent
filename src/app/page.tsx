@@ -40,6 +40,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { BossIcon } from '@/components/icons/BossIcon';
 import { ArrowIcon } from '@/components/icons/ArrowIcon';
+import Inventory from '@/components/Inventory';
 
 
 type LessonListing = Omit<Lesson, 'stages'>;
@@ -78,6 +79,7 @@ function HomePageContent() {
   const router = useRouter();
 
   const [bossChallengeInfo, setBossChallengeInfo] = useState<{lessonId: string, stageId: string} | null>(null);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
 
   // === State for embedded lesson view ===
   const [isLessonViewActive, setIsLessonViewActive] = useState(false);
@@ -599,7 +601,7 @@ function HomePageContent() {
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
           <ProgressBar progress={overallLevelProgressPercentage} progressText={`${overallLevelProgressPercentage}% Complete - ${currentOverallLevel?.title || 'Current Level'}`} />
-          <LevelAndInformationBar currentLevel={currentOverallLevel} />
+          <LevelAndInformationBar currentLevel={currentOverallLevel} onInventoryToggle={() => setIsInventoryOpen(prev => !prev)} />
         </header>
 
         <main className="flex-1 flex flex-col">
@@ -684,6 +686,9 @@ function HomePageContent() {
             )}
         </main>
       </div>
+
+       <Inventory isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} sidebarWidth={currentSidebarTotalWidth} />
+
 
       {bossChallengeInfo && (
         <BossChallengeDialog

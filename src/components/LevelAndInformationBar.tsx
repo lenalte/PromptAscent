@@ -9,9 +9,10 @@ import { BackpackIcon } from '@/components/icons/BackpackIcon';
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     currentLevel: Level | null;
+    onInventoryToggle: () => void;
 }
 
-const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ currentLevel, className }) => {
+const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ currentLevel, className, onInventoryToggle }) => {
     const { userProgress } = useUserProgress();
     const totalPoints = userProgress?.totalPoints ?? 0;
     const activeBooster = userProgress?.activeBooster;
@@ -63,7 +64,9 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
                         <span className="text-primary-foreground">{totalPoints} Punkte</span>
                     </div>
                     <div className="hidden sm:flex items-center">
-                        <BackpackIcon className="h-8 w-8 text-primary-foreground" />
+                        <button onClick={onInventoryToggle} className="cursor-pointer">
+                            <BackpackIcon className="h-8 w-8 text-primary-foreground" />
+                        </button>
                     </div>
                 </div>
             </div >
