@@ -21,7 +21,7 @@ interface InventoryProps {
 }
 
 const InfoCard: React.FC<{ icon: React.ReactNode; value: string | number; label: string }> = ({ icon, value, label }) => (
-    <div className="flex items-center gap-4 p-3 rounded-lg bg-black/20">
+    <div className="flex items-center gap-4 p-3 rounded-lg bg-[#3B0099]">
         <div className="flex-shrink-0 w-8 h-8">{icon}</div>
         <div className="flex flex-col">
             <span className="text-xl font-bold">{value}</span>
