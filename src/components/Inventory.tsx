@@ -75,7 +75,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
       >
         <CloseIcon className="h-6 w-6" />
       </button>
-      <div className="px-12 py-8 text-white">
+      <div className="px-16 py-8 text-white">
         <Tabs defaultValue="allgemein" className="w-full">
         <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
           <TabsTrigger value="allgemein" className={cn(tabTriggerClasses)}>
