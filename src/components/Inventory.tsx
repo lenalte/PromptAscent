@@ -90,7 +90,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                     {/* Left Side: Avatar */}
                     <div className="flex flex-col items-center gap-4 flex-shrink-0 w-1/3">
                         {userProgress?.avatarId && (
-                           <AvatarDisplay avatarId={userProgress.avatarId} className="h-36 w-36" />
+                           <AvatarDisplay avatarId={userProgress.avatarId} className="h-40 w-40" />
                         )}
                     </div>
                     {/* Right Side: Stats */}
