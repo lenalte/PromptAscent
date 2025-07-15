@@ -1,9 +1,10 @@
+
 "use client";
 
 import React, { useEffect, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { AvatarDisplay } from './AvatarDisplay';
 import { getLeaderboardData, type LeaderboardEntry } from '@/services/userProgressService';
@@ -60,9 +61,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
     : '-';
 
   const tabTriggerClasses =
-  "relative inline-block w-full text-white px-4 py-2 transition-all duration-100 no-underline text-center group";
-  const activeTabClasses = "text-black";
-  const inactiveTabClasses = "text-white";
+  "relative inline-block w-full px-4 py-2 transition-all duration-100 no-underline text-center group data-[state=active]:text-black text-white";
 
   return (
     <div
@@ -125,7 +124,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
             <div className="mt-8 p-4 rounded-lg bg-black/20">
                 <div className="flex items-center gap-8">
                     {/* Left Side: Avatar */}
-                    <div className="flex flex-col items-center gap-4 flex-shrink-0 w-1/3">
+                    <div className="flex flex-col items-center justify-center gap-4 flex-shrink-0 w-1/3">
                         {userProgress?.avatarId && (
                            <AvatarDisplay avatarId={userProgress.avatarId} className="h-40 w-40" />
                         )}
