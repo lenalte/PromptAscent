@@ -116,6 +116,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                 <div className="w-full text-left mt-4">
                     <h4 className="font-semibold text-lg">Level: {currentLevel?.title ?? 'Basics'}</h4>
                     <ProgressBar progress={levelProgressPercentage} />
+                    <h3 className="text-center text-xl font-bold mt-2">{userProgress?.username}</h3>
                 </div>
             </div>
           </TabsContent>
