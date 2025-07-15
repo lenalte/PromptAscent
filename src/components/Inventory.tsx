@@ -13,7 +13,6 @@ import { PointsIcon } from './icons/PointsIcon';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';
 import { CheckIcon } from './icons/CheckIcon';
 import ProgressBar from './ui/progressbar';
-import { CreationDateIcon } from './icons/CreationDateIcon';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -81,14 +80,14 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
         <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
           <TabsTrigger value="allgemein" className={cn(tabTriggerClasses)}>
               <div className="relative z-20">Allgemein</div>
-              <span className="pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] border-solid z-10 data-[state=active]:border-[hsl(var(--foreground))] data-[state=inactive]:border-[hsl(var(--background))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
-              <span className="pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] border-solid z-10 data-[state=active]:border-[hsl(var(--foreground))] data-[state=inactive]:border-[hsl(var(--background))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
+              <span className="pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] border-solid z-10 border-[hsl(var(--foreground))]"></span>
+              <span className="pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] border-solid z-10 border-[hsl(var(--foreground))]"></span>
               <div className="absolute inset-0 -z-10 data-[state=inactive]:bg-[hsl(var(--background))] group-hover:bg-[hsl(var(--background))] data-[state=active]:bg-[hsl(var(--foreground))]"></div>
           </TabsTrigger>
           <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses)}>
               <div className="relative z-20">Zusammenfassungen</div>
-              <span className="pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] border-solid z-10 data-[state=active]:border-[hsl(var(--foreground))] data-[state=inactive]:border-[hsl(var(--background))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
-              <span className="pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] border-solid z-10 data-[state=active]:border-[hsl(var(--foreground))] data-[state=inactive]:border-[hsl(var(--background))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
+              <span className="pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] border-solid z-10 border-[hsl(var(--foreground))]"></span>
+              <span className="pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] border-solid z-10 border-[hsl(var(--foreground))]"></span>
               <div className="absolute inset-0 -z-10 data-[state=inactive]:bg-[hsl(var(--background))] group-hover:bg-[hsl(var(--background))] data-[state=active]:bg-[hsl(var(--foreground))]"></div>
           </TabsTrigger>
           </TabsList>
