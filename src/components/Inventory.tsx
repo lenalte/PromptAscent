@@ -18,7 +18,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
 
   return (
     <div
-      className="fixed top-0 right-0 bottom-0 bg-background/90 backdrop-blur-sm z-50"
+      className="fixed top-0 right-0 bottom-0 sidebar-background z-50"
       style={{ left: `${sidebarWidth}px` }}
     >
       <button
