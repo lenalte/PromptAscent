@@ -12,7 +12,6 @@ import { PointsIcon } from './icons/PointsIcon';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';
 import { CheckIcon } from './icons/CheckIcon';
 import ProgressBar from './ui/progressbar';
-import { CreationDateIcon } from './icons/CreationDateIcon';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -113,18 +112,16 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                             value={userProgress?.completedLessons.length ?? 0}
                             label="erledigte Lektionen"
                         />
-                         <InfoCard 
-                            icon={<CreationDateIcon className="w-full h-full" />}
-                            value={creationDate}
-                            label="Mitglied seit"
-                        />
                     </div>
                 </div>
                 {/* Progress Bar Section */}
                 <div className="w-full text-left mt-4">
                     <h4 className="font-semibold text-lg">Level: {currentLevel?.title ?? 'Basics'}</h4>
                     <ProgressBar progress={levelProgressPercentage} />
-                    <h3 className="text-xl font-bold mt-2">{userProgress?.username}</h3>
+                    <div className="flex justify-between items-center mt-2">
+                        <h3 className="text-xl font-bold">{userProgress?.username}</h3>
+                        <p className="text-sm text-white/80">Beigetreten am {creationDate}</p>
+                    </div>
                 </div>
             </div>
           </TabsContent>
