@@ -26,7 +26,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
         className="absolute top-4 right-4 text-white hover:text-gray-300"
         aria-label="Close inventory"
       >
-        <CloseIcon className="h-8 w-8" />
+        <CloseIcon className="h-6 w-6" />
       </button>
       <div className="p-8 text-white">
         <h2 className="text-2xl font-bold">Inventar</h2>
