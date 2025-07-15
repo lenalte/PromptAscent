@@ -4,6 +4,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface InventoryProps {
   isOpen: boolean;
@@ -29,9 +30,25 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
         <CloseIcon className="h-6 w-6" />
       </button>
       <div className="p-8 text-white">
-        <h2 className="text-2xl font-bold">Inventar</h2>
-        <p className="mt-4">Hier werden deine Gegenstände angezeigt.</p>
-        {/* Inventory content will go here */}
+        <h2 className="text-2xl font-bold mb-4">Inventar</h2>
+        <Tabs defaultValue="allgemein" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-sidebar-accent">
+            <TabsTrigger value="allgemein">Allgemein</TabsTrigger>
+            <TabsTrigger value="zusammenfassungen">Zusammenfassungen</TabsTrigger>
+          </TabsList>
+          <TabsContent value="allgemein">
+            <div className="mt-4 p-4 rounded-lg bg-black/20">
+              <h3 className="text-lg font-semibold">Allgemeine Gegenstände</h3>
+              <p className="mt-2 text-white/80">Hier werden deine allgemeinen Gegenstände angezeigt.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="zusammenfassungen">
+            <div className="mt-4 p-4 rounded-lg bg-black/20">
+              <h3 className="text-lg font-semibold">Zusammenfassungen</h3>
+              <p className="mt-2 text-white/80">Hier werden deine gesammelten Zusammenfassungen angezeigt.</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
