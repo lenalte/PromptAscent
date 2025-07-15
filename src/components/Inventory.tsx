@@ -61,11 +61,11 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
     : '-';
 
   const tabTriggerClasses =
-  "relative inline-block w-full px-4 py-2 transition-all duration-100 no-underline text-center group data-[state=active]:text-black text-white";
+    "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group data-[state=active]:text-black text-white";
 
   return (
     <div
-      className="fixed top-0 right-0 bottom-0 sidebar-background z-50"
+      className="fixed top-0 right-0 bottom-0 z-50 sidebar-background"
       style={{ left: `${sidebarWidth}px` }}
     >
       <button
@@ -78,59 +78,29 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
       <div className="p-8 text-white">
         <h2 className="text-2xl font-bold mb-4">Inventar</h2>
         <Tabs defaultValue="allgemein" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 gap-4 bg-transparent p-0 border-none">
-            <TabsTrigger value="allgemein" className={cn(tabTriggerClasses)}>
-                <div className="relative z-20">Allgemein</div>
-                <span
-                    className="
-                      pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px]
-                      border-solid z-10
-                      data-[state=active]:border-white
-                      data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]
-                    "
-                ></span>
-                <span
-                    className="
-                      pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px]
-                      border-solid z-10
-                      data-[state=active]:border-white
-                      data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]
-                    "
-                ></span>
-                 <div className="absolute inset-0 bg-[hsl(var(--foreground))] group-hover:bg-[hsl(var(--background))] data-[state=active]:bg-white -z-10"></div>
-            </TabsTrigger>
-            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses)}>
-                <div className="relative z-20">Zusammenfassungen</div>
-                <span
-                    className="
-                      pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px]
-                      border-solid z-10
-                      data-[state=active]:border-white
-                      data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]
-                    "
-                ></span>
-                <span
-                    className="
-                      pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px]
-                      border-solid z-10
-                      data-[state=active]:border-white
-                      data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]
-                    "
-                ></span>
-                 <div className="absolute inset-0 bg-[hsl(var(--foreground))] group-hover:bg-[hsl(var(--background))] data-[state=active]:bg-white -z-10"></div>
-            </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
+          <TabsTrigger value="allgemein" className={cn(tabTriggerClasses)}>
+              <div className="relative z-20">Allgemein</div>
+              <span className="pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] border-solid z-10 data-[state=active]:border-white data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
+              <span className="pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] border-solid z-10 data-[state=active]:border-white data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
+              <div className="absolute inset-0 -z-10 bg-[hsl(var(--foreground))] group-hover:bg-[hsl(var(--background))] data-[state=active]:bg-white"></div>
+          </TabsTrigger>
+          <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses)}>
+              <div className="relative z-20">Zusammenfassungen</div>
+              <span className="pointer-events-none absolute left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] border-solid z-10 data-[state=active]:border-white data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
+              <span className="pointer-events-none absolute top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] border-solid z-10 data-[state=active]:border-white data-[state=inactive]:border-[hsl(var(--foreground))] data-[state=inactive]:group-hover:border-[hsl(var(--background))]"></span>
+              <div className="absolute inset-0 -z-10 bg-[hsl(var(--foreground))] group-hover:bg-[hsl(var(--background))] data-[state=active]:bg-white"></div>
+          </TabsTrigger>
           </TabsList>
           <TabsContent value="allgemein">
             <div className="mt-8 p-4 rounded-lg bg-black/20">
                 <div className="flex items-center gap-8">
-                    {/* Left Side: Avatar */}
-                    <div className="flex flex-col items-center justify-center gap-4 flex-shrink-0 w-1/3">
+                    <div className="flex flex-col items-center justify-center flex-shrink-0 w-1/3 gap-4">
                         {userProgress?.avatarId && (
-                           <AvatarDisplay avatarId={userProgress.avatarId} className="h-40 w-40" />
+                           <AvatarDisplay avatarId={userProgress.avatarId} className="h-40 w-40 text-[hsl(var(--sidebar-accent-foreground))]" />
                         )}
                     </div>
-                    {/* Right Side: Stats */}
-                    <div className="flex flex-col gap-4 w-2/3">
+                    <div className="flex flex-col w-2/3 gap-4">
                         <InfoCard 
                             icon={<PointsIcon className="w-full h-full" />}
                             value={userProgress?.totalPoints ?? 0}
@@ -148,11 +118,10 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                         />
                     </div>
                 </div>
-                {/* Progress Bar Section */}
-                <div className="w-full text-left mt-4">
-                    <h4 className="font-semibold text-lg">Level: {currentLevel?.title ?? 'Basics'}</h4>
+                <div className="w-full mt-4 text-left">
+                    <h4 className="text-lg font-semibold">Level: {currentLevel?.title ?? 'Basics'}</h4>
                     <ProgressBar progress={levelProgressPercentage} />
-                    <div className="flex justify-between items-center mt-2">
+                    <div className="flex items-center justify-between mt-2">
                         <h3 className="text-xl font-bold">{userProgress?.username}</h3>
                         <p className="text-sm text-white/80">Beigetreten am {creationDate}</p>
                     </div>
@@ -160,7 +129,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
             </div>
           </TabsContent>
           <TabsContent value="zusammenfassungen">
-            <div className="mt-4 p-4 rounded-lg bg-black/20">
+            <div className="p-4 mt-4 rounded-lg bg-black/20">
               <h3 className="text-lg font-semibold">Zusammenfassungen</h3>
               <p className="mt-2 text-white/80">Hier werden deine gesammelten Zusammenfassungen angezeigt.</p>
             </div>
