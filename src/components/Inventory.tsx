@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserProgress } from '@/context/UserProgressContext';
 import { AvatarDisplay } from './AvatarDisplay';
 import { getLeaderboardData, type LeaderboardEntry } from '@/services/userProgressService';
@@ -75,7 +75,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
       >
         <CloseIcon className="h-6 w-6" />
       </button>
-      <div className="px-20 py-8 text-white">
+      <div className="px-28 py-8 text-white">
         <Tabs defaultValue="allgemein" className="w-full">
         <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
           <TabsTrigger value="allgemein" className={cn(tabTriggerClasses)}>
