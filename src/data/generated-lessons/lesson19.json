@@ -1,0 +1,135 @@
+
+{
+  "id": "lesson19",
+  "title": "Schreiben in verschiedenen Stilen",
+  "description": "Lerne, KI zu nutzen, um Texte in verschiedenen Stilen und Tonalitäten zu verfassen.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Stilvorgaben machen",
+          "content": "Anstatt generische Texte zu erhalten, kannst du einer KI einen bestimmten Stil oder Autor vorgeben. Dadurch werden die generierten Texte lebendiger und passender für den jeweiligen Zweck.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Stil-Anpassung",
+          "question": "Warum ist es nützlich, einer KI einen bestimmten Schreibstil vorzugeben?",
+          "options": [
+            "Um die KI langsamer zu machen.",
+            "Um die Qualität, den Ton und die Wirkung des generierten Textes gezielt zu steuern.",
+            "Um sicherzustellen, dass der Text immer gleich klingt.",
+            "Um die KI zu verwirren."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Informellen Stil anwenden",
+          "question": "Du möchtest einen kurzen Text über die Vorteile von Sport. Formuliere einen Prompt, der die KI anweist, in einem lockeren, motivierenden Ton zu schreiben.",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Schreibe einen kurzen, motivierenden Absatz über die Vorteile von Sport. Verwende dabei eine lockere und freundliche Sprache.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Bekannten Stil imitieren",
+          "question": "Wie würdest du einen Prompt formulieren, um einen kurzen Absatz über das Universum im Stil des berühmten Wissenschaftlers Carl Sagan zu erhalten?",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Schreibe einen kurzen Absatz über die Wunder des Universums im Stil von Carl Sagan, mit einem Gefühl von Ehrfurcht und Staunen.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Eigenen Schreibstil nachahmen",
+          "taskDescription": "Du möchtest, dass eine KI eine E-Mail in deinem persönlichen Stil verfasst. Beschreibe, wie du einen Prompt gestalten würdest, indem du der KI Beispiele deiner bisherigen E-Mails gibst, damit sie deinen Ton und deine typischen Formulierungen lernen kann.",
+          "evaluationGuidance": "1. Erkennt der Benutzer die Notwendigkeit, Beispiele des eigenen Stils bereitzustellen? 2. Schlägt der Prompt vor, mehrere E-Mail-Beispiele in den Kontext zu geben? 3. Ist die Anweisung klar, dass die neue E-Mail den Stil der Beispiele nachahmen soll?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Grenzen der Stilimitation",
+          "question": "Warum ist es wichtig, die Ergebnisse zu überprüfen, wenn man eine KI den Stil einer realen Person imitieren lässt, und wo liegen die potenziellen Risiken?",
+          "expectedAnswer": "Man sollte die Ergebnisse überprüfen, weil die KI den Stil möglicherweise übertreibt oder zu einer Karikatur macht. Das Risiko besteht darin, dass der Text unauthentisch wirkt oder wichtige Nuancen der Persönlichkeit verloren gehen. Bei öffentlichen Figuren könnten auch rechtliche oder ethische Probleme entstehen.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Stil-Anwendung",
+          "question": "Welche der folgenden Anweisungen eignet sich am besten, um den Stil eines KI-generierten Textes zu steuern?",
+          "options": [
+            "Mach den Text länger.",
+            "Schreibe im Stil eines professionellen Journalisten.",
+            "Verwende mehr Adjektive.",
+            "Wiederhole den ersten Satz."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Komplexe Stilanweisung",
+          "taskDescription": "Du bist ein Marketing-Manager für eine Luxusuhrenmarke. Erstelle einen Prompt, der die KI anweist, eine Produktbeschreibung zu verfassen. Der Stil soll elegant, exklusiv und technisch präzise sein. Gib der KI die Rolle eines Uhren-Connaisseurs und fordere sie auf, Begriffe wie 'Handwerkskunst', 'Präzision' und 'zeitloses Design' zu verwenden.",
+          "evaluationGuidance": "1. Enthält der Prompt eine klare Rollenzuweisung (Uhren-Connaisseur)? 2. Werden die stilistischen Vorgaben (elegant, exklusiv) klar kommuniziert? 3. Werden die geforderten Schlüsselbegriffe in der Anweisung erwähnt? 4. Ist der Prompt spezifisch genug, um einen hochwertigen Werbetext für eine Luxusmarke zu erzeugen?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}

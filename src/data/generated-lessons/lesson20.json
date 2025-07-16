@@ -1,0 +1,135 @@
+
+{
+  "id": "lesson20",
+  "title": "E-Mails schreiben",
+  "description": "Lerne, wie du KI nutzt, um schnell und effektiv E-Mails zu verfassen und zu beantworten.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "KI als E-Mail-Assistent",
+          "content": "Künstliche Intelligenz kann beim Schreiben verschiedenster E-Mails helfen – von einfachen Krankmeldungen bis hin zu komplexen Geschäftsanfragen. Sie kann den richtigen Ton treffen und wichtige Informationen strukturieren.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Anpassung von E-Mails",
+          "question": "Was ist der Hauptvorteil bei der Nutzung von KI für E-Mails?",
+          "options": [
+            "Die KI schreibt immer nur sehr kurze E-Mails.",
+            "Die Möglichkeit, den Stil, Ton und Inhalt einer E-Mail gezielt an den Empfänger und die Situation anzupassen.",
+            "Die KI kann nur auf Englisch antworten.",
+            "Die KI kann keine Anhänge verwalten."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Einfache E-Mail erstellen",
+          "question": "Du musst dich für heute bei deinem Chef krankmelden. Schreibe einen einfachen Prompt, der alle nötigen Informationen enthält (dein Name: Alex, Name des Chefs: Frau Meier).",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Mein Name: Alex. Name des Chefs: Frau Meier. Schreibe eine kurze, professionelle E-Mail, um mich für heute krankzumelden.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "E-Mails zusammenfassen",
+          "question": "Du erhältst eine sehr lange E-Mail von einem Kollegen mit vielen Details zu einem Projekt. Wie würdest du einen Prompt formulieren, um die wichtigsten Punkte und die daraus resultierenden Aufgaben für dich zu extrahieren?",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Fasse die folgende E-Mail zusammen und erstelle eine Liste mit allen Action Items für mich: [LANGE E-MAIL EINFÜGEN]'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Kaltakquise-E-Mail personalisieren",
+          "taskDescription": "Du möchtest eine Kaltakquise-E-Mail an einen potenziellen Kunden senden. Du hast sein LinkedIn-Profil. Beschreibe, wie du einen Prompt gestalten würdest, der relevante Informationen aus dem Profil (z.B. seine aktuelle Position, ein kürzliches Projekt) aufgreift, um die E-Mail persönlicher und relevanter zu machen.",
+          "evaluationGuidance": "1. Erkennt der Benutzer den Wert von Personalisierung in Kaltakquise-Mails? 2. Schlägt der Prompt vor, spezifische Informationen aus dem LinkedIn-Profil als Kontext zu verwenden? 3. Ist die Anweisung klar, dass die E-Mail einen Bezug zu diesen Informationen herstellen soll? 4. Ist der resultierende Prompt geeignet, um eine höhere Antwortrate zu erzielen?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Grenzen der Automatisierung",
+          "question": "Warum ist es trotz der Hilfe von KI immer noch wichtig, eine generierte E-Mail vor dem Absenden sorgfältig zu überprüfen, besonders bei wichtigen oder sensiblen Themen?",
+          "expectedAnswer": "Eine Überprüfung ist entscheidend, weil die KI den Kontext oder die feinen Nuancen einer Beziehung falsch interpretieren könnte. Fehler, unpassender Ton oder sachliche Ungenauigkeiten können schnell zu Missverständnissen oder einem unprofessionellen Eindruck führen. Der Mensch behält die finale Kontrolle über die Botschaft.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Stil-Anpassung",
+          "question": "Welcher Prompt eignet sich am besten, um eine humorvolle Abwesenheitsnotiz zu erstellen?",
+          "options": [
+            "Schreibe eine E-Mail.",
+            "Schreibe eine Abwesenheitsnotiz.",
+            "Schreibe eine humorvolle, aber professionelle Abwesenheitsnotiz, in der du einen witzigen Grund für deine Abwesenheit nennst.",
+            "Fasse meine Abwesenheit zusammen."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Eine komplexe Antwort-E-Mail erstellen",
+          "taskDescription": "Du hast eine lange E-Mail von einem Kunden erhalten, der sich über ein Problem mit eurem Produkt beschwert, aber auch positives Feedback gibt. Erstelle einen Prompt, der die KI anweist, eine Antwort zu verfassen. Die Antwort soll 1. die Beschwerde anerkennen und eine Lösung vorschlagen, 2. sich für das positive Feedback bedanken und 3. einen professionellen und empathischen Ton wahren.",
+          "evaluationGuidance": "1. Fordert der Prompt die KI auf, alle drei Teile (Beschwerde anerkennen, Lösung vorschlagen, für Feedback danken) zu behandeln? 2. Wird der gewünschte Tonfall (professionell, empathisch) klar vorgegeben? 3. Ist der Prompt so strukturiert, dass die KI eine ausgewogene und kundenorientierte Antwort erstellen kann? 4. Beinhaltet der Prompt die ursprüngliche E-Mail als Kontext?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
