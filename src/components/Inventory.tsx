@@ -106,11 +106,25 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
     : '-';
 
   const renderSummaryWithBold = (text: string) => {
-    return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={index}>{part.slice(2, -2)}</strong>;
+    // Split the text by our bold markers, keeping the markers.
+    // Also, we want to split by newlines to process them.
+    return text.split(/(\*\*.*?\*\*|\n)/g).map((part, index) => {
+      if (part === '\n') {
+        return <br key={index} />;
+      }
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const content = part.slice(2, -2);
+        const isHeading = content.endsWith(':'); // A simple heuristic for headings
+        if (isHeading) {
+          return (
+            <h4 key={index} className="text-lg font-semibold mt-4 mb-2">
+              {content}
+            </h4>
+          );
         }
-        return part;
+        return <strong key={index}>{content}</strong>;
+      }
+      return part;
     });
   };
 
@@ -191,7 +205,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
                             <AccordionTrigger className="text-white hover:text-gray-300 text-left text-3xl font-bold">
                                 {summary.title}
                             </AccordionTrigger>
-                            <AccordionContent className="text-white/80 whitespace-pre-line p-4 bg-black/20 rounded-b-lg">
+                            <AccordionContent className="text-white/80 p-4 bg-black/20 rounded-b-lg">
                                 {renderSummaryWithBold(summary.summary)}
                             </AccordionContent>
                         </AccordionItem>
