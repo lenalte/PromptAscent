@@ -1,0 +1,135 @@
+
+{
+  "id": "lesson23",
+  "title": "Lernpartner",
+  "description": "Erfahre, wie du KI als effektiven Partner beim Lernen einsetzen kannst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "KI als dein persönlicher Tutor",
+          "content": "LLMs wie ChatGPT sind hervorragende Lernwerkzeuge. Sie können komplexe Begriffe einfach erklären, dir beim Verstehen schwieriger Textpassagen helfen und dich sogar mit maßgeschneiderten Fragen zu deinen Lerninhalten abfragen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Hauptvorteil beim Lernen",
+          "question": "Was ist ein großer Vorteil bei der Nutzung von KI als Lernpartner?",
+          "options": [
+            "Die KI lernt an deiner Stelle.",
+            "Die KI kann dir personalisierte Erklärungen und Quizfragen zu jedem Thema erstellen.",
+            "Die KI hat immer dieselbe Antwort auf eine Frage.",
+            "Die KI kann nur bei mathematischen Fächern helfen."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Begriffe erklären lassen",
+          "question": "Du liest in einem Biologiebuch den Satz: 'Die Mitose ist ein zentraler Prozess der Zellteilung.' und verstehst den Begriff 'Mitose' nicht vollständig. Schreibe einen Prompt, der die KI bittet, dir diesen Begriff einfach zu erklären.",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Erkläre mir in einfachen Worten, was Mitose ist.' oder 'Was bedeutet Mitose im Kontext der Zellteilung?'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Quizfragen generieren",
+          "question": "Du bereitest dich auf eine Geschichtsprüfung über die Französische Revolution vor. Wie würdest du einen Prompt formulieren, um 5 Quizfragen zu diesem Thema zu erhalten?",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Erstelle 5 Quizfragen zum Thema Französische Revolution für eine Geschichtsprüfung.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Lernen mit eigenen Notizen",
+          "taskDescription": "Du hast dir Notizen zum Thema 'Marketing-Grundlagen' gemacht. Erstelle einen Prompt, der die KI anweist, dir basierend auf deinen Notizen drei Multiple-Choice-Fragen zu erstellen, um dein Wissen zu testen. Füge deine Notizen dem Prompt als Kontext hinzu.",
+          "evaluationGuidance": "1. Fordert der Prompt die Erstellung von Multiple-Choice-Fragen an? 2. Wird die Anzahl der Fragen (drei) spezifiziert? 3. Beinhaltet der Prompt die eigenen Notizen als Kontext für die KI? 4. Sind die resultierenden Fragen relevant für die bereitgestellten Notizen?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Grenzen der KI als Lernpartner",
+          "question": "Warum ist es wichtig, die von einer KI gegebenen Erklärungen oder Antworten kritisch zu hinterfragen und nicht blind darauf zu vertrauen?",
+          "expectedAnswer": "Es ist wichtig, kritisch zu bleiben, weil KI-Modelle manchmal Fehler machen, Informationen veraltet sein können oder sie den Kontext falsch verstehen. Eine Überprüfung mit zuverlässigen Quellen wie Lehrbüchern oder Fachartikeln ist unerlässlich, um sicherzustellen, dass man korrekte Informationen lernt.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Effektives Lernen",
+          "question": "Welche Vorgehensweise ist am effektivsten, um mit einer KI für eine Prüfung zu lernen?",
+          "options": [
+            "Die KI bitten, die Prüfung für einen zu schreiben.",
+            "Sich nur die Antworten auf Quizfragen geben lassen, ohne sie selbst zu versuchen.",
+            "Die KI bitten, komplexe Themen zu erklären und dann das eigene Verständnis mit selbst generierten Quizfragen zu überprüfen.",
+            "Die KI bitten, nur lustige Fakten zum Thema zu erzählen."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einen Lernplan erstellen",
+          "taskDescription": "Du musst dich in einer Woche auf eine wichtige Prüfung im Fach 'Künstliche Intelligenz' vorbereiten. Erstelle einen Prompt, der die KI anweist, einen detaillierten 5-Tages-Lernplan zu erstellen. Der Plan soll die wichtigsten Themen des Faches (z.B. Neuronale Netze, Maschinelles Lernen, NLP) auf die Tage verteilen und für jeden Tag spezifische Lernziele und eine kleine Übungsaufgabe vorschlagen.",
+          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung eines Lernplans an? 2. Werden die Dauer (5 Tage) und das Fach (KI) genannt? 3. Werden die wichtigsten zu behandelnden Themen im Prompt erwähnt? 4. Beinhaltet die Anweisung, Lernziele und Übungsaufgaben für jeden Tag zu definieren? 5. Ist der resultierende Plan eine nützliche und strukturierte Hilfe für die Prüfungsvorbereitung?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}

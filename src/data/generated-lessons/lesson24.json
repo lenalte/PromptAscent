@@ -1,0 +1,142 @@
+
+{
+  "id": "lesson24",
+  "title": "Digitales Marketing",
+  "description": "Erfahre, wie KI bei verschiedenen Aufgaben im digitalen Marketing eingesetzt werden kann.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "KI als Marketing-Assistent",
+          "content": "Künstliche Intelligenz ist ein vielseitiges Werkzeug für digitales Marketing. Sie kann bei der Keyword-Recherche, der Erstellung von Social-Media-Inhalten, der Anzeigenoptimierung und der Analyse von Daten helfen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Rolle zuweisen",
+          "content": "Um die besten Ergebnisse zu erzielen, ist es hilfreich, der KI eine Rolle wie 'Senior Digital Marketing Specialist' zuzuweisen. Dadurch werden die Antworten fachmännischer und auf die Marketing-Perspektive zugeschnitten.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Anwendungsbereich im Marketing",
+          "question": "Welche der folgenden Aufgaben ist ein typischer Anwendungsfall für KI im digitalen Marketing?",
+          "options": [
+            "Den Kaffee für das Marketing-Team kochen.",
+            "Die Buchhaltung des Unternehmens führen.",
+            "SEO-freundliche Titel-Tags und Meta-Beschreibungen für einen Blogartikel generieren.",
+            "Den CEO des Unternehmens anrufen."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Keywords generieren",
+          "question": "Du betreibst einen Online-Shop für handgemachte Seifen. Schreibe einen Prompt, der die KI bittet, eine Liste von relevanten Keywords für deine Produkte zu generieren.",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Generiere eine Liste von SEO-Keywords für einen Online-Shop, der handgemachte, natürliche Seifen verkauft.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Social-Media-Post erstellen",
+          "question": "Du möchtest einen neuen handgemachten Lavendel-Seifenbarren auf Instagram bewerben. Wie würdest du einen Prompt formulieren, um einen ansprechenden Beitragstext inklusive relevanter Hashtags zu erhalten?",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Schreibe einen kurzen, ansprechenden Instagram-Post, um einen neuen handgemachten Lavendel-Seifenbarren zu bewerben. Füge am Ende 5 relevante Hashtags hinzu.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Anzeigentexte für PPC variieren",
+          "taskDescription": "Du schaltest eine Google-Anzeige für deinen Seifen-Shop. Erstelle einen Prompt, der die KI anweist, 3 verschiedene, überzeugende Überschriften für die Anzeige zu schreiben. Jede Überschrift darf maximal 30 Zeichen lang sein und sollte einen klaren Call-to-Action enthalten.",
+          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung von 3 Anzeigenüberschriften an? 2. Wird die Längenbeschränkung (max. 30 Zeichen) erwähnt? 3. Beinhaltet die Anweisung die Forderung nach einem Call-to-Action? 4. Sind die resultierenden Überschriften für eine Google-Anzeige geeignet?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Zielgruppenansprache",
+          "question": "Warum ist es wichtig, bei Marketing-Prompts immer die Zielgruppe zu berücksichtigen und dies der KI mitzuteilen?",
+          "expectedAnswer": "Die Berücksichtigung der Zielgruppe ist entscheidend, weil die Tonalität, Wortwahl und die hervorgehobenen Vorteile je nach Publikum stark variieren. Eine Ansprache für Teenager unterscheidet sich grundlegend von einer für Geschäftsleute. Indem man die Zielgruppe im Prompt definiert, kann die KI den Inhalt passgenau und damit wirksamer gestalten.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Technisches SEO",
+          "question": "Welche der folgenden technischen SEO-Aufgaben kann eine KI unterstützen?",
+          "options": [
+            "Die Ladezeit der Webseite physisch verbessern.",
+            "Hreflang-Tags für mehrsprachige Webseiten erstellen.",
+            "Einen neuen Server für die Webseite kaufen.",
+            "Die Domain der Webseite ändern."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Eine komplette Kampagnenidee entwickeln",
+          "taskDescription": "Du planst eine Social-Media-Kampagne für die Einführung eines neuen, nachhaltigen Kaffeebechers. Erstelle einen umfassenden Prompt, der die KI anweist, eine Kampagnenidee zu entwickeln. Der Prompt soll fordern: 1. Eine Zielgruppendefinition (umweltbewusste Studenten). 2. Drei Ideen für Social-Media-Posts (Instagram & TikTok). 3. Fünf passende Hashtags. 4. Eine Idee für einen kleinen Wettbewerb zur Einführung.",
+          "evaluationGuidance": "1. Enthält der Prompt alle vier geforderten Elemente (Zielgruppe, Post-Ideen, Hashtags, Wettbewerb)? 2. Ist die Zielgruppe klar definiert? 3. Sind die Anweisungen für die Post-Ideen spezifisch genug für die genannten Plattformen? 4. Ist die resultierende Kampagnenidee schlüssig und für das Produkt geeignet?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
