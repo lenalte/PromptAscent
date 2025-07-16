@@ -118,7 +118,6 @@ const renderSummaryWithBold = (text: string) => {
             );
         }
 
-        // Process for bold text
         const parts = line.split(/(\*\*.*?\*\*)/g).filter(part => part);
         return (
             <p key={`line-${lineIndex}`} className="mb-2">
@@ -205,7 +204,7 @@ const renderSummaryWithBold = (text: string) => {
               {unlockedSummaries.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
                     {unlockedSummaries.map((summary) => (
-                        <AccordionItem key={summary.id} value={summary.id}>
+                        <AccordionItem key={summary.id} value={summary.id} className="border-b border-[hsl(var(--foreground))]">
                             <AccordionTrigger className="text-white hover:text-gray-300 text-3xl font-bold hover:no-underline">
                                 {summary.title}
                             </AccordionTrigger>
