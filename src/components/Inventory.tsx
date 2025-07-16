@@ -206,7 +206,7 @@ const renderSummaryWithBold = (text: string) => {
                 <Accordion type="single" collapsible className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
                     {unlockedSummaries.map((summary) => (
                         <AccordionItem key={summary.id} value={summary.id}>
-                            <AccordionTrigger className="text-white hover:text-gray-300 text-left text-3xl font-bold">
+                            <AccordionTrigger className="text-white hover:text-gray-300 text-3xl font-bold hover:no-underline">
                                 {summary.title}
                             </AccordionTrigger>
                             <AccordionContent className="text-white/80 p-4 bg-black/20 rounded-b-lg">
