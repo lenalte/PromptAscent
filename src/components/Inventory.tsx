@@ -106,27 +106,32 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
     : '-';
 
   const renderSummaryWithBold = (text: string) => {
-    // Split the text by our bold markers, keeping the markers.
-    // Also, we want to split by newlines to process them.
-    return text.split(/(\*\*.*?\*\*|\n)/g).map((part, index) => {
-      if (part === '\n') {
-        return <br key={index} />;
-      }
-      if (part.startsWith('**') && part.endsWith('**')) {
-        const content = part.slice(2, -2);
-        const isHeading = content.endsWith(':'); // A simple heuristic for headings
-        if (isHeading) {
-          return (
-            <h4 key={index} className="text-lg font-semibold mt-4 mb-2">
-              {content}
-            </h4>
-          );
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    
+    return lines.map((line, lineIndex) => {
+        if (line.trim().startsWith('# ')) {
+            const headingText = line.trim().substring(2);
+            return (
+                <h4 key={`line-${lineIndex}`} className="text-lg font-semibold mt-4 mb-2">
+                    {headingText}
+                </h4>
+            );
         }
-        return <strong key={index}>{content}</strong>;
-      }
-      return part;
+
+        // Process for bold text
+        const parts = line.split(/(\*\*.*?\*\*)/g).filter(part => part);
+        return (
+            <p key={`line-${lineIndex}`} className="mb-2">
+                {parts.map((part, partIndex) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={partIndex}>{part.slice(2, -2)}</strong>;
+                    }
+                    return part;
+                })}
+            </p>
+        );
     });
-  };
+};
 
   const tabTriggerClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
   const tabBorderSpanClasses = "pointer-events-none absolute border-solid";
