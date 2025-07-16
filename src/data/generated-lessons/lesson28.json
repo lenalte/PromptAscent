@@ -1,0 +1,126 @@
+
+{
+  "id": "lesson28",
+  "title": "Zero-Shot Chain-of-Thought",
+  "description": "Lerne, wie du die Denkprozesse von KIs durch schrittweise Anweisungen ohne explizite Beispiele verbesserst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was ist Zero-Shot CoT Prompting?",
+          "content": "Zero-Shot Chain-of-Thought (CoT) ist eine vereinfachte Methode, die die logischen Fähigkeiten von LLMs verbessert. Anstatt Beispiele zu geben, fügt man einfach die Anweisung 'Denken wir Schritt für Schritt nach.' an den Prompt an. Dies veranlasst die KI, ihren Denkprozess offenzulegen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Unterschied zu CoT",
+          "question": "Was ist der Hauptunterschied zwischen Zero-Shot CoT und normalem CoT-Prompting?",
+          "options": [
+            "Zero-Shot CoT ist komplizierter.",
+            "Zero-Shot CoT funktioniert nur bei Bildmodellen.",
+            "Zero-Shot CoT benötigt keine expliziten Beispiele (Few-Shot-Exemplare) im Prompt.",
+            "Zero-Shot CoT liefert immer kürzere Antworten."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Anwendung bei einer Matheaufgabe",
+          "question": "Du hast die Frage: 'Wenn John 5 Birnen hat, 2 isst, 5 weitere kauft und dann 3 an seinen Freund gibt, wie viele Birnen hat er noch?' Wie würdest du einen Zero-Shot CoT Prompt formulieren, um die richtige Antwort zu erhalten?",
+          "expectedAnswer": "Man würde die Frage stellen und am Ende einfach hinzufügen: 'Denken wir Schritt für Schritt nach.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Variationen des magischen Satzes",
+          "taskDescription": "Der Satz 'Denken wir Schritt für Schritt nach' ist sehr effektiv. Formuliere zwei alternative Sätze, die eine ähnliche Wirkung haben könnten, um die KI zu veranlassen, ihren Denkprozess für eine Logikaufgabe offenzulegen (z.B. 'Lass uns das Problem in Teilschritte zerlegen').",
+          "evaluationGuidance": "1. Hat der Benutzer zwei alternative Formulierungen erstellt? 2. Zielen diese Formulierungen darauf ab, die KI zu einer schrittweisen Analyse zu bewegen? 3. Sind die Alternativen klar und verständlich?",
+          "pointsAwarded": 10,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Grenzen von Zero-Shot CoT",
+          "question": "Warum ist Zero-Shot CoT bei sehr komplexen Aufgaben oft nicht so effektiv wie das traditionelle CoT-Prompting mit expliziten Beispielen?",
+          "expectedAnswer": "Bei sehr komplexen Aufgaben reicht die einfache Anweisung 'Schritt für Schritt' manchmal nicht aus. Das traditionelle CoT mit Beispielen gibt der KI ein konkretes Muster für die Art der Argumentation vor, was bei sehr nuancierten Problemen zu besseren Ergebnissen führt.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Hauptanwendungsfall",
+          "question": "Für welche Art von Aufgabe eignet sich Zero-Shot CoT besonders gut?",
+          "options": [
+            "Das Schreiben eines kreativen Gedichts.",
+            "Das Lösen einer einfachen bis mittelschweren Rechenaufgabe.",
+            "Die Generierung eines Bildes.",
+            "Die Übersetzung eines sehr langen Romans."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einen vollständigen Prozess simulieren",
+          "taskDescription": "Der Zero-Shot-CoT-Prozess besteht technisch aus zwei Schritten: 1. Eine Denkprozess-Antwort generieren. 2. Aus dieser Antwort die endgültige Lösung extrahieren. Erstelle einen ersten Prompt für eine Logikfrage, der den Denkprozess hervorruft. Formuliere dann einen zweiten Prompt, der die generierte Denkprozess-Antwort als Kontext nimmt und die KI anweist, daraus die finale, kurze Antwort zu extrahieren.",
+          "evaluationGuidance": "1. Hat der Benutzer zwei separate Prompts erstellt? 2. Wendet der erste Prompt die Zero-Shot CoT Technik korrekt an? 3. Nimmt der zweite Prompt die Ausgabe des ersten als Kontext auf? 4. Ist die Anweisung im zweiten Prompt klar darauf ausgerichtet, nur die finale Antwort zu extrahieren?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}

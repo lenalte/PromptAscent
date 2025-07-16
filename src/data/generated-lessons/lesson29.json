@@ -1,0 +1,126 @@
+
+{
+  "id": "lesson29",
+  "title": "Self-Consistency",
+  "description": "Lerne, wie du durch Mehrheitsentscheidungen die Genauigkeit von KI-Antworten erhöhst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was ist Self-Consistency?",
+          "content": "Self-Consistency ist eine Technik, bei der man die KI mehrmals mit demselben Prompt auffordert und dann die am häufigsten genannte Antwort als das endgültige Ergebnis wählt. Es ist eine Art Mehrheitsentscheid, der die Zuverlässigkeit erhöht.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Kombination mit CoT",
+          "question": "Mit welcher anderen Technik wird Self-Consistency oft kombiniert, um die besten Ergebnisse zu erzielen?",
+          "options": [
+            "Role Prompting",
+            "Zero-Shot Prompting",
+            "Chain-of-Thought (CoT) Prompting",
+            "Instruction Prompting"
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Self-Consistency anwenden",
+          "question": "Du hast eine komplexe Logikfrage. Beschreibe die Schritte, wie du mit der Self-Consistency-Methode eine möglichst zuverlässige Antwort erhalten würdest.",
+          "expectedAnswer": "1. Ich würde die Logikfrage nehmen und sie mit einer CoT-Anweisung ('Denken wir Schritt für Schritt nach') versehen. 2. Ich würde diesen Prompt mehrmals (z.B. 3-5 Mal) an die KI senden. 3. Ich würde die verschiedenen Antworten sammeln und die am häufigsten genannte Schlussfolgerung als die wahrscheinlichste Antwort auswählen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Anwendung bei einer Klassifizierungsaufgabe",
+          "taskDescription": "Du hast eine E-Mail und bist unsicher, ob sie als 'WICHTIG' oder 'NICHT WICHTIG' einzustufen ist. Beschreibe, wie du Self-Consistency nutzen würdest, um eine fundierte Entscheidung zu treffen. Erstelle dafür einen passenden CoT-Prompt als Grundlage.",
+          "evaluationGuidance": "1. Erstellt der Benutzer einen klaren CoT-Prompt zur Klassifizierung der E-Mail? 2. Beschreibt der Benutzer korrekt den Prozess des mehrfachen Ausführens des Prompts? 3. Wird die Mehrheitsentscheidung als finale Klassifizierungsmethode genannt?",
+          "pointsAwarded": 10,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Warum funktioniert Self-Consistency?",
+          "question": "Erkläre, warum das Generieren mehrerer Denkprozesse und die Auswahl der Mehrheitsantwort oft zu einem besseren Ergebnis führt als eine einzelne Antwort.",
+          "expectedAnswer": "Es funktioniert, weil verschiedene Denkprozesse zu demselben Problem führen können. Wenn mehrere unterschiedliche logische Wege zur gleichen Antwort führen, ist diese Antwort wahrscheinlich robuster und korrekter. Einzelne Fehler oder falsche Annahmen in einem Denkprozess werden durch die Mehrheit der korrekten Prozesse ausgeglichen.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Hauptvorteil",
+          "question": "Was ist der Hauptvorteil von Self-Consistency?",
+          "options": [
+            "Die Antworten werden immer kreativer.",
+            "Die Antworten werden kürzer.",
+            "Die Genauigkeit und Zuverlässigkeit der Antworten werden durch Reduzierung von Zufallsfehlern erhöht.",
+            "Die KI antwortet schneller."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Self-Consistency für eine kreative Aufgabe",
+          "taskDescription": "Du möchtest den besten Slogan für ein neues Produkt finden. Beschreibe, wie du Self-Consistency anwenden würdest, um nicht nur einen, sondern mehrere gute Vorschläge zu erhalten und dann den besten auszuwählen. Erstelle dazu einen passenden CoT-Prompt, der die KI anleitet, über die Zielgruppe und die Vorteile des Produkts nachzudenken, bevor sie Slogans vorschlägt.",
+          "evaluationGuidance": "1. Ist der CoT-Prompt so gestaltet, dass er die KI zu einer durchdachten Slogan-Generierung anleitet? 2. Beschreibt der Benutzer den Prozess, mehrere Antworten zu generieren? 3. Wird ein klares Kriterium genannt, um den 'besten' Slogan aus den generierten Antworten auszuwählen (z.B. der am häufigsten vorgeschlagene oder eine manuelle Auswahl basierend auf Qualität)?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
