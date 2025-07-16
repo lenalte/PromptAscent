@@ -20,6 +20,8 @@ import { PointsIcon } from '@/components/icons/PointsIcon';
 import { ProfilIcon } from "../icons/ProfilIcon";
 import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
 import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 interface SidebarProps {
     initialContentOpen?: boolean;
@@ -113,7 +115,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     const isLessonEffectivelyUnlocked = (lessonId: string) => {
         if (!currentUser) return false;
-        return unlockedLessonIds.includes(lessonId);
+        // A lesson is unlocked if it's in the unlocked list OR if it's already completed.
+        return unlockedLessonIds.includes(lessonId) || (userProgress?.completedLessons.includes(lessonId) ?? false);
     };
 
     const iconContainerLeftPadding = 0.5;
