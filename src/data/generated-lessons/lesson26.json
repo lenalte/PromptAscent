@@ -1,0 +1,133 @@
+
+{
+  "id": "lesson26",
+  "title": "Wissensdatenbank-Chatbot",
+  "description": "Lerne, wie du Chatbots erstellst, die auf Basis von Wissensdatenbanken antworten.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was ist ein Wissensdatenbank-Chatbot?",
+          "content": "Im Gegensatz zu traditionellen Chatbots mit festen Antworten, nutzt ein Wissensdatenbank-Chatbot Dokumente als Kontext, um Fragen zu beantworten. Das macht seine Antworten flexibler und spezifischer auf die jeweilige Anfrage zugeschnitten.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Hauptherausforderung",
+          "question": "Warum kann man nicht einfach die gesamte Wissensdatenbank in einen einzigen Prompt an die KI übergeben?",
+          "options": [
+            "Weil es zu teuer wäre.",
+            "Weil die KI dann zu langsam antworten würde.",
+            "Weil LLMs eine maximale Kontextlänge (Token-Limit) haben, die nicht überschritten werden darf.",
+            "Weil die Wissensdatenbank zu viele verschiedene Themen enthält."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Zweistufiger Prozess",
+          "content": "Ein solcher Chatbot funktioniert in zwei Schritten: 1. Semantische Suche, um das relevanteste Dokument aus der Wissensdatenbank zu finden. 2. Übergabe dieses Dokuments als Kontext an die KI, um eine Antwort zu generieren.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Prompt erstellen",
+          "question": "Du hast ein Dokument, das den Login-Prozess für eine App beschreibt. Wie würdest du einen Prompt formulieren, der der KI (in der Rolle eines Chatbots) dieses Dokument als Kontext gibt, um eine Nutzerfrage zu beantworten?",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Du bist ein hilfsbereiter Chatbot. Beantworte die folgende Frage des Nutzers nur auf Basis des bereitgestellten Kontexts. START KONTEXT [Dokument einfügen] END KONTEXT. Nutzerfrage: [Frage einfügen]'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Umgang mit unklaren Fragen",
+          "taskDescription": "Ein Nutzer fragt nur 'Kann nicht einloggen'. Der Kontext-Dokument beschreibt den Login für die Website und die mobile App. Erstelle einen Prompt, der die KI anweist, eine klärende Gegenfrage zu stellen, bevor sie eine detaillierte Antwort gibt.",
+          "evaluationGuidance": "1. Erkennt der Prompt die Mehrdeutigkeit der Nutzerfrage? 2. Weist der Prompt die KI an, eine Gegenfrage zur Unterscheidung (Website vs. App) zu stellen? 3. Zielt die Anweisung darauf ab, dem Nutzer gezielter zu helfen, anstatt eine allgemeine Antwort zu geben?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Gefahr der Halluzination",
+          "question": "Was ist das größte Risiko, wenn die semantische Suche kein passendes Dokument findet und die KI die Nutzerfrage trotzdem beantworten soll?",
+          "expectedAnswer": "Das größte Risiko ist, dass die KI 'halluziniert', also Informationen erfindet, die nicht in der Wissensdatenbank stehen. Für einen Kundenservice-Chatbot kann dies zu falschen Anweisungen und unzufriedenen Kunden führen.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Rolle des Kontexts",
+          "question": "Welche Rolle spielt der Kontext (das Dokument aus der Wissensdatenbank) im Prompt?",
+          "options": [
+            "Er dient nur als Beispiel und wird ignoriert.",
+            "Er gibt der KI die alleinige Informationsgrundlage, um die Nutzerfrage zu beantworten.",
+            "Er wird verwendet, um die Rechtschreibung der Nutzerfrage zu korrigieren.",
+            "Er wird am Ende der Antwort angehängt."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einen vollständigen Prompt entwerfen",
+          "taskDescription": "Entwirf einen vollständigen Prompt für einen Wissensdatenbank-Chatbot. Der Prompt soll eine Rolle ('fortschrittlicher Chatbot namens Skippy'), die Kontext-Markierungen (START/END KONTEXT), einen Platzhalter für den Konversationsverlauf und einen Platzhalter für die aktuelle Nutzerfrage enthalten.",
+          "evaluationGuidance": "1. Enthält der Prompt alle geforderten Elemente (Rolle, Kontext-Markierungen, Platzhalter)? 2. Ist die Rollenzuweisung klar? 3. Sind die Kontext-Markierungen eindeutig und helfen sie, den Inhalt zu strukturieren? 4. Ist die Struktur des Prompts logisch und für die Verarbeitung durch eine KI geeignet?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}

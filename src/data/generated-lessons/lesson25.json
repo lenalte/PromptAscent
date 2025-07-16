@@ -1,0 +1,135 @@
+
+{
+  "id": "lesson25",
+  "title": "Unterstützung beim Programmieren",
+  "description": "Lerne, wie du KI für Aufgaben wie Codegenerierung, Debugging und Refactoring einsetzen kannst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "KI als Programmier-Assistent",
+          "content": "LLMs können Programmierer bei einer Vielzahl von Aufgaben unterstützen, darunter das Generieren von Code, das Finden von Fehlern (Debugging), das Umstrukturieren (Refactoring) und das Kommentieren von Code in über 40 Programmiersprachen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Code-Generierung",
+          "question": "Welche der folgenden Aufgaben ist eine typische Anwendung von KI beim Programmieren?",
+          "options": [
+            "Den Code auf einem Server ausführen.",
+            "Eine Python-Funktion aus einer einfachen Beschreibung erstellen.",
+            "Einen neuen Computer für den Entwickler kaufen.",
+            "Den Kaffee für das Entwicklerteam kochen."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Code kommentieren lassen",
+          "question": "Du hast ein unkommentiertes Python-Skript. Schreibe einen Prompt, der die KI anweist, den Code Zeile für Zeile zu kommentieren, um ihn verständlicher zu machen.",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Bitte füge zu dem folgenden Python-Code Zeilenkommentare hinzu, um ihn lesbarer zu machen: [CODE EINFÜGEN]'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Fehler finden (Debugging)",
+          "question": "Ein Python-Skript enthält einen logischen Fehler, der zu einer 'Division by zero'-Fehlermeldung führt. Wie würdest du die KI anweisen, diesen Fehler zu finden und zu korrigieren?",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Bitte debugge den folgenden Python-Code und korrigiere den Fehler, der zu einer Division durch Null führt: [CODE EINFÜGEN]'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Code übersetzen",
+          "taskDescription": "Du hast ein einfaches Skript in Python und möchtest es in JavaScript übersetzen. Erstelle einen Prompt, der die KI anweist, diese Übersetzung durchzuführen. Gib der KI die Rolle eines erfahrenen Entwicklers, der beide Sprachen beherrscht.",
+          "evaluationGuidance": "1. Fordert der Prompt klar die Übersetzung von Python nach JavaScript an? 2. Wird der KI eine passende Expertenrolle zugewiesen? 3. Ist der resultierende JavaScript-Code eine korrekte Übersetzung des Python-Originals? 4. Ist die Anweisung klar genug, um eine genaue Übersetzung zu gewährleisten?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Die Wichtigkeit der Überprüfung",
+          "question": "Warum ist es unerlässlich, von einer KI generierten oder optimierten Code immer sorgfältig zu überprüfen, bevor man ihn in einem echten Projekt verwendet?",
+          "expectedAnswer": "Eine Überprüfung ist unerlässlich, weil die KI möglicherweise nicht den vollen Kontext des Projekts versteht, subtile logische Fehler einbauen oder ineffizienten Code produzieren kann. Der menschliche Entwickler ist letztendlich verantwortlich für die Qualität, Sicherheit und Wartbarkeit des Codes.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Code-Optimierung",
+          "question": "Welche Anweisung ist am besten geeignet, um einen langsamen Code-Abschnitt von einer KI optimieren zu lassen?",
+          "options": [
+            "Mach den Code schöner.",
+            "Füge mehr Kommentare hinzu.",
+            "Optimiere diesen Code für eine bessere Performance und erkläre deine Änderungen.",
+            "Schreibe den Code in einer anderen Sprache."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Eine komplexe Programmieraufgabe lösen",
+          "taskDescription": "Du musst Unit-Tests für eine bestehende Python-Funktion schreiben, die Steuern berechnet. Erstelle einen umfassenden Prompt, der die KI anweist, als 'erfahrener Python-Softwaretest-Ingenieur' zu agieren. Der Prompt soll die Erstellung von mindestens drei Testfällen (z.B. für niedriges, mittleres und hohes Einkommen) mit dem `unittest`-Framework fordern.",
+          "evaluationGuidance": "1. Enthält der Prompt eine klare Rollenzuweisung (Testingenieur)? 2. Wird die Erstellung von Unit-Tests für eine spezifische Funktion gefordert? 3. Werden die zu testenden Fälle (verschiedene Einkommensstufen) im Prompt genannt? 4. Ist die Anweisung präzise genug, um funktionsfähigen und relevanten Testcode zu generieren?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
