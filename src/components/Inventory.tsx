@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -208,7 +207,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
                             <AccordionTrigger className="text-white hover:text-gray-300 text-3xl font-bold hover:no-underline">
                                 {summary.title}
                             </AccordionTrigger>
-                            <AccordionContent className="text-white/80 pb-4 px-4 rounded-b-lg">
+                            <AccordionContent className="text-white/80 pb-4 px-4">
                                 {renderSummaryWithBold(summary.summary)}
                             </AccordionContent>
                         </AccordionItem>
