@@ -1,0 +1,135 @@
+
+{
+  "id": "lesson17",
+  "title": "Multiple-Choice-Fragen",
+  "description": "Lerne Techniken, um die Leistung von LLMs bei der Lösung von Multiple-Choice-Fragen zu verbessern.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Der 'Magische Satz'",
+          "content": "Einfache Prompts können bei komplexen Fragen versagen. Die Anweisung 'Erklären wir es Schritt für Schritt' (Chain-of-Thought Prompting) veranlasst die KI, ihren Denkprozess offenzulegen, was oft zu genaueren Antworten führt.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Chain-of-Thought Prompting",
+          "question": "Was bewirkt die Anweisung 'Erklären wir es Schritt für Schritt' bei einer KI?",
+          "options": [
+            "Sie verkürzt die Antwort der KI.",
+            "Sie veranlasst die KI, ihre logischen Schritte zur Lösungsfindung zu zeigen.",
+            "Sie stellt sicher, dass die KI immer falsch antwortet.",
+            "Sie ändert die Schriftart der Antwort."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Schritt-für-Schritt-Anweisung anwenden",
+          "question": "Du hast die Frage: 'Ein Zug fährt um 14:00 Uhr in Stadt A ab und kommt um 17:30 Uhr in Stadt B an. Die Entfernung beträgt 210 km. Was ist die Durchschnittsgeschwindigkeit?' Wie würdest du den Prompt formulieren, um eine schrittweise Lösung zu erhalten?",
+          "expectedAnswer": "Man sollte die Frage stellen und am Ende hinzufügen: 'Erklären wir es Schritt für Schritt.' oder 'Lass uns das Schritt für Schritt durchgehen.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Kontext hinzufügen",
+          "question": "Bei einer komplexen Physikfrage zur Berechnung der Fallzeit eines Objekts könnte die KI die Luftreibung ignorieren. Welchen zusätzlichen Kontext könntest du im Prompt geben, um eine genauere Antwort zu erhalten?",
+          "expectedAnswer": "Man könnte die relevante physikalische Formel direkt im Prompt erwähnen, z.B. 'Bitte löse das folgende Problem unter Verwendung der Formel für den freien Fall unter Berücksichtigung der Luftreibung.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Frage umformulieren",
+          "taskDescription": "Du hast eine Multiple-Choice-Frage, bei der du unsicher bist, welche Antwort am besten passt. Anstatt nur nach der richtigen Antwort zu fragen, formuliere den Prompt so um, dass die KI jede einzelne Antwortoption bewerten und erklären soll, warum sie richtig oder falsch ist.",
+          "evaluationGuidance": "1. Ist der Prompt so umformuliert, dass er nach einer Bewertung jeder einzelnen Option fragt? 2. Fordert der Prompt eine Begründung für jede Bewertung? 3. Hilft dieser Ansatz, ein tieferes Verständnis für die Frage und die Antwortmöglichkeiten zu entwickeln?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Wert des Denkprozesses",
+          "question": "Warum ist es wertvoller, die KI ihren Denkprozess zeigen zu lassen, anstatt nur die endgültige Antwort auf eine Multiple-Choice-Frage zu erhalten?",
+          "expectedAnswer": "Den Denkprozess zu sehen, hilft zu verstehen, wie die KI zu ihrer Schlussfolgerung kommt. Man kann logische Fehler erkennen, die Argumentation nachvollziehen und sicherstellen, dass die Antwort nicht nur zufällig richtig ist, sondern auf einer korrekten Herleitung basiert.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Verbesserungstechniken",
+          "question": "Welche der folgenden Techniken verbessert die Antwortqualität bei Multiple-Choice-Fragen NICHT?",
+          "options": [
+            "Den Denkprozess schrittweise erklären lassen.",
+            "Die Frage so kurz wie möglich halten und jeglichen Kontext entfernen.",
+            "Die Antwortmöglichkeiten neu anordnen.",
+            "Zusätzliche relevante Formeln oder Informationen bereitstellen."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Komplexe Analyse-Anweisung",
+          "taskDescription": "Du hast eine komplexe Multiple-Choice-Frage aus einem juristischen Text, bei der es auf Nuancen ankommt. Erstelle einen Prompt, der die KI anweist, als Rechtsexperte zu agieren. Der Prompt soll die KI anleiten, nicht nur die beste Antwort auszuwählen, sondern auch zu erklären, warum die anderen Optionen weniger zutreffend sind, und dabei auf spezifische Paragraphen (fiktiv, z.B. §123) aus einem angenommenen Gesetzestext zu verweisen.",
+          "evaluationGuidance": "1. Weist der Prompt der KI eine passende Expertenrolle zu (Rechtsexperte)? 2. Fordert der Prompt eine Analyse aller Antwortoptionen? 3. Beinhaltet die Anweisung den Verweis auf fiktive Belege (Paragraphen)? 4. Ist der Prompt so gestaltet, dass er zu einer tiefgehenden und gut begründeten Analyse führt?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
