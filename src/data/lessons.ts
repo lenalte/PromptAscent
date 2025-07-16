@@ -3,7 +3,6 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { generateLessonItems } from '@/ai/flows/generate-lesson-items-flow';
 import type { Lesson, LessonItem, LessonStage } from '@/ai/schemas/lesson-schemas'; // Import types from Zod schemas
 
 // Re-export types for use in components
@@ -11,7 +10,6 @@ export type { Lesson, LessonItem, LessonStage, FreeResponseLessonItem, MultipleC
 export type { StageItemStatus, StageProgress, StageStatusValue, BossQuestion } from '@/ai/schemas/lesson-schemas';
 
 
-const LESSON_CONTENT_DIR = path.join(process.cwd(), 'src', 'data', 'lesson-content');
 const LESSON_GENERATED_DIR = path.join(process.cwd(), 'src', 'data', 'generated-lessons');
 const LESSON_MANIFEST_PATH = path.join(process.cwd(), 'src', 'data', 'lessons-manifest.json');
 const LESSON_SUMMARIES_PATH = path.join(process.cwd(), 'src', 'data', 'lesson-summaries.json');
@@ -69,7 +67,6 @@ export async function getAvailableLessons(): Promise<Omit<Lesson, 'stages'>[]> {
 }
 
 // In-memory cache for development to avoid re-reading files constantly.
-// This is different from the file-based caching we are implementing.
 const lessonCache = new Map<string, Lesson>();
 
 export async function getGeneratedLessonById(lessonId: string): Promise<Lesson | undefined> {
@@ -79,7 +76,6 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
 
   const generatedLessonPath = path.join(LESSON_GENERATED_DIR, `${lessonId}.json`);
 
-  // 1. Try to load from the JSON file first
   try {
     const cachedLessonContent = await fs.readFile(generatedLessonPath, 'utf-8');
     const lessonData: Lesson = JSON.parse(cachedLessonContent);
@@ -89,81 +85,12 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
     }
     return lessonData;
   } catch (error: any) {
-    // If file doesn't exist (ENOENT), we generate it. Otherwise, it's a real error.
-    if (error.code !== 'ENOENT') {
-      console.error(`[SERVER LOG] [Lesson: ${lessonId}] Error reading cached lesson file:`, error);
-      throw error; // Rethrow if it's not a "file not found" error
+    console.error(`[SERVER LOG] [Lesson: ${lessonId}] Error reading cached lesson file:`, error);
+    // If file doesn't exist, we can't proceed as dynamic generation is removed.
+    if (error.code === 'ENOENT') {
+        throw new Error(`Lesson content for ${lessonId} not found. Pre-generation is required.`);
     }
-    console.log(`[SERVER LOG] [Lesson: ${lessonId}] No cached JSON found. Proceeding with generation.`);
-  }
-
-  // 2. If JSON doesn't exist, generate and save it
-  const manifest = await getLessonManifest();
-  const lessonEntry = manifest.find(l => l.id === lessonId);
-
-  if (!lessonEntry) {
-    console.warn(`[SERVER LOG] [getGeneratedLessonById] Lesson with ID "${lessonId}" not found in manifest.`);
-    throw new Error(`Lesson with ID "${lessonId}" not found in manifest.`);
-  }
-
-  try {
-    const filePath = path.join(LESSON_CONTENT_DIR, lessonEntry.contentFileName);
-    const rawContent = await fs.readFile(filePath, 'utf-8');
-
-    const MAX_RETRIES = 3;
-    let generatedLessonData: Lesson | undefined;
-
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        console.log(`[SERVER LOG] [Lesson: ${lessonId}] Attempt ${attempt}/${MAX_RETRIES} to generate lesson items via AI...`);
-        generatedLessonData = await generateLessonItems({
-          lessonId: lessonEntry.id,
-          lessonTitle: lessonEntry.title,
-          lessonDescription: lessonEntry.description,
-          rawContent: rawContent,
-        });
-
-        // Basic validation of the generated data
-        if (generatedLessonData && generatedLessonData.stages && generatedLessonData.stages.length === 6) {
-          console.log(`[SERVER LOG] [Lesson: ${lessonId}] Successfully generated lesson on attempt ${attempt}.`);
-          break; // Exit loop on success
-        } else {
-           throw new Error(`AI did not return a valid lesson structure (e.g., not 6 stages).`);
-        }
-      } catch (error) {
-        console.error(`[SERVER LOG] [Lesson: ${lessonId}] AI generation attempt ${attempt} failed:`, error instanceof Error ? error.message : String(error));
-        if (attempt === MAX_RETRIES) {
-          throw new Error(`Failed to generate lesson "${lessonId}" after ${MAX_RETRIES} attempts.`);
-        }
-      }
-    }
-
-    if (!generatedLessonData) {
-      throw new Error(`Failed to generate lesson "${lessonId}" data after all retries.`);
-    }
-
-    // 3. Save the newly generated lesson to a JSON file
-    try {
-      await fs.mkdir(LESSON_GENERATED_DIR, { recursive: true });
-      await fs.writeFile(generatedLessonPath, JSON.stringify(generatedLessonData, null, 2), 'utf-8');
-      console.log(`[SERVER LOG] [Lesson: ${lessonId}] Successfully saved newly generated lesson to ${generatedLessonPath}`);
-    } catch (saveError) {
-      console.error(`[SERVER LOG] [Lesson: ${lessonId}] CRITICAL: Failed to save newly generated lesson to cache file:`, saveError);
-      // We don't rethrow here, just return the data so the user can proceed.
-      // The next load will try to generate it again.
-    }
-    
-    if (process.env.NODE_ENV === 'development') {
-      lessonCache.set(lessonId, generatedLessonData);
-    }
-    return generatedLessonData;
-
-  } catch (error) {
-    console.error(`[SERVER LOG] [Lesson: ${lessonId}] Overall processing failed:`, error instanceof Error ? error.message : String(error));
-    if (error instanceof Error) {
-      throw new Error(`Failed to process lesson "${lessonId}": ${error.message}`);
-    }
-    throw new Error(`Failed to process lesson "${lessonId}" due to an unknown error.`);
+    throw error;
   }
 }
 
