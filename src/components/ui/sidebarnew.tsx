@@ -194,7 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Collapsible Content Area */}
             {isContentOpen && (
-                <div className="w-72 sidebar-background h-full pr-2 pl-2 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
+                <div className="w-72 sidebar-background h-full pr-4 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
                     {activeCategory === 'profil' && (
                         <div>
                             <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
@@ -327,31 +327,30 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <div className="flex-grow pt-4">
                                  {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
-                             <div className="pb-4">
-                                <div className="space-y-1">
-                                    <Link href="/legal/agb" passHref legacyBehavior>
-                                        <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
-                                    </Link>
-                                    <Link href="/legal/datenschutz" passHref legacyBehavior>
-                                        <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
-                                    </Link>
-                                    {isAuthenticated && (
-                                      <button className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive mt-2">
-                                        <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
-                                      </button>
-                                    )}
-                                    {isAuthenticated ? (
-                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2">
+                             <div className="space-y-1 pb-4">
+                                <Link href="/legal/agb" passHref legacyBehavior>
+                                    <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
+                                </Link>
+                                <Link href="/legal/datenschutz" passHref legacyBehavior>
+                                    <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
+                                </Link>
+                                
+                                {isAuthenticated ? (
+                                    <>
+                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                             <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
                                         </button>
-                                    ) : (
-                                        <Link href="/auth/login" passHref legacyBehavior>
-                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2">
-                                                <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-                                            </a>
-                                        </Link>
-                                    )}
-                                </div>
+                                        <button className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive">
+                                          <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
+                                        </button>
+                                    </>
+                                ) : (
+                                    <Link href="/auth/login" passHref legacyBehavior>
+                                        <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                            <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                        </a>
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     )}
