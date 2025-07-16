@@ -1,7 +1,8 @@
+
 {
   "id": "lesson1",
-  "title": "What is Generative AI?",
-  "description": "An introduction to Generative AI and its core concepts.",
+  "title": "Was ist Generative KI?",
+  "description": "Eine Einführung in die Grundlagen und Kernkonzepte der Generativen KI.",
   "stages": [
     {
       "id": "stage1",
@@ -10,27 +11,27 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "What is AI?",
-          "content": "Artificial Intelligence (AI) is the field of technology where machines and systems are developed to perform tasks requiring human-like intelligence, like speech recognition, decision-making, and text generation.",
+          "title": "Was ist KI?",
+          "content": "Künstliche Intelligenz (KI) ist das Technologiefeld, in dem Maschinen und Systeme entwickelt werden, um Aufgaben auszuführen, die menschenähnliche Intelligenz erfordern, wie Spracherkennung, Entscheidungsfindung und Texterstellung.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "What is Generative AI?",
-          "content": "Generative AI (GenAI) is a subset of AI that focuses on creating new content, such as text, images, audio, and video, based on patterns it has learned from data.",
+          "title": "Was ist Generative KI?",
+          "content": "Generative KI (GenAI) ist ein Teilbereich der KI, der sich darauf konzentriert, neue Inhalte wie Texte, Bilder, Audio und Video zu erstellen, basierend auf Mustern, die sie aus Daten gelernt hat.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Key Function of AI",
-          "question": "Which of the following is a primary capability of Artificial Intelligence?",
+          "title": "Schlüsselfunktion der KI",
+          "question": "Welche der folgenden ist eine primäre Fähigkeit der Künstlichen Intelligenz?",
           "options": [
-            "Performing tasks that require human-like intelligence.",
-            "Only storing large amounts of data.",
-            "Broadcasting radio signals.",
-            "Manufacturing computer hardware."
+            "Aufgaben ausführen, die menschenähnliche Intelligenz erfordern.",
+            "Nur große Datenmengen speichern.",
+            "Radiosignale senden.",
+            "Computerhardware herstellen."
           ],
           "correctOptionIndex": 0,
           "pointsAwarded": 3,
@@ -39,9 +40,9 @@
         {
           "type": "freeResponse",
           "id": "s1_fr1",
-          "title": "Define Generative AI",
-          "question": "In your own words, what is the main difference between general AI and Generative AI?",
-          "expectedAnswer": "General AI performs tasks requiring intelligence, while Generative AI specifically focuses on creating new, original content like text or images based on what it has learned.",
+          "title": "Definiere Generative KI",
+          "question": "Was ist in deinen eigenen Worten der Hauptunterschied zwischen allgemeiner KI und Generativer KI?",
+          "expectedAnswer": "Allgemeine KI führt Aufgaben aus, die Intelligenz erfordern, während sich Generative KI speziell darauf konzentriert, neue, originelle Inhalte wie Text oder Bilder auf der Grundlage dessen zu erstellen, was sie gelernt hat.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
@@ -54,25 +55,25 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Real-World Example: Voice Assistants",
-          "content": "Voice assistants like Siri, Alexa, and Google Assistant use AI to understand your voice commands and respond appropriately. This is an example of AI interpreting information.",
+          "title": "Praxisbeispiel: Sprachassistenten",
+          "content": "Sprachassistenten wie Siri, Alexa und Google Assistant verwenden KI, um deine Sprachbefehle zu verstehen und angemessen zu reagieren. Dies ist ein Beispiel dafür, wie KI Informationen interpretiert.",
           "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Applying Generative AI",
-          "question": "Name one example of a real-world Generative AI tool mentioned in the text and describe what it creates.",
-          "expectedAnswer": "ChatGPT creates human-like text, DALL-E creates images from text descriptions, or GitHub Copilot creates code snippets.",
+          "title": "Anwendung von Generativer KI",
+          "question": "Nenne ein Beispiel für ein im Text erwähntes reales Generatives KI-Tool und beschreibe, was es erstellt.",
+          "expectedAnswer": "ChatGPT erstellt menschenähnlichen Text, DALL-E erstellt Bilder aus Textbeschreibungen, oder GitHub Copilot erstellt Code-Schnipsel.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s2_fr2",
-          "title": "Training Data's Role",
-          "question": "Why is training data important for an AI to learn? Use the example of an AI learning to recognize animals.",
-          "expectedAnswer": "Training data is key for AI to learn patterns. By showing an AI thousands of labeled pictures of animals (e.g., 'cat,' 'dog'), it learns to identify features like shape, size, and fur to make accurate predictions on new images.",
+          "title": "Die Rolle der Trainingsdaten",
+          "question": "Warum sind Trainingsdaten für das Lernen einer KI wichtig? Verwende das Beispiel einer KI, die lernt, Tiere zu erkennen.",
+          "expectedAnswer": "Trainingsdaten sind entscheidend, damit die KI Muster lernen kann. Indem man einer KI Tausende von beschrifteten Tierbildern (z.B. 'Katze', 'Hund') zeigt, lernt sie, Merkmale wie Form, Größe und Fell zu identifizieren, um bei neuen Bildern genaue Vorhersagen zu treffen.",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -85,9 +86,9 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Create a Prompt for an Image",
-          "taskDescription": "You want to use a generative AI like DALL-E to create an image. Write a prompt to generate a picture of a futuristic city.",
-          "evaluationGuidance": "1. Does the prompt clearly state the subject (a futuristic city)? 2. Does it include at least two descriptive details (e.g., 'flying cars', 'gleaming skyscrapers', 'neon lights')? 3. Is the prompt concise and easy for an AI to understand?",
+          "title": "Erstelle einen Prompt für ein Bild",
+          "taskDescription": "Du möchtest eine generative KI wie DALL-E verwenden, um ein Bild zu erstellen. Schreibe einen Prompt, um ein Bild einer futuristischen Stadt zu generieren.",
+          "evaluationGuidance": "1. Gibt der Prompt klar das Motiv an (eine futuristische Stadt)? 2. Enthält er mindestens zwei beschreibende Details (z.B. 'fliegende Autos', 'glänzende Wolkenkratzer', 'Neonlichter')? 3. Ist der Prompt prägnant und für eine KI leicht verständlich?",
           "pointsAwarded": 10,
           "pointsForIncorrect": 0
         }
@@ -100,18 +101,18 @@
         {
           "type": "promptingTask",
           "id": "s4_pt_error1",
-          "title": "Analyze a Flawed Prompt",
-          "taskDescription": "A user gives a generative AI the prompt: 'Write a story.' This prompt is too vague. Identify why it is flawed and suggest an improved version that would lead to a better story.",
-          "evaluationGuidance": "1. Does the user correctly identify the flaw (vagueness)? 2. Does the suggested improvement add specific elements like genre, character, or plot? 3. Is the improved prompt clear and actionable for an AI?",
+          "title": "Analysiere einen fehlerhaften Prompt",
+          "taskDescription": "Ein Benutzer gibt einer generativen KI den Prompt: 'Schreibe eine Geschichte.' Dieser Prompt ist zu vage. Identifiziere, warum er fehlerhaft ist, und schlage eine verbesserte Version vor, die zu einer besseren Geschichte führen würde.",
+          "evaluationGuidance": "1. Erkennt der Benutzer den Fehler korrekt (Ungenauigkeit)? 2. Fügt die vorgeschlagene Verbesserung spezifische Elemente wie Genre, Charakter oder Handlung hinzu? 3. Ist der verbesserte Prompt klar und für eine KI umsetzbar?",
           "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Common Pitfalls",
-          "question": "Based on the lesson, what is a common pitfall when interacting with AI, especially regarding its knowledge?",
-          "expectedAnswer": "A common pitfall is assuming the AI has real-time knowledge. AI systems are trained on past data and don't know about recent events unless they are specifically designed to access the internet.",
+          "title": "Häufige Fallstricke",
+          "question": "Was ist laut der Lektion eine häufige Falle beim Umgang mit KI, insbesondere in Bezug auf ihr Wissen?",
+          "expectedAnswer": "Eine häufige Falle ist die Annahme, dass die KI über Echtzeitwissen verfügt. KI-Systeme werden mit Vergangenheitsdaten trainiert und wissen nichts über aktuelle Ereignisse, es sei denn, sie sind speziell für den Zugriff auf das Internet ausgelegt.",
           "pointsAwarded": 6,
           "pointsForIncorrect": 0
         }
@@ -124,13 +125,13 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "AI Learning Process",
-          "question": "What is the correct four-step learning process for an AI?",
+          "title": "KI-Lernprozess",
+          "question": "Was ist der korrekte vierstufige Lernprozess für eine KI?",
           "options": [
-            "Training, Data Collection, Inference, Evaluation.",
-            "Data Collection, Model Training, Evaluation and Tuning, Inference.",
-            "Inference, Evaluation, Data Collection, Training.",
-            "Evaluation, Inference, Training, Data Collection."
+            "Training, Datenerfassung, Inferenz, Bewertung.",
+            "Datenerfassung, Modelltraining, Bewertung und Abstimmung, Inferenz.",
+            "Inferenz, Bewertung, Datenerfassung, Training.",
+            "Bewertung, Inferenz, Training, Datenerfassung."
           ],
           "correctOptionIndex": 1,
           "pointsAwarded": 5,
@@ -139,9 +140,9 @@
         {
           "type": "freeResponse",
           "id": "s5_fr1",
-          "title": "Summarize Deep Learning",
-          "question": "Briefly summarize what Deep Learning is and what kind of structures it uses.",
-          "expectedAnswer": "Deep learning is a subset of machine learning that uses neural networks with multiple layers (deep neural networks) to learn from complex data patterns. These layers allow the model to process information sequentially to make decisions.",
+          "title": "Fasse Deep Learning zusammen",
+          "question": "Fasse kurz zusammen, was Deep Learning ist und welche Art von Strukturen es verwendet.",
+          "expectedAnswer": "Deep Learning ist ein Teilbereich des maschinellen Lernens, der neuronale Netze mit mehreren Schichten (tiefe neuronale Netze) verwendet, um aus komplexen Datenmustern zu lernen. Diese Schichten ermöglichen es dem Modell, Informationen sequenziell zu verarbeiten, um Entscheidungen zu treffen.",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -154,18 +155,18 @@
         {
           "type": "promptingTask",
           "id": "s6_pt_complex1",
-          "title": "Complex Prompt Creation",
-          "taskDescription": "You are a teacher who wants to create a simple quiz about AI for your students. Write a prompt for a Generative AI that instructs it to act as a quiz creator. The prompt should specify the topic (Generative AI), the number of questions (3), the question format (multiple choice), and the target audience (middle school students).",
-          "evaluationGuidance": "1. Does the prompt clearly assign a role to the AI (quiz creator)? 2. Does it specify the topic, number of questions, and format? 3. Is the target audience clearly mentioned? 4. Is the prompt structured in a way that an AI can easily follow the instructions?",
+          "title": "Komplexe Prompterstellung",
+          "taskDescription": "Du bist ein Lehrer, der ein einfaches Quiz über KI für seine Schüler erstellen möchte. Schreibe einen Prompt für eine Generative KI, der sie anweist, als Quizersteller zu fungieren. Der Prompt sollte das Thema (Generative KI), die Anzahl der Fragen (3), das Frageformat (Multiple Choice) und die Zielgruppe (Mittelschüler) angeben.",
+          "evaluationGuidance": "1. Weist der Prompt der KI klar eine Rolle zu (Quizersteller)? 2. Gibt er das Thema, die Anzahl der Fragen und das Format an? 3. Wird die Zielgruppe klar erwähnt? 4. Ist der Prompt so strukturiert, dass eine KI die Anweisungen leicht befolgen kann?",
           "pointsAwarded": 20,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
-          "title": "Lesson Reflection",
+          "title": "Lektionsreflexion",
           "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "User's personal reflection",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
