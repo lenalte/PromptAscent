@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { cn } from "@/lib/utils";
 import { CloseIcon } from './icons/closeIcon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -76,6 +76,13 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
     }
   }, [summaries, userProgress?.unlockedSummaries]);
 
+  useEffect(() => {
+    if (leaderboard.length > 0 && currentUser) {
+      const rank = leaderboard.findIndex(entry => entry.userId === currentUser.uid) + 1;
+      setUserRank(rank > 0 ? rank : null);
+    }
+  }, [leaderboard, currentUser]);
+
 
   if (!isOpen) {
     return null;
@@ -90,8 +97,17 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
     ? new Date(currentUser.metadata.creationTime).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
     : '-';
 
-  const tabTriggerBaseClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
-  const tabBorderSpanClasses = "pointer-events-none absolute border-solid border-[hsl(var(--foreground))]";
+  const renderSummaryWithBold = (text: string) => {
+    return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={index}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+    });
+  };
+
+  const tabTriggerClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
+  const tabBorderSpanClasses = "pointer-events-none absolute border-solid border-custom-foreground";
 
   return (
     <div
@@ -106,15 +122,15 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
         <CloseIcon className="h-6 w-6" />
       </button>
       <div className="px-28 py-8 text-white">
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
-             <TabsTrigger value="allgemein" className={cn(tabTriggerBaseClasses, activeTab === 'allgemein' ? "text-white" : "text-custom-foreground")}>
+             <TabsTrigger value="allgemein" className={cn(tabTriggerClasses, activeTab === 'allgemein' ? "text-white" : "text-custom-foreground")}>
                 <div className="relative z-20">Allgemein</div>
                 <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10")}></span>
                 <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10")}></span>
                 <div className={cn("absolute inset-0 -z-10 group-hover:bg-custom-foreground", activeTab === 'allgemein' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
-            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerBaseClasses, activeTab === 'zusammenfassungen' ? "text-white" : "text-custom-foreground")}>
+            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses, activeTab === 'zusammenfassungen' ? "text-white" : "text-custom-foreground")}>
                 <div className="relative z-20">Zusammenfassungen</div>
                 <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10")}></span>
                 <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10")}></span>
@@ -168,7 +184,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
                                 {summary.title}
                             </AccordionTrigger>
                             <AccordionContent className="text-white/80 whitespace-pre-line p-4 bg-black/20 rounded-b-lg">
-                                {summary.summary}
+                                {renderSummaryWithBold(summary.summary)}
                             </AccordionContent>
                         </AccordionItem>
                     ))}
