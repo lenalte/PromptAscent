@@ -329,7 +329,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                  {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
                              <div className="pb-2">
-                                <div className="pt-2 border-t border-white/20">
+                                <div>
                                     <Link href="/legal/agb" passHref legacyBehavior>
                                         <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
                                     </Link>
@@ -337,12 +337,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
                                     </Link>
                                     {isAuthenticated ? (
-                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2 border-t border-white/20 pt-4">
+                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2 pt-4">
                                             <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
                                         </button>
                                     ) : (
                                         <Link href="/auth/login" passHref legacyBehavior>
-                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2 border-t border-white/20 pt-4">
+                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2 pt-4">
                                                 <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
                                             </a>
                                         </Link>
