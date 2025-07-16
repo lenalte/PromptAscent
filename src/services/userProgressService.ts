@@ -16,6 +16,7 @@ export interface UserProgressData {
   currentLessonId: string; // The ID of the lesson the user is currently on or last accessed
   completedLessons: string[]; // List of lesson IDs fully completed
   unlockedLessons: string[]; // List of lesson IDs the user can access
+  unlockedSummaries: string[]; // List of lesson IDs for which summaries are unlocked
   // New structure for per-lesson, per-stage progress
   lessonStageProgress: {
     [lessonId: string]: {
@@ -118,6 +119,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
         currentLessonId: currentLesson,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : [defaultLessonId],
+        unlockedSummaries: Array.isArray(data.unlockedSummaries) ? data.unlockedSummaries : [],
         lessonStageProgress: lessonStageProgress,
         activeBooster: activeBooster,
         knowledgeGaps: data.knowledgeGaps ?? [],
@@ -157,6 +159,7 @@ export async function createUserProgressDocument(userId: string, initialData?: P
       unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
         ? initialData.unlockedLessons
         : [defaultLessonId],
+      unlockedSummaries: initialData?.unlockedSummaries ?? [],
       activeBooster: initialData?.activeBooster,
       lessonStageProgress: initialData?.lessonStageProgress ?? initialLessonStageProgress,
       knowledgeGaps: initialData?.knowledgeGaps ?? [],
@@ -305,7 +308,8 @@ export async function completeStageInFirestore(
         console.log(`[UserProgress] Advancing to stage ${nextStageId} (index ${nextStageIndex}) in lesson ${lessonId}.`);
       } else {
         updates.completedLessons = arrayUnion(lessonId);
-        console.log(`[UserProgress] Lesson ${lessonId} fully completed.`);
+        updates.unlockedSummaries = arrayUnion(lessonId); // Unlock summary on lesson completion
+        console.log(`[UserProgress] Lesson ${lessonId} fully completed. Summary unlocked.`);
 
         const allLessonsManifest = await getAvailableLessons();
         const currentLessonManifestIndex = allLessonsManifest.findIndex(l => l.id === lessonId);

@@ -13,12 +13,20 @@ export type { StageItemStatus, StageProgress, StageStatusValue, BossQuestion } f
 
 const LESSON_CONTENT_DIR = path.join(process.cwd(), 'src', 'data', 'lesson-content');
 const LESSON_MANIFEST_PATH = path.join(process.cwd(), 'src', 'data', 'lessons-manifest.json');
+const LESSON_SUMMARIES_PATH = path.join(process.cwd(), 'src', 'data', 'lesson-summaries.json');
+
 
 interface LessonManifestEntry {
   id: string;
   title: string;
   description: string;
   contentFileName: string;
+}
+
+export interface LessonSummary {
+  id: string;
+  title: string;
+  summary: string;
 }
 
 async function getLessonManifest(): Promise<LessonManifestEntry[]> {
@@ -34,6 +42,17 @@ async function getLessonManifest(): Promise<LessonManifestEntry[]> {
     return manifest;
   } catch (error) {
     console.error("[SERVER LOG] [getLessonManifest] CRITICAL: Failed to read or parse lesson manifest:", error);
+    return [];
+  }
+}
+
+export async function getLessonSummaries(): Promise<LessonSummary[]> {
+  try {
+    const summariesContent = await fs.readFile(LESSON_SUMMARIES_PATH, 'utf-8');
+    const summaries = JSON.parse(summariesContent) as LessonSummary[];
+    return summaries;
+  } catch (error) {
+    console.error("[SERVER LOG] [getLessonSummaries] Failed to read or parse lesson summaries:", error);
     return [];
   }
 }
