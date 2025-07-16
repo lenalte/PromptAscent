@@ -329,7 +329,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
                                  {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
-                             <div className="pb-4 space-y-2">
+                             <div className="space-y-2">
                                 <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">AGB</button>
                                 <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">Datenschutz</button>
                                 <div className="pt-2 border-t border-white/20 mt-2">
