@@ -324,11 +324,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                     )}
                      {activeCategory === 'einstellungen' && (
-                        <div className="flex flex-col h-full pt-4">
-                            <div className="flex-grow">
+                        <div className="flex flex-col h-full">
+                            <div className="flex-grow pt-4">
                                  {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
-                             <div className="pb-4">
+                             <div className="pb-2">
                                 <div className="pt-2 border-t border-white/20">
                                     <Link href="/legal/agb" passHref legacyBehavior>
                                         <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>

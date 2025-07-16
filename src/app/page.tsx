@@ -502,7 +502,7 @@ function HomePageContent() {
 
 
   const ICON_BAR_WIDTH_PX = 64;
-  const CONTENT_AREA_WIDTH_PX = 256;
+  const CONTENT_AREA_WIDTH_PX = 288;
   const currentSidebarTotalWidth = isSidebarContentAreaOpen ? ICON_BAR_WIDTH_PX + CONTENT_AREA_WIDTH_PX : ICON_BAR_WIDTH_PX;
   const isLessonUnlocked = (lessonId: string) => userProgress?.unlockedLessons?.includes(lessonId) ?? false;
   const currentStageIndexOfSelectedLesson = selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex : -1;
