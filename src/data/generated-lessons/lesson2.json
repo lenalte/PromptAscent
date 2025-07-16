@@ -1,7 +1,8 @@
+
 {
   "id": "lesson2",
-  "title": "Introduction to Prompt Engineering",
-  "description": "Learn the fundamentals of prompt engineering.",
+  "title": "Einführung in Prompt Engineering",
+  "description": "Lerne die Grundlagen des Prompt Engineering.",
   "stages": [
     {
       "id": "stage1",
@@ -10,27 +11,27 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "What is a Prompt?",
-          "content": "A prompt is the input or instruction given to an AI model to generate a response. It can be a simple question or a complex set of instructions with context, tone, and format specifications.",
+          "title": "Was ist ein Prompt?",
+          "content": "Ein Prompt ist die Eingabe oder Anweisung, die einem KI-Modell gegeben wird, um eine Antwort zu generieren. Es kann eine einfache Frage oder ein komplexer Satz von Anweisungen mit Kontext, Ton und Formatvorgaben sein.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "What is Prompt Engineering?",
-          "content": "Prompt engineering is the process of crafting and refining prompts to improve the performance of generative AI models. It guides the AI to deliver more accurate and relevant outputs.",
+          "title": "Was ist Prompt Engineering?",
+          "content": "Prompt Engineering ist der Prozess des Erstellens und Verfeinerns von Prompts, um die Leistung von generativen KI-Modellen zu verbessern. Es leitet die KI an, genauere und relevantere Ausgaben zu liefern.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Goal of Prompt Engineering",
-          "question": "What is the primary goal of prompt engineering?",
+          "title": "Ziel des Prompt Engineering",
+          "question": "Was ist das Hauptziel des Prompt Engineering?",
           "options": [
-            "To make the AI respond faster.",
-            "To improve the accuracy and relevance of the AI's output.",
-            "To test the AI's memory capacity.",
-            "To create more complex AI models."
+            "Die KI dazu bringen, schneller zu antworten.",
+            "Die Genauigkeit und Relevanz der KI-Ausgabe zu verbessern.",
+            "Die Speicherkapazität der KI zu testen.",
+            "Komplexere KI-Modelle zu erstellen."
           ],
           "correctOptionIndex": 1,
           "pointsAwarded": 3,
@@ -39,9 +40,9 @@
         {
           "type": "freeResponse",
           "id": "s1_fr1",
-          "title": "Define Prompt",
-          "question": "In your own words, what is a prompt in the context of Generative AI?",
-          "expectedAnswer": "A prompt is the instruction or question you give to an AI to get it to generate a response, like text, images, or code.",
+          "title": "Definiere Prompt",
+          "question": "Was ist in deinen eigenen Worten ein Prompt im Kontext von Generativer KI?",
+          "expectedAnswer": "Ein Prompt ist die Anweisung oder Frage, die man einer KI gibt, um eine Antwort wie Text, Bilder oder Code zu generieren.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
@@ -54,25 +55,25 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Example: Math Problem",
-          "content": "A vague prompt like 'What is 923 * 99?' might lead to an incorrect answer. A refined prompt like 'What is 923 * 99? Let's go step by step.' encourages logical reasoning and improves accuracy.",
+          "title": "Beispiel: Matheaufgabe",
+          "content": "Ein vager Prompt wie 'Was ist 923 * 99?' könnte zu einer falschen Antwort führen. Ein verfeinerter Prompt wie 'Was ist 923 * 99? Gehen wir Schritt für Schritt vor.' fördert logisches Denken und verbessert die Genauigkeit.",
           "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Applying Prompt Engineering to Text",
-          "question": "You want a summary of a news article. Write a simple, initial prompt for this task.",
-          "expectedAnswer": "A simple prompt would be: 'Summarize this article.' or 'Write a summary for the following text.'",
+          "title": "Anwendung von Prompt Engineering auf Text",
+          "question": "Du möchtest eine Zusammenfassung eines Nachrichtenartikels. Schreibe einen einfachen, anfänglichen Prompt für diese Aufgabe.",
+          "expectedAnswer": "Ein einfacher Prompt wäre: 'Fasse diesen Artikel zusammen.' oder 'Schreibe eine Zusammenfassung für den folgenden Text.'",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s2_fr2",
-          "title": "Refining the Text Prompt",
-          "question": "Now, refine the prompt from the previous question to be more specific. Mention the desired length and focus.",
-          "expectedAnswer": "A refined prompt could be: 'Summarize this article in three sentences, focusing on the main outcomes.'",
+          "title": "Verfeinerung des Text-Prompts",
+          "question": "Verfeinere nun den Prompt aus der vorherigen Frage, um spezifischer zu sein. Erwähne die gewünschte Länge und den Fokus.",
+          "expectedAnswer": "Ein verfeinerter Prompt könnte sein: 'Fasse diesen Artikel in drei Sätzen zusammen und konzentriere dich auf die Hauptergebnisse.'",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -85,18 +86,18 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Image Generation Prompt",
-          "taskDescription": "Write two different prompts to generate an image of a 'dragon'. The first should be simple and the second should be a refined, more detailed prompt.",
-          "evaluationGuidance": "1. Does the user provide a simple, one-or-two-word prompt? 2. Does the refined prompt include at least three specific details (e.g., color, setting, action, style)? 3. Is the refined prompt likely to produce a more specific and interesting image?",
+          "title": "Bildgenerierungs-Prompt",
+          "taskDescription": "Schreibe zwei verschiedene Prompts, um ein Bild eines 'Drachen' zu generieren. Der erste sollte einfach und der zweite ein verfeinerter, detaillierterer Prompt sein.",
+          "evaluationGuidance": "1. Gibt der Benutzer einen einfachen ein- oder zweiwörtigen Prompt an? 2. Enthält der verfeinerte Prompt mindestens drei spezifische Details (z. B. Farbe, Umgebung, Aktion, Stil)? 3. Ist der verfeinerte Prompt wahrscheinlich ein spezifischeres und interessanteres Bild zu erzeugen?",
           "pointsAwarded": 10,
           "pointsForIncorrect": 0
         },
         {
           "type": "promptingTask",
           "id": "s3_pt2",
-          "title": "Code Generation Prompt",
-          "taskDescription": "You need a Python function that adds two numbers. First, write a simple prompt. Then, write a refined prompt that also asks for error handling.",
-          "evaluationGuidance": "1. Is the simple prompt a clear request for a function that adds two numbers? 2. Does the refined prompt explicitly ask for error handling (e.g., for non-integer inputs)? 3. Is the refined prompt more robust for a real-world application?",
+          "title": "Codegenerierungs-Prompt",
+          "taskDescription": "Du benötigst eine Python-Funktion, die zwei Zahlen addiert. Schreibe zuerst einen einfachen Prompt. Schreibe dann einen verfeinerten Prompt, der auch nach Fehlerbehandlung fragt.",
+          "evaluationGuidance": "1. Ist der einfache Prompt eine klare Anforderung für eine Funktion, die zwei Zahlen addiert? 2. Fragt der verfeinerte Prompt explizit nach Fehlerbehandlung (z. B. für Nicht-Ganzzahl-Eingaben)? 3. Ist der verfeinerte Prompt robuster für eine reale Anwendung?",
           "pointsAwarded": 15,
           "pointsForIncorrect": 0
         }
@@ -109,9 +110,9 @@
         {
           "type": "promptingTask",
           "id": "s4_pt_error1",
-          "title": "Analyze a Tweet Prompt",
-          "taskDescription": "The prompt 'Write a tweet about ArchaeologistAI' is flawed because it lacks context. Explain why this is a problem and how adding the information 'ArchaeologistAI tells stories about famous archaeologists' improves the result.",
-          "evaluationGuidance": "1. Does the user correctly identify that the original prompt lacks context about the product's function? 2. Does the user explain that this leads to an inaccurate or generic tweet? 3. Does the user recognize that adding the specific function helps the AI generate a more accurate and relevant tweet?",
+          "title": "Analysiere einen Tweet-Prompt",
+          "taskDescription": "Der Prompt 'Schreibe einen Tweet über ArchaeologistAI' ist fehlerhaft, weil ihm der Kontext fehlt. Erkläre, warum dies ein Problem ist und wie das Hinzufügen der Information 'ArchaeologistAI erzählt Geschichten über berühmte Archäologen' das Ergebnis verbessert.",
+          "evaluationGuidance": "1. Erkennt der Benutzer korrekt, dass dem ursprünglichen Prompt der Kontext zur Funktion des Produkts fehlt? 2. Erklärt der Benutzer, dass dies zu einem ungenauen oder generischen Tweet führt? 3. Erkennt der Benutzer, dass das Hinzufügen der spezifischen Funktion der KI hilft, einen genaueren und relevanteren Tweet zu generieren?",
           "pointsAwarded": 15,
           "pointsForIncorrect": 0
         }
@@ -124,13 +125,13 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Core of Prompt Engineering",
-          "question": "Prompt engineering is an ______ process.",
+          "title": "Kern des Prompt Engineering",
+          "question": "Prompt Engineering ist ein ______ Prozess.",
           "options": [
-            "automated",
-            "one-time",
-            "iterative",
-            "optional"
+            "automatisierter",
+            "einmaliger",
+            "iterativer",
+            "optionaler"
           ],
           "correctOptionIndex": 2,
           "pointsAwarded": 5,
@@ -139,9 +140,9 @@
         {
           "type": "freeResponse",
           "id": "s5_fr1",
-          "title": "Why Refine Prompts?",
-          "question": "Explain why it is often necessary to refine a prompt after getting an initial response from an AI.",
-          "expectedAnswer": "It's necessary to refine prompts because the initial output might be too generic, inaccurate, or not in the desired format. Refining the prompt with more specific instructions, context, or examples helps guide the AI to a better result.",
+          "title": "Warum Prompts verfeinern?",
+          "question": "Erkläre, warum es oft notwendig ist, einen Prompt zu verfeinern, nachdem man eine erste Antwort von einer KI erhalten hat.",
+          "expectedAnswer": "Es ist notwendig, Prompts zu verfeinern, weil die anfängliche Ausgabe zu allgemein, ungenau oder nicht im gewünschten Format sein könnte. Die Verfeinerung des Prompts mit spezifischeren Anweisungen, Kontext oder Beispielen hilft, die KI zu einem besseren Ergebnis zu führen.",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -154,18 +155,18 @@
         {
           "type": "promptingTask",
           "id": "s6_pt_complex1",
-          "title": "Creative Prompt with Style",
-          "taskDescription": "You are marketing a fictional AI product called 'StoryWeaver' that helps write children's books. Write a prompt to generate a tweet about this product. The prompt should include the product's function and ask for the tweet to be written in a whimsical and magical style.",
-          "evaluationGuidance": "1. Does the prompt clearly state the product name and function? 2. Does it specify a style (whimsical/magical)? 3. Is the prompt well-structured for an AI to understand and execute the creative task? 4. Does it imply the target audience is parents or children's authors?",
+          "title": "Kreativer Prompt mit Stil",
+          "taskDescription": "Du vermarktest ein fiktives KI-Produkt namens 'StoryWeaver', das beim Schreiben von Kinderbüchern hilft. Schreibe einen Prompt, um einen Tweet über dieses Produkt zu generieren. Der Prompt sollte die Funktion des Produkts enthalten und darum bitten, den Tweet in einem wunderlichen und magischen Stil zu verfassen.",
+          "evaluationGuidance": "1. Gibt der Prompt den Produktnamen und die Funktion klar an? 2. Gibt er einen Stil an (wunderlich/magisch)? 3. Ist der Prompt gut strukturiert, damit eine KI die kreative Aufgabe verstehen und ausführen kann? 4. Impliziert er, dass die Zielgruppe Eltern oder Kinderbuchautoren sind?",
           "pointsAwarded": 20,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
-          "title": "Lesson Reflection",
+          "title": "Lektionsreflexion",
           "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "User's personal reflection",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
