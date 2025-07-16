@@ -626,7 +626,7 @@ function HomePageContent() {
         style={{ marginLeft: `${currentSidebarTotalWidth}px` }}
       >
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
-          <ProgressBar progress={overallLevelProgressPercentage} progressText={`${overallLevelProgressPercentage}% Complete - ${currentOverallLevel?.title || 'Current Level'}`} />
+          <ProgressBar progress={overallLevelProgressPercentage} />
           <LevelAndInformationBar currentLevel={currentOverallLevel} onInventoryToggle={() => setIsInventoryOpen(prev => !prev)} />
         </header>
 
