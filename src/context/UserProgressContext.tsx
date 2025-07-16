@@ -3,12 +3,13 @@
 
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useMemo } from 'react';
-import { type User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { type User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser } from 'firebase/auth';
 import { auth, db } from '../lib/firebase/index';
 import {
   getUserProgress,
   createUserProgressDocument,
   updateUserDocument,
+  deleteUserDocument,
   completeStageInFirestore as serverCompleteStage,
   populateBossChallengeQuestions as serverPopulateBoss,
   resolveBossChallenge as serverResolveBoss,
@@ -45,6 +46,7 @@ interface UserProgressContextType {
   signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
   logOut: () => Promise<void>;
   restartStage: (lessonId: string, stageId: string) => Promise<void>;
+  deleteCurrentUserAccount: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const UserProgressContext = createContext<UserProgressContextType | undefined>(undefined);
@@ -224,9 +226,37 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       const updatedProgress = await serverRestartStage(currentUser.uid, lessonId, stageId);
       setUserProgress(updatedProgress);
     } catch (error) {
-      console.error(`[UserProgressContext] Error restarting stage ${stageId}:`, error);
+      console.error(`[UserProgress] Error restarting stage ${stageId}:`, error);
     } finally {
       setIsLoadingProgress(false);
+    }
+  }, [currentUser]);
+
+  const deleteCurrentUserAccount = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+    if (!currentUser) {
+      return { success: false, error: "No user is currently logged in." };
+    }
+    
+    // The order is important: first delete dependent data, then the user.
+    try {
+      // 1. Delete Firestore document
+      await deleteUserDocument(currentUser.uid);
+      console.log(`[UserProgressContext] Successfully deleted Firestore data for UID: ${currentUser.uid}`);
+      
+      // 2. Delete Firebase Auth user
+      await deleteUser(currentUser);
+      console.log(`[UserProgressContext] Successfully deleted Firebase Auth user for UID: ${currentUser.uid}`);
+
+      return { success: true };
+    } catch (error) {
+      const firebaseError = error as { code?: string; message: string };
+      console.error(`[UserProgressContext] Error deleting account for UID: ${currentUser.uid}:`, error);
+
+      // Handle common error where user needs to re-authenticate
+      if (firebaseError.code === 'auth/requires-recent-login') {
+        return { success: false, error: "This is a sensitive operation and requires you to have logged in recently. Please log out and log back in to delete your account." };
+      }
+      return { success: false, error: firebaseError.message || "An unknown error occurred while deleting the account." };
     }
   }, [currentUser]);
 
@@ -241,7 +271,8 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     signInWithEmail,
     logOut,
     restartStage,
-  }), [currentUser, userProgress, isLoadingAuth, isLoadingProgress, completeStageAndProceed, signUpWithEmail, signInWithEmail, logOut, restartStage]);
+    deleteCurrentUserAccount,
+  }), [currentUser, userProgress, isLoadingAuth, isLoadingProgress, completeStageAndProceed, signUpWithEmail, signInWithEmail, logOut, restartStage, deleteCurrentUserAccount]);
 
   return (
     <UserProgressContext.Provider value={value}>
