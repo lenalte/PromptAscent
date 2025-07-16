@@ -6,7 +6,7 @@ import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { getLeaderboardData } from '@/services/userProgressService';
 import type { LeaderboardEntry } from '@/services/userProgressService';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Settings } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { EightbitButton } from './eightbit-button';
@@ -21,6 +21,7 @@ import { ProfilIcon } from "../icons/ProfilIcon";
 import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
 import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { SettingsIcon } from "../icons/SettingsIcon";
 
 
 interface SidebarProps {
@@ -174,17 +175,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
-                    {isAuthenticated ? (
-                        <EightbitButton onClick={logOut} className="!p-2" aria-label="Logout">
-                            <LogoutIcon />
-                        </EightbitButton>
-                    ) : (
-                         <Link href="/auth/login" passHref legacyBehavior>
-                            <EightbitButton as="a" className="!p-2" aria-label="Login">
-                                <LoginIcon />
-                            </EightbitButton>
-                        </Link>
-                    )}
+                     <button
+                        type="button"
+                        onClick={() => handleCategoryClick('einstellungen')}
+                        className={cn(
+                            "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                            activeCategory === 'einstellungen' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                        )}
+                        aria-label="Einstellungen"
+                    >
+                        <SettingsIcon className={cn(
+                            "h-8 w-8 shrink-0",
+                            activeCategory === 'einstellungen' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
+                        )} />
+                    </button>
                 </div>
             </div>
 
@@ -318,6 +322,25 @@ const Sidebar: React.FC<SidebarProps> = ({
                             )}
                         </div>
                     )}
+                     {activeCategory === 'einstellungen' && (
+                        <div>
+                            <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
+                            <div className="space-y-4">
+                                {isAuthenticated ? (
+                                    <EightbitButton onClick={logOut} className="w-full">
+                                        <LogoutIcon className="mr-2" /> Logout
+                                    </EightbitButton>
+                                ) : (
+                                    <Link href="/auth/login" passHref legacyBehavior>
+                                        <EightbitButton as="a" className="w-full">
+                                            <LoginIcon className="mr-2" /> Login
+                                        </EightbitButton>
+                                    </Link>
+                                )}
+                                {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -325,3 +348,5 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
+
+    
