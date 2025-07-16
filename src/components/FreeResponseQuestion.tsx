@@ -83,10 +83,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
       <CardContent>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor={`frq-${id}`}>Your Answer</Label>
+            <Label htmlFor={`frq-${id}`}>Deine Antwort</Label>
             <Textarea
               id={`frq-${id}`}
-              placeholder="Type your answer here..."
+              placeholder="Gib hier deine Antwort ein..."
               className="resize-none"
               rows={4}
               value={userAnswer}
@@ -99,7 +99,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           {isPending && (
             <div className="flex items-center space-x-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Validating...</span>
+              <span>Überprüfe...</span>
             </div>
           )}
 
@@ -118,13 +118,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
               )}
               <AlertTitle className={cn(result.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {result.isValid ? 'Correct!' : 'Incorrect'}
+                {result.isValid ? 'Korrekt!' : 'Inkorrekt'}
               </AlertTitle>
               <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {result.feedback}
                 {!result.isValid && expectedAnswer && (
                   <p className="mt-2">
-                    Expected answer guidance: <span className="font-semibold">{expectedAnswer}</span>
+                    Erwartete Antwort (Leitfaden): <span className="font-semibold">{expectedAnswer}</span>
                   </p>
                 )}
               </AlertDescription>
@@ -139,12 +139,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <p>Correct: +{pointsAwarded} points</p>
-            <p>Attempts remaining: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
+            <p>Korrekt: +{pointsAwarded} Punkte</p>
+            <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
     </Card>
   );
 };
-
-    
