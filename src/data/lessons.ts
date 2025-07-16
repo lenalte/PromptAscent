@@ -96,6 +96,7 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
 
 /**
  * Fetches a specified number of random questions from previous lessons or stages.
+ * This now filters out reflection-style questions.
  */
 export async function getQuestionsForBossChallenge(
   completedLessonIds: string[],
@@ -109,6 +110,10 @@ export async function getQuestionsForBossChallenge(
     lesson.stages.slice(0, maxStageIndex).forEach(stage => {
       stage.items.forEach(item => {
         if (item.type === 'multipleChoice' || item.type === 'freeResponse') {
+          // Filter out reflection questions
+          if (item.type === 'freeResponse' && item.question.includes('Was sind deine wichtigsten Erkenntnisse')) {
+            return; // Skip this item
+          }
           allQuestions.push({ lessonId, item });
         }
       });
