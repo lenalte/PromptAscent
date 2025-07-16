@@ -177,9 +177,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                      <EightbitButton
                         onClick={() => handleCategoryClick('einstellungen')}
                         className={cn(
-                           "!p-2 !bg-transparent !border-0",
+                           "!p-2 !bg-transparent", // override default background
                            "!w-auto !h-auto", // override default size
-                           activeCategory === 'einstellungen' && isContentOpen ? "!bg-[var(--sidebar-accent)]" : "hover:!bg-[var(--sidebar-accent)]"
+                           "border-none", // no border
+                           "hover:!bg-[var(--sidebar-accent)]", // hover effect
+                           activeCategory === 'einstellungen' && isContentOpen && "!bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Einstellungen"
                     >
@@ -325,24 +327,24 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <div className="flex flex-col h-full">
                             <div className="flex-grow">
                                 <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
-                                <div className="space-y-4">
-                                     {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
-                                     <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">AGB</button>
-                                     <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">Datenschutz</button>
-                                </div>
+                                 {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
-                             <div className="pb-4">
-                                {isAuthenticated ? (
-                                    <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                        <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
-                                    </button>
-                                ) : (
-                                    <Link href="/auth/login" passHref legacyBehavior>
-                                        <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                            <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-                                        </a>
-                                    </Link>
-                                )}
+                             <div className="pb-4 space-y-2">
+                                <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">AGB</button>
+                                <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">Datenschutz</button>
+                                <div className="pt-2 border-t border-white/20 mt-2">
+                                    {isAuthenticated ? (
+                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                            <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+                                        </button>
+                                    ) : (
+                                        <Link href="/auth/login" passHref legacyBehavior>
+                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                                <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                            </a>
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
