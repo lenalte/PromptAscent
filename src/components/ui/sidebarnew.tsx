@@ -9,6 +9,18 @@ import type { LeaderboardEntry } from '@/services/userProgressService';
 import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Settings, Trash2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { EightbitButton } from './eightbit-button';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { LockClosedIcon } from "@/components/icons/lock_closed";
@@ -50,7 +62,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [lessons, setLessons] = useState<LessonListing[]>([]);
     const [isLoadingLessons, setIsLoadingLessons] = useState(true);
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
-    const { logOut, currentUser, userProgress } = useUserProgress(); // Added userProgress
+    const { logOut, currentUser, userProgress, deleteCurrentUserAccount } = useUserProgress();
+    const { toast } = useToast();
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
@@ -58,6 +72,25 @@ const Sidebar: React.FC<SidebarProps> = ({
     // DEBUGGING LOGS
     console.log("[sidebarnew] currentUser:", currentUser);
     console.log("[sidebarnew] userProgress:", userProgress);
+
+    const handleDeleteAccount = async () => {
+        setIsDeleting(true);
+        const result = await deleteCurrentUserAccount();
+        if (result.success) {
+            toast({
+                title: "Account gelöscht",
+                description: "Dein Account und alle deine Daten wurden erfolgreich gelöscht.",
+            });
+            // Logout is handled implicitly by user deletion, auth state will change
+        } else {
+            toast({
+                title: "Fehler beim Löschen des Accounts",
+                description: result.error,
+                variant: "destructive",
+            });
+        }
+        setIsDeleting(false);
+    };
 
 
     useEffect(() => {
@@ -340,9 +373,32 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                             <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
                                         </button>
-                                        <button className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive">
-                                          <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
-                                        </button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <button className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive">
+                                                  <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
+                                                </button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                <AlertDialogTitle>Bist du dir absolut sicher?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Diese Aktion kann nicht rückgängig gemacht werden. Dadurch werden dein Account und alle deine Fortschrittsdaten dauerhaft von unseren Servern entfernt.
+                                                </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={handleDeleteAccount}
+                                                    disabled={isDeleting}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                >
+                                                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                                    Ja, Account löschen
+                                                </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </>
                                 ) : (
                                     <Link href="/auth/login" passHref legacyBehavior>

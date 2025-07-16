@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from '@/lib/firebase/index';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, type FieldValue } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, deleteDoc, type FieldValue } from 'firebase/firestore';
 import { getAvailableLessons, getQuestionsForBossChallenge, getGeneratedLessonById, type Lesson, type StageProgress, type StageItemStatus, type LessonItem, type BossQuestion } from '@/data/lessons';
 import { getRandomBoss, getBossById, type Boss } from '@/data/boss-data';
 import type { AvatarId } from '@/data/avatars';
@@ -566,6 +566,21 @@ export async function getLeaderboardData(): Promise<LeaderboardEntry[]> {
     return leaderboard;
   } catch (error) {
     console.error(`[SERVER LOG] [userProgressService.getLeaderboardData] Error fetching leaderboard data:`, error);
+    throw error;
+  }
+}
+
+export async function deleteUserDocument(userId: string): Promise<void> {
+  if (!db) {
+    console.error("[SERVER LOG] [userProgressService.deleteUserDocument] Firestore (db) is not available.");
+    throw new Error("Firestore not initialized");
+  }
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    await deleteDoc(userDocRef);
+    console.log(`[SERVER LOG] [userProgressService.deleteUserDocument] User document deleted for UID: ${userId}`);
+  } catch (error) {
+    console.error(`[SERVER LOG] [userProgressService.deleteUserDocument] Error deleting user document for UID: ${userId}:`, error);
     throw error;
   }
 }
