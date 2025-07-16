@@ -148,18 +148,18 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
       </button>
       <div className="px-28 py-8 text-white">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
-             <TabsTrigger value="allgemein" className={cn(tabTriggerClasses, activeTab === 'allgemein' ? "text-white" : "text-custom-foreground")}>
+          <TabsList className="grid w-full grid-cols-2 gap-8 p-0 bg-transparent border-none">
+          <TabsTrigger value="allgemein" className={cn(tabTriggerClasses, activeTab === 'allgemein' ? "!text-white" : "text-custom-foreground hover:!text-white")}>
                 <div className="relative z-20">Allgemein</div>
                 <span className={cn(tabBorderSpanClasses, "border-custom-foreground left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px]")}></span>
                 <span className={cn(tabBorderSpanClasses, "border-custom-foreground top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px]")}></span>
-                <div className={cn("absolute inset-0 -z-10 group-hover:bg-custom-foreground", activeTab === 'allgemein' ? 'bg-[hsl(var(--foreground))]' : 'bg-background')}></div>
+                <div className={cn("absolute inset-0 z-10 group-hover:bg-custom-foreground", activeTab === 'allgemein' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
-            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses, activeTab === 'zusammenfassungen' ? "text-white" : "text-custom-foreground")}>
+            <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses, activeTab === 'zusammenfassungen' ? "!text-white" : "text-custom-foreground hover:!text-white")}>
                 <div className="relative z-20">Zusammenfassungen</div>
                 <span className={cn(tabBorderSpanClasses, "border-custom-foreground left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px]")}></span>
                 <span className={cn(tabBorderSpanClasses, "border-custom-foreground top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px]")}></span>
-                <div className={cn("absolute inset-0 -z-10 group-hover:bg-custom-foreground", activeTab === 'zusammenfassungen' ? 'bg-[hsl(var(--foreground))]' : 'bg-background')}></div>
+                <div className={cn("absolute inset-0 z-10 group-hover:bg-custom-foreground", activeTab === 'zusammenfassungen' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="allgemein">
