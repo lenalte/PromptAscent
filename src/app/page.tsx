@@ -634,16 +634,16 @@ function HomePageContent() {
                                     <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
                                     {isLessonUnlocked(selectedLesson.id) ? (
                                         <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
-                                            {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Starting...</> : <>Start Lesson <ArrowIcon className="ml-2" /></>}
+                                            {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...</> : <>Lektion starten <ArrowIcon className="ml-2" /></>}
                                         </EightbitButton>
                                     ) : (
-                                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lesson Locked <ArrowIcon className="ml-2" /></EightbitButton>
+                                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lektion gesperrt <ArrowIcon className="ml-2" /></EightbitButton>
                                     )}
                                 </div>
                             ) : (
                                 <div className="text-center py-10">
-                                    <h2 className="text-2xl font-semibold text-foreground mb-2">Welcome to Prompt Ascent!</h2>
-                                    <p className="text-muted-foreground">Please select a lesson from the sidebar to begin.</p>
+                                    <h2 className="text-2xl font-semibold text-foreground mb-2">Willkommen bei Prompt Ascent!</h2>
+                                    <p className="text-muted-foreground">Wähle eine Lektion in der Seitenleiste, um zu beginnen.</p>
                                 </div>
                             )}
                         </div>
