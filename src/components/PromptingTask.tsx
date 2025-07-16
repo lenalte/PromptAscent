@@ -91,10 +91,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
       <CardContent>
         <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor={`pt-${id}`} className="text-purple-800 dark:text-purple-300">Your Prompt</Label>
+              <Label htmlFor={`pt-${id}`} className="text-purple-800 dark:text-purple-300">Dein Prompt</Label>
               <Textarea
                 id={`pt-${id}`}
-                placeholder="Write your prompt here to solve the task..."
+                placeholder="Schreibe deinen Prompt hier, um die Aufgabe zu lösen..."
                 className="resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400"
                 rows={6}
                 value={userPrompt}
@@ -103,14 +103,14 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 disabled={isComponentReadOnly || isPending}
               />
               <p className="text-sm text-purple-600 dark:text-purple-500">
-                Craft a prompt based on the task description above. Minimum 10 characters.
+                Erstelle einen Prompt basierend auf der Aufgabenbeschreibung oben. Mindestens 10 Zeichen.
               </p>
             </div>
 
             {isPending && (
                 <div className="flex items-center space-x-2 text-muted-foreground">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                    <span>Evaluating...</span>
+                    <span>Bewerte...</span>
                 </div>
             )}
 
@@ -129,10 +129,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                   <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
                 )}
                 <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                  {evaluationResult.isCorrect ? 'Effective Prompt!' : 'Needs Improvement'}
+                  {evaluationResult.isCorrect ? 'Effektiver Prompt!' : 'Verbesserungswürdig'}
                 </AlertTitle>
                 <AlertDescription className={cn("space-y-2", evaluationResult.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
-                  <div>Score: {evaluationResult.score}/100</div>
+                  <div>Punktzahl: {evaluationResult.score}/100</div>
                   <Progress
                     value={evaluationResult.score}
                     className={cn(
@@ -142,12 +142,12 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                       "[&>*]:bg-red-500 dark:[&>*]:bg-red-400"
                     )}
                   />
-                  <p className="pt-2 whitespace-pre-line">Explanation: {evaluationResult.explanation}</p>
+                  <p className="pt-2 whitespace-pre-line">{evaluationResult.explanation}</p>
                 </AlertDescription>
               </Alert>
             )}
             <div className="text-sm text-purple-700 dark:text-purple-400 mt-4 p-3 border border-purple-200 dark:border-purple-700 rounded-md bg-purple-100/50 dark:bg-purple-900/30">
-              <h4 className="font-semibold mb-1 text-purple-800 dark:text-purple-300">Evaluation Guidance:</h4>
+              <h4 className="font-semibold mb-1 text-purple-800 dark:text-purple-300">Bewertungsleitfaden:</h4>
               <p className="whitespace-pre-line">{evaluationGuidance}</p>
             </div>
         </div>
@@ -159,12 +159,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-purple-600 dark:text-purple-500">
-            <p>Effective: +{pointsAwarded} points</p>
-            <p>Attempts remaining: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
+            <p>Effektiv: +{pointsAwarded} Punkte</p>
+            <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
     </Card>
   );
 };
-
-    
