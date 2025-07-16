@@ -1,0 +1,151 @@
+
+{
+  "id": "lesson15",
+  "title": "Textzusammenfassung",
+  "description": "Lerne, wie du mit KI komplexe Texte schnell und verständlich zusammenfassen kannst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was kann KI bei Texten tun?",
+          "content": "Künstliche Intelligenz kann lange Texte wie Bücher, Artikel oder Dokumente zusammenfassen, komplexe Ideen einfach erklären, Gliederungen erstellen und Informationen für verschiedene Zielgruppen anpassen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Zielgruppenspezifische Anpassung",
+          "content": "Die wahre Stärke von KI-Modellen liegt in ihrer Fähigkeit, Inhalte an verschiedene Zielgruppen anzupassen. Man kann zum Beispiel eine technische Erklärung für Laien vereinfachen lassen oder eine Geschichte für Kinder zusammenfassen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Kernkompetenz der KI",
+          "question": "Welche der folgenden Aufgaben ist eine zentrale Fähigkeit von KI bei der Textanalyse?",
+          "options": [
+            "Nur Rechtschreibfehler finden.",
+            "Die Schriftart eines Dokuments ändern.",
+            "Komplexe Inhalte für verschiedene Zielgruppen vereinfachen und zusammenfassen.",
+            "Die Länge eines Textes immer verdoppeln."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Einfache Zusammenfassung erstellen",
+          "question": "Du hast einen langen Nachrichtenartikel über ein politisches Ereignis. Schreibe einen einfachen Prompt, um die Kernaussagen des Artikels zusammenzufassen.",
+          "expectedAnswer": "Ein einfacher, aber effektiver Prompt wäre: 'Fasse diesen Artikel zusammen: [ARTIKEL EINFÜGEN]' oder 'Gib mir eine Zusammenfassung des folgenden Textes.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Zielgruppe anpassen",
+          "question": "Der folgende Text ist sehr wissenschaftlich: 'Quantum entanglement is the phenomenon...'. Wie würdest du den Prompt formulieren, um diesen Text für ein fünfjähriges Kind zu erklären?",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Fasse das für mich zusammen, als wäre ich 5 Jahre alt: [TEXT EINFÜGEN]'.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Informationen strukturieren",
+          "taskDescription": "Du hast einen langen historischen Text über die Französische Revolution. Schreibe einen Prompt, der die KI anweist, die wichtigsten Ereignisse in Form einer chronologischen Zeitleiste zu extrahieren und darzustellen.",
+          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung einer Zeitleiste an? 2. Gibt der Prompt an, dass die Ereignisse chronologisch geordnet sein sollen? 3. Ist der Prompt spezifisch genug, damit die KI die relevanten Daten aus dem Text extrahieren kann?",
+          "pointsAwarded": 10,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Gefahr von Halluzinationen",
+          "question": "Warum ist es wichtig, die von einer KI zusammengefassten Fakten und Daten immer zu überprüfen?",
+          "expectedAnswer": "Es ist wichtig, die Informationen zu überprüfen, weil KI-Modelle dazu neigen können, Fakten zu 'halluzinieren', also falsche, aber plausibel klingende Informationen zu erfinden. Besonders bei wichtigen Daten oder spezifischen Fakten ist eine Überprüfung unerlässlich.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt_error1",
+          "title": "Iterative Verfeinerung",
+          "taskDescription": "Ein erster Prompt 'Fasse den Text zusammen' liefert eine zu lange und unstrukturierte Antwort. Beschreibe, wie du diesen Prompt iterativ verfeinern würdest, um eine kurze Zusammenfassung mit den drei wichtigsten Kernpunkten zu erhalten.",
+          "evaluationGuidance": "1. Erkennt der Benutzer das Problem der zu allgemeinen Antwort? 2. Schlägt die Verfeinerung eine Längenbeschränkung vor (z.B. 'in drei Sätzen')? 3. Fordert die Verfeinerung eine Fokussierung auf die 'drei wichtigsten Punkte'? 4. Zeigt die Antwort ein Verständnis für den iterativen Prozess?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Ausgabeformate",
+          "question": "Welches der folgenden Formate kann eine KI nutzen, um Informationen aus einem Text zu strukturieren?",
+          "options": [
+            "Nur Fließtext.",
+            "Nur Bilder.",
+            "Zeitleisten, Stichpunktlisten, Gliederungen oder Frage-Antwort-Formate.",
+            "Nur Tabellen."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Komplexe Analyse",
+          "taskDescription": "Du hast einen Geschäftsbericht für das letzte Quartal. Erstelle einen Prompt, der die KI anweist, eine Zusammenfassung für das Management zu erstellen. Der Prompt soll fordern, dass die Zusammenfassung nicht länger als 150 Wörter ist, die drei wichtigsten finanziellen Kennzahlen hervorhebt und eine Empfehlung für den nächsten Schritt ausspricht.",
+          "evaluationGuidance": "1. Enthält der Prompt eine klare Längenbeschränkung? 2. Fordert er die Fokussierung auf die wichtigsten Kennzahlen? 3. Beinhaltet die Anweisung die Erstellung einer Handlungsempfehlung? 4. Ist der Prompt spezifisch genug für eine geschäftliche Zielgruppe (Management)?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
