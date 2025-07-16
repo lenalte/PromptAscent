@@ -1,0 +1,135 @@
+
+{
+  "id": "lesson21",
+  "title": "Blog-Beiträge schreiben",
+  "description": "Lerne, wie du KI nutzen kannst, um den Prozess des Blogschreibens zu beschleunigen und zu verbessern.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "KI als Schreibassistent für Blogs",
+          "content": "Künstliche Intelligenz kann den Zeitaufwand für das Schreiben von Blog-Beiträgen erheblich reduzieren. Sie kann Gliederungen erstellen, Entwürfe formulieren und bei der Verfeinerung von Texten helfen. Menschliche Überarbeitung bleibt jedoch entscheidend.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Der Schreibprozess mit KI",
+          "question": "Was ist ein effektiver erster Schritt, wenn man einen Blog-Beitrag mit KI schreibt?",
+          "options": [
+            "Direkt den gesamten Text generieren lassen.",
+            "Zuerst eine Gliederung von der KI erstellen lassen.",
+            "Bilder für den Beitrag suchen.",
+            "Den Titel finalisieren."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Gliederung erstellen lassen",
+          "question": "Du möchtest einen Blog-Beitrag über 'Die Vorteile von Remote-Arbeit' schreiben. Formuliere einen Prompt, um eine Gliederung dafür zu erhalten.",
+          "expectedAnswer": "Ein guter Prompt wäre: 'Erstelle eine Gliederung für einen Blog-Beitrag über die Vorteile von Remote-Arbeit. Die Gliederung sollte eine Einleitung, drei Hauptpunkte und einen Schluss enthalten.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Text aus Gliederung erstellen",
+          "question": "Du hast eine Gliederung für deinen Blog-Beitrag. Wie würdest du den Prompt formulieren, um die KI zu bitten, einen vollständigen Text basierend auf dieser Gliederung zu schreiben?",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Schreibe einen kurzen Blog-Beitrag basierend auf der folgenden Gliederung: [GLIEDERUNG EINFÜGEN]'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Iteratives Verfeinern",
+          "taskDescription": "Die erste Version deines Blog-Beitrags ist gut, aber du möchtest einen Abschnitt über die Nachteile von Remote-Arbeit hinzufügen. Beschreibe, wie du einen Folge-Prompt formulieren würdest, um den bestehenden Text um diesen spezifischen Abschnitt zu ergänzen.",
+          "evaluationGuidance": "1. Erkennt der Benutzer den iterativen Charakter des Schreibprozesses? 2. Ist der Folge-Prompt klar und fordert er die Ergänzung eines neuen Abschnitts? 3. Wird das Thema des neuen Abschnitts (Nachteile von Remote-Arbeit) präzise benannt? 4. Wird der bestehende Text als Kontext für die Ergänzung bereitgestellt?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Rolle des Menschen",
+          "question": "Warum ist es trotz der Unterstützung durch KI wichtig, dass der menschliche Autor den finalen Blog-Beitrag überarbeitet und ihm eine persönliche Note gibt?",
+          "expectedAnswer": "Die menschliche Überarbeitung ist entscheidend, um dem Text Authentizität, persönliche Erfahrungen und eine einzigartige Stimme zu verleihen. Die KI liefert die Struktur und den Inhalt, aber der Mensch sorgt für Kreativität, Glaubwürdigkeit und die emotionale Verbindung zum Leser.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Effizienter Prozess",
+          "question": "Welche Vorgehensweise ist am effizientesten, um einen gut strukturierten Blog-Beitrag mit KI zu erstellen?",
+          "options": [
+            "Zuerst den Text schreiben, dann eine Gliederung erstellen.",
+            "Alles in einem einzigen, sehr langen Prompt generieren lassen.",
+            "Zuerst eine Gliederung erstellen, diese verfeinern und dann den Text daraus generieren lassen.",
+            "Nur die Einleitung von der KI schreiben lassen."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einen vollständigen Blog-Workflow simulieren",
+          "taskDescription": "Du schreibst einen Blog-Beitrag über 'Tipps für nachhaltiges Reisen'. Erstelle einen umfassenden Prompt, der die KI anweist, eine detaillierte Gliederung zu erstellen. Der Prompt soll auch fordern, dass die Gliederung Abschnitte zu den Themen 'Verkehrsmittel', 'Unterkunft' und 'Verhalten vor Ort' enthält. Beschreibe dann, wie du in einem zweiten Schritt aus dieser Gliederung den vollständigen Artikel generieren lassen würdest.",
+          "evaluationGuidance": "1. Fordert der erste Prompt eine detaillierte Gliederung mit den drei spezifischen Themen an? 2. Ist der beschriebene zweite Schritt logisch und baut er auf der Gliederung auf? 3. Zeigt der gesamte Ansatz ein klares Verständnis für den iterativen Schreibprozess mit KI? 4. Ist der Prompt spezifisch genug, um einen informativen und gut strukturierten Artikel zu erzeugen?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
