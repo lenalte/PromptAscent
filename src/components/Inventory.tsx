@@ -20,6 +20,8 @@ interface InventoryProps {
   isOpen: boolean;
   onClose: () => void;
   sidebarWidth: number;
+  selectedSummaryLessonId: string | null;
+  onSummarySelectHandled: () => void;
 }
 
 const InfoCard: React.FC<{ icon: React.ReactNode; value: string | number; label: string }> = ({ icon, value, label }) => (
@@ -33,13 +35,14 @@ const InfoCard: React.FC<{ icon: React.ReactNode; value: string | number; label:
 );
 
 
-const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) => {
+const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, selectedSummaryLessonId, onSummarySelectHandled }) => {
   const { userProgress, currentUser } = useUserProgress();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("allgemein");
   const [summaries, setSummaries] = useState<LessonSummary[]>([]);
   const [unlockedSummaries, setUnlockedSummaries] = useState<LessonSummary[]>([]);
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function fetchDataForTab() {
@@ -68,13 +71,13 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
     }
     fetchDataForTab();
   }, [isOpen, activeTab, currentUser]);
-
+  
   useEffect(() => {
-    if (summaries.length > 0 && userProgress?.unlockedSummaries) {
-        const filtered = summaries.filter(s => userProgress.unlockedSummaries.includes(s.id));
+    if (summaries.length > 0 && userProgress?.completedLessons) {
+        const filtered = summaries.filter(s => userProgress.completedLessons.includes(s.id));
         setUnlockedSummaries(filtered);
     }
-  }, [summaries, userProgress?.unlockedSummaries]);
+  }, [summaries, userProgress?.completedLessons]);
 
   useEffect(() => {
     if (leaderboard.length > 0 && currentUser) {
@@ -82,6 +85,14 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
       setUserRank(rank > 0 ? rank : null);
     }
   }, [leaderboard, currentUser]);
+  
+  useEffect(() => {
+    if (selectedSummaryLessonId) {
+        setActiveTab("zusammenfassungen");
+        setAccordionValue(selectedSummaryLessonId);
+        onSummarySelectHandled(); // Reset the selection in the parent
+    }
+  }, [selectedSummaryLessonId, onSummarySelectHandled]);
 
 
   if (!isOpen) {
@@ -126,14 +137,14 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
           <TabsList className="grid w-full grid-cols-2 gap-4 p-0 bg-transparent border-none">
              <TabsTrigger value="allgemein" className={cn(tabTriggerClasses, activeTab === 'allgemein' ? "text-white" : "text-custom-foreground")}>
                 <div className="relative z-20">Allgemein</div>
-                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10")}></span>
-                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10")}></span>
+                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px]")} style={{ borderColor: 'hsl(var(--foreground))' }}></span>
+                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px]")} style={{ borderColor: 'hsl(var(--foreground))' }}></span>
                 <div className={cn("absolute inset-0 -z-10 group-hover:bg-custom-foreground", activeTab === 'allgemein' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
             <TabsTrigger value="zusammenfassungen" className={cn(tabTriggerClasses, activeTab === 'zusammenfassungen' ? "text-white" : "text-custom-foreground")}>
                 <div className="relative z-20">Zusammenfassungen</div>
-                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px] z-10")}></span>
-                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px] z-10")}></span>
+                <span className={cn(tabBorderSpanClasses, "left-0 right-0 -top-[6px] h-[calc(100%+12px)] border-t-[6px] border-b-[6px]")} style={{ borderColor: 'hsl(var(--foreground))' }}></span>
+                <span className={cn(tabBorderSpanClasses, "top-0 bottom-0 -left-[6px] w-[calc(100%+12px)] border-l-[6px] border-r-[6px]")} style={{ borderColor: 'hsl(var(--foreground))' }}></span>
                 <div className={cn("absolute inset-0 -z-10 group-hover:bg-custom-foreground", activeTab === 'zusammenfassungen' ? 'bg-custom-foreground' : 'bg-background')}></div>
             </TabsTrigger>
           </TabsList>
@@ -177,7 +188,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth }) 
             <div className="p-4 mt-4 rounded-lg max-h-[calc(100vh-12rem)] overflow-y-auto hide-scrollbar">
               <h3 className="text-xl font-semibold mb-4">Deine Zusammenfassungen</h3>
               {unlockedSummaries.length > 0 ? (
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="single" collapsible className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
                     {unlockedSummaries.map((summary) => (
                         <AccordionItem key={summary.id} value={summary.id}>
                             <AccordionTrigger className="text-white hover:text-gray-300 text-left">
