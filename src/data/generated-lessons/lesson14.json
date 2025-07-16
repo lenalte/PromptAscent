@@ -1,0 +1,151 @@
+
+{
+  "id": "lesson14",
+  "title": "Problemlösung mit Generativer KI: Eine einfache Methode",
+  "description": "Lerne eine 5-Schritte-Methode, um Probleme strukturiert mit Generativer KI zu lösen.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Die Learn Prompting Methode",
+          "content": "Die Learn Prompting Methode ist ein strukturierter 5-Schritte-Ansatz, um Probleme mit Generativer KI zu lösen. Sie hilft dabei, zu bestimmen, ob KI die richtige Lösung ist, und leitet den Prozess von der Idee bis zur finalen Anwendung.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Die Fünf Schritte",
+          "content": "Die Methode besteht aus fünf Schritten: 1. Problem formulieren, 2. Relevante Informationen prüfen, 3. Lösung vorschlagen, 4. Lösung anpassen, 5. Lösung einführen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Erster Schritt",
+          "question": "Was ist der erste und wichtigste Schritt der Learn Prompting Methode?",
+          "options": [
+            "Sofort einen Prompt schreiben.",
+            "Das Problem klar und präzise definieren, ohne an eine Lösung zu denken.",
+            "Ein KI-Tool auswählen.",
+            "Feedback von Nutzern sammeln."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Problem formulieren",
+          "question": "Dein Team verbringt zu viel Zeit damit, Meeting-Protokolle manuell zu schreiben. Formuliere dieses Problem gemäß dem ersten Schritt der Methode.",
+          "expectedAnswer": "Ein gut formuliertes Problem wäre: 'Unser Team verliert wöchentlich mehrere Stunden durch das manuelle Erstellen und Zusammenfassen von Meeting-Protokollen, was die Produktivität senkt.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Lösung vorschlagen",
+          "question": "Basierend auf dem Problem der manuellen Protokollerstellung, schlage eine mögliche KI-basierte Lösung vor (Schritt 3).",
+          "expectedAnswer": "Eine mögliche Lösung wäre, eine KI zu verwenden, die Audioaufnahmen von Meetings automatisch transkribiert und eine prägnante Zusammenfassung mit den wichtigsten Entscheidungen und To-Dos erstellt.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Lösung anpassen",
+          "taskDescription": "Stell dir vor, die erste Version deines Protokoll-Bots fasst zwar zusammen, aber die To-Dos sind unklar. Beschreibe, wie du den Prompt anpassen würdest (Schritt 4), um die Ausgabe zu verbessern.",
+          "evaluationGuidance": "1. Erkennt der Benutzer das Problem (unklare To-Dos)? 2. Schlägt die Anpassung eine spezifischere Anweisung vor (z.B. 'Liste alle To-Dos mit verantwortlicher Person und Fälligkeitsdatum auf')? 3. Verbessert die Anpassung die Nützlichkeit der KI-Ausgabe klar?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Zyklischer Prozess",
+          "question": "Warum wird die Learn Prompting Methode als 'zyklisch' beschrieben? Was passiert nach dem letzten Schritt ('Lösung einführen')?",
+          "expectedAnswer": "Sie ist zyklisch, weil nach der Einführung einer Lösung weiterhin Feedback gesammelt und die Leistung überwacht wird. Diese neuen Erkenntnisse fließen dann wieder in den Prozess ein (beginnend bei Schritt 2 oder 4), um die Lösung kontinuierlich zu verbessern.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Relevante Informationen",
+          "question": "Welche Aktivität gehört zu Schritt 2, 'Relevante Informationen prüfen'?",
+          "options": [
+            "Die finale Lösung programmieren.",
+            "Die Farbe des App-Logos auswählen.",
+            "Ähnliche Probleme und bestehende Lösungen analysieren, um zu sehen, ob KI geeignet ist.",
+            "Die Lösung auf Social Media bewerben."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Zusammenfassung der Methode",
+          "question": "Fasse den Zweck der Learn Prompting Methode in einem Satz zusammen.",
+          "expectedAnswer": "Die Learn Prompting Methode bietet einen strukturierten Rahmen, um Probleme systematisch zu analysieren und effektive, KI-gestützte Lösungen zu entwickeln und zu optimieren.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Die Methode auf ein neues Problem anwenden",
+          "taskDescription": "Problem: Ein Kundensupport-Team wird mit sich wiederholenden Fragen überflutet. Wende die ersten drei Schritte der Learn Prompting Methode auf dieses Problem an: 1. Formuliere das Problem klar. 2. Nenne zwei relevante Informationen, die du prüfen würdest. 3. Schlage eine erste KI-basierte Lösung vor.",
+          "evaluationGuidance": "1. Ist das Problem klar formuliert (z.B. hohe Belastung durch repetitive Anfragen)? 2. Sind die zu prüfenden Informationen relevant (z.B. Analyse der häufigsten Fragen, Evaluierung von Chatbot-Tools)? 3. Ist die vorgeschlagene Lösung plausibel (z.B. ein FAQ-Chatbot, der auf Unternehmensdokumenten trainiert ist)? 4. Zeigt die Antwort ein klares Verständnis der ersten drei Methodenschritte?",
+          "pointsAwarded": 20,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
