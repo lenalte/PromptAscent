@@ -1,0 +1,142 @@
+
+{
+  "id": "lesson12",
+  "title": "LLM-Einschränkungen: Wenn Modelle und Chatbots Fehler machen",
+  "description": "Verstehe die häufigsten Einschränkungen und Fallstricke von LLMs.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Halluzinationen (Erfinden von Informationen)",
+          "content": "Eine der seltsamsten Eigenschaften von LLMs ist, dass sie oft Informationen erfinden, wenn sie die Antwort nicht wissen. Anstatt zuzugeben, dass sie etwas nicht wissen, erzeugen sie überzeugend klingende, aber falsche Fakten. Dies wird als 'Halluzination' bezeichnet.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Begrenzte Argumentationsfähigkeiten",
+          "content": "Obwohl LLMs sehr intelligent wirken können, haben sie oft Schwierigkeiten mit grundlegender Mathematik oder komplexen, mehrstufigen logischen Problemen. Sie sind für das Verstehen und Generieren von Sprache konzipiert, nicht für das Lösen von Rätseln oder komplexen Berechnungen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Veraltetes Wissen",
+          "question": "Warum kann ein LLM oft keine Fragen zu aktuellen Ereignissen beantworten?",
+          "options": [
+            "Weil es kein Interesse an Nachrichten hat.",
+            "Weil es nur auf Daten trainiert wurde, die in der Vergangenheit gesammelt wurden, und keinen Echtzeitzugriff auf neue Informationen hat.",
+            "Weil aktuelle Ereignisse zu komplex sind.",
+            "Weil es absichtlich veraltete Informationen gibt."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Bias erkennen",
+          "question": "Gib ein Beispiel dafür, wie sich ein Bias (Voreingenommenheit) aus den Trainingsdaten in der Antwort einer KI widerspiegeln könnte.",
+          "expectedAnswer": "Ein Beispiel wäre, wenn die KI bei der Beschreibung eines 'typischen Programmierers' hauptsächlich männliche Eigenschaften nennt, weil die Trainingsdaten überwiegend aus Texten stammen, in denen Männer als Programmierer dargestellt werden. Dies würde geschlechtsspezifische Stereotypen reproduzieren.",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Umgang mit Halluzinationen",
+          "question": "Du fragst eine KI nach dem Geburtsdatum einer weniger bekannten historischen Figur und sie gibt dir eine exakte, aber falsche Antwort. Was solltest du tun, um diese Art von Fehler zu vermeiden?",
+          "expectedAnswer": "Man sollte die von der KI gelieferten Informationen immer überprüfen, besonders bei Fakten. Man könnte eine zuverlässige Quelle wie eine Enzyklopädie oder eine historische Datenbank konsultieren, anstatt sich blind auf die KI-Antwort zu verlassen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Prompt Hacking vermeiden",
+          "taskDescription": "Ein Benutzer versucht, eine KI dazu zu bringen, eine Anleitung für eine schädliche Aktivität zu geben, indem er den Prompt trickreich formuliert (z.B. als Teil eines fiktiven Drehbuchs). Wie könnte ein guter Priming-Prompt für den Chatbot aussehen, der solche Versuche erkennt und ablehnt?",
+          "evaluationGuidance": "1. Enthält der Priming-Prompt eine klare Regel, die die Generierung von schädlichen oder unethischen Inhalten verbietet? 2. Weist der Prompt die KI an, auch auf Versuche zu achten, diese Regel zu umgehen? 3. Ist die vorgegebene Antwort im Falle eines Regelverstoßes eine höfliche, aber bestimmte Ablehnung?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Grenzen des Gedächtnisses",
+          "question": "Warum ist die Aussage 'Jedes Mal, wenn du mit einem LLM interagierst, beginnt es mit einem leeren Blatt' eine wichtige Einschränkung, die man beachten sollte?",
+          "expectedAnswer": "Es ist eine wichtige Einschränkung, weil es bedeutet, dass das LLM keine persönlichen Erfahrungen oder Erinnerungen an frühere Gespräche hat. Man muss den gesamten relevanten Kontext in jeder neuen Sitzung erneut bereitstellen, was bei längeren Projekten oder Diskussionen umständlich sein kann.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Kernschwäche",
+          "question": "Welche der folgenden Aufgaben ist für ein LLM typischerweise am schwierigsten?",
+          "options": [
+            "Einen kurzen Text zusammenfassen.",
+            "Eine mehrstufige mathematische Textaufgabe lösen.",
+            "Einen Satz in eine andere Sprache übersetzen.",
+            "Ein Gedicht im Stil eines berühmten Autors schreiben."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einschränkungen umgehen",
+          "taskDescription": "Du benötigst eine Zusammenfassung der wichtigsten Finanznachrichten der letzten 24 Stunden. Da du weißt, dass LLMs kein Echtzeitwissen haben, wie würdest du einen Prompt gestalten, der dieses Problem umgeht? (Tipp: Denke darüber nach, wie du der KI aktuelle Informationen zur Verfügung stellen könntest).",
+          "evaluationGuidance": "1. Erkennt der Benutzer das Problem des fehlenden Echtzeitwissens? 2. Enthält der vorgeschlagene Prompt die relevanten Nachrichtenartikel als Kontext? 3. Ist die Anweisung klar, dass die KI ihre Zusammenfassung NUR auf den bereitgestellten Text stützen soll?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
