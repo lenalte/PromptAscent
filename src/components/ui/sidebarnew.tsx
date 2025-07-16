@@ -21,7 +21,6 @@ import { ProfilIcon } from "../icons/ProfilIcon";
 import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
 import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { SettingsIcon } from "../icons/SettingsIcon";
 
 
 interface SidebarProps {
@@ -175,26 +174,25 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
-                     <button
-                        type="button"
+                     <EightbitButton
                         onClick={() => handleCategoryClick('einstellungen')}
                         className={cn(
-                            "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
-                            activeCategory === 'einstellungen' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                           "!p-2 !bg-transparent !border-0",
+                            activeCategory === 'einstellungen' && isContentOpen && "!bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Einstellungen"
                     >
-                        <SettingsIcon className={cn(
+                        <Settings className={cn(
                             "h-8 w-8 shrink-0",
                             activeCategory === 'einstellungen' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
                         )} />
-                    </button>
+                    </EightbitButton>
                 </div>
             </div>
 
             {/* Collapsible Content Area */}
             {isContentOpen && (
-                <div className="w-64 sidebar-background h-full pr-3 pl-2 py-4 overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
+                <div className="w-64 sidebar-background h-full pr-3 pl-2 py-4 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
                     {activeCategory === 'profil' && (
                         <div>
                             <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
@@ -323,21 +321,27 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                     )}
                      {activeCategory === 'einstellungen' && (
-                        <div>
-                            <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
-                            <div className="space-y-4">
+                        <div className="flex flex-col h-full">
+                            <div className="flex-grow">
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
+                                <div className="space-y-4">
+                                     {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
+                                     <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">AGB</button>
+                                     <button className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">Datenschutz</button>
+                                </div>
+                            </div>
+                             <div className="pb-4">
                                 {isAuthenticated ? (
-                                    <EightbitButton onClick={logOut} className="w-full">
-                                        <LogoutIcon className="mr-2" /> Logout
-                                    </EightbitButton>
+                                    <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                        <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+                                    </button>
                                 ) : (
                                     <Link href="/auth/login" passHref legacyBehavior>
-                                        <EightbitButton as="a" className="w-full">
-                                            <LoginIcon className="mr-2" /> Login
-                                        </EightbitButton>
+                                        <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                            <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                        </a>
                                     </Link>
                                 )}
-                                {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
                         </div>
                     )}
@@ -348,5 +352,3 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
-
-    
