@@ -506,6 +506,20 @@ function HomePageContent() {
   const currentSidebarTotalWidth = isSidebarContentAreaOpen ? ICON_BAR_WIDTH_PX + CONTENT_AREA_WIDTH_PX : ICON_BAR_WIDTH_PX;
   const isLessonUnlocked = (lessonId: string) => userProgress?.unlockedLessons?.includes(lessonId) ?? false;
   const currentStageIndexOfSelectedLesson = selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex : -1;
+  
+  const hasStartedSelectedLesson = useMemo(() => {
+    if (!selectedLesson || !userProgress?.lessonStageProgress?.[selectedLesson.id]) {
+      return false;
+    }
+    const lessonProgress = userProgress.lessonStageProgress[selectedLesson.id];
+    if (lessonProgress.currentStageIndex > 0) {
+      return true;
+    }
+    const firstStageId = `stage1`;
+    const firstStageProgress = lessonProgress.stages[firstStageId];
+    return firstStageProgress && Object.keys(firstStageProgress.items).length > 0;
+  }, [selectedLesson, userProgress]);
+
   const getStageProgressForSelectedLesson = (stageId: string) => selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.stages?.[stageId];
   const stageHeights = ['h-[6.5rem]', 'h-[9rem]', 'h-[11.5rem]', 'h-[14rem]', 'h-[16.5rem]', 'h-[19rem]'];
   const stageDetails = [
@@ -634,7 +648,14 @@ function HomePageContent() {
                                     <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
                                     {isLessonUnlocked(selectedLesson.id) ? (
                                         <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
-                                            {isStartingLesson ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...</> : <>Lektion starten <ArrowIcon className="ml-2" /></>}
+                                            {isStartingLesson ? (
+                                                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...</>
+                                            ) : (
+                                                <>
+                                                    {hasStartedSelectedLesson ? 'Weiterlernen' : 'Lektion starten'}
+                                                    <ArrowIcon className="ml-2" />
+                                                </>
+                                            )}
                                         </EightbitButton>
                                     ) : (
                                         <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lektion gesperrt <ArrowIcon className="ml-2" /></EightbitButton>
