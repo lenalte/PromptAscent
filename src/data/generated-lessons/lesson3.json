@@ -1,0 +1,190 @@
+{
+  "description": "Understand the key components of effective prompts.",
+  "id": "lesson3",
+  "stages": [
+    {
+      "id": "stage1",
+      "items": [
+        {
+          "content": "A directive is a concise instruction or question that gives the AI a clear task to perform. It tells the AI exactly what task it should perform.",
+          "id": "s1_info1",
+          "pointsAwarded": 1,
+          "title": "Directive Definition",
+          "type": "informationalSnippet"
+        },
+        {
+          "content": "A role assigns a specific persona or perspective to the AI, encouraging it to tailor its response according to the designated role.",
+          "id": "s1_info2",
+          "pointsAwarded": 1,
+          "title": "Role Definition",
+          "type": "informationalSnippet"
+        },
+        {
+          "correctOptionIndex": 0,
+          "id": "s1_mcq1",
+          "options": [
+            "The main instruction in the prompt that tells the AI what to do.",
+            "Background information that helps the AI generate a relevant response.",
+            "Specifies the format in which you want the AI to present its output.",
+            "Assigning a specific persona to the AI."
+          ],
+          "pointsAwarded": 3,
+          "question": "What is the Directive?",
+          "title": "Directive Comprehension",
+          "type": "multipleChoice",
+          "pointsForIncorrect": 0
+        },
+        {
+          "expectedAnswer": "The role element in a prompt assigns a specific persona or perspective to the AI, encouraging it to tailor its response according to the designated role. For example, telling the AI to act as a doctor.",
+          "id": "s1_fr1",
+          "pointsAwarded": 5,
+          "question": "Define 'Role' (persona) in your own words and provide an example.",
+          "title": "Role Definition in Your Own Words",
+          "type": "freeResponse",
+          "pointsForIncorrect": 0
+        }
+      ],
+      "title": "Stage 1: Verstehen"
+    },
+    {
+      "id": "stage2",
+      "items": [
+        {
+          "expectedAnswer": "The prompt should be revised to include more detail. For example: 'You are a friendly tour guide. Explain the history of the Eiffel Tower to a group of elementary school students.'",
+          "id": "s2_fr1",
+          "pointsAwarded": 5,
+          "question": "The prompt 'Explain the Eiffel Tower' is too vague. How could you improve it by adding a role?",
+          "title": "Applying Roles",
+          "type": "freeResponse",
+          "pointsForIncorrect": 0
+        },
+        {
+          "content": "Examples demonstrate the expected format, style, or structure of the output. By including them in the prompt, you can guide the AI's behavior and help it better understand the desired result.",
+          "id": "s2_info1",
+          "pointsAwarded": 1,
+          "title": "The Importance of Examples",
+          "type": "informationalSnippet"
+        },
+        {
+          "expectedAnswer": "The prompt should be revised to include additional context. For example: 'You are a financial analyst. Based on the following stock market data, predict the likely performance of Company XYZ over the next quarter.' Followed by relevant stock market data.",
+          "id": "s2_fr2",
+          "pointsAwarded": 7,
+          "question": "You want the AI to predict the performance of a stock but only provide the prompt 'Predict the stock performance'. What crucial element is missing and how would you add it?",
+          "title": "Applying Additional Information",
+          "type": "freeResponse",
+          "pointsForIncorrect": 0
+        }
+      ],
+      "title": "Stage 2: Anwenden"
+    },
+    {
+      "id": "stage3",
+      "items": [
+        {
+          "evaluationGuidance": "1. Did the user create a clear and concise directive? 2. Did the user specify the desired output format (e.g., a list, paragraph, or table)? 3. Did the prompt use appropriate additional information to guide the AI?",
+          "id": "s3_pt1",
+          "pointsAwarded": 10,
+          "taskDescription": "Write a prompt that instructs the AI to summarize a given news article. Specify that the output should be a concise bulleted list highlighting the key points of the article.",
+          "title": "Summarization Prompt",
+          "type": "promptingTask",
+          "pointsForIncorrect": 0
+        }
+      ],
+      "title": "Stage 3: Variieren"
+    },
+    {
+      "id": "stage4",
+      "items": [
+        {
+          "evaluationGuidance": "1. Did the user identify the lack of a specified role? 2. Did the user suggest a role that adds expertise to the prompt? 3. How well does the added role fit the original request?",
+          "id": "s4_pt_error1",
+          "pointsAwarded": 12,
+          "taskDescription": "The following prompt is flawed: 'Write an email about climate change.' Identify the weakness in this prompt and suggest how to improve it. Specifically, focus on a missing key component. Then re-write the prompt incorporating your suggestions.",
+          "title": "Identify and Improve a Flawed Prompt",
+          "type": "promptingTask",
+          "pointsForIncorrect": 0
+        },
+        {
+          "expectedAnswer": "Common pitfalls include vague directives, lack of context, and omitting desired output formats. Best practices include using clear and concise directives, providing relevant additional information, and specifying the output format.",
+          "id": "s4_fr1",
+          "pointsAwarded": 6,
+          "question": "What are some common pitfalls to avoid when crafting prompts, and what are some best practices to follow?",
+          "title": "Common Pitfalls and Best Practices",
+          "type": "freeResponse",
+          "pointsForIncorrect": 0
+        }
+      ],
+      "title": "Stage 4: Reflektieren"
+    },
+    {
+      "id": "stage5",
+      "items": [
+        {
+          "correctOptionIndex": 1,
+          "id": "s5_mcq1",
+          "options": [
+            "Providing incorrect information to confuse the AI.",
+            "Demonstrating the expected format, style, or structure of the output.",
+            "Ignoring the task and providing irrelevant details.",
+            "Using ambiguous language."
+          ],
+          "pointsAwarded": 4,
+          "question": "What is the primary purpose of providing examples in a prompt?",
+          "title": "Purpose of Examples",
+          "type": "multipleChoice",
+          "pointsForIncorrect": 0
+        },
+        {
+          "correctOptionIndex": 0,
+          "id": "s5_mcq2",
+          "options": [
+            "Examples, Additional Information, Role, Directive, Output Formatting",
+            "Directive, Role, Additional Information, Examples, Output Formatting",
+            "Output Formatting, Directive, Role, Additional Information, Examples",
+            "Role, Directive, Additional Information, Examples, Output Formatting"
+          ],
+          "pointsAwarded": 4,
+          "question": "What is the recommended order for prompt parts?",
+          "title": "Recommended Prompt Order",
+          "type": "multipleChoice",
+          "pointsForIncorrect": 0
+        },
+        {
+          "expectedAnswer": "Output formatting improves AI responses by instructing the AI to present its response in a specific structure, such as a list, table, or paragraph—making the result immediately usable and reducing the need for further editing.",
+          "id": "s5_fr1",
+          "pointsAwarded": 6,
+          "question": "How does output formatting improve AI responses?",
+          "title": "Output Formatting Improvement",
+          "type": "freeResponse",
+          "pointsForIncorrect": 0
+        }
+      ],
+      "title": "Stage 5: Wiederholen"
+    },
+    {
+      "id": "stage6",
+      "items": [
+        {
+          "evaluationGuidance": "1. Did the user successfully combine a role, directive, and additional information in the prompt? 2. Is the prompt clear and specific, guiding the AI effectively? 3. Does the prompt appropriately set the context for the task? 4. Does the prompt specify the desired output format?",
+          "id": "s6_pt_complex1",
+          "pointsAwarded": 18,
+          "taskDescription": "Imagine you need to explain the concept of 'artificial intelligence' to a group of high school students with no prior knowledge of the subject. Write a prompt that instructs the AI to act as a knowledgeable and engaging teacher who can simplify complex topics. Provide relevant additional information about AI, and request the output be structured as a lesson plan with key topics and brief explanations.",
+          "title": "Crafting a Complex AI Explanation Prompt",
+          "type": "promptingTask",
+          "pointsForIncorrect": 0
+        },
+        {
+          "expectedAnswer": "User's personal reflection",
+          "id": "s6_fr_reflect1",
+          "pointsAwarded": 5,
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "title": "Lesson Reflection",
+          "type": "freeResponse",
+          "pointsForIncorrect": 0
+        }
+      ],
+      "title": "Stage 6: Meistern"
+    }
+  ],
+  "title": "Basic Prompt Structure and Key Parts"
+}

@@ -1,0 +1,175 @@
+{
+  "id": "lesson2",
+  "title": "Introduction to Prompt Engineering",
+  "description": "Learn the fundamentals of prompt engineering.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "What is a Prompt?",
+          "content": "A prompt is the input or instruction given to an AI model to generate a response. It can be a simple question or a complex set of instructions with context, tone, and format specifications.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "What is Prompt Engineering?",
+          "content": "Prompt engineering is the process of crafting and refining prompts to improve the performance of generative AI models. It guides the AI to deliver more accurate and relevant outputs.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Goal of Prompt Engineering",
+          "question": "What is the primary goal of prompt engineering?",
+          "options": [
+            "To make the AI respond faster.",
+            "To improve the accuracy and relevance of the AI's output.",
+            "To test the AI's memory capacity.",
+            "To create more complex AI models."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Define Prompt",
+          "question": "In your own words, what is a prompt in the context of Generative AI?",
+          "expectedAnswer": "A prompt is the instruction or question you give to an AI to get it to generate a response, like text, images, or code.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Example: Math Problem",
+          "content": "A vague prompt like 'What is 923 * 99?' might lead to an incorrect answer. A refined prompt like 'What is 923 * 99? Let's go step by step.' encourages logical reasoning and improves accuracy.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Applying Prompt Engineering to Text",
+          "question": "You want a summary of a news article. Write a simple, initial prompt for this task.",
+          "expectedAnswer": "A simple prompt would be: 'Summarize this article.' or 'Write a summary for the following text.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Refining the Text Prompt",
+          "question": "Now, refine the prompt from the previous question to be more specific. Mention the desired length and focus.",
+          "expectedAnswer": "A refined prompt could be: 'Summarize this article in three sentences, focusing on the main outcomes.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Image Generation Prompt",
+          "taskDescription": "Write two different prompts to generate an image of a 'dragon'. The first should be simple and the second should be a refined, more detailed prompt.",
+          "evaluationGuidance": "1. Does the user provide a simple, one-or-two-word prompt? 2. Does the refined prompt include at least three specific details (e.g., color, setting, action, style)? 3. Is the refined prompt likely to produce a more specific and interesting image?",
+          "pointsAwarded": 10,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Code Generation Prompt",
+          "taskDescription": "You need a Python function that adds two numbers. First, write a simple prompt. Then, write a refined prompt that also asks for error handling.",
+          "evaluationGuidance": "1. Is the simple prompt a clear request for a function that adds two numbers? 2. Does the refined prompt explicitly ask for error handling (e.g., for non-integer inputs)? 3. Is the refined prompt more robust for a real-world application?",
+          "pointsAwarded": 15,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s4_pt_error1",
+          "title": "Analyze a Tweet Prompt",
+          "taskDescription": "The prompt 'Write a tweet about ArchaeologistAI' is flawed because it lacks context. Explain why this is a problem and how adding the information 'ArchaeologistAI tells stories about famous archaeologists' improves the result.",
+          "evaluationGuidance": "1. Does the user correctly identify that the original prompt lacks context about the product's function? 2. Does the user explain that this leads to an inaccurate or generic tweet? 3. Does the user recognize that adding the specific function helps the AI generate a more accurate and relevant tweet?",
+          "pointsAwarded": 15,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Core of Prompt Engineering",
+          "question": "Prompt engineering is an ______ process.",
+          "options": [
+            "automated",
+            "one-time",
+            "iterative",
+            "optional"
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Why Refine Prompts?",
+          "question": "Explain why it is often necessary to refine a prompt after getting an initial response from an AI.",
+          "expectedAnswer": "It's necessary to refine prompts because the initial output might be too generic, inaccurate, or not in the desired format. Refining the prompt with more specific instructions, context, or examples helps guide the AI to a better result.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Creative Prompt with Style",
+          "taskDescription": "You are marketing a fictional AI product called 'StoryWeaver' that helps write children's books. Write a prompt to generate a tweet about this product. The prompt should include the product's function and ask for the tweet to be written in a whimsical and magical style.",
+          "evaluationGuidance": "1. Does the prompt clearly state the product name and function? 2. Does it specify a style (whimsical/magical)? 3. Is the prompt well-structured for an AI to understand and execute the creative task? 4. Does it imply the target audience is parents or children's authors?",
+          "pointsAwarded": 20,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lesson Reflection",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "User's personal reflection",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
