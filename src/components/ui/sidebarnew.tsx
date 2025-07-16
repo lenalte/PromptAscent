@@ -178,7 +178,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                         onClick={() => handleCategoryClick('einstellungen')}
                         className={cn(
                            "!p-2 !bg-transparent !border-0",
-                            activeCategory === 'einstellungen' && isContentOpen && "!bg-[var(--sidebar-accent)]"
+                           "!w-auto !h-auto", // override default size
+                           activeCategory === 'einstellungen' && isContentOpen ? "!bg-[var(--sidebar-accent)]" : "hover:!bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Einstellungen"
                     >
