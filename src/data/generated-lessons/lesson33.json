@@ -1,0 +1,142 @@
+
+{
+  "id": "lesson33",
+  "title": "Rollen neu betrachtet",
+  "description": "Erfahre, warum Rollen-Prompting bei neuen Modellen anders wirkt und wie du es weiterhin effektiv einsetzt.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Veränderte Wirksamkeit",
+          "content": "Während Rollen-Prompting bei älteren KI-Modellen die Antwortqualität erheblich steigerte, ist der Effekt bei modernen Modellen wie GPT-4 weniger ausgeprägt. Diese Modelle haben bereits ein so breites Wissen, dass eine einfache Rollenzuweisung oft nicht mehr nötig ist.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Weiterhin nützlich",
+          "content": "Trotz der geringeren Notwendigkeit bleibt Rollen-Prompting nützlich. Besonders detaillierte Rollenbeschreibungen oder die Kombination mehrerer Personas können immer noch helfen, den Stil und die Perspektive der KI-Antworten präzise zu steuern.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Entwicklung des Promptings",
+          "question": "Warum ist einfaches Rollen-Prompting (z.B. 'Du bist ein Arzt') bei GPT-4 weniger wirksam als bei älteren Modellen?",
+          "options": [
+            "Weil GPT-4 keine Rollen mehr versteht.",
+            "Weil GPT-4 bereits über ein sehr breites und tiefes Fachwissen verfügt und die Rolle oft schon aus dem Kontext der Frage ableiten kann.",
+            "Weil Rollen-Prompting generell veraltet ist.",
+            "Weil es zu lange dauert, eine Rolle zuzuweisen."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Detaillierte Rolle erstellen",
+          "question": "Anstatt nur 'Du bist ein Etymologe' zu sagen, wie könntest du eine detailliertere Rolle für eine KI formulieren, die die Herkunft eines Wortes erforschen soll?",
+          "expectedAnswer": "Eine detailliertere Rolle wäre: 'Du bist ein Etymologe, der sich darauf spezialisiert hat, die Wurzeln von Wörtern bis in die Antike zurückzuverfolgen. Du solltest auch erklären, wie sich die Bedeutung des Wortes über die Zeit verändert hat.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Automatische Rollengenerierung",
+          "question": "Beschreibe, wie du die KI selbst nutzen könntest, um eine passende Rolle für eine Aufgabe zu erstellen. Gib ein Beispiel für einen Prompt, der das tut.",
+          "expectedAnswer": "Man kann die KI bitten, eine Rolle zu generieren, die zu einer bestimmten Aufgabe passt. Beispiel-Prompt: 'Erstelle eine detaillierte Rollenbeschreibung für eine KI, die als kreativer Werbetexter für Luxusmarken agieren soll.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Mehrere Personas kombinieren",
+          "taskDescription": "Du möchtest eine ausgewogene Analyse der Vor- und Nachteile von künstlicher Intelligenz. Erstelle einen Prompt, der die KI anweist, einen Dialog zwischen zwei Personas zu schreiben: einem optimistischen Tech-Evangelisten und einem skeptischen Ethiker. Lass beide ihre Argumente austauschen.",
+          "evaluationGuidance": "1. Enthält der Prompt die Anweisung, einen Dialog zu schreiben? 2. Werden die beiden gegensätzlichen Rollen (Optimist vs. Skeptiker) klar definiert? 3. Ist die Aufgabenstellung so formuliert, dass eine ausgewogene Diskussion entsteht? 4. Führt dieser Ansatz zu einer nuancierteren Antwort als eine einfache Pro/Contra-Liste?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Wann ist Rollen-Prompting heute noch wichtig?",
+          "question": "In welchen Situationen ist das Zuweisen einer Rolle auch bei modernen KI-Modellen immer noch besonders wertvoll?",
+          "expectedAnswer": "Es ist besonders wertvoll, wenn ein sehr spezifischer Stil, ein ungewöhnlicher Tonfall oder eine bestimmte Perspektive erforderlich ist, die die KI nicht allein aus dem Kontext ableiten kann. Beispiele sind kreatives Schreiben, das Nachahmen einer bestimmten Persönlichkeit oder das Einnehmen einer konträren Meinung in einer Debatte.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Effektive Rollen",
+          "question": "Welche Art von Rolle ist bei modernen Modellen am ehesten noch wirksam?",
+          "options": [
+            "Eine sehr kurze Rolle wie 'Du bist klug'.",
+            "Eine detaillierte, mehrsätzige Rollenbeschreibung mit spezifischen Anweisungen.",
+            "Eine Rolle, die der Aufgabe widerspricht.",
+            "Gar keine Rolle."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Eine komplexe Rollen-Simulation erstellen",
+          "taskDescription": "Du möchtest einen realistischen Kundenservice-Dialog simulieren. Erstelle einen Prompt, der die KI anweist, zwei Rollen gleichzeitig zu spielen: einen frustrierten Kunden, dessen Lieferung verloren gegangen ist, und einen geduldigen, lösungsorientierten Servicemitarbeiter. Der Dialog soll das Problem beschreiben, mögliche Lösungen durchspielen und zu einer Einigung führen.",
+          "evaluationGuidance": "1. Weist der Prompt die KI an, einen Dialog zwischen zwei Rollen zu führen? 2. Sind die beiden Rollen (frustrierter Kunde, hilfsbereiter Mitarbeiter) klar und mit gegensätzlichen Emotionen definiert? 3. Wird ein klares Ziel für den Dialog vorgegeben (Problem, Lösung, Einigung)? 4. Ist dieser Ansatz geeignet, um eine realistische und nuancierte Konversation zu generieren?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
