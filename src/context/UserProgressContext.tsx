@@ -248,15 +248,14 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       console.log(`[UserProgressContext] Successfully deleted Firebase Auth user for UID: ${currentUser.uid}`);
 
       return { success: true };
-    } catch (error) {
-      const firebaseError = error as { code?: string; message: string };
+    } catch (error: any) {
       console.error(`[UserProgressContext] Error deleting account for UID: ${currentUser.uid}:`, error);
-
+      
       // Handle common error where user needs to re-authenticate
-      if (firebaseError.code === 'auth/requires-recent-login') {
-        return { success: false, error: "This is a sensitive operation and requires you to have logged in recently. Please log out and log back in to delete your account." };
+      if (error.code === 'auth/requires-recent-login') {
+        return { success: false, error: "Diese Aktion ist sensibel und erfordert eine kürzliche Anmeldung. Bitte logge dich erneut ein, bevor du deinen Account löschst." };
       }
-      return { success: false, error: firebaseError.message || "An unknown error occurred while deleting the account." };
+      return { success: false, error: error.message || "An unknown error occurred while deleting the account." };
     }
   }, [currentUser]);
 
