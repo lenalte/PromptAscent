@@ -6,7 +6,7 @@ import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { getLeaderboardData } from '@/services/userProgressService';
 import type { LeaderboardEntry } from '@/services/userProgressService';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Settings } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Settings, Trash2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { EightbitButton } from './eightbit-button';
@@ -174,14 +174,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
-                     <EightbitButton
+                     <button
                         onClick={() => handleCategoryClick('einstellungen')}
                         className={cn(
-                           "!p-2 !bg-[hsl(var(--foreground))]", // override default background
-                           "!w-auto !h-auto", // override default size
-                           "border-none", // no border
-                           "hover:!bg-[var(--sidebar-accent)]", // hover effect
-                           activeCategory === 'einstellungen' && isContentOpen && "!bg-[var(--sidebar-accent)]"
+                           "!p-2 !w-auto !h-auto",
+                           "rounded-lg",
+                           "bg-transparent hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                           activeCategory === 'einstellungen' && isContentOpen && "bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Einstellungen"
                     >
@@ -189,13 +188,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                             "h-5 w-5 shrink-0",
                             activeCategory === 'einstellungen' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
                         )} />
-                    </EightbitButton>
+                    </button>
                 </div>
             </div>
 
             {/* Collapsible Content Area */}
             {isContentOpen && (
-                <div className="w-72 sidebar-background h-full pr-4 pl-2 py-4 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
+                <div className="w-72 sidebar-background h-full pr-2 pl-2 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
                     {activeCategory === 'profil' && (
                         <div>
                             <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
@@ -328,21 +327,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <div className="flex-grow pt-4">
                                  {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
-                             <div className="pb-2">
-                                <div>
+                             <div className="pb-4">
+                                <div className="space-y-1">
                                     <Link href="/legal/agb" passHref legacyBehavior>
                                         <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
                                     </Link>
                                     <Link href="/legal/datenschutz" passHref legacyBehavior>
                                         <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
                                     </Link>
+                                    {isAuthenticated && (
+                                      <button className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive mt-2">
+                                        <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
+                                      </button>
+                                    )}
                                     {isAuthenticated ? (
-                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2 pt-4">
+                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2">
                                             <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
                                         </button>
                                     ) : (
                                         <Link href="/auth/login" passHref legacyBehavior>
-                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2 pt-4">
+                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white mt-2">
                                                 <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
                                             </a>
                                         </Link>
