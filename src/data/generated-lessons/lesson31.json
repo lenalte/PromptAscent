@@ -1,0 +1,126 @@
+
+{
+  "id": "lesson31",
+  "title": "Least-to-Most-Prompting",
+  "description": "Lerne, wie du komplexe Probleme löst, indem du sie in einfachere, aufeinander aufbauende Schritte zerlegst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was ist Least-to-Most (LtM) Prompting?",
+          "content": "Least-to-Most (LtM) Prompting ist eine fortgeschrittene Technik, die komplexe Probleme in eine Reihe von einfacheren Teilproblemen zerlegt. Diese Teilprobleme werden dann nacheinander gelöst, wobei die Lösung eines Schrittes als Grundlage für den nächsten dient.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Unterschied zu CoT",
+          "question": "Was ist der Hauptunterschied zwischen Least-to-Most- und Chain-of-Thought-Prompting?",
+          "options": [
+            "LtM verwendet keine Beispiele.",
+            "Bei LtM wird die Lösung eines vorherigen Teilproblems explizit in den nächsten Schritt eingebracht.",
+            "LtM ist nur für mathematische Aufgaben geeignet.",
+            "CoT ist immer genauer als LtM."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Problem zerlegen",
+          "question": "Du hast die komplexe Frage: 'Wie viel kostet es, eine Party für 50 Personen mit Pizza und Getränken zu organisieren?'. Liste die Teilprobleme auf, die du mit dem LtM-Ansatz lösen müsstest.",
+          "expectedAnswer": "Teilprobleme könnten sein: 1. Wie viele Pizzen braucht man für 50 Personen? 2. Was kostet eine Pizza? 3. Wie viele Getränke braucht man? 4. Was kostet ein Getränk? 5. Was sind die Gesamtkosten?",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "LtM für eine Planungsaufgabe",
+          "taskDescription": "Du planst eine Reiseroute von Berlin nach Rom mit dem Zug. Erstelle einen ersten Prompt für den LtM-Prozess, der die KI anweist, die möglichen Zugverbindungen und ihre Dauer aufzulisten. Formuliere dann einen zweiten Prompt, der diese Information als Kontext nutzt, um die günstigste Verbindung auszuwählen.",
+          "evaluationGuidance": "1. Hat der Benutzer zwei separate Prompts erstellt? 2. Zielt der erste Prompt darauf ab, die Teilprobleme (Verbindungen auflisten) zu lösen? 3. Nutzt der zweite Prompt die Ausgabe des ersten als Kontext? 4. Führt dieser zweistufige Prozess zu einer fundierteren Entscheidung?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Vorteile von LtM",
+          "question": "Warum ist das schrittweise Lösen von Teilproblemen mit LtM oft erfolgreicher als der Versuch, eine komplexe Frage in einem einzigen Schritt zu beantworten?",
+          "expectedAnswer": "Das schrittweise Lösen reduziert die Komplexität jedes einzelnen Schrittes für die KI. Indem sie sich auf ein kleineres Teilproblem konzentriert und auf bereits gelösten Schritten aufbaut, sinkt die Fehlerwahrscheinlichkeit und die Genauigkeit der endgültigen Lösung steigt.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Hauptanwendungsfall",
+          "question": "Für welche Art von Aufgabe eignet sich LtM-Prompting besonders gut?",
+          "options": [
+            "Das Schreiben eines kurzen Gedichts.",
+            "Die Übersetzung eines einzelnen Wortes.",
+            "Das Lösen einer Aufgabe, die aus mehreren voneinander abhängigen logischen Schritten besteht.",
+            "Die Generierung eines zufälligen Namens."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einen vollständigen LtM-Prozess simulieren",
+          "taskDescription": "Du möchtest eine komplexe Kundenanfrage beantworten. Die Anfrage lautet: 'Ich habe am 1. März ein T-Shirt für 30€ mit 40% Rabatt gekauft. Heute ist der 29. März und es gibt 50% Rabatt. Kann ich das Shirt zurückgeben und mit dem Guthaben zwei neue Hemden kaufen?'\n\nErstelle einen Prompt, der die KI anweist, zuerst die Teilprobleme zu identifizieren (z.B. Rückgabefrist prüfen, Guthaben berechnen, Kosten für zwei neue Hemden berechnen) und diese dann nacheinander zu lösen, um eine umfassende Antwort zu formulieren.",
+          "evaluationGuidance": "1. Fordert der Prompt die KI auf, das Problem in logische Teilprobleme zu zerlegen? 2. Werden die Teilprobleme korrekt identifiziert? 3. Weist der Prompt die KI an, die Teilprobleme nacheinander zu lösen und die Ergebnisse zu verwenden? 4. Ist der LtM-Ansatz für diese Art von Service-Anfrage geeignet?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
