@@ -105,7 +105,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
     ? new Date(currentUser.metadata.creationTime).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
     : '-';
 
-const renderSummaryWithBold = (text: string) => {
+  const renderSummaryWithBold = (text: string) => {
     const lines = text.split('\n').filter(line => line.trim() !== '');
     
     return lines.map((line, lineIndex) => {
@@ -130,7 +130,7 @@ const renderSummaryWithBold = (text: string) => {
             </p>
         );
     });
-};
+  };
 
   const tabTriggerClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
   const tabBorderSpanClasses = "pointer-events-none absolute border-solid";
@@ -208,7 +208,7 @@ const renderSummaryWithBold = (text: string) => {
                             <AccordionTrigger className="text-white hover:text-gray-300 text-3xl font-bold hover:no-underline">
                                 {summary.title}
                             </AccordionTrigger>
-                            <AccordionContent className="text-white/80 p-4 rounded-b-lg">
+                            <AccordionContent className="text-white/80 pt-1 pb-4 px-4 rounded-b-lg">
                                 {renderSummaryWithBold(summary.summary)}
                             </AccordionContent>
                         </AccordionItem>
