@@ -2,206 +2,206 @@
 [
   {
     "id": "lesson1",
-    "title": "What is Generative AI?",
-    "description": "An introduction to Generative AI and its core concepts.",
+    "title": "Was ist Generative KI?",
+    "description": "Eine Einführung in die Grundlagen und Kernkonzepte der Generativen KI.",
     "contentFileName": "lesson1.md"
   },
   {
     "id": "lesson2",
-    "title": "Introduction to Prompt Engineering",
-    "description": "Learn the fundamentals of prompt engineering.",
+    "title": "Einführung in Prompt Engineering",
+    "description": "Lerne die Grundlagen des Prompt Engineering.",
     "contentFileName": "lesson2.md"
   },
   {
     "id": "lesson3",
-    "title": "Basic Prompt Structure and Key Parts",
-    "description": "Understand the key components of effective prompts.",
+    "title": "Grundlegende Prompt-Struktur",
+    "description": "Verstehe die Schlüsselkomponenten effektiver Prompts.",
     "contentFileName": "lesson3.md"
   },
   {
     "id": "lesson4",
-    "title": "Technique #1: Instructions in Prompts",
-    "description": "Learn how to give clear instructions in your prompts.",
+    "title": "Technik #1: Anweisungen in Prompts",
+    "description": "Lerne, wie du klare Anweisungen in deinen Prompts gibst.",
     "contentFileName": "lesson4.md"
   },
   {
     "id": "lesson5",
-    "title": "Technique #2: Roles in Prompts",
-    "description": "Discover how assigning roles to AI can shape responses.",
+    "title": "Technik #2: Rollen in Prompts",
+    "description": "Entdecke, wie das Zuweisen von Rollen an die KI die Antworten formen kann.",
     "contentFileName": "lesson5.md"
   },
   {
     "id": "lesson6",
-    "title": "Technique #3: Examples in Prompts: From Zero-Shot to Few-Shot",
-    "description": "Explore using examples in prompts, from zero-shot to few-shot.",
+    "title": "Technik #3: Beispiele in Prompts",
+    "description": "Erkunde die Nutzung von Beispielen in Prompts, von Zero-Shot bis Few-Shot.",
     "contentFileName": "lesson6.md"
   },
   {
     "id": "lesson7",
-    "title": "Combining Prompting Techniques",
-    "description": "Learn how to combine different prompting techniques effectively.",
+    "title": "Kombination von Prompting-Techniken",
+    "description": "Lerne, wie du verschiedene Prompting-Techniken effektiv kombinierst.",
     "contentFileName": "lesson7.md"
   },
   {
     "id": "lesson8",
-    "title": "Tips for Writing Better Prompts",
-    "description": "Get practical tips for improving your prompt writing skills.",
+    "title": "Tipps für bessere Prompts",
+    "description": "Erhalte praktische Tipps, um die Qualität deiner Prompts zu verbessern.",
     "contentFileName": "lesson8.md"
   },
   {
     "id": "lesson9",
-    "title": "Prompt Priming: Setting Context for AI",
-    "description": "Understand prompt priming and how to set context for AI.",
+    "title": "Prompt Priming: Kontext für die KI",
+    "description": "Verstehe Prompt Priming und wie man den Kontext für eine KI richtig setzt.",
     "contentFileName": "lesson9.md"
   },
   {
     "id": "lesson10",
-    "title": "Prompt Priming: Setting Context for AI",
-    "description": "Further exploration of prompt priming and context setting.",
+    "title": "Prompt Priming: Kontext für die KI (Fortsetzung)",
+    "description": "Weitere Erkundung von Prompt Priming und Kontexteinstellung.",
     "contentFileName": "lesson10.md"
   },
   {
     "id": "lesson11",
-    "title": "Differences Between Chatbots and LLMs",
-    "description": "Learn the key differences between chatbots and Large Language Models.",
+    "title": "Unterschiede: Chatbots und LLMs",
+    "description": "Lerne die wesentlichen Unterschiede zwischen Chatbots und großen Sprachmodellen kennen.",
     "contentFileName": "lesson11.md"
   },
   {
     "id": "lesson12",
-    "title": "LLM Limitations: When Models and Chatbots Make Mistakes",
-    "description": "Understand common limitations and pitfalls of LLMs.",
+    "title": "LLM-Einschränkungen: Wenn Modelle Fehler machen",
+    "description": "Verstehe die häufigsten Einschränkungen und Fallstricke von LLMs.",
     "contentFileName": "lesson12.md"
   },
   {
     "id": "lesson13",
-    "title": "What Can Generative AI Create Beyond Text?",
-    "description": "Explore the diverse capabilities of Generative AI beyond text generation.",
+    "title": "Was kann KI außer Text?",
+    "description": "Entdecke die vielfältigen kreativen Fähigkeiten von Generativer KI jenseits von Text.",
     "contentFileName": "lesson13.md"
   },
   {
     "id": "lesson14",
-    "title": "How to Solve Problems Using Generative AI: A Simple Method",
-    "description": "A structured method for solving problems using Generative AI.",
+    "title": "Problemlösung mit Generativer KI",
+    "description": "Eine strukturierte Methode zur Problemlösung mit Generativer KI.",
     "contentFileName": "lesson14.md"
   },
   {
     "id": "lesson15",
-    "title": "Text Summarization",
-    "description": "Learn techniques for effective text summarization with AI.",
+    "title": "Textzusammenfassung",
+    "description": "Lerne Techniken für eine effektive Textzusammenfassung mit KI.",
     "contentFileName": "lesson15.md"
   },
   {
     "id": "lesson16",
-    "title": "Table Generation",
-    "description": "How to use AI to generate structured tables from text.",
+    "title": "Tabellengenerierung",
+    "description": "Wie man KI zur Erstellung strukturierter Tabellen aus Text nutzt.",
     "contentFileName": "lesson16.md"
   },
   {
     "id": "lesson17",
-    "title": "Multiple Choice Questions",
-    "description": "Techniques for using AI to solve and generate multiple choice questions.",
+    "title": "Multiple-Choice-Fragen",
+    "description": "Techniken, um mit KI Multiple-Choice-Fragen zu lösen und zu generieren.",
     "contentFileName": "lesson17.md"
   },
   {
     "id": "lesson18",
-    "title": "Short-Form Content",
-    "description": "Tips for creating effective short-form content with AI.",
+    "title": "Kurzform-Inhalte",
+    "description": "Tipps zur Erstellung effektiver Kurzform-Inhalte mit KI.",
     "contentFileName": "lesson18.md"
   },
   {
     "id": "lesson19",
-    "title": "Writing in Different Styles",
-    "description": "Learn to guide AI to write in various styles and tones.",
+    "title": "Schreiben in verschiedenen Stilen",
+    "description": "Lerne, die KI so zu steuern, dass sie in verschiedenen Stilen und Tonalitäten schreibt.",
     "contentFileName": "lesson19.md"
   },
   {
     "id": "lesson20",
-    "title": "Writing Emails",
-    "description": "Using AI to draft and respond to emails effectively.",
+    "title": "E-Mails schreiben",
+    "description": "KI nutzen, um E-Mails effektiv zu entwerfen und zu beantworten.",
     "contentFileName": "lesson20.md"
   },
   {
     "id": "lesson21",
-    "title": "Blog Writing",
-    "description": "Techniques for leveraging AI in the blog writing process.",
+    "title": "Blog-Beiträge schreiben",
+    "description": "Techniken, um KI im Prozess des Blogschreibens zu nutzen.",
     "contentFileName": "lesson21.md"
   },
   {
     "id": "lesson22",
-    "title": "Legal Documents",
-    "description": "Exploring AI's role in reading and drafting legal documents.",
+    "title": "Juristische Dokumente",
+    "description": "Erkundung der Rolle der KI beim Lesen und Entwerfen von juristischen Dokumenten.",
     "contentFileName": "lesson22.md"
   },
   {
     "id": "lesson23",
-    "title": "Study Buddy",
-    "description": "How to use AI as an effective study partner.",
+    "title": "Lernpartner",
+    "description": "Wie man KI als effektiven Lernpartner einsetzt.",
     "contentFileName": "lesson23.md"
   },
   {
     "id": "lesson24",
-    "title": "Digital Marketing",
-    "description": "Applying AI in various digital marketing tasks.",
+    "title": "Digitales Marketing",
+    "description": "Anwendung von KI bei verschiedenen Aufgaben im digitalen Marketing.",
     "contentFileName": "lesson24.md"
   },
   {
     "id": "lesson25",
-    "title": "Coding Assistance",
-    "description": "Using AI for code generation, debugging, and more.",
+    "title": "Unterstützung beim Programmieren",
+    "description": "Nutzung von KI für Codegenerierung, Debugging und mehr.",
     "contentFileName": "lesson25.md"
   },
   {
     "id": "lesson26",
-    "title": "Knowledge Base Chatbot",
-    "description": "Building chatbots that leverage knowledge bases with AI.",
+    "title": "Wissensdatenbank-Chatbot",
+    "description": "Chatbots bauen, die Wissensdatenbanken mit KI nutzen.",
     "contentFileName": "lesson26.md"
   },
   {
     "id": "lesson27",
-    "title": "Chain-of-Thought Prompting",
-    "description": "Understanding and using chain-of-thought prompting.",
+    "title": "Chain-of-Thought-Prompting",
+    "description": "Chain-of-Thought-Prompting verstehen und anwenden.",
     "contentFileName": "lesson27.md"
   },
   {
     "id": "lesson28",
     "title": "Zero-Shot Chain-of-Thought",
-    "description": "An introduction to zero-shot chain-of-thought prompting.",
+    "description": "Eine Einführung in das Zero-Shot Chain-of-Thought-Prompting.",
     "contentFileName": "lesson28.md"
   },
   {
     "id": "lesson29",
     "title": "Self-Consistency",
-    "description": "Learn about self-consistency in AI responses.",
+    "description": "Lerne über Self-Consistency bei KI-Antworten.",
     "contentFileName": "lesson29.md"
   },
   {
     "id": "lesson30",
     "title": "Generated Knowledge",
-    "description": "Exploring the concept of generated knowledge in AI.",
+    "description": "Erkundung des Konzepts des generierten Wissens in der KI.",
     "contentFileName": "lesson30.md"
   },
   {
     "id": "lesson31",
-    "title": "Least-to-Most Prompting",
-    "description": "An introduction to least-to-most prompting techniques.",
+    "title": "Least-to-Most-Prompting",
+    "description": "Eine Einführung in Least-to-Most-Prompting-Techniken.",
     "contentFileName": "lesson31.md"
   },
   {
     "id": "lesson32",
-    "title": "Dealing With Long Form Content",
-    "description": "Strategies for handling long-form content with AI.",
+    "title": "Umgang mit langen Inhalten",
+    "description": "Strategien für den Umgang mit langen Inhalten mit KI.",
     "contentFileName": "lesson32.md"
   },
   {
     "id": "lesson33",
-    "title": "Revisiting Roles",
-    "description": "A deeper look into the effectiveness of role prompting.",
+    "title": "Rollen neu betrachtet",
+    "description": "Ein tieferer Einblick in die Wirksamkeit des Rollen-Promptings.",
     "contentFileName": "lesson33.md"
   },
   {
     "id": "lesson34",
-    "title": "More About Prompt Elements",
-    "description": "Further insights into important elements of prompts.",
+    "title": "Mehr über Prompt-Elemente",
+    "description": "Weitere Einblicke in wichtige Elemente von Prompts.",
     "contentFileName": "lesson34.md"
   }
 ]
