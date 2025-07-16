@@ -1,0 +1,151 @@
+
+{
+  "id": "lesson34",
+  "title": "Mehr über Prompt-Elemente",
+  "description": "Lerne, warum das Format und das Label-Spektrum wichtiger sind als die Korrektheit von Beispielen.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Format ist entscheidend",
+          "content": "Die Art und Weise, wie Beispiele in einem Prompt formatiert sind, ist entscheidend. Die KI lernt aus der Struktur Ihrer Beispiele, wie sie ihre eigene Antwort formatieren soll, selbst wenn die Beispiele inhaltlich falsch sind.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Was ist der Label Space?",
+          "content": "Der 'Label Space' bezeichnet die Menge der möglichen Antworten für eine Klassifizierungsaufgabe (z.B. 'positiv', 'negativ', 'neutral'). Es ist wichtig, der KI zu zeigen, welche Art von Labels möglich sind.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Wichtigkeit der Elemente",
+          "question": "Was ist laut Lektion wichtiger für die Struktur der KI-Antwort?",
+          "options": [
+            "Die Korrektheit der Antworten in den Beispielen.",
+            "Das Format der Beispiele im Prompt.",
+            "Die Länge des Prompts.",
+            "Die Anzahl der Fragen im Prompt."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Formatvorgabe anwenden",
+          "question": "Du möchtest, dass eine KI auf eine Frage immer mit einem einzigen Wort in Großbuchstaben antwortet. Gib ein Beispiel für einen Prompt mit einem falschen Beispiel, der der KI trotzdem das richtige Format beibringt.",
+          "expectedAnswer": "Ein gutes Beispiel wäre: 'Frage: Was ist 2+2? Antwort: FÜNFZIG. Frage: Was ist 1+1? Antwort:'. Die KI wird lernen, in Großbuchstaben zu antworten, auch wenn das Beispiel falsch ist.",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Label Space definieren",
+          "question": "Du klassifizierst Kundenfeedback in die Kategorien 'DRINGEND' und 'NORMAL'. Warum ist es wichtig, im Prompt Beispiele für beide Kategorien zu zeigen, auch wenn die meisten Anfragen 'NORMAL' sind?",
+          "expectedAnswer": "Es ist wichtig, beide Kategorien zu zeigen, damit die KI den gesamten 'Label Space' (also alle möglichen Antwortkategorien) kennt. Ohne ein Beispiel für 'DRINGEND' würde die KI möglicherweise nie diese Kategorie auswählen, selbst wenn es passend wäre.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Verteilungsgetreue Beispiele",
+          "taskDescription": "Du hast Restaurantbewertungen, von denen 80% positiv und 20% negativ sind. Erstelle einen Few-Shot-Prompt zur Klassifizierung einer neuen Bewertung. Die Beispiele in deinem Prompt sollen diese 80/20-Verteilung widerspiegeln (z.B. 4 positive und 1 negatives Beispiel).",
+          "evaluationGuidance": "1. Enthält der Prompt mehrere Beispiele? 2. Spiegelt die Verteilung der Beispiele (positiv/negativ) ungefähr das Verhältnis 4:1 wider? 3. Ist die Anweisung zur Klassifizierung der neuen Bewertung klar?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Die 'Ground Truth' Falle",
+          "question": "Warum ist es eine überraschende Erkenntnis, dass die inhaltliche Richtigkeit (Ground Truth) der Beispiele in einem Prompt weniger wichtig ist als das Format und der Label Space?",
+          "expectedAnswer": "Es ist überraschend, weil man intuitiv annehmen würde, dass korrekte Beispiele entscheidend sind. Die Erkenntnis zeigt jedoch, dass LLMs primär Muster in der Struktur und den Antwortmöglichkeiten lernen. Solange das Format und die möglichen Labels klar sind, kann die KI oft selbst die richtige inhaltliche Antwort ableiten, selbst wenn die gezeigten Beispiele falsch waren.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Anzahl der Beispiele",
+          "question": "Welcher Bereich für die Anzahl der Beispiele in einem Prompt liefert oft gute Ergebnisse?",
+          "options": [
+            "Immer nur ein Beispiel.",
+            "Zwischen 4 und 8 Beispiele.",
+            "Immer mehr als 20 Beispiele.",
+            "Gar keine Beispiele."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Zusammenfassung der Kernerkenntnis",
+          "question": "Fasse in einem Satz zusammen, was beim Erstellen von Prompts mit Beispielen am wichtigsten ist.",
+          "expectedAnswer": "Am wichtigsten ist es, ein klares Format vorzugeben und den Raum möglicher Antworten (Label Space) klar zu definieren, da dies die KI-Antwort stärker beeinflusst als die inhaltliche Korrektheit der Beispiele selbst.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Einen robusten Prompt entwerfen",
+          "taskDescription": "Du möchtest eine KI, die medizinische Anfragen von Patienten in die drei Kategorien 'Notfall', 'Termin vereinbaren' und 'Allgemeine Frage' einteilt. Entwirf einen Few-Shot-Prompt, der ein klares Format vorgibt (z.B. 'Anfrage: [Text] -> Kategorie: [Label]') und Beispiele für alle drei Kategorien enthält, um den Label Space klar zu definieren.",
+          "evaluationGuidance": "1. Enthält der Prompt Beispiele für alle drei geforderten Kategorien? 2. Ist das Format der Beispiele konsistent und klar? 3. Ist die Anweisung zur Klassifizierung einer neuen Anfrage eindeutig? 4. Ist der Prompt so gestaltet, dass er zu einer zuverlässigen Klassifizierung führt?",
+          "pointsAwarded": 18,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
