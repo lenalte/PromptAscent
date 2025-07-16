@@ -105,7 +105,7 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
     ? new Date(currentUser.metadata.creationTime).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
     : '-';
 
-  const renderSummaryWithBold = (text: string) => {
+const renderSummaryWithBold = (text: string) => {
     const lines = text.split('\n').filter(line => line.trim() !== '');
     
     return lines.map((line, lineIndex) => {
@@ -202,7 +202,6 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
           </TabsContent>
           <TabsContent value="zusammenfassungen">
             <div className="p-4 mt-4 rounded-lg max-h-[calc(100vh-12rem)] overflow-y-auto hide-scrollbar">
-              <h3 className="text-xl font-semibold mb-4">Deine Zusammenfassungen</h3>
               {unlockedSummaries.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full" value={accordionValue} onValueChange={setAccordionValue}>
                     {unlockedSummaries.map((summary) => (
