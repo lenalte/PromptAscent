@@ -171,5 +171,3 @@
     "summary": "**Kurzüberblick:**\n\nDie Struktur und das Label-Spektrum der Beispiele (Exemplars) im Prompt sind entscheidend dafür, wie Sprachmodelle antworten – sogar wichtiger als die eigentliche Korrektheit der Beispielantworten.\n\n**Wichtiges aus der Lektion:**\n\n- Das Format der Beispiele im Prompt gibt der KI vor, wie die Antwort strukturiert werden soll.\n- Die eigentliche Richtigkeit der Beispielantworten ist weniger relevant als deren Format und die Repräsentation der Label Space.\n- Die Auswahl und Verteilung der Labels im Prompt sollten die Realität widerspiegeln, z.B. bei Sentiment-Analysen.\n- Idealerweise werden 4–8 Beispiel-Prompts verwendet, aber auch mehr sind oft möglich und sinnvoll.\n\nWer beim Prompting auf eine klare Struktur und die richtige Repräsentation der Aufgabenlabels achtet, bekommt verlässlichere und besser formatierte KI-Ausgaben"
   }
 ]
-
-    

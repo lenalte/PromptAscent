@@ -80,6 +80,8 @@ function HomePageContent() {
 
   const [bossChallengeInfo, setBossChallengeInfo] = useState<{lessonId: string, stageId: string} | null>(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [selectedSummaryLessonId, setSelectedSummaryLessonId] = useState<string | null>(null);
+
 
   // === State for embedded lesson view ===
   const [isLessonViewActive, setIsLessonViewActive] = useState(false);
@@ -152,7 +154,17 @@ function HomePageContent() {
   }, [currentOverallLevel, completedLessonsString, userProgress?.completedLessons]);
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => setIsSidebarContentAreaOpen(isOpen), []);
-  const handleLessonSelect = useCallback((lesson: LessonListing) => setSelectedLesson(lesson), []);
+  
+  const handleLessonSelect = useCallback((lesson: LessonListing) => {
+    if (isInventoryOpen) {
+        const isCompleted = userProgress?.completedLessons.includes(lesson.id) ?? false;
+        if (isCompleted) {
+            setSelectedSummaryLessonId(lesson.id);
+        }
+    } else {
+        setSelectedLesson(lesson);
+    }
+  }, [isInventoryOpen, userProgress?.completedLessons]);
 
   const resetLessonState = () => {
     setLessonData(null);
@@ -687,7 +699,13 @@ function HomePageContent() {
         </main>
       </div>
 
-       <Inventory isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} sidebarWidth={currentSidebarTotalWidth} />
+       <Inventory 
+        isOpen={isInventoryOpen} 
+        onClose={() => setIsInventoryOpen(false)} 
+        sidebarWidth={currentSidebarTotalWidth}
+        selectedSummaryLessonId={selectedSummaryLessonId}
+        onSummarySelectHandled={() => setSelectedSummaryLessonId(null)}
+        />
 
 
       {bossChallengeInfo && (
