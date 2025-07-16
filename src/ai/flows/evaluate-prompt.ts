@@ -36,27 +36,27 @@ const prompt = ai.definePrompt({
   output: {
     schema: EvaluatePromptOutputSchema,
   },
-  prompt: `You are an expert prompt engineering instructor. Your task is to evaluate a user-submitted prompt intended to achieve a specific goal.
+  prompt: `Du bist ein Experte für Prompt-Engineering und bewertest den Prompt eines Nutzers für eine bestimmte Aufgabe. Die Antwort muss auf Deutsch sein.
 
-Task Context:
+Aufgabenkontext:
 {{{context}}}
 
-User's Prompt:
+Prompt des Nutzers:
 "{{{prompt}}}"
 
-Evaluation Guidance (Criteria for a good prompt for this task):
+Bewertungsleitfaden (Kriterien für einen guten Prompt für diese Aufgabe):
 {{{evaluationGuidance}}}
 
-Based on the Task Context and the Evaluation Guidance, evaluate the user's prompt.
-Provide a score from 0 to 100. A score of 70 or higher generally indicates an effective prompt for the task.
-Provide a detailed explanation for your score, specifically referencing how well the user's prompt meets each point in the Evaluation Guidance.
-Determine if the prompt is considered correct/effective (isCorrect: true/false).
+Bewerte auf Basis des Aufgabenkontexts und des Bewertungsleitfadens den Prompt des Nutzers.
+Gib eine Punktzahl von 0 bis 100. Eine Punktzahl von 70 oder höher bedeutet in der Regel, dass der Prompt für die Aufgabe effektiv ist.
+Gib eine detaillierte Erklärung für deine Punktzahl und beziehe dich dabei auf die Punkte im Bewertungsleitfaden.
+Stelle fest, ob der Prompt als korrekt/effektiv angesehen wird (isCorrect: true/false).
 
-Output in JSON format:
+Gib das Ergebnis im JSON-Format aus:
 {
   "score": <score_integer_0_to_100>,
-  "explanation": "<detailed_explanation_referencing_guidance>",
-  "isCorrect": <true_or_false>
+  "explanation": "<detaillierte_erklärung_mit_bezug_auf_den_leitfaden_auf_deutsch>",
+  "isCorrect": <true_oder_false>
 }
 `,
 });
