@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from 'react';
@@ -74,7 +73,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <Label>Choose the best answer:</Label>
+          <Label>Wähle die beste Antwort:</Label>
           <RadioGroup
             onValueChange={setSelectedValue}
             value={selectedValue}
@@ -115,12 +114,12 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               )}
             >
               <AlertTitle className={cn(isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {isCorrect ? 'Correct!' : 'Incorrect'}
+                {isCorrect ? 'Korrekt!' : 'Inkorrekt'}
               </AlertTitle>
               <AlertDescription className={cn(isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {isCorrect
-                  ? 'Well done!'
-                  : `The correct answer was: "${options[correctOptionIndex]}"`}
+                  ? 'Gut gemacht!'
+                  : `Die richtige Antwort war: "${options[correctOptionIndex]}"`}
               </AlertDescription>
             </Alert>
           )}
@@ -133,12 +132,10 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-muted-foreground">
-          <p>Correct: +{pointsAwarded} points</p>
-          <p>Attempts remaining: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
+          <p>Korrekt: +{pointsAwarded} Punkte</p>
+          <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
     </Card>
   );
 };
-
-    
