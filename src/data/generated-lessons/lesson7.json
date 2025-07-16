@@ -1,0 +1,142 @@
+
+{
+  "id": "lesson7",
+  "title": "Kombination von Prompting-Techniken",
+  "description": "Lerne, wie du verschiedene Prompting-Techniken effektiv kombinierst.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was bedeutet das Kombinieren von Techniken?",
+          "content": "Anstatt nur eine Methode zu verwenden, können verschiedene Elemente wie eine Rolle, eine Anweisung und Beispiele in einem einzigen Prompt kombiniert werden. Dies hilft der KI, komplexe Aufgaben besser zu verstehen und präzisere Antworten zu geben.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Warum Techniken kombinieren?",
+          "question": "Was ist der Hauptvorteil der Kombination verschiedener Prompting-Techniken?",
+          "options": [
+            "Um die Antwortzeit der KI zu verkürzen.",
+            "Um die KI dazu zu bringen, längere Texte zu schreiben.",
+            "Um die Genauigkeit, den Stil und die Relevanz der Antwort für komplexe Aufgaben zu verbessern.",
+            "Um die internen Parameter des Modells zu ändern."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte",
+          "question": "Erkläre in deinen eigenen Worten, warum die Kombination von Rolle und Anweisung in einem Prompt nützlich sein kann.",
+          "expectedAnswer": "Die Kombination ist nützlich, weil die Rolle den Stil und die Perspektive vorgibt (z.B. als Experte), während die Anweisung die konkrete Aufgabe definiert. Zusammen führen sie zu einer präziseren und passenderen Antwort.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Beispiel: Rolle und Anweisung",
+          "content": "Ein Beispiel für die Kombination ist: 'Du bist ein erfahrener Historiker, der sich auf das Römische Reich spezialisiert hat. Schreibe eine kurze Zusammenfassung der wichtigsten Ereignisse während der Herrschaft von Julius Caesar.' Hier wird die Rolle des Historikers mit der klaren Anweisung zur Zusammenfassung kombiniert.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Kombination anwenden",
+          "question": "Du möchtest eine Produktbeschreibung für ein neues veganes Kochbuch. Kombiniere eine passende Rolle und eine klare Anweisung in einem Prompt.",
+          "expectedAnswer": "Ein möglicher Prompt wäre: 'Du bist ein begeisterter Food-Blogger. Schreibe eine überzeugende 2-Satz-Beschreibung für ein neues veganes Kochbuch, das sich auf schnelle 15-Minuten-Gerichte konzentriert.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Drei Techniken kombinieren",
+          "taskDescription": "Du möchtest Kundenrezensionen automatisch als 'Positiv', 'Negativ' oder 'Neutral' klassifizieren. Erstelle einen Prompt, der Kontext ('Du analysierst Kundenfeedback für einen Online-Shop'), eine klare Anweisung UND zwei Few-Shot-Beispiele kombiniert, um eine neue Rezension zu klassifizieren.",
+          "evaluationGuidance": "1. Beginnt der Prompt mit einem klaren Kontext? 2. Enthält er eine explizite Anweisung zur Klassifizierung? 3. Werden mindestens zwei Beispiele (Input und erwarteter Output) gezeigt? 4. Ist der Prompt so strukturiert, dass die KI eine neue Rezension eindeutig klassifizieren kann?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Wann ist eine Kombination sinnvoll?",
+          "question": "In welchen Situationen ist es besonders sinnvoll, mehrere Prompting-Techniken zu kombinieren, anstatt nur eine einfache Anweisung zu geben?",
+          "expectedAnswer": "Eine Kombination ist besonders sinnvoll bei komplexen Aufgaben, die Nuancen erfordern, wie z.B. wenn ein spezifischer Stil (Rolle), ein bestimmtes Format (Anweisung/Beispiele) und Hintergrundwissen (Kontext) gleichzeitig benötigt werden, um ein hochwertiges Ergebnis zu erzielen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Best-Practice-Kombination",
+          "question": "Welche Kombination eignet sich am besten, um der KI beizubringen, Daten in einem sehr spezifischen JSON-Format auszugeben?",
+          "options": [
+            "Nur eine Rolle zuweisen.",
+            "Nur eine sehr detaillierte Anweisung geben.",
+            "Eine Anweisung mit mehreren Few-Shot-Beispielen, die das exakte Format zeigen.",
+            "Nur Kontext über JSON bereitstellen."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Meister-Prompt erstellen",
+          "taskDescription": "Du bist ein Marketing-Manager. Erstelle einen Prompt, der eine KI anweist, eine Social-Media-Anzeige für ein neues umweltfreundliches Reinigungsmittel zu erstellen. Kombiniere dabei die folgenden Elemente: eine Rolle ('Du bist ein Texter, der auf Nachhaltigkeit spezialisiert ist'), Kontext ('Das Produkt ist pflanzlich und plastikfrei verpackt'), eine klare Anweisung ('Schreibe drei Varianten für eine Instagram-Anzeige') und eine Formatvorgabe ('Jede Variante mit kurzer Überschrift und 2-3 Sätzen Text').",
+          "evaluationGuidance": "1. Enthält der Prompt alle vier geforderten Elemente (Rolle, Kontext, Anweisung, Format)? 2. Ist die zugewiesene Rolle passend zur Aufgabe? 3. Ist der Kontext präzise genug? 4. Ist die Anweisung klar und unmissverständlich formuliert?",
+          "pointsAwarded": 20,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}

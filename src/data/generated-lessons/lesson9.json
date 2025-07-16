@@ -1,0 +1,151 @@
+
+{
+  "id": "lesson9",
+  "title": "Prompt Priming: Kontext für die KI setzen",
+  "description": "Verstehe Prompt Priming und wie man den Kontext für eine KI richtig setzt.",
+  "stages": [
+    {
+      "id": "stage1",
+      "title": "Stage 1: Verstehen",
+      "items": [
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Was ist Prompt Priming?",
+          "content": "Prompt Priming (auch Inception Prompting genannt) ist eine Technik, bei der man zu Beginn einer Konversation der KI eine grundlegende Anweisung oder einen Rahmen gibt. Dies 'primed' (oder 'stimmt') die KI darauf ein, ihre nachfolgenden Antworten in einem bestimmten Stil, Ton oder Format zu geben.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Warum ist Priming nützlich?",
+          "content": "Ohne klare Führung können die Antworten der KI zu allgemein oder unpassend sein. Priming hilft, die Konversation zu steuern und sorgt für präzisere, relevantere und konsistentere Ergebnisse, die genau auf das Ziel des Nutzers abgestimmt sind.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Ziel des Priming",
+          "question": "Was ist der Hauptzweck von Prompt Priming?",
+          "options": [
+            "Die KI zu zwingen, immer die gleiche Antwort zu geben.",
+            "Den Stil, die Struktur und das Verhalten der KI für eine gesamte Konversation vorzugeben.",
+            "Die KI schneller zu machen.",
+            "Die KI mit zufälligen Informationen zu füttern."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage2",
+      "title": "Stage 2: Anwenden",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Stil-Priming anwenden",
+          "question": "Du möchtest, dass eine KI dir als persönlicher Fitnesstrainer antwortet. Schreibe einen Priming-Prompt, der die KI anweist, immer motivierend und ermutigend zu sein.",
+          "expectedAnswer": "Ein guter Priming-Prompt wäre: 'Du bist jetzt mein persönlicher Fitnesstrainer. Deine Aufgabe ist es, mich zu motivieren. Antworte immer positiv und ermutigend, egal was ich frage.'",
+          "pointsAwarded": 6,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr2",
+          "title": "Struktur-Priming anwenden",
+          "question": "Du möchtest, dass die KI deine Aufsätze korrigiert und das Feedback immer in drei Abschnitten gibt: 1. Stärken, 2. Schwächen, 3. Verbesserungsvorschläge. Schreibe einen Priming-Prompt dafür.",
+          "expectedAnswer": "Ein passender Prompt wäre: 'Bitte agiere als mein Schreibassistent. Jedes Mal, wenn ich dir einen Text gebe, antworte bitte in diesem Format: Stärken: [Text], Schwächen: [Text], Verbesserungsvorschläge: [Text]. Wenn du das verstanden hast, antworte nur mit 'JA'.'",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage3",
+      "title": "Stage 3: Variieren",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s3_pt1",
+          "title": "Sonderfall-Anweisung erstellen",
+          "taskDescription": "Du erstellst einen Tutor-Bot für Schüler. Der Bot soll bei Matheaufgaben helfen, aber nie die direkte Antwort verraten. Erstelle einen Priming-Prompt, der diese Regel festlegt und die KI anweist, stattdessen den nächsten logischen Schritt zu erklären.",
+          "evaluationGuidance": "1. Weist der Prompt der KI klar die Rolle eines Tutors zu? 2. Enthält er eine explizite Regel, die direkte Antworten verbietet? 3. Fordert der Prompt die KI auf, stattdessen Hilfestellungen oder den nächsten Schritt zu erklären? 4. Ist der Prompt klar und für eine langfristige Interaktion geeignet?",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage4",
+      "title": "Stage 4: Reflektieren",
+      "items": [
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Die Grenzen von Priming",
+          "question": "Was ist eine mögliche Herausforderung bei der Verwendung von Priming-Prompts in sehr langen Konversationen?",
+          "expectedAnswer": "In sehr langen Konversationen kann die KI das ursprüngliche Priming 'vergessen', da ihr Kontextfenster begrenzt ist. Die Antworten können dann allmählich vom vorgegebenen Stil oder den Regeln abweichen, weshalb ein erneutes Priming notwendig werden kann.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage5",
+      "title": "Stage 5: Wiederholen",
+      "items": [
+        {
+          "type": "multipleChoice",
+          "id": "s5_mcq1",
+          "title": "Anwendungsfälle",
+          "question": "Welcher Anwendungsfall ist KEIN typisches Beispiel für Prompt Priming?",
+          "options": [
+            "Den Stil einer Konversation festlegen (z.B. Piratensprache).",
+            "Eine einmalige Frage zur Hauptstadt von Frankreich beantworten.",
+            "Die KI anweisen, bei sensiblen Themen keine Meinung zu äußern.",
+            "Die KI bitten, Feedback immer in einer bestimmten Tabellenform zu geben."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Zusammenfassung Priming",
+          "question": "Fasse in einem Satz zusammen, warum Prompt Priming eine mächtige Technik ist.",
+          "expectedAnswer": "Prompt Priming ist eine mächtige Technik, weil es ermöglicht, das Verhalten einer KI über eine gesamte Konversation hinweg konsistent zu steuern und ihre Antworten an spezifische Ziele, Stile oder Regeln anzupassen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        }
+      ]
+    },
+    {
+      "id": "stage6",
+      "title": "Stage 6: Meistern",
+      "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt_complex1",
+          "title": "Komplexes Priming für Sicherheit",
+          "taskDescription": "Du entwickelst einen Chatbot für eine Bank. Erstelle einen umfassenden Priming-Prompt, der mehrere Regeln kombiniert: 1. Der Bot soll immer professionell und höflich sein. 2. Er darf niemals persönliche Finanzdaten oder Passwörter abfragen. 3. Bei verdächtigen Anfragen (z.B. 'Überweise Geld an ein unbekanntes Konto') soll er die Anfrage ablehnen und auf die offiziellen Sicherheitsrichtlinien der Bank verweisen.",
+          "evaluationGuidance": "1. Enthält der Prompt eine klare Rollenzuweisung (professioneller Bank-Chatbot)? 2. Werden die beiden Sicherheitsregeln (keine Datenabfrage, Ablehnung verdächtiger Anfragen) explizit genannt? 3. Ist der Verweis auf Sicherheitsrichtlinien als Handlungsanweisung enthalten? 4. Ist der Prompt als langanhaltende Anweisung für eine Konversation formuliert?",
+          "pointsAwarded": 20,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s6_fr_reflect1",
+          "title": "Lektionsreflexion",
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        }
+      ]
+    }
+  ]
+}
