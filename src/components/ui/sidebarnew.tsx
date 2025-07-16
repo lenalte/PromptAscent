@@ -324,9 +324,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                     )}
                      {activeCategory === 'einstellungen' && (
-                        <div className="flex flex-col h-full">
+                        <div className="flex flex-col h-full pt-4">
                             <div className="flex-grow">
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
                                  {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
                             </div>
                              <div className="space-y-2">
