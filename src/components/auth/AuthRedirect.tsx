@@ -19,9 +19,9 @@ export default function AuthRedirect({ children }: { children: React.ReactNode }
         }
 
         if (!currentUser) {
-            router.push('/auth/login');
+            router.push('/auth/register');
         } else if (currentUser.isAnonymous) {
-            router.push('/auth/login');
+            router.push('/auth/register');
         }
     }, [isLoadingAuth, currentUser, router, pathname]);
 
