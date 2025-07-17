@@ -350,16 +350,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     )}
 
     {/* Datenschutz & AGB – immer sichtbar */}
-    <Link href="/datenschutz" passHref legacyBehavior>
-      <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+    <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
         <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
-      </a>
-    </Link>
-    <Link href="/agb" passHref legacyBehavior>
-      <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+    </a>
+    <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
         <Award className="mr-3 ml-1 h-5 w-5" /> AGB
-      </a>
-    </Link>
+    </a>
 
     {/* Account löschen, nur wenn eingeloggt */}
     {isAuthenticated && (
