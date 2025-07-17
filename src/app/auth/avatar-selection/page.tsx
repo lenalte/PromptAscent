@@ -23,8 +23,8 @@ export default function AvatarSelection() {
   const handleSaveAvatar = async () => {
     if (!selectedAvatarId) {
       toast({
-        title: "No Avatar Selected",
-        description: "Please select an avatar before proceeding.",
+        title: "Kein Avatar ausgewählt",
+        description: "Bitte wähle einen Avatar aus.",
         variant: "destructive",
       });
       return;
@@ -44,8 +44,8 @@ export default function AvatarSelection() {
       });
 
       toast({
-        title: "Avatar Saved",
-        description: "Your avatar has been successfully saved!",
+        title: "Avatar gespeichert",
+        description: "Dein Avatar wurde erfolgreich gespeichert!",
       });
 
       router.push('/'); // Redirect to the homepage or other relevant page
@@ -53,7 +53,7 @@ export default function AvatarSelection() {
       console.error('Error saving avatar:', error);
       toast({
         title: "Error",
-        description: `An error occurred: ${error.message}`,
+        description: `Es ist ein Fehler aufgetreten: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -65,7 +65,7 @@ export default function AvatarSelection() {
   <CardHeader>
     <CardTitle className="text-2xl">Choose Your Avatar</CardTitle>
     <CardDescription>
-      {'Step 2: Select your avatar from the options below.'}
+      {'Schritt 2: Wähle Deinen Avatar aus den Optionen aus.'}
     </CardDescription>
   </CardHeader>
   
@@ -89,7 +89,7 @@ export default function AvatarSelection() {
   
   <CardFooter className="flex flex-col space-y-2">
     <EightbitButton onClick={handleSaveAvatar} className="w-full">
-      Save Avatar
+      Avatar speichern
     </EightbitButton>
   </CardFooter>
 </Card>

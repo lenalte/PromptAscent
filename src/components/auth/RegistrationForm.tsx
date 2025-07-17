@@ -1,182 +1,284 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { useUserProgress } from '@/context/UserProgressContext';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Loader2, UserPlus, User as UserIcon, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { EightbitButton } from "@/components/ui/eightbit-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from '@/lib/utils';
-import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore"; 
+import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, browserLocalPersistence, setPersistence } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
-// Validation Schema
-const registrationSchema = z.object({
-  username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(20, { message: "Username must be 20 characters or less." }),
-  email: z.string().email({ message: "Invalid email address." }),
-}).refine(data => data.username !== "", {
-  message: "Username is required.",
-  path: ["username"], // path of error
+const emailSchema = z.object({
+  email: z.string().email({ message: "Ungültige E-Mail-Adresse." }),
+});
+const profileSchema = z.object({
+  username: z.string().min(3, { message: "Mind. 3 Zeichen." }).max(20, { message: "Max. 20 Zeichen." }),
+  avatar: z.string().min(1, { message: "Bitte wähle einen Avatar." }),
 });
 
-type RegistrationFormValues = z.infer<typeof registrationSchema>;
+type EmailFormValues = z.infer<typeof emailSchema>;
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function RegistrationForm() {
-  const [step, setStep] = useState(1);
+type Step = "email" | "waitingLink" | "profile" | "done";
+
+export default function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>("email");
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [authProcessing, setAuthProcessing] = useState(false);
   const { toast } = useToast();
-  const form = useForm<RegistrationFormValues>({
-    resolver: zodResolver(registrationSchema),
-    defaultValues: {
-      username: '',
-      email: '',
-    },
+  const router = useRouter();
+
+  // 1. Email-Eingabe-Form
+  const emailForm = useForm<EmailFormValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { email: "" },
+  });
+  // 2. Profil-Eingabe-Form (nur bei Registrierung)
+  const profileForm = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { username: "", avatar: "" },
   });
 
-  const selectedAvatarId = form.watch('avatarId');
+  // Passwordless Login/Signup - EIN Feld für alles!
+  const onSubmitEmail = async (data: EmailFormValues) => {
+    setIsLoading(true);
+    const auth = getAuth();
+    const email = data.email.trim();
+    const tempPassword = "SomePassword1234!";
+    setPendingEmail(email);
 
-  // Handle next step, this validates the form and sends verification email
-  const handleNextStep = async (data: RegistrationFormValues) => {
-    const fieldsToValidate: ('username' | 'email')[] = ['username', 'email'];
-    const isValid = await form.trigger(fieldsToValidate);
-
-    if (isValid) {
-      const email = form.getValues('email');
-      const auth = getAuth();
-
-      const actionCodeSettings = {
-        url: 'https://6000-idx-studio-1746014326268.cluster-ombtxv25tbd6yrjpp3lukp6zhc.cloudworkstations.dev/auth/avatar-selection',
-        handleCodeInApp: true,
-      };
-
-      try {
-        // Create user with email and temporary password
-        const tempPassword = 'temporaryPassword1234'; // Temporarily use a password
-        await createUserWithEmailAndPassword(auth, email, tempPassword);
-
-        // Log the data to check if username is correctly passed
-        console.log("Form Data:", data);
-        console.log("Username:", data.username);
-
-        // Save additional user data (username) in Firestore
-        const db = getFirestore();
-        const userRef = doc(db, "users", auth.currentUser?.uid);
-        console.log("Saving to Firestore:", userRef);
-
-        await setDoc(userRef, {
-          username: data.username,  // Save the username
-          email: email,  // Save the email address
-        });
-
-        // Send verification link to email
+    try {
+      // Versuch: User anlegen (Registration)
+      await createUserWithEmailAndPassword(auth, email, tempPassword);
+      // NEUER User – jetzt Profil-Completion anzeigen!
+      setStep("profile");
+    } catch (error: any) {
+      if (error.code === "auth/email-already-in-use") {
+        // ACCOUNT EXISTIERT: Direkt Login-Link schicken!
+        const actionCodeSettings = {
+          url: window.location.origin + "/auth/register", // der Pfad dieser Seite!
+          handleCodeInApp: true,
+        };
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        window.localStorage.setItem('emailForSignIn', email);
-
+        window.localStorage.setItem("emailForSignIn", email);
+        setStep("waitingLink");
         toast({
-          title: "Registration Successful",
-          description: "A verification email has been sent. Please check your inbox and confirm your email address.",
+          title: "Login-Link verschickt",
+          description: "Checke deine E-Mails zum Einloggen!",
         });
-
-        // Check if the user clicks the link and signs in
-        const url = window.location.href;
-        if (isSignInWithEmailLink(auth, url)) {
-          let storedEmail = window.localStorage.getItem('emailForSignIn');
-          if (!storedEmail) {
-            storedEmail = window.prompt('Please provide your email for confirmation');
-          }
-
-          // Sign the user in with the link
-          await signInWithEmailLink(auth, storedEmail!, url);
-
-          // Remove email from local storage
-          window.localStorage.removeItem('emailForSignIn');
-
-          // Go to step 2 (Avatar selection)
-          // setStep(2);
-        } else {
-          // If the email is not verified
-          toast({
-            title: "Email Not Verified",
-            description: "Please verify your email before proceeding.",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        console.error('Error sending verification email:', error);
+      } else {
         toast({
-          title: "Error",
-          description: `An error occurred: ${error.message}`, // More detailed error message
+          title: "Fehler",
+          description: error.message,
           variant: "destructive",
         });
       }
     }
+    setIsLoading(false);
   };
 
+  // Nach Registrierung: Profil speichern + Login-Link senden!
+  const onSubmitProfile = async (data: ProfileFormValues) => {
+    setIsLoading(true);
+    const auth = getAuth();
+    const db = getFirestore();
+
+    if (!pendingEmail) {
+      toast({ title: "Fehler", description: "E-Mail fehlt. Bitte neu starten.", variant: "destructive" });
+      setIsLoading(false);
+      return;
+    }
+
+    // Finde User (wurde vorhin erstellt)
+    const userSnap = await getDoc(doc(db, "users", auth.currentUser?.uid || "none"));
+    let userUid: string | null = null;
+    if (auth.currentUser) {
+      userUid = auth.currentUser.uid;
+    } else if (userSnap.exists()) {
+      userUid = userSnap.id;
+    }
+    // Firestore-Profil speichern (oder überschreiben)
+    if (userUid) {
+      await setDoc(doc(db, "users", userUid), {
+        username: data.username,
+        avatar: data.avatar,
+        email: pendingEmail,
+      });
+    }
+
+    // Login-Link schicken
+    const actionCodeSettings = {
+      url: window.location.origin + "/auth/register",
+      handleCodeInApp: true,
+    };
+    await sendSignInLinkToEmail(auth, pendingEmail, actionCodeSettings);
+    window.localStorage.setItem("emailForSignIn", pendingEmail);
+    setStep("waitingLink");
+    toast({
+      title: "Registrierung fast fertig",
+      description: "Checke deine Mails und bestätige den Link, um einzuloggen!",
+    });
+    setIsLoading(false);
+  };
+
+  // Passwordless Link Handler
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      const auth = getAuth();
+      await setPersistence(auth, browserLocalPersistence);
+      const url = window.location.href;
+      if (isSignInWithEmailLink(auth, url)) {
+        setAuthProcessing(true);
+        let storedEmail = window.localStorage.getItem("emailForSignIn");
+        if (!storedEmail) {
+          storedEmail = window.prompt("Bitte gib deine E-Mail zur Bestätigung ein");
+        }
+        if (storedEmail) {
+          try {
+            const cred = await signInWithEmailLink(auth, storedEmail, url);
+            window.localStorage.removeItem("emailForSignIn");
+            // Profile prüfen – fehlt was?
+            const db = getFirestore();
+            const userRef = doc(db, "users", cred.user.uid);
+            const userSnap = await getDoc(userRef);
+            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatar) {
+              setStep("profile");
+              setPendingEmail(cred.user.email || "");
+              toast({
+                title: "Profil unvollständig",
+                description: "Bitte wähle Username & Avatar.",
+              });
+            } else {
+              setStep("done");
+              toast({ title: "Login erfolgreich", description: "Du bist eingeloggt." });
+              router.push("/"); // oder wohin du willst
+            }
+          } catch (err: any) {
+            toast({
+              title: "Fehler",
+              description: err.message,
+              variant: "destructive",
+            });
+            setAuthProcessing(false);
+          }
+        }
+        setAuthProcessing(false);
+      }
+    })();
+    return () => { isMounted = false; };
+  }, [router, toast]);
+
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">Register</CardTitle>
+        <CardTitle className="text-2xl">
+          {step === "email" && "Login oder Registrierung"}
+          {step === "waitingLink" && "Checke deine E-Mails"}
+          {step === "profile" && "Profil vervollständigen"}
+          {step === "done" && "Willkommen!"}
+        </CardTitle>
         <CardDescription>
-          {'Step 1: Enter your account details.'}
+          {step === "email" && "Gib deine E-Mail ein. Wir prüfen für dich, ob ein Account existiert oder du neu bist."}
+          {step === "waitingLink" && "Du erhältst gleich einen Login-Link per Mail."}
+          {step === "profile" && "Wähle Username und Avatar, um deinen Account zu vervollständigen."}
+          {step === "done" && "Du bist eingeloggt."}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleNextStep)} className="space-y-4">
-              <>
-                <FormField
-                  control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label htmlFor="username">Username</Label>
-                      <FormControl>
-                        <div className="relative">
-                          <UserIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                          <Input id="username" placeholder="your_username" {...field} disabled={isLoading} className="pl-8" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label htmlFor="email">Email</Label>
-                      <FormControl>
-                        <Input id="email" type="email" placeholder="m@example.com" {...field} disabled={isLoading} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                  Create Account
-                </EightbitButton>
-              </>
-          </form>
-        </Form>
+        {step === "email" && (
+          <Form {...emailForm}>
+            <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-4">
+              <FormField
+                control={emailForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="email">E-Mail</Label>
+                    <FormControl>
+                      <Input id="email" type="email" placeholder="m@example.com" {...field} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Fortfahren"}
+              </EightbitButton>
+            </form>
+          </Form>
+        )}
+
+        {step === "profile" && (
+          <Form {...profileForm}>
+            <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+              <FormField
+                control={profileForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="username">Username</Label>
+                    <FormControl>
+                      <Input id="username" placeholder="dein_username" {...field} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={profileForm.control}
+                name="avatar"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="avatar">Avatar</Label>
+                    <FormControl>
+                      <Input id="avatar" placeholder="Avatar (URL oder Name)" {...field} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Profil speichern & Login-Link senden"}
+              </EightbitButton>
+            </form>
+          </Form>
+        )}
+
+        {step === "waitingLink" && (
+          <div className="flex flex-col items-center py-8">
+            <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+            <div className="mt-4 text-sm text-muted-foreground">
+              Wir haben dir eine E-Mail geschickt.<br />
+              Klicke auf den Link darin, um dich einzuloggen.
+            </div>
+          </div>
+        )}
+
+        {step === "done" && (
+          <div className="flex flex-col items-center py-8">
+            <div className="text-lg font-bold mb-2">Erfolgreich eingeloggt 🎉</div>
+            <EightbitButton className="w-full" onClick={() => router.push("/")}>
+              Zum Dashboard
+            </EightbitButton>
+          </div>
+        )}
       </CardContent>
-      <CardFooter className="flex flex-col space-y-2">
-        <div className="text-center text-sm">
-          Already have an account?{' '}
-          <Link href="/auth/login" className="underline hover:text-primary">
-            Log in
-          </Link>
-        </div>
+      <CardFooter>
+        {step === "email" && (
+          <div className="text-center text-sm">
+            {/* Platz für weitere Links (z.B. Datenschutz, Impressum) */}
+          </div>
+        )}
       </CardFooter>
     </Card>
   );
