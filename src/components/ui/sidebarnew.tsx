@@ -164,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         aria-label="Profil und Lektionen"
                     >
-                        <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className={cn(
+                        <AvatarDisplay avatarId={userProgress?.avatarId} className={cn(
                             "h-8 w-8 shrink-0",
                              activeCategory === 'profil' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
                         )} />

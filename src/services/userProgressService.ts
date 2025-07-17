@@ -114,7 +114,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       return {
         userId,
         username: data.username,
-        avatarId: data.avatarId || 'avatar1',
+        avatarId: data.avatarId,
         totalPoints: typeof data.totalPoints === 'number' && !isNaN(data.totalPoints) ? data.totalPoints : 0,
         currentLessonId: currentLesson,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
