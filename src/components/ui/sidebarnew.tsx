@@ -65,6 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
     const { logOut, currentUser, userProgress } = useUserProgress();
     const { toast } = useToast();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
@@ -172,6 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         onClick={() => handleCategoryClick('leaderboard')}
                         className={cn(
                             "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                            "pt-4",
                             activeCategory === 'leaderboard' && isContentOpen && "bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Leaderboard"
@@ -332,36 +335,41 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 )}
                             </div>
                         )}
-                    </div>
-
-                    <div className="flex-shrink-0 pb-4">
-                        {activeCategory === 'einstellungen' && (
-                            <div className="flex flex-col gap-2 pt-4">
+                         {activeCategory === 'einstellungen' && (
+                           <div className="pt-4">
+                            <h2 className="text-xl font-semibold text-white mb-4 px-1">Einstellungen</h2>
+                            <div className="flex flex-col gap-2">
                                 <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                     <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
                                 </a>
                                 <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                     <Award className="mr-3 ml-1 h-5 w-5" /> AGB
                                 </a>
-                                {isAuthenticated && (
-                                    <>
-                                        <button
-                                            onClick={logOut}
-                                            className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
-                                        >
-                                            <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
-                                        </button>
-                                        <DeleteAccountDialogButton />
-                                    </>
-                                )}
-                                {!isAuthenticated && (
-                                <Link href="/auth/register" passHref legacyBehavior>
-                                    <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                    <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-                                    </a>
-                                </Link>
-                                )}
                             </div>
+                           </div>
+                        )}
+                    </div>
+
+                    <div className="flex-shrink-0 pb-4">
+                        {isAuthenticated && (
+                            <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                                <button
+                                    onClick={logOut}
+                                    className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
+                                >
+                                    <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+                                </button>
+                                <DeleteAccountDialogButton />
+                            </div>
+                        )}
+                        {!isAuthenticated && (
+                        <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                            <Link href="/auth/register" passHref legacyBehavior>
+                                <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                </a>
+                            </Link>
+                        </div>
                         )}
                     </div>
                 </div>
