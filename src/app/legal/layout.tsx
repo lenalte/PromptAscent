@@ -17,15 +17,7 @@ export default function LegalLayout({
   return (
     <div className="relative flex flex-col min-h-screen bg-background p-4">
       <BirdsBackground />
-      <div className="absolute top-4 left-4 z-20">
-        <Link href="/" passHref legacyBehavior>
-          <EightbitButton as="a">
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Zurück zur Startseite
-          </EightbitButton>
-        </Link>
-      </div>
-      <div className="w-full z-10 pt-20">
+      <div className="w-full z-10 pt-8">
         {children}
       </div>
     </div>
