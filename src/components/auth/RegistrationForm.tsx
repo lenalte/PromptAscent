@@ -35,8 +35,10 @@ export default function AuthForm() {
   const [step, setStep] = useState<Step>("email");
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [authProcessing, setAuthProcessing] = useState(false);
+  const [profileStep, setProfileStep] = useState<"username" | "avatar">("username");
   const { toast } = useToast();
   const router = useRouter();
+
 
   // 1. Email-Eingabe-Form
   const emailForm = useForm<EmailFormValues>({
@@ -179,6 +181,14 @@ export default function AuthForm() {
     return () => { isMounted = false; };
   }, [router, toast]);
 
+  const handleUsernameNext = async () => {
+    const isValid = await profileForm.trigger("username");
+    if (isValid) {
+      setProfileStep("avatar");
+    }
+    // Bei Fehlern bleibt die Card offen und zeigt die Validierungs-Message an
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
@@ -219,9 +229,9 @@ export default function AuthForm() {
           </Form>
         )}
 
-        {step === "profile" && (
+        {step === "profile" && profileStep === "username" && (
           <Form {...profileForm}>
-            <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+            <form onSubmit={e => { e.preventDefault(); handleUsernameNext(); }} className="space-y-4">
               <FormField
                 control={profileForm.control}
                 name="username"
@@ -235,26 +245,35 @@ export default function AuthForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={profileForm.control}
-                name="avatar"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label htmlFor="avatar">Avatar</Label>
-                    <AvatarSelector
-        value={field.value}
-        onChange={field.onChange}
-      />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Profil speichern & Login-Link senden"}
-              </EightbitButton>
-            </form>
-          </Form>
+        Weiter
+      </EightbitButton>
+    </form>
+  </Form>
+)}
+{step === "profile" && profileStep === "avatar" && (
+  <Form {...profileForm}>
+    <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+      <FormField
+        control={profileForm.control}
+        name="avatar"
+        render={({ field }) => (
+          <FormItem>
+            <Label>Avatar</Label>
+            <AvatarSelector
+              value={field.value}
+              onChange={field.onChange}
+            />
+            <FormMessage />
+          </FormItem>
         )}
+      />
+      <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Profil speichern & Login-Link senden"}
+      </EightbitButton>
+    </form>
+  </Form>
+)}
 
         {step === "waitingLink" && (
           <div className="flex flex-col items-center py-8">
