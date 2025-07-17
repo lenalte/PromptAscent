@@ -222,6 +222,11 @@ export default function AuthForm() {
                   </FormItem>
                 )}
               />
+               <div className="rounded-md bg-muted p-3 text-xs text-foreground border mb-2">
+        <b>Hinweis zur Datennutzung</b><br />
+        Diese Plattform wird im Rahmen einer Bachelorarbeit betrieben. Während du die Anwendung nutzt, werden anonymisierte Daten zur Verbesserung der Plattform erhoben (mithilfe von Google Analytics). Deine Eingaben in den Aufgaben werden zudem zur automatisierten Auswertung an die Gemini API übermittelt.<br /><br />
+        Mit der Registrierung erklärst du dich damit einverstanden. Weitere Infos findest du in der <Link href="/legal/datenschutz" className="underline" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</Link>.
+      </div>
               <EightbitButton type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Fortfahren"}
               </EightbitButton>
