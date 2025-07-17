@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import {AvatarSelector} from "@/components/AvatarSelector";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Ungültige E-Mail-Adresse." }),
@@ -240,9 +241,10 @@ export default function AuthForm() {
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor="avatar">Avatar</Label>
-                    <FormControl>
-                      <Input id="avatar" placeholder="Avatar (URL oder Name)" {...field} disabled={isLoading} />
-                    </FormControl>
+                    <AvatarSelector
+        value={field.value}
+        onChange={field.onChange}
+      />
                     <FormMessage />
                   </FormItem>
                 )}
