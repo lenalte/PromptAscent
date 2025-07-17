@@ -3,7 +3,7 @@
 
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useMemo } from 'react';
-import { type User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser } from 'firebase/auth';
+import { type User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth, db } from '../lib/firebase/index';
 import {
   getUserProgress,
@@ -92,6 +92,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         return;
     }
 
+    setPersistence(auth, browserLocalPersistence)
+      .then(() => {
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
         setIsLoadingAuth(true);
         if (user) {
@@ -107,6 +110,10 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     return () => {
         unsubscribe();
     };
+  })
+  .catch((err) => {
+    console.error("[UserProgressContext] Fehler bei setPersistence:", err);
+  });
   }, []); 
 
 
