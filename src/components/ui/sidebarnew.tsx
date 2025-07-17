@@ -63,17 +63,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [lessons, setLessons] = useState<LessonListing[]>([]);
     const [isLoadingLessons, setIsLoadingLessons] = useState(true);
     const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
-    const { logOut, currentUser, userProgress, deleteCurrentUserAccount } = useUserProgress();
+    const { logOut, currentUser, userProgress } = useUserProgress();
     const { toast } = useToast();
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
-
-    // DEBUGGING LOGS
-    console.log("[sidebarnew] currentUser:", currentUser);
-    console.log("[sidebarnew] userProgress:", userProgress);
-
 
     useEffect(() => {
         if (isContentOpen && !activeCategory) {
@@ -210,169 +204,166 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* Collapsible Content Area */}
             {isContentOpen && (
                 <div className="w-72 sidebar-background h-full pr-4 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
-                    {activeCategory === 'profil' && (
-                        <div>
-                            <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
-                                {userDisplayName}
-                            </h2>
-                            {isLoadingLessons && (
-                                <div className={`flex items-center p-2 rounded-lg text-white`}>
-                                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
-                                    <span className="ms-3 text-sm">Lade Lektionen...</span>
-                                </div>
-                            )}
-                            {!isLoadingLessons && lessons.length > 0 && (
-                                <div className="relative">
-                                    {/* Dotted Line Element */}
-                                    <div
-                                        className="absolute w-px bg-repeat-y opacity-70"
-                                        style={{
-                                            left: `${lineLeftOffsetRem}rem`,
-                                            top: '1.25rem',
-                                            bottom: '1.25rem',
-                                            backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
-                                            backgroundSize: '1px 8px',
-                                            zIndex: 0,
-                                        }}
-                                    ></div>
-                                    <ul className="space-y-1 font-medium relative z-10">
-                                        {lessons.map((lesson) => (
-                                            <li key={lesson.id} className="relative">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onLessonSelect(lesson)}
-                                                    disabled={!isLessonEffectivelyUnlocked(lesson.id)}
-                                                    className={cn(
-                                                        `flex flex-col p-2 rounded-lg group text-white w-full text-left`,
-                                                        isLessonEffectivelySelected(lesson.id) && "bg-[var(--sidebar-accent)]",
-                                                        isLessonEffectivelyUnlocked(lesson.id) ? "hover:bg-[var(--sidebar-accent)] cursor-pointer" : "opacity-50 cursor-not-allowed"
-                                                    )}
-                                                >
-                                                    <div className="flex items-center justify-between w-full">
-                                                        <div className="flex items-center overflow-hidden">
-                                                            <span className={cn("mr-3 h-8 w-8 relative z-20 flex items-center justify-center rounded-full bg-[hsl(var(--sidebar-background))]")}>
-                                                                {isLessonEffectivelyUnlocked(lesson.id) ? (
-                                                                    <LockOpenIcon className="shrink-0 text-white" />
-                                                                ) : (
-                                                                    <LockClosedIcon className="shrink-0 text-white" />
-                                                                )}
-                                                            </span>
-                                                            <span className={cn(
-                                                              "text-sm whitespace-normal break-words flex-1",
-                                                              isLessonEffectivelyUnlocked(lesson.id) && "font-semibold"
-                                                            )}>
-                                                                {lesson.title}
-                                                            </span>
-                                                        </div>
-                                                        {lesson.description && (
-                                                            <div
-                                                                onClick={(e) => toggleLessonDescription(lesson.id, e)}
-                                                                className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0 z-30 cursor-pointer"
-                                                                aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
-                                                                role="button"
-                                                                tabIndex={0}
-                                                            >
-                                                                {expandedLessonId === lesson.id ? <SimpleArrowUpIcon className="h-4 w-4 text-white/70" /> : <SimpleArrowDownIcon className="h-4 w-4 text-white/70" />}
-                                                            </div>
+                    <div className="flex-grow">
+                        {activeCategory === 'profil' && (
+                            <div>
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
+                                    {userDisplayName}
+                                </h2>
+                                {isLoadingLessons && (
+                                    <div className={`flex items-center p-2 rounded-lg text-white`}>
+                                        <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                        <span className="ms-3 text-sm">Lade Lektionen...</span>
+                                    </div>
+                                )}
+                                {!isLoadingLessons && lessons.length > 0 && (
+                                    <div className="relative">
+                                        {/* Dotted Line Element */}
+                                        <div
+                                            className="absolute w-px bg-repeat-y opacity-70"
+                                            style={{
+                                                left: `${lineLeftOffsetRem}rem`,
+                                                top: '1.25rem',
+                                                bottom: '1.25rem',
+                                                backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
+                                                backgroundSize: '1px 8px',
+                                                zIndex: 0,
+                                            }}
+                                        ></div>
+                                        <ul className="space-y-1 font-medium relative z-10">
+                                            {lessons.map((lesson) => (
+                                                <li key={lesson.id} className="relative">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => onLessonSelect(lesson)}
+                                                        disabled={!isLessonEffectivelyUnlocked(lesson.id)}
+                                                        className={cn(
+                                                            `flex flex-col p-2 rounded-lg group text-white w-full text-left`,
+                                                            isLessonEffectivelySelected(lesson.id) && "bg-[var(--sidebar-accent)]",
+                                                            isLessonEffectivelyUnlocked(lesson.id) ? "hover:bg-[var(--sidebar-accent)] cursor-pointer" : "opacity-50 cursor-not-allowed"
                                                         )}
+                                                    >
+                                                        <div className="flex items-center justify-between w-full">
+                                                            <div className="flex items-center overflow-hidden">
+                                                                <span className={cn("mr-3 h-8 w-8 relative z-20 flex items-center justify-center rounded-full bg-[hsl(var(--sidebar-background))]")}>
+                                                                    {isLessonEffectivelyUnlocked(lesson.id) ? (
+                                                                        <LockOpenIcon className="shrink-0 text-white" />
+                                                                    ) : (
+                                                                        <LockClosedIcon className="shrink-0 text-white" />
+                                                                    )}
+                                                                </span>
+                                                                <span className={cn(
+                                                                "text-sm whitespace-normal break-words flex-1",
+                                                                isLessonEffectivelyUnlocked(lesson.id) && "font-semibold"
+                                                                )}>
+                                                                    {lesson.title}
+                                                                </span>
+                                                            </div>
+                                                            {lesson.description && (
+                                                                <div
+                                                                    onClick={(e) => toggleLessonDescription(lesson.id, e)}
+                                                                    className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0 z-30 cursor-pointer"
+                                                                    aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
+                                                                    role="button"
+                                                                    tabIndex={0}
+                                                                >
+                                                                    {expandedLessonId === lesson.id ? <SimpleArrowUpIcon className="h-4 w-4 text-white/70" /> : <SimpleArrowDownIcon className="h-4 w-4 text-white/70" />}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {expandedLessonId === lesson.id && lesson.description && (
+                                                            <p
+                                                                className="mt-2 text-xs text-white/80 whitespace-normal break-words"
+                                                                style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
+                                                            >
+                                                                {lesson.description}
+                                                            </p>
+                                                        )}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                {!isLoadingLessons && lessons.length === 0 && (
+                                    <div className="p-2 text-sm text-white/70">
+                                        Keine Lektionen verfügbar.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {activeCategory === 'leaderboard' && (
+                            <div>
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
+                                {isLoadingLeaderboard ? (
+                                    <div className="flex items-center p-2 rounded-lg text-white">
+                                        <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                        <span className="ms-3 text-sm">Lade Leaderboard...</span>
+                                    </div>
+                                ) : leaderboardData.length > 0 ? (
+                                    <ul className="space-y-2">
+                                        {leaderboardData.map((user, index) => (
+                                            <li key={user.userId} className={cn(
+                                                "flex items-center p-2 rounded-lg",
+                                                user.userId === currentUser?.uid ? 'bg-[#3B0099]' : ''
+                                            )}>
+                                                <div className="w-6 text-center font-bold mr-2 shrink-0">
+                                                {index < 3 ? (
+                                                    <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center", getMedalColor(index))}>
+                                                        {index + 1}
                                                     </div>
-                                                    {expandedLessonId === lesson.id && lesson.description && (
-                                                        <p
-                                                            className="mt-2 text-xs text-white/80 whitespace-normal break-words"
-                                                            style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
-                                                        >
-                                                            {lesson.description}
-                                                        </p>
-                                                    )}
-                                                </button>
+                                                ) : (
+                                                    <span className={cn(getMedalColor(index))}>{index + 1}</span>
+                                                )}
+                                                </div>
+                                                <AvatarDisplay avatarId={user.avatarId} className="h-6 w-6 mr-2 shrink-0 text-white" />
+                                                <span className="flex-1 truncate text-white text-sm" title={user.username}>
+                                                    {user.username}
+                                                </span>
+                                                <span className="flex items-center font-semibold text-white text-sm">
+                                                    <PointsIcon className="h-5 w-5 mr-1"/>
+                                                    {user.totalPoints}
+                                                </span>
                                             </li>
                                         ))}
                                     </ul>
-                                </div>
-                            )}
-                            {!isLoadingLessons && lessons.length === 0 && (
-                                <div className="p-2 text-sm text-white/70">
-                                    Keine Lektionen verfügbar.
-                                </div>
-                            )}
-                        </div>
-                    )}
-                    {activeCategory === 'leaderboard' && (
-                        <div>
-                            <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
-                             {isLoadingLeaderboard ? (
-                                <div className="flex items-center p-2 rounded-lg text-white">
-                                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
-                                    <span className="ms-3 text-sm">Lade Leaderboard...</span>
-                                </div>
-                            ) : leaderboardData.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {leaderboardData.map((user, index) => (
-                                        <li key={user.userId} className={cn(
-                                            "flex items-center p-2 rounded-lg",
-                                            user.userId === currentUser?.uid ? 'bg-[#3B0099]' : ''
-                                        )}>
-                                            <div className="w-6 text-center font-bold mr-2 shrink-0">
-                                            {index < 3 ? (
-                                                <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center", getMedalColor(index))}>
-                                                    {index + 1}
-                                                </div>
-                                            ) : (
-                                                <span className={cn(getMedalColor(index))}>{index + 1}</span>
-                                            )}
-                                            </div>
-                                            <AvatarDisplay avatarId={user.avatarId} className="h-6 w-6 mr-2 shrink-0 text-white" />
-                                            <span className="flex-1 truncate text-white text-sm" title={user.username}>
-                                                {user.username}
-                                            </span>
-                                            <span className="flex items-center font-semibold text-white text-sm">
-                                                <PointsIcon className="h-5 w-5 mr-1"/>
-                                                {user.totalPoints}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-white/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
-                            )}
-                        </div>
-                    )}
-                     {activeCategory === 'einstellungen' && (
-  <div className="flex flex-col gap-2 pt-4">
-    {/* Logout-Button, nur wenn eingeloggt */}
-    {isAuthenticated && (
-      <button
-        onClick={logOut}
-        className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
-      >
-        <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
-      </button>
-    )}
+                                ) : (
+                                    <p className="text-white/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
 
-    {/* Datenschutz & AGB – immer sichtbar */}
-    <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-        <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
-    </a>
-    <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-        <Award className="mr-3 ml-1 h-5 w-5" /> AGB
-    </a>
-
-    {/* Account löschen, nur wenn eingeloggt */}
-    {isAuthenticated && (
-      <DeleteAccountDialogButton />
-    )}
-
-    {/* Login-Button, nur wenn NICHT eingeloggt */}
-    {!isAuthenticated && (
-      <Link href="/auth/register" passHref legacyBehavior>
-        <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-          <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-        </a>
-      </Link>
-    )}
-  </div>
-)}
-
+                    <div className="flex-shrink-0 pb-4">
+                        {activeCategory === 'einstellungen' && (
+                            <div className="flex flex-col gap-2 pt-4">
+                                <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                    <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
+                                </a>
+                                <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                    <Award className="mr-3 ml-1 h-5 w-5" /> AGB
+                                </a>
+                                {isAuthenticated && (
+                                    <>
+                                        <button
+                                            onClick={logOut}
+                                            className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
+                                        >
+                                            <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+                                        </button>
+                                        <DeleteAccountDialogButton />
+                                    </>
+                                )}
+                                {!isAuthenticated && (
+                                <Link href="/auth/register" passHref legacyBehavior>
+                                    <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                    <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                    </a>
+                                </Link>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
