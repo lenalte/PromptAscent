@@ -135,7 +135,7 @@ export default function AuthForm() {
     setStep("waitingLink");
     toast({
       title: "Registrierung fast fertig",
-      description: "Checke deine Mails und bestätige den Link, um einzuloggen!",
+      description: "Checke deine Mails und bestätige den Link, um einzuloggen! Habe auch einen Spam-Ordner im Blick!",
     });
     setIsLoading(false);
   };
