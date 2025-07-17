@@ -210,7 +210,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <div className="flex-grow">
                         {activeCategory === 'profil' && (
                             <div className="pt-4">
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 truncate pt-4" title={userDisplayName}>
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
                                     {userDisplayName}
                                 </h2>
                                 {isLoadingLessons && (
@@ -336,15 +336,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                         )}
                          {activeCategory === 'einstellungen' && (
-                           <div className="flex-grow flex flex-col">
-                                {/* This div is empty on purpose to push the content below to the bottom */}
+                           <div className="flex-grow flex flex-col pt-4">
+                               {/* This div is empty on purpose to push the content below to the bottom */}
                            </div>
                         )}
                     </div>
 
                     <div className="flex-shrink-0 pb-4">
                       {activeCategory === 'einstellungen' && (
-                         <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                         <div className="pt-3 flex flex-col gap-2">
                             <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                 <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
                             </a>
@@ -355,7 +355,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       )}
 
                         {isAuthenticated && (
-                            <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                            <div className="pt-3 flex flex-col gap-2">
                                 <DeleteAccountDialogButton />
                                 <button
                                     onClick={logOut}
@@ -366,7 +366,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                         )}
                         {!isAuthenticated && (
-                        <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                        <div className="pt-3 flex flex-col gap-2">
                             <Link href="/auth/register" passHref legacyBehavior>
                                 <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                 <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
