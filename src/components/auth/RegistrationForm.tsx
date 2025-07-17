@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -16,6 +17,7 @@ import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignI
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import {AvatarSelector} from "@/components/AvatarSelector";
+import type { AvatarId } from "@/data/avatars";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Ungültige E-Mail-Adresse." }),
@@ -102,21 +104,26 @@ export default function AuthForm() {
     }
 
     // Finde User (wurde vorhin erstellt)
-    const userSnap = await getDoc(doc(db, "users", auth.currentUser?.uid || "none"));
-    let userUid: string | null = null;
-    if (auth.currentUser) {
-      userUid = auth.currentUser.uid;
-    } else if (userSnap.exists()) {
-      userUid = userSnap.id;
+    const user = auth.currentUser;
+    if (!user) {
+        toast({ title: "Fehler", description: "Benutzer nicht gefunden. Bitte neu registrieren.", variant: "destructive" });
+        setIsLoading(false);
+        setStep("email"); // Zurück zum Anfang
+        return;
     }
-    // Firestore-Profil speichern (oder überschreiben)
-    if (userUid) {
-      await setDoc(doc(db, "users", userUid), {
-        username: data.username,
-        avatar: data.avatar,
-        email: pendingEmail,
-      });
-    }
+
+    // Firestore-Profil speichern
+    await setDoc(doc(db, "users", user.uid), {
+      username: data.username,
+      avatarId: data.avatar, // Use the correct key 'avatarId'
+      email: pendingEmail,
+      // Add other initial fields here
+      totalPoints: 0,
+      completedLessons: [],
+      unlockedLessons: ["lesson1"],
+      currentLessonId: "lesson1",
+      lessonStageProgress: {},
+    });
 
     // Login-Link schicken
     const actionCodeSettings = {
@@ -154,7 +161,7 @@ export default function AuthForm() {
             const db = getFirestore();
             const userRef = doc(db, "users", cred.user.uid);
             const userSnap = await getDoc(userRef);
-            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatar) {
+            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatarId) { // Check for avatarId
               setStep("profile");
               setPendingEmail(cred.user.email || "");
               toast({
@@ -266,7 +273,7 @@ export default function AuthForm() {
           <FormItem>
             <Label>Avatar</Label>
             <AvatarSelector
-              value={field.value}
+              value={field.value as AvatarId}
               onChange={field.onChange}
             />
             <FormMessage />

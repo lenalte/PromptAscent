@@ -170,8 +170,9 @@ export async function createUserProgressDocument(userId: string, initialData?: P
 
     // Filter out any top-level undefined properties before sending to Firestore
     Object.keys(firestoreData).forEach(key => {
-      if ((firestoreData as any)[key] === undefined) {
-        delete (firestoreData as any)[key];
+      const k = key as keyof typeof firestoreData;
+      if (firestoreData[k] === undefined) {
+        delete (firestoreData as any)[k];
       }
     });
 

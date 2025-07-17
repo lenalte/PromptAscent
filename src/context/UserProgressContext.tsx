@@ -58,7 +58,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
 
   useEffect(() => {
-    const fetchUserProgressData = async (userId: string, usernameForNewUser: string | null) => {
+    const fetchUserProgressData = async (user: User) => {
         if (!db) {
             console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
             setIsLoadingProgress(false);
@@ -66,20 +66,22 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
         setIsLoadingProgress(true);
         try {
-            let progress = await getUserProgress(userId);
+            let progress = await getUserProgress(user.uid);
             if (!progress) {
-                console.log(`[UserProgressContext] No progress found for ${userId}, creating new document.`);
-                progress = await createUserProgressDocument(userId, {
-                    username: usernameForNewUser ?? undefined,
+                console.log(`[UserProgressContext] No progress found for ${user.uid}, creating new document.`);
+                // Pass username and avatarId from Auth user if available
+                progress = await createUserProgressDocument(user.uid, {
+                    username: user.displayName ?? undefined,
+                    avatarId: (user.photoURL as AvatarId) ?? undefined,
                 });
-            } else if (usernameForNewUser && !progress.username) {
-                console.log(`[UserProgressContext] Progress found but no username, updating for ${userId}.`);
-                await updateUserDocument(userId, { username: usernameForNewUser });
-                progress.username = usernameForNewUser;
+            } else if (user.displayName && !progress.username) {
+                console.log(`[UserProgressContext] Progress found but no username, updating for ${user.uid}.`);
+                await updateUserDocument(user.uid, { username: user.displayName });
+                progress.username = user.displayName;
             }
             setUserProgress(progress);
         } catch (error) {
-            console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${userId}:`, error);
+            console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${user.uid}:`, error);
             setUserProgress(null);
         } finally {
             setIsLoadingProgress(false);
@@ -99,7 +101,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
         setIsLoadingAuth(true);
         if (user) {
             setCurrentUser(user);
-            await fetchUserProgressData(user.uid, user.displayName);
+            await fetchUserProgressData(user);
         } else {
             setCurrentUser(null);
             setUserProgress(null);
@@ -166,7 +168,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      await updateProfile(userCredential.user, { displayName: username });
+      await updateProfile(userCredential.user, { displayName: username, photoURL: avatarId });
       
       // THIS IS THE CRUCIAL PART: Create the user document in Firestore after registration
       await createUserProgressDocument(userCredential.user.uid, { username, avatarId });
