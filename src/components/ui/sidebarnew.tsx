@@ -362,10 +362,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                              <div className="space-y-1 pb-4">
                                 <Link href="/legal/agb" passHref legacyBehavior>
-                                    <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
+                                    <a target="_blank" rel="noopener noreferrer" className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
                                 </Link>
                                 <Link href="/legal/datenschutz" passHref legacyBehavior>
-                                    <a className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
+                                    <a target="_blank" rel="noopener noreferrer" className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
                                 </Link>
                                 
                                 {isAuthenticated ? (
@@ -401,7 +401,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         </AlertDialog>
                                     </>
                                 ) : (
-                                    <Link href="/auth/login" passHref legacyBehavior>
+                                    <Link href="/auth/register" passHref legacyBehavior>
                                         <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                             <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
                                         </a>
@@ -417,5 +417,3 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
-
-    
