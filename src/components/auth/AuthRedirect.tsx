@@ -13,8 +13,8 @@ export default function AuthRedirect({ children }: { children: React.ReactNode }
     const pathname = usePathname();
 
     useEffect(() => {
-        // Don't redirect if we are on an auth page, or if we are still loading
-        if (isLoadingAuth || pathname.startsWith('/auth')) {
+        // Don't redirect if we are on an auth or legal page, or if we are still loading
+        if (isLoadingAuth || pathname.startsWith('/auth') || pathname.startsWith('/legal')) {
             return;
         }
 
@@ -26,8 +26,8 @@ export default function AuthRedirect({ children }: { children: React.ReactNode }
     }, [isLoadingAuth, currentUser, router, pathname]);
 
     // Show a loading screen for protected routes while auth state is being determined.
-    // Auth pages will render their content immediately.
-    if (isLoadingAuth && !pathname.startsWith('/auth')) {
+    // Auth and legal pages will render their content immediately.
+    if (isLoadingAuth && !pathname.startsWith('/auth') && !pathname.startsWith('/legal')) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-background">
                 <BirdsBackground />
