@@ -78,7 +78,7 @@ export default function AuthForm() {
         setStep("waitingLink");
         toast({
           title: "Login-Link verschickt",
-          description: "Checke deine E-Mails zum Einloggen!",
+          description: "Checke deine E-Mails zum Einloggen! Habe auch deinen Spam-Ordner im Auge!",
         });
       } else {
         toast({
