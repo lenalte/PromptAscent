@@ -52,7 +52,7 @@ function createDefaultLessonProgress(isFirstLesson: boolean): { currentStageInde
   for (let i = 0; i < 6; i++) {
     const stageId = `stage${i + 1}`;
     stagesProgress[stageId] = {
-      status: i === 0 ? 'in-progress' : 'locked', // Unlock first stage
+      status: i === 0 ? 'unlocked' : 'locked', // Unlock first stage, was 'in-progress'
       items: {}, // Item attempts will be populated as user interacts
       pointsEarned: 0,
     };
@@ -142,27 +142,22 @@ export async function createUserProgressDocument(userId: string, initialData?: P
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const defaultLessonId = "lesson1";
-    const currentLessonToInit = initialData?.currentLessonId ?? defaultLessonId;
-
+    
     const initialLessonStageProgress: UserProgressData['lessonStageProgress'] = {
-        [currentLessonToInit]: createDefaultLessonProgress(true) // The first lesson created is always lesson1
+        [defaultLessonId]: createDefaultLessonProgress(true) // Ensure lesson1 progress is created
     };
-
 
     const dataToSet: UserProgressData = {
       userId,
       username: initialData?.username,
       avatarId: initialData?.avatarId ?? 'avatar1',
-      totalPoints: initialData?.totalPoints ?? 0,
-      currentLessonId: currentLessonToInit,
-      completedLessons: initialData?.completedLessons ?? [],
-      unlockedLessons: initialData?.unlockedLessons && initialData.unlockedLessons.length > 0
-        ? initialData.unlockedLessons
-        : [defaultLessonId],
-      unlockedSummaries: initialData?.unlockedSummaries ?? [],
-      activeBooster: initialData?.activeBooster,
-      lessonStageProgress: initialData?.lessonStageProgress ?? initialLessonStageProgress,
-      knowledgeGaps: initialData?.knowledgeGaps ?? [],
+      totalPoints: 0,
+      currentLessonId: defaultLessonId,
+      completedLessons: [],
+      unlockedLessons: [defaultLessonId],
+      unlockedSummaries: [],
+      lessonStageProgress: initialLessonStageProgress,
+      knowledgeGaps: [],
     };
     
     // Create a version of the data for Firestore, excluding userId and handling potential undefined values.
