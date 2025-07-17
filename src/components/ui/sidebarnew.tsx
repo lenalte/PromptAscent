@@ -209,8 +209,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="w-72 sidebar-background h-full pr-4 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
                     <div className="flex-grow">
                         {activeCategory === 'profil' && (
-                            <div>
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
+                            <div className="pt-4">
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 truncate" title={userDisplayName}>
                                     {userDisplayName}
                                 </h2>
                                 {isLoadingLessons && (
@@ -296,8 +296,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                         )}
                         {activeCategory === 'leaderboard' && (
-                            <div>
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
+                            <div className="pt-4">
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1">Leaderboard</h2>
                                 {isLoadingLeaderboard ? (
                                     <div className="flex items-center p-2 rounded-lg text-white">
                                         <Loader2 className="h-5 w-5 animate-spin shrink-0" />
@@ -336,30 +336,33 @@ const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                         )}
                          {activeCategory === 'einstellungen' && (
-                           <div className="pt-4">
-                            <h2 className="text-xl font-semibold text-white mb-4 px-1">Einstellungen</h2>
-                            <div className="flex flex-col gap-2">
-                                <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                    <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
-                                </a>
-                                <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                    <Award className="mr-3 ml-1 h-5 w-5" /> AGB
-                                </a>
-                            </div>
+                           <div className="flex-grow flex flex-col">
+                                {/* This div is empty on purpose to push the content below to the bottom */}
                            </div>
                         )}
                     </div>
 
                     <div className="flex-shrink-0 pb-4">
+                      {activeCategory === 'einstellungen' && (
+                         <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                            <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
+                            </a>
+                            <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                <Award className="mr-3 ml-1 h-5 w-5" /> AGB
+                            </a>
+                         </div>
+                      )}
+
                         {isAuthenticated && (
                             <div className="border-t border-sidebar-border/50 pt-3 mt-3 flex flex-col gap-2">
+                                <DeleteAccountDialogButton />
                                 <button
                                     onClick={logOut}
                                     className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
                                 >
                                     <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
                                 </button>
-                                <DeleteAccountDialogButton />
                             </div>
                         )}
                         {!isAuthenticated && (
