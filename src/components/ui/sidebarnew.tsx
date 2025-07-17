@@ -210,7 +210,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <div className="flex-grow">
                         {activeCategory === 'profil' && (
                             <div className="pt-4">
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 truncate" title={userDisplayName}>
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 truncate pt-4" title={userDisplayName}>
                                     {userDisplayName}
                                 </h2>
                                 {isLoadingLessons && (
@@ -297,7 +297,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         {activeCategory === 'leaderboard' && (
                             <div className="pt-4">
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1">Leaderboard</h2>
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
                                 {isLoadingLeaderboard ? (
                                     <div className="flex items-center p-2 rounded-lg text-white">
                                         <Loader2 className="h-5 w-5 animate-spin shrink-0" />
