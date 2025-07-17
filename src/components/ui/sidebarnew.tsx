@@ -337,43 +337,44 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                          {activeCategory === 'einstellungen' && (
                            <div className="flex-grow flex flex-col pt-4">
-                               {/* This div is empty on purpose to push the content below to the bottom */}
+                              <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
                            </div>
                         )}
                     </div>
 
                     <div className="flex-shrink-0 pb-4">
                       {activeCategory === 'einstellungen' && (
-                         <div className="pt-3 flex flex-col gap-2">
-                            <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
-                            </a>
-                            <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                <Award className="mr-3 ml-1 h-5 w-5" /> AGB
-                            </a>
-                         </div>
+                        <>
+                           <div className="flex flex-col gap-2">
+                              <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                  <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
+                              </a>
+                              <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                  <Award className="mr-3 ml-1 h-5 w-5" /> AGB
+                              </a>
+                           </div>
+                           {isAuthenticated && (
+                              <div className="pt-3 flex flex-col gap-2">
+                                  <DeleteAccountDialogButton />
+                                  <button
+                                      onClick={logOut}
+                                      className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
+                                  >
+                                      <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+                                  </button>
+                              </div>
+                           )}
+                           {!isAuthenticated && (
+                           <div className="pt-3 flex flex-col gap-2">
+                              <Link href="/auth/register" passHref legacyBehavior>
+                                  <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white" target="_blank" rel="noopener noreferrer">
+                                  <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                  </a>
+                              </Link>
+                           </div>
+                           )}
+                        </>
                       )}
-
-                        {isAuthenticated && (
-                            <div className="pt-3 flex flex-col gap-2">
-                                <DeleteAccountDialogButton />
-                                <button
-                                    onClick={logOut}
-                                    className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
-                                >
-                                    <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
-                                </button>
-                            </div>
-                        )}
-                        {!isAuthenticated && (
-                        <div className="pt-3 flex flex-col gap-2">
-                            <Link href="/auth/register" passHref legacyBehavior>
-                                <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-                                </a>
-                            </Link>
-                        </div>
-                        )}
                     </div>
                 </div>
             )}
