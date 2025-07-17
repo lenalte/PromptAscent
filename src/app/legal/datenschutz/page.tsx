@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 
 export default function DatenschutzPage() {
   return (
-    <div className="container mx-auto py-12 px-4 max-w-4xl text-foreground/90">
+    <div className="container mx-auto py-12 px-4 max-w-4xl text-white">
       <h1 className="text-4xl font-bold mb-4 text-primary">Datenschutzerklärung</h1>
       <p className="text-muted-foreground mb-6"><strong>Stand:</strong> Juli 2025</p>
 
