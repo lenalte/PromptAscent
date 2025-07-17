@@ -33,6 +33,7 @@ import { ProfilIcon } from "../icons/ProfilIcon";
 import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
 import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DeleteAccountDialogButton } from "@/components/auth/DeleteAccountDialogButton";
 
 
 interface SidebarProps {
@@ -72,25 +73,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     // DEBUGGING LOGS
     console.log("[sidebarnew] currentUser:", currentUser);
     console.log("[sidebarnew] userProgress:", userProgress);
-
-    const handleDeleteAccount = async () => {
-        setIsDeleting(true);
-        const result = await deleteCurrentUserAccount();
-        if (result.success) {
-            toast({
-                title: "Account gelöscht",
-                description: "Dein Account und alle deine Daten wurden erfolgreich gelöscht.",
-            });
-            // Logout is handled implicitly by user deletion, auth state will change
-        } else {
-            toast({
-                title: "Fehler beim Löschen des Accounts",
-                description: result.error,
-                variant: "destructive",
-            });
-        }
-        setIsDeleting(false);
-    };
 
 
     useEffect(() => {
@@ -356,60 +338,45 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                     )}
                      {activeCategory === 'einstellungen' && (
-                        <div className="flex flex-col h-full">
-                            <div className="flex-grow pt-4">
-                                 {/* Hier können zukünftig weitere Einstellungen hinzugefügt werden */}
-                            </div>
-                             <div className="space-y-1 pb-4">
-                                <Link href="/legal/agb" passHref legacyBehavior>
-                                    <a target="_blank" rel="noopener noreferrer" className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">AGB</a>
-                                </Link>
-                                <Link href="/legal/datenschutz" passHref legacyBehavior>
-                                    <a target="_blank" rel="noopener noreferrer" className="w-full text-left p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white block">Datenschutz</a>
-                                </Link>
-                                
-                                {isAuthenticated ? (
-                                    <>
-                                        <button onClick={logOut} className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                            <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
-                                        </button>
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <button className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive">
-                                                  <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
-                                                </button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                <AlertDialogTitle>Bist du dir absolut sicher?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Diese Aktion kann nicht rückgängig gemacht werden. Dadurch werden dein Account und alle deine Fortschrittsdaten dauerhaft von unseren Servern entfernt.
-                                                </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={handleDeleteAccount}
-                                                    disabled={isDeleting}
-                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                >
-                                                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                                    Ja, Account löschen
-                                                </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </>
-                                ) : (
-                                    <Link href="/auth/register" passHref legacyBehavior>
-                                        <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                            <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-                                        </a>
-                                    </Link>
-                                )}
-                            </div>
-                        </div>
-                    )}
+  <div className="flex flex-col gap-2 pt-4">
+    {/* Logout-Button, nur wenn eingeloggt */}
+    {isAuthenticated && (
+      <button
+        onClick={logOut}
+        className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
+      >
+        <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+      </button>
+    )}
+
+    {/* Datenschutz & AGB – immer sichtbar */}
+    <Link href="/datenschutz" passHref legacyBehavior>
+      <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+        <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
+      </a>
+    </Link>
+    <Link href="/agb" passHref legacyBehavior>
+      <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+        <Award className="mr-3 ml-1 h-5 w-5" /> AGB
+      </a>
+    </Link>
+
+    {/* Account löschen, nur wenn eingeloggt */}
+    {isAuthenticated && (
+      <DeleteAccountDialogButton />
+    )}
+
+    {/* Login-Button, nur wenn NICHT eingeloggt */}
+    {!isAuthenticated && (
+      <Link href="/auth/register" passHref legacyBehavior>
+        <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+          <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+        </a>
+      </Link>
+    )}
+  </div>
+)}
+
                 </div>
             )}
         </div>
