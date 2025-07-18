@@ -56,7 +56,7 @@
           "type": "likertScale",
           "id": "s2_likert1",
           "title": "Feedback zur Plattform",
-          "question": "Die Plattform gibt mir nützliches Feedback, damit ich mich verbessern kann",
+          "question": "Die Plattform gibt mir nützliches Feedback, damit ich mich verbessern kann.",
           "pointsAwarded": 1
         },
         {

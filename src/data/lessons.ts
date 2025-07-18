@@ -66,27 +66,17 @@ export async function getAvailableLessons(): Promise<Omit<Lesson, 'stages'>[]> {
   return manifest.map(({ id, title, description }) => ({ id, title, description }));
 }
 
-// In-memory cache for development to avoid re-reading files constantly.
-const lessonCache = new Map<string, Lesson>();
 
 export async function getGeneratedLessonById(lessonId: string): Promise<Lesson | undefined> {
-  if (process.env.NODE_ENV === 'development' && lessonCache.has(lessonId)) {
-    return lessonCache.get(lessonId);
-  }
-
   const generatedLessonPath = path.join(LESSON_GENERATED_DIR, `${lessonId}.json`);
 
   try {
-    const cachedLessonContent = await fs.readFile(generatedLessonPath, 'utf-8');
-    const lessonData: Lesson = JSON.parse(cachedLessonContent);
-    console.log(`[SERVER LOG] [Lesson: ${lessonId}] Successfully loaded from cached JSON file.`);
-    if (process.env.NODE_ENV === 'development') {
-      lessonCache.set(lessonId, lessonData);
-    }
+    const lessonContent = await fs.readFile(generatedLessonPath, 'utf-8');
+    const lessonData: Lesson = JSON.parse(lessonContent);
+    console.log(`[SERVER LOG] [Lesson: ${lessonId}] Successfully loaded from JSON file.`);
     return lessonData;
   } catch (error: any) {
-    console.error(`[SERVER LOG] [Lesson: ${lessonId}] Error reading cached lesson file:`, error);
-    // If file doesn't exist, we can't proceed as dynamic generation is removed.
+    console.error(`[SERVER LOG] [Lesson: ${lessonId}] Error reading lesson file:`, error);
     if (error.code === 'ENOENT') {
         throw new Error(`Lesson content for ${lessonId} not found. Pre-generation is required.`);
     }
