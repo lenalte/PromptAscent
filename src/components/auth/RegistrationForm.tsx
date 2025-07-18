@@ -12,22 +12,22 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, browserLocalPersistence, setPersistence } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, browserLocalPersistence, setPersistence, updateProfile } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import {AvatarSelector} from "@/components/AvatarSelector";
+import { AvatarSelector } from "@/components/AvatarSelector";
+import type { AvatarId } from "@/data/avatars";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Ungültige E-Mail-Adresse." }),
 });
 const profileSchema = z.object({
   username: z.string().min(3, { message: "Mind. 3 Zeichen." }).max(20, { message: "Max. 20 Zeichen." }),
-  avatar: z.string().min(1, { message: "Bitte wähle einen Avatar." }),
+  avatarId: z.string().min(1, { message: "Bitte wähle einen Avatar." }),
 });
 
 type EmailFormValues = z.infer<typeof emailSchema>;
 type ProfileFormValues = z.infer<typeof profileSchema>;
-
 type Step = "email" | "waitingLink" | "profile" | "done";
 
 export default function AuthForm() {
@@ -39,19 +39,19 @@ export default function AuthForm() {
   const { toast } = useToast();
   const router = useRouter();
 
-
   // 1. Email-Eingabe-Form
   const emailForm = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: { email: "" },
   });
-  // 2. Profil-Eingabe-Form (nur bei Registrierung)
+
+  // 2. Profil-Eingabe-Form
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { username: "", avatar: "" },
+    defaultValues: { username: "", avatarId: "" },
   });
 
-  // Passwordless Login/Signup - EIN Feld für alles!
+  // Email-Check & ggf. User anlegen
   const onSubmitEmail = async (data: EmailFormValues) => {
     setIsLoading(true);
     const auth = getAuth();
@@ -60,15 +60,14 @@ export default function AuthForm() {
     setPendingEmail(email);
 
     try {
-      // Versuch: User anlegen (Registration)
+      // Versuche: User anlegen (Registration)
       await createUserWithEmailAndPassword(auth, email, tempPassword);
-      // NEUER User – jetzt Profil-Completion anzeigen!
-      setStep("profile");
+      setStep("profile"); // Weiter zur Profil-Eingabe
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
-        // ACCOUNT EXISTIERT: Direkt Login-Link schicken!
+        // Account existiert: Direkt Login-Link schicken!
         const actionCodeSettings = {
-          url: window.location.origin + "/auth/register", // der Pfad dieser Seite!
+          url: window.location.origin + "/auth/register",
           handleCodeInApp: true,
         };
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -76,7 +75,7 @@ export default function AuthForm() {
         setStep("waitingLink");
         toast({
           title: "Login-Link verschickt",
-          description: "Checke deine E-Mails zum Einloggen!",
+          description: "Checke deine E-Mails zum Einloggen! (Spam-Ordner prüfen)",
         });
       } else {
         toast({
@@ -89,7 +88,7 @@ export default function AuthForm() {
     setIsLoading(false);
   };
 
-  // Nach Registrierung: Profil speichern + Login-Link senden!
+  // Profil-Infos & Avatar speichern, dann Login-Link schicken
   const onSubmitProfile = async (data: ProfileFormValues) => {
     setIsLoading(true);
     const auth = getAuth();
@@ -101,22 +100,31 @@ export default function AuthForm() {
       return;
     }
 
-    // Finde User (wurde vorhin erstellt)
-    const userSnap = await getDoc(doc(db, "users", auth.currentUser?.uid || "none"));
-    let userUid: string | null = null;
-    if (auth.currentUser) {
-      userUid = auth.currentUser.uid;
-    } else if (userSnap.exists()) {
-      userUid = userSnap.id;
+    const user = auth.currentUser;
+    if (!user) {
+      toast({ title: "Fehler", description: "Benutzer nicht gefunden. Bitte neu registrieren.", variant: "destructive" });
+      setIsLoading(false);
+      setStep("email");
+      return;
     }
-    // Firestore-Profil speichern (oder überschreiben)
-    if (userUid) {
-      await setDoc(doc(db, "users", userUid), {
-        username: data.username,
-        avatar: data.avatar,
-        email: pendingEmail,
-      });
-    }
+
+    // Firebase Profil updaten (Username + Avatar optional als photoURL)
+    await updateProfile(user, {
+      displayName: data.username,
+      photoURL: data.avatarId, // (Optional: kann für deinen Avatar genutzt werden)
+    });
+
+    // Firestore-Profil speichern
+    await setDoc(doc(db, "users", user.uid), {
+      username: data.username,
+      avatarId: data.avatarId,
+      email: pendingEmail,
+      totalPoints: 0,
+      completedLessons: [],
+      unlockedLessons: ["lesson1"],
+      currentLessonId: "lesson1",
+      lessonStageProgress: {},
+    });
 
     // Login-Link schicken
     const actionCodeSettings = {
@@ -128,12 +136,12 @@ export default function AuthForm() {
     setStep("waitingLink");
     toast({
       title: "Registrierung fast fertig",
-      description: "Checke deine Mails und bestätige den Link, um einzuloggen!",
+      description: "Checke deine Mails und bestätige den Link, um einzuloggen! (Spam-Ordner prüfen)",
     });
     setIsLoading(false);
   };
 
-  // Passwordless Link Handler
+  // Login-Link-Handler
   useEffect(() => {
     let isMounted = true;
     (async () => {
@@ -150,11 +158,11 @@ export default function AuthForm() {
           try {
             const cred = await signInWithEmailLink(auth, storedEmail, url);
             window.localStorage.removeItem("emailForSignIn");
-            // Profile prüfen – fehlt was?
+            // Profil prüfen
             const db = getFirestore();
             const userRef = doc(db, "users", cred.user.uid);
             const userSnap = await getDoc(userRef);
-            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatar) {
+            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatarId) {
               setStep("profile");
               setPendingEmail(cred.user.email || "");
               toast({
@@ -164,7 +172,7 @@ export default function AuthForm() {
             } else {
               setStep("done");
               toast({ title: "Login erfolgreich", description: "Du bist eingeloggt." });
-              router.push("/"); // oder wohin du willst
+              router.push("/");
             }
           } catch (err: any) {
             toast({
@@ -181,12 +189,10 @@ export default function AuthForm() {
     return () => { isMounted = false; };
   }, [router, toast]);
 
+  // Stepper-Flow zwischen Username und Avatar
   const handleUsernameNext = async () => {
     const isValid = await profileForm.trigger("username");
-    if (isValid) {
-      setProfileStep("avatar");
-    }
-    // Bei Fehlern bleibt die Card offen und zeigt die Validierungs-Message an
+    if (isValid) setProfileStep("avatar");
   };
 
   return (
@@ -222,11 +228,11 @@ export default function AuthForm() {
                   </FormItem>
                 )}
               />
-               <div className="rounded-md bg-muted p-3 text-xs text-foreground border mb-2">
-        <b>Hinweis zur Datennutzung</b><br />
-        Diese Plattform wird im Rahmen einer Bachelorarbeit betrieben. Während du die Anwendung nutzt, werden anonymisierte Daten zur Verbesserung der Plattform erhoben (mithilfe von Google Analytics). Deine Eingaben in den Aufgaben werden zudem zur automatisierten Auswertung an die Gemini API übermittelt.<br /><br />
-        Mit der Registrierung erklärst du dich damit einverstanden. Weitere Infos findest du in der <Link href="/legal/datenschutz" className="underline" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</Link>.
-      </div>
+              <div className="rounded-md bg-muted p-3 text-xs text-foreground border mb-2">
+                <b>Hinweis zur Datennutzung</b><br />
+                Diese Plattform wird im Rahmen einer Bachelorarbeit betrieben. Während du die Anwendung nutzt, werden anonymisierte Daten zur Verbesserung der Plattform erhoben (mithilfe von Google Analytics). Deine Eingaben in den Aufgaben werden zudem zur automatisierten Auswertung an die Gemini API übermittelt.<br /><br />
+                Mit der Registrierung erklärst du dich damit einverstanden. Weitere Infos findest du in der <a href="/legal/datenschutz" className="underline" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a>.
+              </div>
               <EightbitButton type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Fortfahren"}
               </EightbitButton>
@@ -251,34 +257,35 @@ export default function AuthForm() {
                 )}
               />
               <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-        Weiter
-      </EightbitButton>
-    </form>
-  </Form>
-)}
-{step === "profile" && profileStep === "avatar" && (
-  <Form {...profileForm}>
-    <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-      <FormField
-        control={profileForm.control}
-        name="avatar"
-        render={({ field }) => (
-          <FormItem>
-            <Label>Avatar</Label>
-            <AvatarSelector
-              value={field.value}
-              onChange={field.onChange}
-            />
-            <FormMessage />
-          </FormItem>
+                Weiter
+              </EightbitButton>
+            </form>
+          </Form>
         )}
-      />
-      <EightbitButton type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Profil speichern & Login-Link senden"}
-      </EightbitButton>
-    </form>
-  </Form>
-)}
+
+        {step === "profile" && profileStep === "avatar" && (
+          <Form {...profileForm}>
+            <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+              <FormField
+                control={profileForm.control}
+                name="avatarId"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Avatar</Label>
+                    <AvatarSelector
+                      value={field.value as AvatarId}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <EightbitButton type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Profil speichern & Login-Link senden"}
+              </EightbitButton>
+            </form>
+          </Form>
+        )}
 
         {step === "waitingLink" && (
           <div className="flex flex-col items-center py-8">
@@ -302,7 +309,7 @@ export default function AuthForm() {
       <CardFooter>
         {step === "email" && (
           <div className="text-center text-sm">
-            {/* Platz für weitere Links (z.B. Datenschutz, Impressum) */}
+            {/* Platz für weitere Links */}
           </div>
         )}
       </CardFooter>
