@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
@@ -245,7 +244,6 @@ function HomePageContent() {
       // which will re-run loadLessonAndProgress.
   }, [selectedLesson, currentStage, restartStage]);
 
-
   const handleProceed = useCallback(async () => {
     if (isProcessing.current || !currentStage || !activeContent || !selectedLesson) return;
     isProcessing.current = true;
@@ -315,38 +313,54 @@ function HomePageContent() {
         setIsSubmitting(false);
     }
   }, [activeContent, activeContentIndex, completeStageAndProceed, userProgress, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
+  
+  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string) => {
+    const itemStatus = stageItemAttempts[itemId] || { attempts: 0, correct: null, points: 0 };
+    const maxAttemptsReached = (itemStatus.attempts ?? 0) >= 3;
 
-  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
+    if (itemStatus.correct || maxAttemptsReached) return;
+
     setStageItemAttempts(prev => {
-        const currentAttemptsForThisItem = prev[itemId]?.attempts || 0;
-        const wasCorrectBefore = prev[itemId]?.correct === true;
-        const isNowCorrect = wasCorrectBefore || isCorrect;
-        const newAttempts = currentAttemptsForThisItem + 1;
-        
-        if (isCorrect && !wasCorrectBefore) {
-             setPointsThisStageSession(p => p + pointsChange);
-        }
-        
-        const updatedStatus: StageItemStatus = { 
-            attempts: newAttempts, 
-            correct: isNowCorrect,
-        };
-        
-        const maxAttemptsReached = newAttempts >= 3;
-        if (!isNowCorrect && maxAttemptsReached) {
-            handleProceed();
-        }
+      const currentAttempts = prev[itemId]?.attempts || 0;
+      const newAttempts = currentAttempts + 1;
+      const wasCorrectBefore = prev[itemId]?.correct === true;
+      const isNowCorrect = wasCorrectBefore || isCorrect;
 
-        return { 
-            ...prev, 
-            [itemId]: updatedStatus
-        };
+      let awardedPoints = 0;
+      if (isNowCorrect && !wasCorrectBefore) {
+        awardedPoints = pointsAwarded;
+        setPointsThisStageSession(p => p + awardedPoints);
+      }
+      
+      const newStatus: StageItemStatus = {
+        attempts: newAttempts,
+        correct: isNowCorrect,
+        points: awardedPoints,
+      };
+
+      return {
+          ...prev,
+          [itemId]: newStatus
+      };
     });
-  }, [handleProceed]);
+
+    const isNowMaxedOut = newAttempts >= 3;
+    if (isNowMaxedOut && !isCorrect) {
+        // Automatically proceed to next item after 3 wrong attempts
+        setTimeout(() => handleProceed(), 1000); // Small delay to let user see feedback
+    }
+  }, [stageItemAttempts, handleProceed]);
+
+  useEffect(() => {
+    if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet' && !stageItemAttempts[activeContent.id]) {
+        handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
+    }
+  }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
+
 
   useEffect(() => {
     async function loadLessonAndProgress() {
-        if (!isLessonViewActive || !selectedLesson?.id || !currentUser) return;
+        if (!isLessonViewActive || !selectedLesson || !currentUser) return;
         
         setIsLoadingLesson(true);
         setErrorLoadingLesson(null);
@@ -422,14 +436,7 @@ function HomePageContent() {
 
                 let activeItemIndex = 0;
                 if(currentStageProgress?.items){
-                    const firstIncompleteItemIndex = currentStageData.items.findIndex(item => {
-                        const status = currentStageProgress.items[item.id];
-                        // An item is incomplete if it's not present, not correct, or hasn't reached max attempts if incorrect
-                        if (!status) return true;
-                        if (status.correct === true) return false;
-                        if (status.correct === false && (status.attempts ?? 0) < 3) return true;
-                        return false; // It's complete (either correct or failed max attempts)
-                    });
+                    const firstIncompleteItemIndex = currentStageData.items.findIndex(item => !currentStageProgress.items[item.id]?.correct);
                     activeItemIndex = firstIncompleteItemIndex !== -1 ? firstIncompleteItemIndex : currentStageData.items.length;
                 }
                 newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
@@ -446,14 +453,11 @@ function HomePageContent() {
             setIsLoadingLesson(false);
         }
     }
-    loadLessonAndProgress();
-  }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress, handleExitLesson, handleRestartStage]);
-
-  useEffect(() => {
-    if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet' && !stageItemAttempts[activeContent.id]) {
-        handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
+    if (isLessonViewActive && selectedLesson?.id) {
+      loadLessonAndProgress();
     }
-  }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
+  }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress]);
+
 
   const stageProgressUi = useMemo(() => {
     if (!lessonData || !userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']) return null;
@@ -499,8 +503,9 @@ function HomePageContent() {
         const item = activeContent;
         const itemStatus = stageItemAttempts[item.id];
         const isAnsweredCorrectly = itemStatus?.correct === true;
+        const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
         
-        if (isAnsweredCorrectly || item.type === 'informationalSnippet') {
+        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isAnsweredCorrectly)) {
           return { 
               visible: true, 
               onClick: handleProceed, 
@@ -519,7 +524,7 @@ function HomePageContent() {
   const CONTENT_AREA_WIDTH_PX = 288;
   const currentSidebarTotalWidth = isSidebarContentAreaOpen ? ICON_BAR_WIDTH_PX + CONTENT_AREA_WIDTH_PX : ICON_BAR_WIDTH_PX;
   const isLessonUnlocked = (lessonId: string) => userProgress?.unlockedLessons?.includes(lessonId) ?? false;
-  const currentStageIndexOfSelectedLesson = useMemo(() => selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex : -1, [selectedLesson, userProgress]);
+  const currentStageIndexOfSelectedLesson = selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex : -1;
   
   const hasStartedSelectedLesson = useMemo(() => {
     if (!selectedLesson || !userProgress?.lessonStageProgress?.[selectedLesson.id]) {
@@ -586,16 +591,17 @@ function HomePageContent() {
                                 const isReadOnly = index < activeContentIndex;
                                 const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
                                 const hasSubmittedCorrectly = itemStatus?.correct === true;
+                                const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
                                 
                                 return (
                                     <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
                                         {content.renderType === 'LessonItem' && (() => {
                                             const { key, ...rest } = content;
                                             switch (content.type) {
-                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
-                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
+                                                case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                                                case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
                                                 case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} />;
+                                                case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
                                                 default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
                                             }
                                         })()}
@@ -698,11 +704,9 @@ function HomePageContent() {
                                 contentColorClass = 'text-green-400';
                             }
                             const isLocked = status === 'locked';
-                            const isActiveStage = currentStageIndexOfSelectedLesson === index;
-
                             return (
                                 <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
-                                    {isActiveStage && <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
+                                    {currentStageIndexOfSelectedLesson === index && <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
                                     <div className={cn("w-full relative flex flex-col items-center justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
                                         <div className="flex flex-col items-center w-full">
                                             <div className={cn("flex items-center gap-2", contentColorClass)}>

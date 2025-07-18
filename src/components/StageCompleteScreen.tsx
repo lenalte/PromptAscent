@@ -30,8 +30,9 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   onRestart,
 }) => {
   const { userProgress } = useUserProgress();
-  const activeBoosterMultiplier = userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt
-    ? userProgress.activeBooster.multiplier
+  const activeBooster = userProgress?.activeBooster;
+  const activeBoosterMultiplier = (activeBooster && Date.now() < activeBooster.expiresAt)
+    ? activeBooster.multiplier
     : null;
 
   const isBoosterActive = activeBoosterMultiplier !== null && activeBoosterMultiplier > 1;
@@ -67,7 +68,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
   stageItems.forEach(item => {
     const attemptData = stageItemAttempts[item.id];
     if (attemptData && item.type !== 'informationalSnippet') {
-      if (attemptData.correct && attemptData.attempts === 1) {
+      if (attemptData.correct && (attemptData.attempts ?? 1) === 1) {
         firstTrySuccesses++;
       }
     }

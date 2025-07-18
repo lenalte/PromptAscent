@@ -55,7 +55,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
         
-        const awardedPointsForAttempt = Math.max(0, pointsAwarded - (validation.isValid ? attempts : newAttempts));
+        const awardedPointsForAttempt = validation.isValid ? Math.max(0, pointsAwarded - attempts) : 0;
         onAnswerSubmit(validation.isValid, awardedPointsForAttempt, id.toString());
 
       } catch (error) {
@@ -75,7 +75,8 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     setAttempts(0);
   }, [id]);
 
-  const isComponentReadOnly = isReadOnly || isCorrect;
+  const isComponentReadOnly = isReadOnly || isCorrect || attempts >= MAX_ATTEMPTS;
+  const awardedPoints = isCorrect ? Math.max(0, pointsAwarded - (attempts - 1)) : 0;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
@@ -121,13 +122,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
               )}
               <AlertTitle className={cn(result.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {result.isValid ? `Korrekt! +${Math.max(0, pointsAwarded - (attempts - 1))} Punkte` : 'Inkorrekt'}
+                {result.isValid ? `Korrekt! +${awardedPoints} Punkte` : 'Inkorrekt'}
               </AlertTitle>
               <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {result.feedback}
-                {!result.isValid && expectedAnswer && (
+                {!result.isValid && attempts >= MAX_ATTEMPTS && expectedAnswer && (
                   <p className="mt-2">
-                    Erwartete Antwort (Leitfaden): <span className="font-semibold">{expectedAnswer}</span>
+                    Die erwartete Antwort (Leitfaden) war: <span className="font-semibold">{expectedAnswer}</span>
                   </p>
                 )}
               </AlertDescription>
@@ -136,7 +137,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
-        {!isComponentReadOnly && canAttempt && (
+        {!isComponentReadOnly && (
           <EightbitButton onClick={handleSubmit} disabled={userAnswer.trim().length === 0 || isPending}>
             {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
           </EightbitButton>

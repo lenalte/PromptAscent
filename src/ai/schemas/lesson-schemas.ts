@@ -65,6 +65,7 @@ export type Lesson = z.infer<typeof LessonSchema>;
 export type StageItemStatus = {
     attempts: number;
     correct: boolean | null; // null if not yet attempted, true if correct, false if incorrect on last attempt
+    points?: number; // Added to store points calculated on submission
 };
 
 export type StageStatusValue = 'locked' | 'unlocked' | 'in-progress' | 'completed-perfect' | 'completed-good' | 'failed-stage';

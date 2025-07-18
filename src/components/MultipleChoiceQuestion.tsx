@@ -47,12 +47,12 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     setSubmittedValue(selectedValue);
     const selectedIndex = parseInt(selectedValue, 10);
     const correct = selectedIndex === correctOptionIndex;
-
     setIsCorrect(correct);
+
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
-    
-    const awardedPointsForAttempt = Math.max(0, pointsAwarded - (correct ? attempts : newAttempts));
+
+    const awardedPointsForAttempt = correct ? Math.max(0, pointsAwarded - attempts) : 0;
     onAnswerSubmit(correct, awardedPointsForAttempt, id.toString());
     
   }, [isReadOnly, canAttempt, selectedValue, correctOptionIndex, onAnswerSubmit, pointsAwarded, id, attempts]);
@@ -65,8 +65,9 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     setAttempts(0);
   }, [id]);
 
-  const isComponentReadOnly = isReadOnly || hasSubmittedCorrectly;
+  const isComponentReadOnly = isReadOnly || hasSubmittedCorrectly || attempts >= MAX_ATTEMPTS;
   const hasAttempted = submittedValue !== undefined;
+  const awardedPoints = isCorrect ? Math.max(0, pointsAwarded - (attempts - 1)) : 0;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
@@ -116,8 +117,8 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                 isCorrect ? "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700" : "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700"
               )}
             >
-              <AlertTitle className={cn(isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {isCorrect ? `Korrekt! +${Math.max(0, pointsAwarded - (attempts - 1))} Punkte` : 'Inkorrekt'}
+              <AlertTitle>
+                {isCorrect ? `Korrekt! +${awardedPoints} Punkte` : 'Inkorrekt'}
               </AlertTitle>
               <AlertDescription className={cn(isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {isCorrect
