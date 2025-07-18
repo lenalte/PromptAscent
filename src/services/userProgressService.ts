@@ -628,9 +628,12 @@ export async function saveLikertScaleAnswer(answerData: { lessonId: string; ques
     throw new Error("Firestore not initialized");
   }
   try {
+    // Speichern der Antwort ohne die userId
     await addDoc(collection(db, LIKERT_ANSWERS_COLLECTION), {
-      ...answerData,
-      timestamp: new Date(),
+      lessonId: answerData.lessonId,      // Lektion, auf die sich die Antwort bezieht
+      questionId: answerData.questionId,  // Frage, auf die geantwortet wurde
+      answer: answerData.answer,          // Antwort auf der Likert-Skala
+      timestamp: new Date(),              // Zeitstempel für die Antwort
     });
     console.log(`[SERVER LOG] [userProgressService.saveLikertScaleAnswer] Anonymous answer saved for question ${answerData.questionId}.`);
   } catch (error) {
