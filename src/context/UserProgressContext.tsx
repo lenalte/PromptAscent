@@ -14,7 +14,6 @@ import {
   populateBossChallengeQuestions as serverPopulateBoss,
   resolveBossChallenge as serverResolveBoss,
   restartStageInFirestore as serverRestartStage,
-  skipBossChallenge as serverSkipBoss, // Import new function
   type UserProgressData
 } from '@/services/userProgressService';
 import type { StageItemStatus, LessonItem, BossQuestion } from '@/ai/schemas/lesson-schemas';
@@ -324,12 +323,4 @@ export const restartStage = async (
   stageId: string
 ): Promise<UserProgressData> => {
   return serverRestartStage(userId, lessonId, stageId);
-};
-
-export const skipBossChallenge = async (
-    userId: string,
-    lessonId: string,
-    stageId: string
-): Promise<void> => {
-    return serverSkipBoss(userId, lessonId, stageId);
 };
