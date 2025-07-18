@@ -56,7 +56,7 @@
           "type": "likertScale",
           "id": "s2_likert2",
           "title": "Feedback zur Lernkurve",
-          "question": "Ich finde es einfach, die Konzepte in den Lektionen zu verstehen.",
+          "question": "Die Plattform motiviert mich, Fortschritte zu machen und besser zu werden.",
           "pointsAwarded": 1
         },
         {
@@ -133,7 +133,7 @@
           "type": "likertScale",
           "id": "s5_likert2",
           "title": "Feedback zur Gamification",
-          "question": "Die verschiedenen Aufgabentypen (z.B. Multiple Choice, Freitext) machen das Lernen abwechslungsreich.",
+          "question": "Die Aufgaben fesseln mein ganze Aufmerksamkeit.",
           "pointsAwarded": 1
         },
         {

@@ -10,7 +10,7 @@
           "type": "likertScale",
           "id": "s1_likert3",
           "title": "Feedback zur Struktur",
-          "question": "Die Aufteilung der Lektionen in 6 Stufen hilft mir beim Lernen.",
+          "question": "Das Leaderboard motiviert mich dazu, Erster sein zu wollen.",
           "pointsAwarded": 1
         },
         {
@@ -107,7 +107,7 @@
           "type": "likertScale",
           "id": "s4_likert3",
           "title": "Feedback zur Schwierigkeit",
-          "question": "Die Schwierigkeit der Aufgaben ist angemessen.",
+          "question": "Die Plattform gibt mir das Gefühl neues zu entdecken.",
           "pointsAwarded": 1
         },
         {

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -17,7 +16,6 @@ import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignI
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import {AvatarSelector} from "@/components/AvatarSelector";
-import type { AvatarId } from "@/data/avatars";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Ungültige E-Mail-Adresse." }),
@@ -78,7 +76,7 @@ export default function AuthForm() {
         setStep("waitingLink");
         toast({
           title: "Login-Link verschickt",
-          description: "Checke deine E-Mails zum Einloggen! Habe auch deinen Spam-Ordner im Auge!",
+          description: "Checke deine E-Mails zum Einloggen!",
         });
       } else {
         toast({
@@ -104,26 +102,21 @@ export default function AuthForm() {
     }
 
     // Finde User (wurde vorhin erstellt)
-    const user = auth.currentUser;
-    if (!user) {
-        toast({ title: "Fehler", description: "Benutzer nicht gefunden. Bitte neu registrieren.", variant: "destructive" });
-        setIsLoading(false);
-        setStep("email"); // Zurück zum Anfang
-        return;
+    const userSnap = await getDoc(doc(db, "users", auth.currentUser?.uid || "none"));
+    let userUid: string | null = null;
+    if (auth.currentUser) {
+      userUid = auth.currentUser.uid;
+    } else if (userSnap.exists()) {
+      userUid = userSnap.id;
     }
-
-    // Firestore-Profil speichern
-    await setDoc(doc(db, "users", user.uid), {
-      username: data.username,
-      avatarId: data.avatar, // Use the correct key 'avatarId'
-      email: pendingEmail,
-      // Add other initial fields here
-      totalPoints: 0,
-      completedLessons: [],
-      unlockedLessons: ["lesson1"],
-      currentLessonId: "lesson1",
-      lessonStageProgress: {},
-    });
+    // Firestore-Profil speichern (oder überschreiben)
+    if (userUid) {
+      await setDoc(doc(db, "users", userUid), {
+        username: data.username,
+        avatar: data.avatar,
+        email: pendingEmail,
+      });
+    }
 
     // Login-Link schicken
     const actionCodeSettings = {
@@ -135,7 +128,7 @@ export default function AuthForm() {
     setStep("waitingLink");
     toast({
       title: "Registrierung fast fertig",
-      description: "Checke deine Mails und bestätige den Link, um einzuloggen! Habe auch einen Spam-Ordner im Blick!",
+      description: "Checke deine Mails und bestätige den Link, um einzuloggen!",
     });
     setIsLoading(false);
   };
@@ -161,7 +154,7 @@ export default function AuthForm() {
             const db = getFirestore();
             const userRef = doc(db, "users", cred.user.uid);
             const userSnap = await getDoc(userRef);
-            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatarId) { // Check for avatarId
+            if (!userSnap.exists() || !userSnap.data().username || !userSnap.data().avatar) {
               setStep("profile");
               setPendingEmail(cred.user.email || "");
               toast({
@@ -232,7 +225,7 @@ export default function AuthForm() {
                <div className="rounded-md bg-muted p-3 text-xs text-foreground border mb-2">
         <b>Hinweis zur Datennutzung</b><br />
         Diese Plattform wird im Rahmen einer Bachelorarbeit betrieben. Während du die Anwendung nutzt, werden anonymisierte Daten zur Verbesserung der Plattform erhoben (mithilfe von Google Analytics). Deine Eingaben in den Aufgaben werden zudem zur automatisierten Auswertung an die Gemini API übermittelt.<br /><br />
-        Mit der Registrierung erklärst du dich damit einverstanden. Weitere Infos findest du in der <a href="/legal/datenschutz" className="underline" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a>.
+        Mit der Registrierung erklärst du dich damit einverstanden. Weitere Infos findest du in der <Link href="/legal/datenschutz" className="underline" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</Link>.
       </div>
               <EightbitButton type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Fortfahren"}
@@ -273,7 +266,7 @@ export default function AuthForm() {
           <FormItem>
             <Label>Avatar</Label>
             <AvatarSelector
-              value={field.value as AvatarId}
+              value={field.value}
               onChange={field.onChange}
             />
             <FormMessage />

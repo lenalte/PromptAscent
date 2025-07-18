@@ -56,7 +56,7 @@
           "type": "likertScale",
           "id": "s2_likert1",
           "title": "Feedback zur Plattform",
-          "question": "Die Benutzeroberfläche der Plattform ist ansprechend und einfach zu bedienen.",
+          "question": "Die Plattform gibt mir nützliches Feedback, damit ich mich verbessern kann",
           "pointsAwarded": 1
         },
         {
@@ -133,7 +133,7 @@
           "type": "likertScale",
           "id": "s5_likert1",
           "title": "Feedback zur Motivation",
-          "question": "Das Punktesystem und die Stufen motivieren mich, die Lektionen abzuschließen.",
+          "question": "Die Aufgaben fordern mich heraus.",
           "pointsAwarded": 1
         },
         {
