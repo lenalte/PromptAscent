@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from '@/lib/firebase/index';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, deleteDoc, type FieldValue } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, deleteDoc, type FieldValue, addDoc } from 'firebase/firestore';
 import { getAvailableLessons, getQuestionsForBossChallenge, getGeneratedLessonById, type Lesson, type StageProgress, type StageItemStatus, type LessonItem, type BossQuestion } from '@/data/lessons';
 import { getRandomBoss, getBossById, type Boss } from '@/data/boss-data';
 import type { AvatarId } from '@/data/avatars';
@@ -45,6 +45,8 @@ export interface LeaderboardEntry {
 
 
 const USERS_COLLECTION = 'users';
+const LIKERT_ANSWERS_COLLECTION = 'likertScaleAnswers';
+
 
 // Helper to initialize stage progress for a new lesson without needing the full lesson object.
 function createDefaultLessonProgress(isFirstLesson: boolean): { currentStageIndex: number; stages: { [stageId: string]: StageProgress } } {
@@ -265,11 +267,11 @@ export async function completeStageInFirestore(
         allPerfect = false;
         continue;
       }
-      if (item.type !== 'informationalSnippet' && itemResult.correct === false && (itemResult.attempts ?? 0) >= 3) {
+      if (item.type !== 'informationalSnippet' && item.type !== 'likertScale' && itemResult.correct === false && (itemResult.attempts ?? 0) >= 3) {
         anyFailedMaxAttempts = true;
         break; 
       }
-      if (item.type !== 'informationalSnippet' && (itemResult.correct === false || (itemResult.attempts ?? 0) > 1)) {
+      if (item.type !== 'informationalSnippet' && item.type !== 'likertScale' && (itemResult.correct === false || (itemResult.attempts ?? 0) > 1)) {
         allPerfect = false;
       }
     }
@@ -616,4 +618,23 @@ export async function skipBossChallenge(userId: string, lessonId: string, stageI
         throw new Error("Failed to fetch user progress after skipping boss challenge.");
     }
     return updatedProgress;
+}
+
+
+// New function to save Likert scale answers anonymously
+export async function saveLikertScaleAnswer(answerData: { lessonId: string; questionId: string; answer: number; }): Promise<void> {
+  if (!db) {
+    console.error("[SERVER LOG] [userProgressService.saveLikertScaleAnswer] Firestore (db) is not available.");
+    throw new Error("Firestore not initialized");
+  }
+  try {
+    await addDoc(collection(db, LIKERT_ANSWERS_COLLECTION), {
+      ...answerData,
+      timestamp: new Date(),
+    });
+    console.log(`[SERVER LOG] [userProgressService.saveLikertScaleAnswer] Anonymous answer saved for question ${answerData.questionId}.`);
+  } catch (error) {
+    console.error(`[SERVER LOG] [userProgressService.saveLikertScaleAnswer] Error saving anonymous answer:`, error);
+    throw error;
+  }
 }

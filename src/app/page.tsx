@@ -31,6 +31,7 @@ import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
 import { MultipleChoiceQuestion } from '@/components/MultipleChoiceQuestion';
 import { InformationalSnippet } from '@/components/InformationalSnippet';
 import { PromptingTask } from '@/components/PromptingTask';
+import { LikertScaleQuestion } from '@/components/LikertScaleQuestion'; // Import new component
 import { PointsDisplay } from '@/components/PointsDisplay';
 import { LessonCompleteScreen } from '@/components/LessonCompleteScreen';
 import { StageCompleteScreen } from '@/components/StageCompleteScreen';
@@ -202,13 +203,13 @@ function HomePageContent() {
   };
 
   const handleGoToNextLesson = useCallback(() => {
+    handleExitLesson();
     if (nextLessonId) {
       const nextLesson = lessonList.find(l => l.id === nextLessonId);
       if (nextLesson) {
         setSelectedLesson(nextLesson);
       }
     }
-    handleExitLesson();
   }, [nextLessonId, lessonList, handleExitLesson]);
 
   const handleStartLesson = useCallback((lessonId: string) => {
@@ -344,7 +345,7 @@ function HomePageContent() {
     }
   }, [activeContent, activeContentIndex, completeStageAndProceed, userProgress, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
   
-  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string) => {
+  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string, answer?: number) => {
     let newAttempts = 0;
     setStageItemAttempts(prev => {
       const itemStatus = prev[itemId] || { attempts: 0, correct: null, points: 0 };
@@ -362,6 +363,7 @@ function HomePageContent() {
         attempts: newAttempts,
         correct: isNowCorrect,
         points: (itemStatus.points ?? 0) + awardedPoints,
+        answer: answer,
       };
 
       return {
@@ -376,55 +378,36 @@ function HomePageContent() {
   }, [handleProceed]);
 
   const handleGoToOverviewAfterLessonCompletion = useCallback(() => {
-    // Prüfe, ob das aktuelle Level abgeschlossen ist:
+    // Check if the current level is now complete
     const allLevelLessonsCompleted =
     currentOverallLevel &&
     currentOverallLevel.lessonIds.every(id => userProgress?.completedLessons.includes(id));
 
-    if (allLevelLessonsCompleted) {
+    if (allLevelLessonsCompleted && !showLevelCompleteScreen) {
       setShowLevelCompleteScreen(true);
-      // Noch nicht zur Übersicht, sondern erst LevelCompleteScreen zeigen!
-      return;
+      return; // Stop here, wait for user to close level complete screen
     }
-
-    // Finde die nächste Lektion im lessonList anhand von nextLessonId
+  
+    // Default behavior: just exit the lesson view
+    handleExitLesson();
+    if (nextLessonId) {
+        const nextLesson = lessonList.find(l => l.id === nextLessonId);
+        if (nextLesson) {
+          setSelectedLesson(nextLesson);
+        }
+    }
+  }, [currentOverallLevel, userProgress, nextLessonId, lessonList, showLevelCompleteScreen, handleExitLesson]);
+  
+  const handleLevelCompleteScreenClose = useCallback(() => {
+    setShowLevelCompleteScreen(false); // Hide the screen
+    handleExitLesson(); // Go back to overview
     if (nextLessonId) {
       const nextLesson = lessonList.find(l => l.id === nextLessonId);
       if (nextLesson) {
         setSelectedLesson(nextLesson);
-      } else {
-        // Fallback: Keine nächste Lektion gefunden, evtl. nichts auswählen
-        setSelectedLesson(null);
       }
-    } else {
-      // Kein nextLessonId gesetzt, ebenfalls keine Auswahl
-      setSelectedLesson(null);
     }
-  
-    // Lesson-View schließen & State zurücksetzen
-    setIsLessonViewActive(false);
-    setIsStartingLesson(false);
-    resetLessonState();
-  }, [currentOverallLevel, userProgress, nextLessonId, lessonList, setSelectedLesson, setIsLessonViewActive, setIsStartingLesson, resetLessonState]);
-  
-  const handleLevelCompleteScreenClose = useCallback(() => {
-    setShowLevelCompleteScreen(false);     // LevelCompleteScreen ausblenden
-    setIsLessonViewActive(false);          // Lesson-View verlassen
-    setIsStartingLesson(false);            // „Lektion starten“-State zurücksetzen
-  
-    if (nextLessonId) {
-      const nextLesson = lessonList.find(l => l.id === nextLessonId);
-      if (nextLesson) {
-        setSelectedLesson(nextLesson);     // Nächste Lesson in der Übersicht auswählen
-      } else {
-        setSelectedLesson(null);           // Fallback: keine Auswahl
-      }
-    } else {
-      setSelectedLesson(null);             // Kein nextLessonId, keine Auswahl
-    }
-  
-    resetLessonState();                    // Sonstige States zurücksetzen
-  }, [nextLessonId, lessonList, resetLessonState]);
+  }, [nextLessonId, lessonList, handleExitLesson]);
   
   
 
@@ -581,7 +564,7 @@ function HomePageContent() {
         const isAnsweredCorrectly = itemStatus?.correct === true;
         const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
         
-        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isAnsweredCorrectly)) {
+        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isCorrectly) || item.type === 'likertScale') {
           return { 
               visible: true, 
               onClick: handleProceed, 
@@ -657,13 +640,13 @@ function HomePageContent() {
     <LevelCompleteScreen
       onGoHome={handleLevelCompleteScreenClose}
       levelTitle={currentOverallLevel?.title ?? ""}
-    badgeName={levelBadge?.name ?? ""}
-    badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
+      badgeName={levelBadge?.name ?? ""}
+      badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
     />
   ) : isLessonFullyCompleted ? (
     <LessonCompleteScreen
       onGoHome={handleGoToOverviewAfterLessonCompletion}
-      // weitere Props falls benötigt
+      onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
     />
   ) : (
     contentQueue.map((content, index) => {
@@ -688,6 +671,7 @@ function HomePageContent() {
               case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
               case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
               case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+              case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
               default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
             }
           })()}
@@ -704,7 +688,7 @@ function HomePageContent() {
                 </CardContent>
             </Card>
 
-            {buttonConfig.visible && !isLessonFullyCompleted && (
+            {buttonConfig.visible && !isLessonFullyCompleted && !showLevelCompleteScreen && (
                 <div className="fixed bottom-8 right-8 z-50">
                     <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
                         {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> {buttonConfig.text} <span className="ml-2">{buttonConfig.icon}</span> </>}

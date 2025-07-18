@@ -53,6 +53,13 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "likertScale",
+          "id": "s2_likert2",
+          "title": "Feedback zur Lernkurve",
+          "question": "Ich finde es einfach, die Konzepte in den Lektionen zu verstehen.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "informationalSnippet",
           "id": "s2_info1",
           "title": "Beispiel: Matheaufgabe",
@@ -122,6 +129,13 @@
       "id": "stage5",
       "title": "Stage 5: Wiederholen",
       "items": [
+        {
+          "type": "likertScale",
+          "id": "s5_likert2",
+          "title": "Feedback zur Gamification",
+          "question": "Die verschiedenen Aufgabentypen (z.B. Multiple Choice, Freitext) machen das Lernen abwechslungsreich.",
+          "pointsAwarded": 1
+        },
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",

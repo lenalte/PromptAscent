@@ -53,6 +53,13 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "likertScale",
+          "id": "s2_likert1",
+          "title": "Feedback zur Plattform",
+          "question": "Die Benutzeroberfläche der Plattform ist ansprechend und einfach zu bedienen.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "informationalSnippet",
           "id": "s2_info1",
           "title": "Praxisbeispiel: Sprachassistenten",
@@ -122,6 +129,13 @@
       "id": "stage5",
       "title": "Stage 5: Wiederholen",
       "items": [
+        {
+          "type": "likertScale",
+          "id": "s5_likert1",
+          "title": "Feedback zur Motivation",
+          "question": "Das Punktesystem und die Stufen motivieren mich, die Lektionen abzuschließen.",
+          "pointsAwarded": 1
+        },
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
