@@ -10,8 +10,6 @@ import { EightbitButton } from './ui/eightbit-button';
 import { saveLikertScaleAnswer } from '@/services/userProgressService';
 import { useToast } from '@/hooks/use-toast';
 import { Check, Star } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
 
 interface LikertScaleQuestionProps {
   question: string;
@@ -50,9 +48,10 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
     startTransition(async () => {
       try {
         const answerIndex = parseInt(selectedValue, 10);
+        // Call the anonymous save function, which no longer needs a userId
         await saveLikertScaleAnswer({ 
-            questionId: id, 
             lessonId: lessonId, 
+            questionId: id, 
             answer: answerIndex 
         });
         
@@ -100,7 +99,7 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
               {LIKERT_OPTIONS.map((option, index) => (
                 <div key={`${id}-option-${index}`} className="flex flex-col items-center space-y-2 text-center flex-1 px-1">
                   <Label 
-                    htmlFor={`${id}-option-${index + 1}`} 
+                    htmlFor={`${id}-option-${index + 1}-text`} 
                     className={cn(
                       "text-xs text-muted-foreground h-10 flex items-center",
                       !isComponentReadOnly ? "cursor-pointer" : "cursor-default"
@@ -138,9 +137,9 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
         {!isComponentReadOnly && (
-          <EightbitButton onClick={handleSubmit} disabled={selectedValue === undefined || isPending}>
-            {isPending ? 'Speichern...' : 'Antwort absenden'}
-          </EightbitButton>
+           <EightbitButton onClick={handleSubmit} disabled={selectedValue === undefined || isPending}>
+                {isPending ? 'Speichern...' : 'Antwort absenden'}
+            </EightbitButton>
         )}
         {isComponentReadOnly && (
             <div className="flex items-center text-green-600 font-semibold">
