@@ -1,8 +1,7 @@
-
 "use client";
 
 import type React from 'react';
-import { useState, useTransition, useEffect, useCallback } from 'react';
+import { useState, useTransition, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
@@ -11,6 +10,8 @@ import { EightbitButton } from './ui/eightbit-button';
 import { saveLikertScaleAnswer } from '@/services/userProgressService';
 import { useToast } from '@/hooks/use-toast';
 import { Check, Star } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 interface LikertScaleQuestionProps {
   question: string;
@@ -88,28 +89,50 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
         <CardDescription className="text-amber-700 dark:text-amber-400 pt-2">{question}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          <Label className="text-amber-800 dark:text-amber-300">Deine Einschätzung:</Label>
-          <RadioGroup
-            onValueChange={setSelectedValue}
-            value={selectedValue}
-            className="flex flex-col space-y-2"
-            disabled={isComponentReadOnly || isPending}
-          >
-            {LIKERT_OPTIONS.map((option, index) => (
-              <div key={`${id}-option-${index}`} className={cn(
-                "flex items-center space-x-3 space-y-0 p-3 rounded-md border transition-colors",
-                selectedValue === index.toString() && "border-amber-500 bg-amber-100 dark:bg-amber-900/40 dark:border-amber-600",
-                !isComponentReadOnly && "cursor-pointer hover:bg-amber-100/50"
-              )}>
-                <RadioGroupItem value={index.toString()} id={`${id}-option-${index}`} disabled={isComponentReadOnly || isPending} />
-                <Label htmlFor={`${id}-option-${index}`} className={cn("font-normal flex-1", !isComponentReadOnly ? "cursor-pointer" : "cursor-default")}>
-                  {option}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
+        <TooltipProvider>
+          <div className="space-y-3">
+            <Label className="text-amber-800 dark:text-amber-300">Deine Einschätzung:</Label>
+            <RadioGroup
+              onValueChange={setSelectedValue}
+              value={selectedValue}
+              className="flex flex-row space-x-2 md:space-x-4 items-center justify-center pt-2"
+              disabled={isComponentReadOnly || isPending}
+            >
+              {LIKERT_OPTIONS.map((option, index) => (
+                <Tooltip key={`${id}-tooltip-${index}`}>
+                  <TooltipTrigger asChild>
+                    <div className={cn(
+                      "flex items-center flex-col space-y-2 p-2 rounded-md border-2 transition-colors",
+                      selectedValue === (index + 1).toString()
+                        ? "border-amber-500 bg-amber-100 dark:bg-amber-900/40"
+                        : "border-transparent",
+                      !isComponentReadOnly && "cursor-pointer hover:bg-amber-100/50"
+                    )}>
+                      <Label
+                        htmlFor={`${id}-option-${index + 1}`}
+                        className={cn(
+                          "font-medium text-lg",
+                          !isComponentReadOnly ? "cursor-pointer" : "cursor-default"
+                        )}
+                      >
+                        {index + 1}
+                      </Label>
+                      <RadioGroupItem
+                        value={(index + 1).toString()}
+                        id={`${id}-option-${index + 1}`}
+                        className="h-6 w-6"
+                        disabled={isComponentReadOnly || isPending}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{option}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </RadioGroup>
+          </div>
+        </TooltipProvider>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
         {!isComponentReadOnly && (
