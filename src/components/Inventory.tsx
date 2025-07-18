@@ -14,6 +14,7 @@ import { CheckIcon } from './icons/CheckIcon';
 import ProgressBar from './ui/progressbar';
 import { getLessonSummaries, type LessonSummary } from '@/data/lessons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { LockClosedIcon } from './icons/lock_closed';
 
 interface InventoryProps {
   isOpen: boolean;
@@ -195,6 +196,17 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
                         <h3 className="text-xl font-bold">{userProgress?.username}</h3>
                         <p className="text-sm text-white/80">Beigetreten am {creationDate}</p>
                     </div>
+                </div>
+
+                <div className="mt-8">
+                  <h4 className="text-lg font-semibold mb-4">Deine Badges:</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="aspect-square bg-[hsl(var(--muted))] rounded-lg flex items-center justify-center p-4">
+                        <LockClosedIcon className="h-16 w-16 text-[hsl(var(--foreground))]" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
             </div>
           </TabsContent>
