@@ -437,7 +437,7 @@ export async function resolveBossChallenge(
   const userDocRef = doc(db, USERS_COLLECTION, userId);
 
   const updates: { [key: string]: any } = {
-    [`lessonStageProgress.${lessonId}.stages.${stageId}.bossDefeated`]: finalStatus === 'passed',
+    [`lessonStageProgress.${lessonId}.stages.${stageId}.bossDefeated`]: true, // Boss is now considered "done"
     [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: finalStatus,
     [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.questionStatus`]: finalQuestionStatus,
   };
@@ -579,23 +579,4 @@ export async function deleteUserDocument(userId: string): Promise<void> {
     console.error(`[SERVER LOG] [userProgressService.deleteUserDocument] Error deleting user document for UID: ${userId}:`, error);
     throw error;
   }
-}
-
-export async function skipBossChallenge(userId: string, lessonId: string, stageId: string): Promise<void> {
-    if (!db) {
-        console.error("[userProgressService.skipBossChallenge] Firestore (db) is not available.");
-        throw new Error("Firestore not initialized");
-    }
-    const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const updates = {
-        [`lessonStageProgress.${lessonId}.stages.${stageId}.bossDefeated`]: true, // Mark as defeated to prevent re-prompting
-        [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'skipped',
-    };
-    try {
-        await updateDoc(userDocRef, updates);
-        console.log(`[UserProgress] Boss challenge on stage ${stageId} of lesson ${lessonId} skipped for user ${userId}.`);
-    } catch (error) {
-        console.error(`[UserProgress] Error skipping boss challenge for UID: ${userId}:`, error);
-        throw error;
-    }
 }

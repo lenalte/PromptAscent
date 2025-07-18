@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Zap, Forward } from 'lucide-react';
-import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge, skipBossChallenge } from '@/context/UserProgressContext';
+import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
 import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
@@ -89,15 +89,10 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
   }, [isOpen, loadChallenge]);
   
   const handleSkip = async () => {
-    if (!currentUser || !canSkip) return;
-    setIsLoading(true);
-    try {
-        await skipBossChallenge(currentUser.uid, lessonId, stageId);
-        onSkip(); // Call the parent handler to proceed with the lesson
-    } catch (e) {
-        setError("Fehler beim Überspringen der Herausforderung.");
-    } finally {
-        setIsLoading(false);
+    // We only call the onSkip handler, which closes the dialog and starts the lesson.
+    // We no longer update the database to mark it as 'skipped'.
+    if (canSkip) {
+        onSkip();
     }
   };
 
