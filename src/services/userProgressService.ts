@@ -114,7 +114,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
       return {
         userId,
         username: data.username,
-        avatarId: data.avatarId || 'avatar1',
+        avatarId: data.avatarId ?? 'avatar1',
         totalPoints: typeof data.totalPoints === 'number' && !isNaN(data.totalPoints) ? data.totalPoints : 0,
         currentLessonId: currentLesson,
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
@@ -241,7 +241,7 @@ export async function completeStageInFirestore(
         const isCorrectAfter = statusAfter?.correct === true;
 
         if (isCorrectAfter && !wasCorrectBefore) {
-            serverCalculatedBasePointsDelta += item.pointsAwarded;
+            serverCalculatedBasePointsDelta += statusAfter.points || 0;
         }
     }
     console.log(`[UserProgress] Completing stage ${completedStageId}. Server calculated base points delta: ${serverCalculatedBasePointsDelta}`);
@@ -260,11 +260,11 @@ export async function completeStageInFirestore(
         allPerfect = false;
         continue;
       }
-      if (item.type !== 'informationalSnippet' && itemResult.correct === false && itemResult.attempts >= 3) {
+      if (item.type !== 'informationalSnippet' && itemResult.correct === false && (itemResult.attempts ?? 0) >= 3) {
         anyFailedMaxAttempts = true;
         break; 
       }
-      if (item.type !== 'informationalSnippet' && (itemResult.correct === false || itemResult.attempts > 1)) {
+      if (item.type !== 'informationalSnippet' && (itemResult.correct === false || (itemResult.attempts ?? 0) > 1)) {
         allPerfect = false;
       }
     }
@@ -276,7 +276,7 @@ export async function completeStageInFirestore(
     }
 
     let finalPointsToAdd = serverCalculatedBasePointsDelta;
-    if (userProgressBefore.activeBooster && Date.now() < userProgressBefore.activeBooster.expiresAt) {
+    if (userProgressBefore.activeBooster && Date.now() < userProgressBefore.activeBooster.expiresAt && stageStatus !== 'failed-stage') {
       finalPointsToAdd = Math.round(serverCalculatedBasePointsDelta * userProgressBefore.activeBooster.multiplier);
       console.log(`[UserProgress] Active booster found (${userProgressBefore.activeBooster.multiplier}x). Adjusted points from ${serverCalculatedBasePointsDelta} to ${finalPointsToAdd}.`);
     }

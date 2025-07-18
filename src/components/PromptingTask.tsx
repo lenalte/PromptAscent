@@ -55,7 +55,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
 
-        const awardedPointsForAttempt = Math.max(0, pointsAwarded - (result.isCorrect ? attempts : newAttempts));
+        const awardedPointsForAttempt = result.isCorrect ? Math.max(0, pointsAwarded - attempts) : 0;
         onAnswerSubmit(result.isCorrect, awardedPointsForAttempt, id.toString());
         
       } catch (error) {
@@ -80,8 +80,9 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     setAttempts(0);
   }, [id]);
 
-  const isComponentReadOnly = isReadOnly || isCorrect;
+  const isComponentReadOnly = isReadOnly || isCorrect || attempts >= MAX_ATTEMPTS;
   const isInputValid = userPrompt.trim().length >= 10;
+  const awardedPoints = isCorrect ? Math.max(0, pointsAwarded - (attempts - 1)) : 0;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isComponentReadOnly && "bg-muted/50")}>
@@ -132,7 +133,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                   <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
                 )}
                 <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                  {evaluationResult.isCorrect ? `Effektiver Prompt! +${Math.max(0, pointsAwarded - (attempts - 1))} Punkte` : 'Verbesserungswürdig'}
+                  {evaluationResult.isCorrect ? `Effektiver Prompt! +${awardedPoints} Punkte` : 'Verbesserungswürdig'}
                 </AlertTitle>
                 <AlertDescription className={cn("space-y-2", evaluationResult.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                   <div>Punktzahl: {evaluationResult.score}/100</div>
@@ -156,7 +157,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
-        {!isComponentReadOnly && canAttempt && (
+        {!isComponentReadOnly && (
           <EightbitButton onClick={handleSubmit} disabled={!isInputValid || isPending}>
             {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
           </EightbitButton>
