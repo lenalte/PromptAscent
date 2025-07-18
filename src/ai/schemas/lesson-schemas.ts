@@ -38,11 +38,20 @@ export const PromptingTaskLessonItemSchema = BaseLessonItemSchema.extend({
 });
 export type PromptingTaskLessonItem = z.infer<typeof PromptingTaskLessonItemSchema>;
 
+export const LikertScaleLessonItemSchema = BaseLessonItemSchema.extend({
+  type: z.enum(['likertScale']).describe("The type of the lesson item."),
+  question: z.string().describe('The Likert scale question for the user.'),
+  // Options are fixed for a 5-point scale, so they don't need to be in the schema
+});
+export type LikertScaleLessonItem = z.infer<typeof LikertScaleLessonItemSchema>;
+
+
 export const LessonItemSchema = z.discriminatedUnion('type', [
   FreeResponseLessonItemSchema,
   MultipleChoiceLessonItemSchema,
   InformationalSnippetLessonItemSchema,
   PromptingTaskLessonItemSchema,
+  LikertScaleLessonItemSchema, // Add the new type here
 ]);
 export type LessonItem = z.infer<typeof LessonItemSchema>;
 
@@ -66,6 +75,7 @@ export type StageItemStatus = {
     attempts: number;
     correct: boolean | null; // null if not yet attempted, true if correct, false if incorrect on last attempt
     points?: number; // Added to store points calculated on submission
+    answer?: number; // For Likert scale answer
 };
 
 export type StageStatusValue = 'locked' | 'unlocked' | 'in-progress' | 'completed-perfect' | 'completed-good' | 'failed-stage';
@@ -79,7 +89,7 @@ export type BossChallenge = {
   bossId: string;
   questionIds: { lessonId: string; itemId: string }[];
   questionStatus: { [questionId: string]: BossChallengeQuestionStatus };
-  status: 'pending' | 'in-progress' | 'passed' | 'failed';
+  status: 'pending' | 'in-progress' | 'passed' | 'failed' | 'skipped';
   bonusPointsAwarded?: number;
 };
 

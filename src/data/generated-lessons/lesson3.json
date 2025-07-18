@@ -7,6 +7,13 @@
       "id": "stage1",
       "items": [
         {
+          "type": "likertScale",
+          "id": "s1_likert3",
+          "title": "Feedback zur Struktur",
+          "question": "Die Aufteilung der Lektionen in 6 Stufen hilft mir beim Lernen.",
+          "pointsAwarded": 1
+        },
+        {
           "content": "Eine Direktive ist eine prägnante Anweisung oder Frage, die der KI eine klare Aufgabe gibt. Sie sagt der KI genau, welche Aufgabe sie ausführen soll.",
           "id": "s1_info1",
           "pointsAwarded": 1,
@@ -96,6 +103,13 @@
     {
       "id": "stage4",
       "items": [
+        {
+          "type": "likertScale",
+          "id": "s4_likert3",
+          "title": "Feedback zur Schwierigkeit",
+          "question": "Die Schwierigkeit der Aufgaben ist angemessen.",
+          "pointsAwarded": 1
+        },
         {
           "evaluationGuidance": "1. Hat der Benutzer das Fehlen einer spezifizierten Rolle identifiziert? 2. Hat der Benutzer eine Rolle vorgeschlagen, die dem Prompt Expertise hinzufügt? 3. Wie gut passt die hinzugefügte Rolle zur ursprünglichen Anfrage?",
           "id": "s4_pt_error1",
