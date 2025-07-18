@@ -16,9 +16,10 @@ import { BossIcon as NewBossIcon } from '@/components/icons/BossIcon';
 interface BossChallengeDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSkip: () => void; // New prop to handle skipping
+  onSkip: () => void;
   lessonId: string;
   stageId: string;
+  canSkip: boolean; // New prop to control skip button
 }
 
 // Helper component to render the correct icon based on the string identifier
@@ -35,7 +36,7 @@ const BossIcon = ({ icon, className }: { icon: BossIconType, className?: string 
   }
 };
 
-const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, onSkip, lessonId, stageId }) => {
+const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, onSkip, lessonId, stageId, canSkip }) => {
   const { currentUser, userProgress, setUserProgress } = useUserProgress();
   const [view, setView] = useState<'intro' | 'challenge' | 'result'>('intro');
   const [bossInfo, setBossInfo] = useState<BossInfo | null>(null);
@@ -88,7 +89,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
   }, [isOpen, loadChallenge]);
   
   const handleSkip = async () => {
-    if (!currentUser) return;
+    if (!currentUser || !canSkip) return;
     setIsLoading(true);
     try {
         await skipBossChallenge(currentUser.uid, lessonId, stageId);
@@ -227,10 +228,12 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
               <p>Besiege <span className="font-bold">{bossInfo.name}</span>, um einen Booster zu erhalten und fortzufahren!</p>
             </div>
             <DialogFooter className="mt-6 sm:justify-center gap-4">
-               <EightbitButton onClick={handleSkip} className="bg-muted text-muted-foreground hover:bg-muted/80">
-                <Forward className="mr-2 h-4 w-4" />
-                Überspringen
-              </EightbitButton>
+              {canSkip && (
+                <EightbitButton onClick={handleSkip} className="bg-muted text-muted-foreground hover:bg-muted/80">
+                  <Forward className="mr-2 h-4 w-4" />
+                  Überspringen
+                </EightbitButton>
+              )}
               <EightbitButton onClick={() => setView('challenge')}>Herausforderung annehmen</EightbitButton>
             </DialogFooter>
           </>

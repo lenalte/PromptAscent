@@ -78,7 +78,7 @@ function HomePageContent() {
   const [isStartingLesson, setIsStartingLesson] = useState(false);
   const router = useRouter();
 
-  const [bossChallengeInfo, setBossChallengeInfo] = useState<{lessonId: string, stageId: string} | null>(null);
+  const [bossChallengeInfo, setBossChallengeInfo] = useState<{lessonId: string, stageId: string, canSkip: boolean} | null>(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [selectedSummaryLessonId, setSelectedSummaryLessonId] = useState<string | null>(null);
 
@@ -100,9 +100,6 @@ function HomePageContent() {
   const [nextLessonId, setNextLessonId] = useState<string | null>(null);
   
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
-  const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
-  const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
 
   // Effect to fetch available lessons
   useEffect(() => {
@@ -193,8 +190,8 @@ function HomePageContent() {
       const lessonProg = userProgress.lessonStageProgress[lessonId];
       const stageId = `stage${lessonProg.currentStageIndex + 1}`;
       const stage = lessonProg.stages[stageId];
-      if (stage?.hasBoss && !stage.bossDefeated) {
-          setBossChallengeInfo({ lessonId, stageId });
+      if (stage?.hasBoss && !stage.bossDefeated && stage.bossChallenge?.status !== 'skipped') {
+          setBossChallengeInfo({ lessonId, stageId, canSkip: true });
           return;
       }
     }
@@ -214,11 +211,15 @@ function HomePageContent() {
 
   const handleBossChallengeClick = (stageId: string) => {
     if (selectedLesson) {
-      setBossChallengeInfo({ lessonId: selectedLesson.id, stageId });
+      setBossChallengeInfo({ lessonId: selectedLesson.id, stageId, canSkip: false });
     }
   };
 
   // === Logic for embedded lesson view ===
+  const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
+  const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
+  const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
+
   useEffect(() => {
     const activeItemRef = itemRefs.current[activeContentIndex];
     if (activeItemRef) {
@@ -268,7 +269,7 @@ function HomePageContent() {
         const isLastItemInCurrentStage = !contentQueue.slice(activeContentIndex + 1).some(futureItem => futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id));
 
         if (isLastItemInCurrentStage) {
-            const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, stageItemAttempts, pointsThisStageSession, currentStage.items as LessonItem[]);
+            const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, stageItemAttempts, 0, currentStage.items as LessonItem[]);
             if (!stageResult || !stageResult.updatedProgress) {
                 toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
                 isProcessing.current = false;
@@ -321,18 +322,14 @@ function HomePageContent() {
         isProcessing.current = false;
         setIsSubmitting(false);
     }
-  }, [activeContent, activeContentIndex, completeStageAndProceed, userProgress, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, pointsThisStageSession, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
+  }, [activeContent, activeContentIndex, completeStageAndProceed, userProgress, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
   
   const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string) => {
-    const itemStatus = stageItemAttempts[itemId] || { attempts: 0, correct: null, points: 0 };
-    const currentAttempts = itemStatus.attempts || 0;
-    const newAttempts = currentAttempts + 1;
-    const maxAttemptsReached = newAttempts >= 3;
-
-    if (itemStatus.correct) return;
-
+    let newAttempts = 0;
     setStageItemAttempts(prev => {
-      const wasCorrectBefore = prev[itemId]?.correct === true;
+      const itemStatus = prev[itemId] || { attempts: 0, correct: null, points: 0 };
+      newAttempts = (itemStatus.attempts || 0) + 1;
+      const wasCorrectBefore = itemStatus.correct === true;
       const isNowCorrect = wasCorrectBefore || isCorrect;
 
       let awardedPoints = 0;
@@ -344,7 +341,7 @@ function HomePageContent() {
       const newStatus: StageItemStatus = {
         attempts: newAttempts,
         correct: isNowCorrect,
-        points: awardedPoints,
+        points: (itemStatus.points ?? 0) + awardedPoints,
       };
 
       return {
@@ -353,10 +350,10 @@ function HomePageContent() {
       };
     });
 
-    if (maxAttemptsReached && !isCorrect) {
+    if (newAttempts >= 3 && !isCorrect) {
         setTimeout(() => handleProceed(), 1000); 
     }
-  }, [stageItemAttempts, handleProceed]);
+  }, [handleProceed]);
 
   useEffect(() => {
     if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet' && !stageItemAttempts[activeContent.id]) {
@@ -460,7 +457,9 @@ function HomePageContent() {
             setIsLoadingLesson(false);
         }
     }
-    loadLessonAndProgress();
+    if (isLessonViewActive && selectedLesson?.id) {
+       loadLessonAndProgress();
+    }
   }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress]);
 
 
@@ -761,6 +760,7 @@ function HomePageContent() {
           onSkip={handleSkipBoss}
           lessonId={bossChallengeInfo.lessonId}
           stageId={bossChallengeInfo.stageId}
+          canSkip={bossChallengeInfo.canSkip}
         />
       )}
     </>
