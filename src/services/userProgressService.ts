@@ -6,6 +6,8 @@ import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, que
 import { getAvailableLessons, getQuestionsForBossChallenge, getGeneratedLessonById, type Lesson, type StageProgress, type StageItemStatus, type LessonItem, type BossQuestion } from '@/data/lessons';
 import { getRandomBoss, getBossById, type Boss } from '@/data/boss-data';
 import type { AvatarId } from '@/data/avatars';
+import { LEVELS, getLevelForLessonId } from '@/data/level-structure';
+import { BADGES } from '@/data/badges';
 
 
 export interface UserProgressData {
@@ -17,6 +19,7 @@ export interface UserProgressData {
   completedLessons: string[]; // List of lesson IDs fully completed
   unlockedLessons: string[]; // List of lesson IDs the user can access
   unlockedSummaries: string[]; // List of lesson IDs for which summaries are unlocked
+  unlockedBadges: string[]; // List of badge IDs the user has earned
   // New structure for per-lesson, per-stage progress
   lessonStageProgress: {
     [lessonId: string]: {
@@ -120,6 +123,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
         completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
         unlockedLessons: Array.isArray(data.unlockedLessons) && data.unlockedLessons.length > 0 ? data.unlockedLessons : [defaultLessonId],
         unlockedSummaries: Array.isArray(data.unlockedSummaries) ? data.unlockedSummaries : [],
+        unlockedBadges: Array.isArray(data.unlockedBadges) ? data.unlockedBadges : [],
         lessonStageProgress: lessonStageProgress,
         activeBooster: activeBooster,
         knowledgeGaps: data.knowledgeGaps ?? [],
@@ -156,6 +160,7 @@ export async function createUserProgressDocument(userId: string, initialData?: P
       completedLessons: [],
       unlockedLessons: [defaultLessonId],
       unlockedSummaries: [],
+      unlockedBadges: [],
       lessonStageProgress: initialLessonStageProgress,
       knowledgeGaps: [],
     };
@@ -306,6 +311,21 @@ export async function completeStageInFirestore(
         updates.completedLessons = arrayUnion(lessonId);
         updates.unlockedSummaries = arrayUnion(lessonId); // Unlock summary on lesson completion
         console.log(`[UserProgress] Lesson ${lessonId} fully completed. Summary unlocked.`);
+
+        // Badge Award Logic
+        const currentLevel = getLevelForLessonId(lessonId);
+        if (currentLevel) {
+          const isLevelComplete = currentLevel.lessonIds.every(lId => 
+            userProgressBefore.completedLessons.includes(lId) || lId === lessonId
+          );
+          if (isLevelComplete) {
+            const badgeToAward = BADGES.find(b => b.levelId === currentLevel.id);
+            if (badgeToAward && !userProgressBefore.unlockedBadges.includes(badgeToAward.id)) {
+              updates.unlockedBadges = arrayUnion(badgeToAward.id);
+              console.log(`[UserProgress] Awarded badge "${badgeToAward.name}" for completing level ${currentLevel.title}.`);
+            }
+          }
+        }
 
         const allLessonsManifest = await getAvailableLessons();
         const currentLessonManifestIndex = allLessonsManifest.findIndex(l => l.id === lessonId);
@@ -579,4 +599,21 @@ export async function deleteUserDocument(userId: string): Promise<void> {
     console.error(`[SERVER LOG] [userProgressService.deleteUserDocument] Error deleting user document for UID: ${userId}:`, error);
     throw error;
   }
+}
+
+export async function skipBossChallenge(userId: string, lessonId: string, stageId: string): Promise<UserProgressData> {
+    if (!db) {
+        console.error("[userProgressService.skipBossChallenge] Firestore (db) is not available.");
+        throw new Error("Firestore not initialized");
+    }
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const updates = {
+        [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'skipped',
+    };
+    await updateDoc(userDocRef, updates);
+    const updatedProgress = await getUserProgress(userId);
+    if (!updatedProgress) {
+        throw new Error("Failed to fetch user progress after skipping boss challenge.");
+    }
+    return updatedProgress;
 }

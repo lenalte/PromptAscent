@@ -15,6 +15,9 @@ import ProgressBar from './ui/progressbar';
 import { getLessonSummaries, type LessonSummary } from '@/data/lessons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LockClosedIcon } from './icons/lock_closed';
+import { BADGES, getBadgeById, type Badge } from '@/data/badges';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 
 interface InventoryProps {
   isOpen: boolean;
@@ -132,6 +135,13 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
     });
   };
 
+  const unlockedBadges = useMemo(() => {
+    return BADGES.map(badge => ({
+        ...badge,
+        unlocked: userProgress?.unlockedBadges?.includes(badge.id) ?? false
+    }));
+  }, [userProgress?.unlockedBadges]);
+
   const tabTriggerClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
   const tabBorderSpanClasses = "pointer-events-none absolute border-solid";
 
@@ -200,13 +210,27 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
 
                 <div className="mt-8">
                   <h4 className="text-lg font-semibold mb-4">Deine Badges:</h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="aspect-square bg-[hsl(var(--muted))] rounded-lg flex items-center justify-center p-4">
-                        <LockClosedIcon className="h-16 w-16 text-[hsl(var(--foreground))]" />
-                      </div>
-                    ))}
-                  </div>
+                   <TooltipProvider>
+                    <div className="grid grid-cols-3 gap-4">
+                        {unlockedBadges.map((badge) => (
+                          <Tooltip key={badge.id}>
+                            <TooltipTrigger>
+                              <div className={cn("aspect-square bg-[hsl(var(--muted))] rounded-lg flex items-center justify-center p-4", !badge.unlocked && "opacity-50")}>
+                                {badge.unlocked ? (
+                                    <badge.icon className="h-16 w-16 text-accent" />
+                                ) : (
+                                    <LockClosedIcon className="h-16 w-16 text-[hsl(var(--foreground))]" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="bg-[hsl(var(--background))] text-white border-[hsl(var(--foreground))]">
+                               <p className="font-bold">{badge.name}</p>
+                               <p>{badge.description}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                    </div>
+                   </TooltipProvider>
                 </div>
             </div>
           </TabsContent>
