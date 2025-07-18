@@ -369,6 +369,28 @@ function HomePageContent() {
     }
   }, [handleProceed]);
 
+  const handleGoToOverviewAfterLessonCompletion = useCallback(() => {
+    // Finde die nächste Lektion im lessonList anhand von nextLessonId
+    if (nextLessonId) {
+      const nextLesson = lessonList.find(l => l.id === nextLessonId);
+      if (nextLesson) {
+        setSelectedLesson(nextLesson);
+      } else {
+        // Fallback: Keine nächste Lektion gefunden, evtl. nichts auswählen
+        setSelectedLesson(null);
+      }
+    } else {
+      // Kein nextLessonId gesetzt, ebenfalls keine Auswahl
+      setSelectedLesson(null);
+    }
+  
+    // Lesson-View schließen & State zurücksetzen
+    setIsLessonViewActive(false);
+    setIsStartingLesson(false);
+    resetLessonState();
+  }, [nextLessonId, lessonList, setSelectedLesson, setIsLessonViewActive, setIsStartingLesson, resetLessonState]);
+  
+
   useEffect(() => {
     if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet' && !stageItemAttempts[activeContent.id]) {
         handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
@@ -589,7 +611,7 @@ function HomePageContent() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                             <LessonCompleteScreen onGoHome={handleExitLesson} />
+                             <LessonCompleteScreen onGoHome={handleGoToOverviewAfterLessonCompletion} />
 
                         ) : (
                             contentQueue.map((content, index) => {
