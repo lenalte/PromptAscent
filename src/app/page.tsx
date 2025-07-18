@@ -320,9 +320,10 @@ function HomePageContent() {
 
     if (itemStatus.correct || maxAttemptsReached) return;
 
+    const currentAttempts = itemStatus.attempts || 0;
+    const newAttempts = currentAttempts + 1;
+
     setStageItemAttempts(prev => {
-      const currentAttempts = prev[itemId]?.attempts || 0;
-      const newAttempts = currentAttempts + 1;
       const wasCorrectBefore = prev[itemId]?.correct === true;
       const isNowCorrect = wasCorrectBefore || isCorrect;
 
@@ -360,7 +361,7 @@ function HomePageContent() {
 
   useEffect(() => {
     async function loadLessonAndProgress() {
-        if (!isLessonViewActive || !selectedLesson || !currentUser) return;
+        if (!isLessonViewActive || !selectedLesson?.id || !currentUser) return;
         
         setIsLoadingLesson(true);
         setErrorLoadingLesson(null);
@@ -453,9 +454,7 @@ function HomePageContent() {
             setIsLoadingLesson(false);
         }
     }
-    if (isLessonViewActive && selectedLesson?.id) {
-      loadLessonAndProgress();
-    }
+    loadLessonAndProgress();
   }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress]);
 
 
@@ -764,3 +763,5 @@ function HomePageContent() {
 export default function Home() {
     return <HomePageContent />;
 }
+
+    
