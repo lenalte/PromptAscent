@@ -54,7 +54,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         setResult(validation);
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
-        onAnswerSubmit(validation.isValid, validation.isValid ? pointsAwarded : 0, id.toString());
+        
+        const awardedPointsForAttempt = Math.max(0, pointsAwarded - (validation.isValid ? attempts : newAttempts));
+        onAnswerSubmit(validation.isValid, awardedPointsForAttempt, id.toString());
+
       } catch (error) {
         console.error('Validation error:', error);
         setResult({ isValid: false, feedback: error instanceof Error ? error.message : 'Bei der Überprüfung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.' });
@@ -118,7 +121,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
                 <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
               )}
               <AlertTitle className={cn(result.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {result.isValid ? 'Korrekt!' : 'Inkorrekt'}
+                {result.isValid ? `Korrekt! +${Math.max(0, pointsAwarded - (attempts - 1))} Punkte` : 'Inkorrekt'}
               </AlertTitle>
               <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {result.feedback}
@@ -139,7 +142,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <p>Korrekt: +{pointsAwarded} Punkte</p>
+            <p>Max. Punkte: +{pointsAwarded}</p>
             <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>

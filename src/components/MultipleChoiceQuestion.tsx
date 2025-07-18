@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -50,7 +51,9 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     setIsCorrect(correct);
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
-    onAnswerSubmit(correct, correct ? pointsAwarded : 0, id.toString());
+    
+    const awardedPointsForAttempt = Math.max(0, pointsAwarded - (correct ? attempts : newAttempts));
+    onAnswerSubmit(correct, awardedPointsForAttempt, id.toString());
     
   }, [isReadOnly, canAttempt, selectedValue, correctOptionIndex, onAnswerSubmit, pointsAwarded, id, attempts]);
 
@@ -114,7 +117,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               )}
             >
               <AlertTitle className={cn(isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                {isCorrect ? 'Korrekt!' : 'Inkorrekt'}
+                {isCorrect ? `Korrekt! +${Math.max(0, pointsAwarded - (attempts - 1))} Punkte` : 'Inkorrekt'}
               </AlertTitle>
               <AlertDescription className={cn(isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {isCorrect
@@ -132,7 +135,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-muted-foreground">
-          <p>Korrekt: +{pointsAwarded} Punkte</p>
+          <p>Max. Punkte: +{pointsAwarded}</p>
           <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
