@@ -54,7 +54,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         setEvaluationResult(result);
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
-        onAnswerSubmit(result.isCorrect, result.isCorrect ? pointsAwarded : 0, id.toString());
+
+        const awardedPointsForAttempt = Math.max(0, pointsAwarded - (result.isCorrect ? attempts : newAttempts));
+        onAnswerSubmit(result.isCorrect, awardedPointsForAttempt, id.toString());
+        
       } catch (error) {
         console.error('Prompt evaluation error:', error);
         const errorResult: EvaluatePromptOutput = {
@@ -129,7 +132,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                   <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
                 )}
                 <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                  {evaluationResult.isCorrect ? 'Effektiver Prompt!' : 'Verbesserungswürdig'}
+                  {evaluationResult.isCorrect ? `Effektiver Prompt! +${Math.max(0, pointsAwarded - (attempts - 1))} Punkte` : 'Verbesserungswürdig'}
                 </AlertTitle>
                 <AlertDescription className={cn("space-y-2", evaluationResult.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                   <div>Punktzahl: {evaluationResult.score}/100</div>
@@ -159,7 +162,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
           </EightbitButton>
         )}
         <div className="flex justify-between w-full text-xs text-purple-600 dark:text-purple-500">
-            <p>Effektiv: +{pointsAwarded} Punkte</p>
+            <p>Max. Punkte: +{pointsAwarded}</p>
             <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
         </div>
       </CardFooter>
