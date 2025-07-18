@@ -4,8 +4,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Zap } from 'lucide-react';
-import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
+import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Zap, Forward } from 'lucide-react';
+import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge, skipBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
 import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
@@ -16,6 +16,7 @@ import { BossIcon as NewBossIcon } from '@/components/icons/BossIcon';
 interface BossChallengeDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onSkip: () => void; // New prop to handle skipping
   lessonId: string;
   stageId: string;
 }
@@ -34,7 +35,7 @@ const BossIcon = ({ icon, className }: { icon: BossIconType, className?: string 
   }
 };
 
-const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, lessonId, stageId }) => {
+const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, onSkip, lessonId, stageId }) => {
   const { currentUser, userProgress, setUserProgress } = useUserProgress();
   const [view, setView] = useState<'intro' | 'challenge' | 'result'>('intro');
   const [bossInfo, setBossInfo] = useState<BossInfo | null>(null);
@@ -78,8 +79,27 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
   useEffect(() => {
     if (isOpen) {
       loadChallenge();
+    } else {
+        // Reset state when dialog is closed
+        setView('intro');
+        setCurrentQuestionIndex(0);
+        setChallengeResult(null);
     }
   }, [isOpen, loadChallenge]);
+  
+  const handleSkip = async () => {
+    if (!currentUser) return;
+    setIsLoading(true);
+    try {
+        await skipBossChallenge(currentUser.uid, lessonId, stageId);
+        onSkip(); // Call the parent handler to proceed with the lesson
+    } catch (e) {
+        setError("Fehler beim Überspringen der Herausforderung.");
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
 
   const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsChange: number, itemId: string) => {
     const currentQuestion = questions[currentQuestionIndex];
@@ -206,7 +226,11 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             <div className="text-center mt-4">
               <p>Besiege <span className="font-bold">{bossInfo.name}</span>, um einen Booster zu erhalten und fortzufahren!</p>
             </div>
-            <DialogFooter className="mt-6">
+            <DialogFooter className="mt-6 sm:justify-center gap-4">
+               <EightbitButton onClick={handleSkip} className="bg-muted text-muted-foreground hover:bg-muted/80">
+                <Forward className="mr-2 h-4 w-4" />
+                Überspringen
+              </EightbitButton>
               <EightbitButton onClick={() => setView('challenge')}>Herausforderung annehmen</EightbitButton>
             </DialogFooter>
           </>
@@ -274,7 +298,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {if(!open) onClose()}}>
       <DialogContent className="max-w-3xl">
         {renderContent()}
       </DialogContent>

@@ -182,20 +182,29 @@ function HomePageContent() {
     itemRefs.current = [];
   };
 
-  const handleStartLesson = useCallback((lessonId: string) => {
-    if (userProgress?.lessonStageProgress?.[lessonId]) {
-        const lessonProg = userProgress.lessonStageProgress[lessonId];
-        const stage = lessonProg.stages[`stage${lessonProg.currentStageIndex + 1}`];
-        if (stage?.hasBoss && !stage.bossDefeated) {
-            setBossChallengeInfo({ lessonId, stageId: `stage${lessonProg.currentStageIndex + 1}` });
-            return;
-        }
-    }
+  const handleStartLessonFlow = useCallback(() => {
     setIsStartingLesson(true);
     resetLessonState();
     setIsLessonViewActive(true);
-    // No need to setIsStartingLesson(false) as the view changes
-  }, [userProgress]);
+  }, []);
+
+  const handleStartLesson = useCallback((lessonId: string) => {
+    if (userProgress?.lessonStageProgress?.[lessonId]) {
+      const lessonProg = userProgress.lessonStageProgress[lessonId];
+      const stageId = `stage${lessonProg.currentStageIndex + 1}`;
+      const stage = lessonProg.stages[stageId];
+      if (stage?.hasBoss && !stage.bossDefeated) {
+          setBossChallengeInfo({ lessonId, stageId });
+          return;
+      }
+    }
+    handleStartLessonFlow();
+  }, [userProgress, handleStartLessonFlow]);
+
+  const handleSkipBoss = useCallback(() => {
+    setBossChallengeInfo(null);
+    handleStartLessonFlow();
+  }, [handleStartLessonFlow]);
 
   const handleExitLesson = () => {
     setIsLessonViewActive(false);
@@ -236,7 +245,7 @@ function HomePageContent() {
         setIsSubmitting(false);
     }
   }, [currentStageIndex, lessonData]);
-
+  
   const handleRestartStage = useCallback(async () => {
       if (!currentStage || !selectedLesson) return;
       await restartStage(selectedLesson.id, currentStage.id);
@@ -316,12 +325,11 @@ function HomePageContent() {
   
   const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string) => {
     const itemStatus = stageItemAttempts[itemId] || { attempts: 0, correct: null, points: 0 };
-    const maxAttemptsReached = (itemStatus.attempts ?? 0) >= 3;
-
-    if (itemStatus.correct || maxAttemptsReached) return;
-
     const currentAttempts = itemStatus.attempts || 0;
     const newAttempts = currentAttempts + 1;
+    const maxAttemptsReached = newAttempts >= 3;
+
+    if (itemStatus.correct) return;
 
     setStageItemAttempts(prev => {
       const wasCorrectBefore = prev[itemId]?.correct === true;
@@ -329,7 +337,7 @@ function HomePageContent() {
 
       let awardedPoints = 0;
       if (isNowCorrect && !wasCorrectBefore) {
-        awardedPoints = pointsAwarded;
+        awardedPoints = pointsAwarded; // pointsAwarded already includes deductions from components
         setPointsThisStageSession(p => p + awardedPoints);
       }
       
@@ -345,10 +353,8 @@ function HomePageContent() {
       };
     });
 
-    const isNowMaxedOut = newAttempts >= 3;
-    if (isNowMaxedOut && !isCorrect) {
-        // Automatically proceed to next item after 3 wrong attempts
-        setTimeout(() => handleProceed(), 1000); // Small delay to let user see feedback
+    if (maxAttemptsReached && !isCorrect) {
+        setTimeout(() => handleProceed(), 1000); 
     }
   }, [stageItemAttempts, handleProceed]);
 
@@ -752,6 +758,7 @@ function HomePageContent() {
         <BossChallengeDialog
           isOpen={!!bossChallengeInfo}
           onClose={() => setBossChallengeInfo(null)}
+          onSkip={handleSkipBoss}
           lessonId={bossChallengeInfo.lessonId}
           stageId={bossChallengeInfo.stageId}
         />
@@ -763,5 +770,3 @@ function HomePageContent() {
 export default function Home() {
     return <HomePageContent />;
 }
-
-    
