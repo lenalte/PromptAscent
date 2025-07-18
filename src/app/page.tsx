@@ -103,6 +103,7 @@ function HomePageContent() {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
   const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
+  const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
 
   // Effect to fetch available lessons
   useEffect(() => {
@@ -345,7 +346,7 @@ function HomePageContent() {
 
   useEffect(() => {
     async function loadLessonAndProgress() {
-        if (!isLessonViewActive || !selectedLesson || !currentUser) return;
+        if (!isLessonViewActive || !selectedLesson?.id || !currentUser) return;
         
         setIsLoadingLesson(true);
         setErrorLoadingLesson(null);
@@ -446,9 +447,7 @@ function HomePageContent() {
         }
     }
     loadLessonAndProgress();
-  }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress]);
-
-  const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
+  }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress, handleExitLesson, handleRestartStage]);
 
   useEffect(() => {
     if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet' && !stageItemAttempts[activeContent.id]) {
