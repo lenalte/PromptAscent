@@ -89,50 +89,52 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
         <CardDescription className="text-amber-700 dark:text-amber-400 pt-2">{question}</CardDescription>
       </CardHeader>
       <CardContent>
-        <TooltipProvider>
           <div className="space-y-3">
             <Label className="text-amber-800 dark:text-amber-300">Deine Einschätzung:</Label>
             <RadioGroup
               onValueChange={setSelectedValue}
               value={selectedValue}
-              className="flex flex-row space-x-2 md:space-x-4 items-center justify-center pt-2"
+              className="flex flex-row justify-between items-end pt-2"
               disabled={isComponentReadOnly || isPending}
             >
               {LIKERT_OPTIONS.map((option, index) => (
-                <Tooltip key={`${id}-tooltip-${index}`}>
-                  <TooltipTrigger asChild>
-                    <div className={cn(
-                      "flex items-center flex-col space-y-2 p-2 rounded-md border-2 transition-colors",
-                      selectedValue === (index + 1).toString()
-                        ? "border-amber-500 bg-amber-100 dark:bg-amber-900/40"
-                        : "border-transparent",
-                      !isComponentReadOnly && "cursor-pointer hover:bg-amber-100/50"
-                    )}>
-                      <Label
-                        htmlFor={`${id}-option-${index + 1}`}
-                        className={cn(
-                          "font-medium text-lg",
-                          !isComponentReadOnly ? "cursor-pointer" : "cursor-default"
-                        )}
-                      >
-                        {index + 1}
-                      </Label>
-                      <RadioGroupItem
-                        value={(index + 1).toString()}
-                        id={`${id}-option-${index + 1}`}
-                        className="h-6 w-6"
-                        disabled={isComponentReadOnly || isPending}
-                      />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{option}</p>
-                  </TooltipContent>
-                </Tooltip>
+                <div key={`${id}-option-${index}`} className="flex flex-col items-center space-y-2 text-center flex-1 px-1">
+                  <Label 
+                    htmlFor={`${id}-option-${index + 1}`} 
+                    className={cn(
+                      "text-xs text-muted-foreground h-10 flex items-center",
+                      !isComponentReadOnly ? "cursor-pointer" : "cursor-default"
+                    )}
+                   >
+                     {option}
+                  </Label>
+                  <div className={cn(
+                    "flex items-center flex-col space-y-2 p-2 rounded-md border-2 w-full justify-center",
+                    selectedValue === (index + 1).toString()
+                      ? "border-amber-500 bg-amber-100 dark:bg-amber-900/40"
+                      : "border-transparent",
+                    !isComponentReadOnly && "cursor-pointer hover:bg-amber-100/50"
+                  )}>
+                    <Label
+                      htmlFor={`${id}-option-${index + 1}`}
+                      className={cn(
+                        "font-medium text-lg",
+                        !isComponentReadOnly ? "cursor-pointer" : "cursor-default"
+                      )}
+                    >
+                      {index + 1}
+                    </Label>
+                    <RadioGroupItem
+                      value={(index + 1).toString()}
+                      id={`${id}-option-${index + 1}`}
+                      className="h-6 w-6"
+                      disabled={isComponentReadOnly || isPending}
+                    />
+                  </div>
+                </div>
               ))}
             </RadioGroup>
           </div>
-        </TooltipProvider>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">
         {!isComponentReadOnly && (
