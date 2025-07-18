@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -46,6 +47,13 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
   const [summaries, setSummaries] = useState<LessonSummary[]>([]);
   const [unlockedSummaries, setUnlockedSummaries] = useState<LessonSummary[]>([]);
   const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
+
+  const unlockedBadges = useMemo(() => {
+    return BADGES.map(badge => ({
+        ...badge,
+        unlocked: userProgress?.unlockedBadges?.includes(badge.id) ?? false
+    }));
+  }, [userProgress?.unlockedBadges]);
 
   useEffect(() => {
     async function fetchDataForTab() {
@@ -134,13 +142,6 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
         );
     });
   };
-
-  const unlockedBadges = useMemo(() => {
-    return BADGES.map(badge => ({
-        ...badge,
-        unlocked: userProgress?.unlockedBadges?.includes(badge.id) ?? false
-    }));
-  }, [userProgress?.unlockedBadges]);
 
   const tabTriggerClasses = "relative inline-block w-full px-4 py-2 text-center no-underline transition-all duration-100 group";
   const tabBorderSpanClasses = "pointer-events-none absolute border-solid";
