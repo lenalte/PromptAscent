@@ -11,9 +11,10 @@ import { useUserProgress } from '@/context/UserProgressContext';
 interface LessonCompleteScreenProps {
   onGoHome: () => void;
   onGoToNextLesson: () => void;
+  nextLessonId: string | null;
 }
 
-export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGoHome, onGoToNextLesson }) => {
+export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGoHome, onGoToNextLesson, nextLessonId }) => {
   const { isLoadingProgress: isContextLoading, userProgress } = useUserProgress();
   
   const lessonTitle = userProgress?.currentLessonId ? userProgress.lessonStageProgress[userProgress.currentLessonId] ? userProgress.currentLessonId : 'this lesson' : 'this lesson';
@@ -36,9 +37,14 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
         </div>
       </CardContent>
        <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
-           <EightbitButton as="a" onClick={onGoHome} disabled={isContextLoading}>
-               <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Lektionsübersicht
+           <EightbitButton onClick={onGoHome} disabled={isContextLoading}>
+               <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Übersicht
            </EightbitButton>
+            {nextLessonId && (
+              <EightbitButton onClick={onGoToNextLesson} disabled={isContextLoading}>
+                Nächste Lektion <ArrowRight className="ml-2 h-4 w-4" />
+              </EightbitButton>
+            )}
        </CardFooter>
     </Card>
   );

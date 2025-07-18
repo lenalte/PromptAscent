@@ -185,12 +185,28 @@ function HomePageContent() {
     setIsLessonViewActive(true);
   }, []);
 
+  const handleExitLesson = () => {
+    setIsLessonViewActive(false);
+    setIsStartingLesson(false);
+    resetLessonState();
+  };
+
+  const handleGoToNextLesson = useCallback(() => {
+    if (nextLessonId) {
+      const nextLesson = lessonList.find(l => l.id === nextLessonId);
+      if (nextLesson) {
+        setSelectedLesson(nextLesson);
+      }
+    }
+    handleExitLesson();
+  }, [nextLessonId, lessonList, handleExitLesson]);
+
   const handleStartLesson = useCallback((lessonId: string) => {
     if (userProgress?.lessonStageProgress?.[lessonId]) {
       const lessonProg = userProgress.lessonStageProgress[lessonId];
       const stageId = `stage${lessonProg.currentStageIndex + 1}`;
       const stage = lessonProg.stages[stageId];
-      if (stage?.hasBoss && !stage.bossDefeated && stage.bossChallenge?.status !== 'skipped') {
+      if (stage?.hasBoss && !stage.bossDefeated) {
           setBossChallengeInfo({ lessonId, stageId, canSkip: true });
           return;
       }
@@ -202,12 +218,6 @@ function HomePageContent() {
     setBossChallengeInfo(null);
     handleStartLessonFlow();
   }, [handleStartLessonFlow]);
-
-  const handleExitLesson = () => {
-    setIsLessonViewActive(false);
-    setIsStartingLesson(false);
-    resetLessonState();
-  };
 
   const handleBossChallengeClick = (stageId: string) => {
     if (selectedLesson) {
@@ -360,7 +370,6 @@ function HomePageContent() {
         handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
     }
   }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
-
 
   useEffect(() => {
     async function loadLessonAndProgress() {
@@ -576,13 +585,7 @@ function HomePageContent() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                             <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={() => {
-                                handleExitLesson();
-                                if(nextLessonId){
-                                    const lesson = lessonList.find(l => l.id === nextLessonId);
-                                    if(lesson) handleLessonSelect(lesson);
-                                }
-                            }} />
+                             <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={handleGoToNextLesson} nextLessonId={nextLessonId} />
                         ) : (
                             contentQueue.map((content, index) => {
                                 // If we are only showing the failed screen, hide everything that comes before it.
