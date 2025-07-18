@@ -98,6 +98,9 @@ function HomePageContent() {
   const isProcessing = useRef(false);
   const [isLessonFullyCompleted, setIsLessonFullyCompleted] = useState(false);
   const [nextLessonId, setNextLessonId] = useState<string | null>(null);
+
+  const [hasAutoSelectedLesson, setHasAutoSelectedLesson] = useState(false);
+
   
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -108,11 +111,12 @@ function HomePageContent() {
       try {
         const availableLessons = await getAvailableLessons();
         setLessonList(availableLessons);
-        if (availableLessons.length > 0) {
+        if (availableLessons.length > 0 && !hasAutoSelectedLesson) {
             const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
             const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
             setSelectedLesson(lessonToSelect);
-        } else {
+            setHasAutoSelectedLesson(true);
+        } else if (availableLessons.length === 0) {
           setSelectedLesson(null);
         }
       } catch (error) {
@@ -124,7 +128,7 @@ function HomePageContent() {
     if (!isLoadingProgress && !isLoadingAuth && currentUser) {
         fetchLessons();
     }
-  }, [isLoadingAuth, isLoadingProgress, userProgress?.currentLessonId, currentUser]);
+  }, [isLoadingAuth, isLoadingProgress, currentUser, hasAutoSelectedLesson]);
 
   // Effect to update overall level info
   useEffect(() => {
@@ -585,7 +589,8 @@ function HomePageContent() {
                 <CardContent className="p-0">
                     <div className="space-y-8">
                         {isLessonFullyCompleted ? (
-                             <LessonCompleteScreen onGoHome={handleExitLesson} onGoToNextLesson={handleGoToNextLesson} nextLessonId={nextLessonId} />
+                             <LessonCompleteScreen onGoHome={handleExitLesson} />
+
                         ) : (
                             contentQueue.map((content, index) => {
                                 // If we are only showing the failed screen, hide everything that comes before it.
