@@ -11,15 +11,15 @@ import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { useToast } from "@/hooks/use-toast";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { EightbitButton } from './eightbit-button';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
 
     const isLessonEffectivelySelected = (lessonId: string) => {
-      return currentSelectedLessonId === lessonId || (currentSelectedLessonId === null && currentLessonIdFromProgress === lessonId);
+        return currentSelectedLessonId === lessonId || (currentSelectedLessonId === null && currentLessonIdFromProgress === lessonId);
     };
 
     const isLessonEffectivelyUnlocked = (lessonId: string) => {
@@ -138,11 +138,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     const lineLeftOffsetRem = iconContainerLeftPadding + iconSpanPadding + (iconWidth / 2);
     const descriptionPaddingLeftRem = iconContainerLeftPadding + (iconSpanPadding * 2) + iconWidth + iconSpanMarginRight;
-    
+
     // Correctly prioritize username display
     const userDisplayName = userProgress?.username || currentUser?.displayName || "Profil & Lektionen";
 
-    
+
     const getMedalColor = (rank: number) => {
         if (rank === 0) return 'text-yellow-400 border-yellow-400';
         if (rank === 1) return 'text-gray-400 border-gray-400';
@@ -167,23 +167,23 @@ const Sidebar: React.FC<SidebarProps> = ({
                     >
                         <AvatarDisplay avatarId={userProgress?.avatarId} className={cn(
                             "h-8 w-8 shrink-0",
-                             activeCategory === 'profil' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
+                            activeCategory === 'profil' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
                         )} />
                     </button>
                     <button
                         type="button"
                         onClick={() => {
-                          trackEvent({
-                            action: "Leaderboard_Selected",
-                            category: "Navigation",
-                            label: "Leaderboard",
-                          });
-                          handleCategoryClick('leaderboard');
+                            trackEvent({
+                                action: "Leaderboard_Selected",
+                                category: "Navigation",
+                                label: "Leaderboard",
+                            });
+                            handleCategoryClick('leaderboard');
                         }}
                         className={cn(
-                          "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
-                          "pt-4",
-                          activeCategory === 'leaderboard' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                            "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                            "pt-4",
+                            activeCategory === 'leaderboard' && isContentOpen && "bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Leaderboard"
                     >
@@ -194,13 +194,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
-                     <button
+                    <button
                         onClick={() => handleCategoryClick('einstellungen')}
                         className={cn(
-                           "!p-2 !w-auto !h-auto",
-                           "rounded-lg",
-                           "bg-transparent hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
-                           activeCategory === 'einstellungen' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                            "!p-2 !w-auto !h-auto",
+                            "rounded-lg",
+                            "bg-transparent hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                            activeCategory === 'einstellungen' && isContentOpen && "bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Einstellungen"
                     >
@@ -217,172 +217,181 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="w-72 sidebar-background h-full pr-4 flex flex-col justify-between overflow-y-auto transition-all duration-300 ease-in-out hide-scrollbar">
                     <div className="flex-grow">
                         {activeCategory === 'profil' && (
-                            <div className="pt-4">
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
-                                    {userDisplayName}
-                                </h2>
-                                {isLoadingLessons && (
-                                    <div className={`flex items-center p-2 rounded-lg text-white`}>
-                                        <Loader2 className="h-5 w-5 animate-spin shrink-0" />
-                                        <span className="ms-3 text-sm">Lade Lektionen...</span>
-                                    </div>
-                                )}
-                                {!isLoadingLessons && lessons.length > 0 && (
-                                    <div className="relative">
-                                        {/* Dotted Line Element */}
-                                        <div
-                                            className="absolute w-px bg-repeat-y opacity-70"
-                                            style={{
-                                                left: `${lineLeftOffsetRem}rem`,
-                                                top: '1.25rem',
-                                                bottom: '1.25rem',
-                                                backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
-                                                backgroundSize: '1px 8px',
-                                                zIndex: 0,
-                                            }}
-                                        ></div>
-                                        <ul className="space-y-1 font-medium relative z-10">
-                                            {lessons.map((lesson) => (
-                                                <li key={lesson.id} className="relative">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => onLessonSelect(lesson)}
-                                                        disabled={!isLessonEffectivelyUnlocked(lesson.id)}
-                                                        className={cn(
-                                                            `flex flex-col p-2 rounded-lg group text-white w-full text-left`,
-                                                            isLessonEffectivelySelected(lesson.id) && "bg-[var(--sidebar-accent)]",
-                                                            isLessonEffectivelyUnlocked(lesson.id) ? "hover:bg-[var(--sidebar-accent)] cursor-pointer" : "opacity-50 cursor-not-allowed"
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <div className="flex items-center overflow-hidden">
-                                                                <span className={cn("mr-3 h-8 w-8 relative z-20 flex items-center justify-center rounded-full bg-[hsl(var(--sidebar-background))]")}>
-                                                                    {isLessonEffectivelyUnlocked(lesson.id) ? (
-                                                                        <LockOpenIcon className="shrink-0 text-white" />
-                                                                    ) : (
-                                                                        <LockClosedIcon className="shrink-0 text-white" />
-                                                                    )}
-                                                                </span>
-                                                                <span className={cn(
-                                                                "text-sm whitespace-normal break-words flex-1",
-                                                                isLessonEffectivelyUnlocked(lesson.id) && "font-semibold"
-                                                                )}>
-                                                                    {lesson.title}
-                                                                </span>
-                                                            </div>
-                                                            {lesson.description && (
-                                                                <div
-                                                                    onClick={(e) => toggleLessonDescription(lesson.id, e)}
-                                                                    className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0 z-30 cursor-pointer"
-                                                                    aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
-                                                                    role="button"
-                                                                    tabIndex={0}
-                                                                >
-                                                                    {expandedLessonId === lesson.id ? <SimpleArrowUpIcon className="h-4 w-4 text-white/70" /> : <SimpleArrowDownIcon className="h-4 w-4 text-white/70" />}
-                                                                </div>
+                            <div className="pt-4 h-full flex flex-col">
+                                <div className="sticky top-0 bg-[var(--sidebar-background)] z-10">
+                                    <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4 truncate" title={userDisplayName}>
+                                        {userDisplayName}
+                                    </h2>
+                                </div>
+                                <div className="overflow-y-auto max-h-[calc(100vh-130px)] scrollbar-hide">
+                                    {isLoadingLessons && (
+                                        <div className={`flex items-center p-2 rounded-lg text-white`}>
+                                            <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                            <span className="ms-3 text-sm">Lade Lektionen...</span>
+                                        </div>
+                                    )}
+                                    {!isLoadingLessons && lessons.length > 0 && (
+                                        <div className="relative">
+                                            {/* Dotted Line Element */}
+                                            <div
+                                                className="absolute w-px bg-repeat-y opacity-70"
+                                                style={{
+                                                    left: `${lineLeftOffsetRem}rem`,
+                                                    top: '1.25rem',
+                                                    bottom: '1.25rem',
+                                                    backgroundImage: `linear-gradient(to bottom, hsl(var(--sidebar-foreground)) 50%, transparent 50%)`,
+                                                    backgroundSize: '1px 8px',
+                                                    zIndex: 0,
+                                                }}
+                                            ></div>
+                                            <ul className="space-y-1 font-medium relative z-10">
+                                                {lessons.map((lesson) => (
+                                                    <li key={lesson.id} className="relative">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onLessonSelect(lesson)}
+                                                            disabled={!isLessonEffectivelyUnlocked(lesson.id)}
+                                                            className={cn(
+                                                                `flex flex-col p-2 rounded-lg group text-white w-full text-left`,
+                                                                isLessonEffectivelySelected(lesson.id) && "bg-[var(--sidebar-accent)]",
+                                                                isLessonEffectivelyUnlocked(lesson.id) ? "hover:bg-[var(--sidebar-accent)] cursor-pointer" : "opacity-50 cursor-not-allowed"
                                                             )}
-                                                        </div>
-                                                        {expandedLessonId === lesson.id && lesson.description && (
-                                                            <p
-                                                                className="mt-2 text-xs text-white/80 whitespace-normal break-words"
-                                                                style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
-                                                            >
-                                                                {lesson.description}
-                                                            </p>
-                                                        )}
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                                {!isLoadingLessons && lessons.length === 0 && (
-                                    <div className="p-2 text-sm text-white/70">
-                                        Keine Lektionen verfügbar.
-                                    </div>
-                                )}
+                                                        >
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <div className="flex items-center overflow-hidden">
+                                                                    <span className={cn("mr-3 h-8 w-8 relative z-20 flex items-center justify-center rounded-full bg-[hsl(var(--sidebar-background))]")}>
+                                                                        {isLessonEffectivelyUnlocked(lesson.id) ? (
+                                                                            <LockOpenIcon className="shrink-0 text-white" />
+                                                                        ) : (
+                                                                            <LockClosedIcon className="shrink-0 text-white" />
+                                                                        )}
+                                                                    </span>
+                                                                    <span className={cn(
+                                                                        "text-sm whitespace-normal break-words flex-1",
+                                                                        isLessonEffectivelyUnlocked(lesson.id) && "font-semibold"
+                                                                    )}>
+                                                                        {lesson.title}
+                                                                    </span>
+                                                                </div>
+                                                                {lesson.description && (
+                                                                    <div
+                                                                        onClick={(e) => toggleLessonDescription(lesson.id, e)}
+                                                                        className="p-1 -mr-1 hover:bg-opacity-50 rounded shrink-0 z-30 cursor-pointer"
+                                                                        aria-label={expandedLessonId === lesson.id ? "Beschreibung einklappen" : "Beschreibung ausklappen"}
+                                                                        role="button"
+                                                                        tabIndex={0}
+                                                                    >
+                                                                        {expandedLessonId === lesson.id ? <SimpleArrowUpIcon className="h-4 w-4 text-white/70" /> : <SimpleArrowDownIcon className="h-4 w-4 text-white/70" />}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            {expandedLessonId === lesson.id && lesson.description && (
+                                                                <p
+                                                                    className="mt-2 text-xs text-white/80 whitespace-normal break-words"
+                                                                    style={{ paddingLeft: `${descriptionPaddingLeftRem}rem` }}
+                                                                >
+                                                                    {lesson.description}
+                                                                </p>
+                                                            )}
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {!isLoadingLessons && lessons.length === 0 && (
+                                        <div className="p-2 text-sm text-white/70">
+                                            Keine Lektionen verfügbar.
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                         {activeCategory === 'leaderboard' && (
-                            <div className="pt-4">
-                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
-                                {isLoadingLeaderboard ? (
-                                    <div className="flex items-center p-2 rounded-lg text-white">
-                                        <Loader2 className="h-5 w-5 animate-spin shrink-0" />
-                                        <span className="ms-3 text-sm">Lade Leaderboard...</span>
-                                    </div>
-                                ) : leaderboardData.length > 0 ? (
-                                    <ul className="space-y-2">
-                                        {leaderboardData.map((user, index) => (
-                                            <li key={user.userId} className={cn(
-                                                "flex items-center p-2 rounded-lg",
-                                                user.userId === currentUser?.uid ? 'bg-[#3B0099]' : ''
-                                            )}>
-                                                <div className="w-6 text-center font-bold mr-2 shrink-0">
-                                                {index < 3 ? (
-                                                    <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center", getMedalColor(index))}>
-                                                        {index + 1}
+                            <div className="pt-4 h-full flex flex-col">
+                                <div className="pt-0.7 sticky top-0 bg-[var(--sidebar-background)] z-10">
+                                    <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Leaderboard</h2>
+                                </div>
+                                <div className="overflow-y-auto max-h-[calc(100vh-130px)] scrollbar-hide">
+                                    {isLoadingLeaderboard ? (
+                                        <div className="flex items-center p-2 rounded-lg text-white">
+                                            <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                            <span className="ms-3 text-sm">Lade Leaderboard...</span>
+                                        </div>
+                                    ) : leaderboardData.length > 0 ? (
+                                        <ul className="space-y-2">
+                                            {leaderboardData.map((user, index) => (
+                                                <li key={user.userId} className={cn(
+                                                    "flex items-center p-2 rounded-lg",
+                                                    user.userId === currentUser?.uid ? 'bg-[#3B0099]' : ''
+                                                )}>
+                                                    <div className="w-6 text-center font-bold mr-2 shrink-0">
+                                                        {index < 3 ? (
+                                                            <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center", getMedalColor(index))}>
+                                                                {index + 1}
+                                                            </div>
+                                                        ) : (
+                                                            <span className={cn(getMedalColor(index))}>{index + 1}</span>
+                                                        )}
                                                     </div>
-                                                ) : (
-                                                    <span className={cn(getMedalColor(index))}>{index + 1}</span>
-                                                )}
-                                                </div>
-                                                <AvatarDisplay avatarId={user.avatarId} className="h-6 w-6 mr-2 shrink-0 text-white" />
-                                                <span className="flex-1 truncate text-white text-sm" title={user.username}>
-                                                    {user.username}
-                                                </span>
-                                                <span className="flex items-center font-semibold text-white text-sm">
-                                                    <PointsIcon className="h-5 w-5 mr-1"/>
-                                                    {user.totalPoints}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="text-white/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
-                                )}
+                                                    <AvatarDisplay avatarId={user.avatarId} className="h-6 w-6 mr-2 shrink-0 text-white" />
+                                                    <span className="flex-1 truncate text-white text-sm" title={user.username}>
+                                                        {user.username}
+                                                    </span>
+                                                    <span className="flex items-center font-semibold text-white text-sm">
+                                                        <PointsIcon className="h-5 w-5 mr-1" />
+                                                        {user.totalPoints}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-white/80 p-2 text-sm">Noch niemand auf dem Leaderboard. Sei der Erste!</p>
+                                    )}
+                                </div>
                             </div>
                         )}
-                         {activeCategory === 'einstellungen' && (
-                           <div className="flex-grow flex flex-col pt-4">
-                              <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
-                           </div>
+
+                        {activeCategory === 'einstellungen' && (
+                            <div className="flex-grow flex flex-col pt-4">
+                                <h2 className="text-xl font-semibold text-white mb-4 px-1 pt-4">Einstellungen</h2>
+                            </div>
                         )}
                     </div>
 
                     <div className="flex-shrink-0 pb-4">
-                      {activeCategory === 'einstellungen' && (
-                        <>
-                           <div className="flex flex-col gap-2">
-                              <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                  <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
-                              </a>
-                              <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                  <Award className="mr-3 ml-1 h-5 w-5" /> AGB
-                              </a>
-                           </div>
-                           {isAuthenticated && (
-                              <div className="pt-3 flex flex-col gap-2">
-                                  <DeleteAccountDialogButton />
-                                  <button
-                                      onClick={logOut}
-                                      className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
-                                  >
-                                      <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
-                                  </button>
-                              </div>
-                           )}
-                           {!isAuthenticated && (
-                           <div className="pt-3 flex flex-col gap-2">
-                              <Link href="/auth/register" passHref legacyBehavior>
-                                  <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white" target="_blank" rel="noopener noreferrer">
-                                  <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
-                                  </a>
-                              </Link>
-                           </div>
-                           )}
-                        </>
-                      )}
+                        {activeCategory === 'einstellungen' && (
+                            <>
+                                <div className="flex flex-col gap-2">
+                                    <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                        <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
+                                    </a>
+                                    <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                        <Award className="mr-3 ml-1 h-5 w-5" /> AGB
+                                    </a>
+                                </div>
+                                {isAuthenticated && (
+                                    <div className="pt-3 flex flex-col gap-2">
+                                        <DeleteAccountDialogButton />
+                                        <button
+                                            onClick={logOut}
+                                            className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white"
+                                        >
+                                            <LogoutIcon className="mr-3 ml-1 h-5 w-5" /> Logout
+                                        </button>
+                                    </div>
+                                )}
+                                {!isAuthenticated && (
+                                    <div className="pt-3 flex flex-col gap-2">
+                                        <Link href="/auth/register" passHref legacyBehavior>
+                                            <a className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white" target="_blank" rel="noopener noreferrer">
+                                                <LoginIcon className="mr-3 ml-1 h-5 w-5" /> Login
+                                            </a>
+                                        </Link>
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
             )}
