@@ -518,6 +518,43 @@ function HomePageContent() {
     }
   }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress]);
 
+  useEffect(() => {
+    if (showLevelCompleteScreen && currentOverallLevel?.title) {
+      trackEvent({
+        action: "Level_Completed",
+        category: "Progress",
+        label: currentOverallLevel.title,
+      });
+    }
+  }, [showLevelCompleteScreen, currentOverallLevel?.title]);
+
+  useEffect(() => {
+    if (isLessonFullyCompleted && selectedLesson?.id) {
+      trackEvent({
+        action: "Lesson_Completed",
+        category: "Progress",
+        label: `LessonID: ${selectedLesson.id}`,
+      });
+    }
+  }, [isLessonFullyCompleted, selectedLesson?.id]);
+
+  useEffect(() => {
+    // Checke, ob aktuell ein StageCompleteScreen angezeigt wird
+    const activeContentItem = contentQueue[activeContentIndex];
+    if (
+      activeContentItem &&
+      activeContentItem.renderType === 'StageCompleteScreen'
+    ) {
+      trackEvent({
+        action: "Stage_Completed",
+        category: "Progress",
+        label: `Stage: ${activeContentItem.stageTitle} (${activeContentItem.stageId})`,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeContentIndex]);
+  
+
 
   const stageProgressUi = useMemo(() => {
     if (!lessonData || !userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']) return null;

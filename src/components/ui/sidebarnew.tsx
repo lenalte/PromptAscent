@@ -174,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         type="button"
                         onClick={() => {
                           trackEvent({
-                            action: "Category_Selected",
+                            action: "Leaderboard_Selected",
                             category: "Navigation",
                             label: "Leaderboard",
                           });
