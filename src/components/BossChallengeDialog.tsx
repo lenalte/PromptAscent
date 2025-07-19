@@ -9,7 +9,6 @@ import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge }
 import type { BossQuestion } from '@/data/lessons';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 import { FreeResponseQuestion } from './FreeResponseQuestion';
-import { Separator } from './ui/separator';
 import { BossIcon } from '@/components/icons/BossIcon';
 import { trackEvent } from '@/lib/gtagHelper';
 
