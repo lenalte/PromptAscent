@@ -564,7 +564,7 @@ function HomePageContent() {
         const isAnsweredCorrectly = itemStatus?.correct === true;
         const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
         
-        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isCorrectly) || item.type === 'likertScale') {
+        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isAnsweredCorrectly) || item.type === 'likertScale') {
           return { 
               visible: true, 
               onClick: handleProceed, 
@@ -837,3 +837,5 @@ function HomePageContent() {
 export default function Home() {
     return <HomePageContent />;
 }
+
+    
