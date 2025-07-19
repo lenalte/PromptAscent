@@ -49,7 +49,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
       setBossInfo(boss);
       setQuestions(fetchedQuestions);
       setQuestionStatus(challenge?.questionStatus || {});
-      if(fetchedQuestions.length === 0){
+      if (fetchedQuestions.length === 0) {
         // auto-passed because no questions could be found
         setChallengeResult('passed');
         setView('result');
@@ -68,18 +68,18 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     if (isOpen) {
       loadChallenge();
     } else {
-        // Reset state when dialog is closed
-        setView('intro');
-        setCurrentQuestionIndex(0);
-        setChallengeResult(null);
+      // Reset state when dialog is closed
+      setView('intro');
+      setCurrentQuestionIndex(0);
+      setChallengeResult(null);
     }
   }, [isOpen, loadChallenge]);
-  
+
   const handleSkip = async () => {
     // We only call the onSkip handler, which closes the dialog and starts the lesson.
     // We no longer update the database to mark it as 'skipped'.
     if (canSkip) {
-        onSkip();
+      onSkip();
     }
   };
 
@@ -90,25 +90,25 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
 
     setIsSubmitting(true);
     const currentStatus = questionStatus[itemId] || { correct: null, attempts: 0 };
-    
+
     const newStatus = {
-        ...questionStatus,
-        [itemId]: {
-            ...currentStatus,
-            correct: isCorrect,
-            attempts: currentStatus.attempts + 1
-        }
+      ...questionStatus,
+      [itemId]: {
+        ...currentStatus,
+        correct: isCorrect,
+        attempts: currentStatus.attempts + 1
+      }
     };
     setQuestionStatus(newStatus);
     setIsSubmitting(false); // Mark submission as complete
   }, [questions, currentQuestionIndex, questionStatus]);
-  
+
   const handleNextQuestion = () => {
-      if (currentQuestionIndex < questions.length - 1) {
-          setCurrentQuestionIndex(prev => prev + 1);
-      } else {
-          finishChallenge();
-      }
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      finishChallenge();
+    }
   };
 
 
@@ -120,19 +120,19 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         break;
       }
     }
-    
+
     const result = allCorrect ? 'passed' : 'failed';
     setChallengeResult(result);
     setView('result');
     setIsLoading(true);
 
     try {
-      if(currentUser){
-          const finalProgress = await resolveBossChallenge(currentUser.uid, lessonId, stageId, result, questionStatus);
-          setUserProgress(finalProgress); // Update global context
-          if (result === 'passed' && finalProgress.activeBooster && finalProgress.activeBooster.expiresAt > Date.now()) {
-            setAwardedBooster(finalProgress.activeBooster.multiplier);
-          }
+      if (currentUser) {
+        const finalProgress = await resolveBossChallenge(currentUser.uid, lessonId, stageId, result, questionStatus);
+        setUserProgress(finalProgress); // Update global context
+        if (result === 'passed' && finalProgress.activeBooster && finalProgress.activeBooster.expiresAt > Date.now()) {
+          setAwardedBooster(finalProgress.activeBooster.multiplier);
+        }
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save challenge result.");
@@ -140,13 +140,13 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
       setIsLoading(false);
     }
   };
-  
+
   const renderQuestion = () => {
     const question = questions[currentQuestionIndex];
     if (!question) return <p>No question to display.</p>;
-    
+
     const isAnswered = (questionStatus[question.item.id]?.attempts ?? 0) > 0;
-    
+
     const props = {
       ...question.item,
       id: question.item.id,
@@ -203,7 +203,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
           <>
             <DialogHeader className="items-center text-center">
               <BossIcon className="h-20 w-20 text-primary mb-4" />
-              <DialogTitle className="text-2xl">Ein Herausforderer erscheint!</DialogTitle>
+              <DialogTitle className="text-2xl">Wiederholungs Herausforderung</DialogTitle>
               <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">"{bossInfo.quote}"</DialogDescription>
             </DialogHeader>
             <div className="text-center mt-4">
@@ -217,29 +217,29 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                 </EightbitButton>
               )}
               <EightbitButton onClick={() => {
-    trackEvent({
-      action: 'Challenge_Accepted',
-      category: 'UI',
-      label: 'Herausforderung annehmen',
-    });
-    setView('challenge');
-  }}>
-    Herausforderung annehmen
-    </EightbitButton>
+                trackEvent({
+                  action: 'Challenge_Accepted',
+                  category: 'UI',
+                  label: 'Herausforderung annehmen',
+                });
+                setView('challenge');
+              }}>
+                Herausforderung annehmen
+              </EightbitButton>
             </DialogFooter>
           </>
         );
       case 'challenge':
         const currentQuestion = questions[currentQuestionIndex];
         const isAnswered = currentQuestion && (questionStatus[currentQuestion.item.id]?.attempts ?? 0) > 0;
-        
+
         return (
           <>
             <DialogHeader>
-                <DialogTitle>Boss-Herausforderung: {bossInfo.name}</DialogTitle>
-                <DialogDescription>
-                  Beantworte die folgenden Fragen, um fortzufahren.
-                </DialogDescription>
+              <DialogTitle>Boss-Herausforderung: {bossInfo.name}</DialogTitle>
+              <DialogDescription>
+                Beantworte die folgenden Fragen, um fortzufahren.
+              </DialogDescription>
             </DialogHeader>
             <div className="p-4">{renderQuestion()}</div>
             <DialogFooter className="mt-4 p-4 border-t">
@@ -264,10 +264,10 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                 </DialogHeader>
                 {awardedBooster && (
                   <div className="mt-4 text-center">
-                      <p className="text-lg font-semibold flex items-center justify-center gap-2">
-                         <BossIcon className="h-6 w-6 text-yellow-500" /> {awardedBooster}x Punkte-Booster aktiviert!
-                      </p>
-                      <p className="text-muted-foreground">Sammle in den nächsten 10 Minuten mehr Punkte!</p>
+                    <p className="text-lg font-semibold flex items-center justify-center gap-2">
+                      <BossIcon className="h-6 w-6 text-yellow-500" /> {awardedBooster}x Punkte-Booster aktiviert!
+                    </p>
+                    <p className="text-muted-foreground">Sammle in den nächsten 10 Minuten mehr Punkte!</p>
                   </div>
                 )}
               </>
@@ -277,7 +277,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                   <BossIcon className="h-16 w-16 text-destructive mb-4" />
                   <DialogTitle className="text-2xl font-bold text-destructive">Herausforderung gescheitert</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">
-                      Keine Sorge, du kannst trotzdem weitermachen. Die falschen Fragen wurden als Wissenslücke markiert.
+                    Keine Sorge, du kannst trotzdem weitermachen. Die falschen Fragen wurden als Wissenslücke markiert.
                   </DialogDescription>
                 </DialogHeader>
               </>
@@ -290,7 +290,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {if(!open) onClose()}}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
       <DialogContent className="max-w-3xl">
         {renderContent()}
       </DialogContent>
