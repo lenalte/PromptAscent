@@ -200,7 +200,7 @@ export default function AuthForm() {
       <CardHeader>
         <CardTitle className="text-2xl">
           {step === "email" && "Login oder Registrierung"}
-          {step === "waitingLink" && "Checke deine E-Mails"}
+          {step === "waitingLink" && "Checke deine E-Mails und deinen Spam Ordner"}
           {step === "profile" && "Profil vervollständigen"}
           {step === "done" && "Willkommen!"}
         </CardTitle>
@@ -289,11 +289,7 @@ export default function AuthForm() {
 
         {step === "waitingLink" && (
           <div className="flex flex-col items-center py-8">
-            <Loader2 className="mr-2 h-8 w-8 animate-spin" />
-            <div className="mt-4 text-sm text-muted-foreground">
-              Wir haben dir eine E-Mail geschickt.<br />
-              Klicke auf den Link darin, um dich einzuloggen.
-            </div>
+            <Loader2 className="mr-2 h-8 w-8 animate-spin" />       
           </div>
         )}
 
