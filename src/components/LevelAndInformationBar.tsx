@@ -6,6 +6,7 @@ import { useUserProgress } from '@/context/UserProgressContext';
 import { BossIcon } from '@/components/icons/BossIcon';
 import { PointsIcon } from '@/components/icons/PointsIcon';
 import { BackpackIcon } from '@/components/icons/BackpackIcon';
+import { trackEvent } from "@/lib/gtagHelper";
 
 interface LevelAndInformationBarProps extends React.HTMLAttributes<HTMLDivElement> {
     currentLevel: Level | null;
@@ -64,7 +65,15 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
                         <span className="text-primary-foreground">{totalPoints} Punkte</span>
                     </div>
                     <div className="hidden sm:flex items-center">
-                        <button onClick={onInventoryToggle} className="cursor-pointer">
+                        <button onClick={() => {
+                            trackEvent({
+                                action: "Backpack_Button_Clicked",
+                                category: "UI",
+                                label: "Inventory Toggle Button",
+                              });
+                              onInventoryToggle();
+                              }} 
+                              className="cursor-pointer">
                             <BackpackIcon className="h-8 w-8 text-primary-foreground" />
                         </button>
                     </div>
