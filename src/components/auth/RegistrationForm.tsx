@@ -199,13 +199,13 @@ export default function AuthForm() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl">
-          {step === "email" && "Login oder Registrierung"}
+          {step === "email" && "Anmelden"}
           {step === "waitingLink" && "Checke deine E-Mails und deinen Spam Ordner"}
           {step === "profile" && "Profil vervollständigen"}
           {step === "done" && "Willkommen!"}
         </CardTitle>
         <CardDescription>
-          {step === "email" && "Gib deine E-Mail ein. Wir prüfen für dich, ob ein Account existiert oder du neu bist."}
+          {step === "email" && "Gib deine E-Mail ein, um dich anzumelden."}
           {step === "waitingLink" && "Du erhältst gleich einen Login-Link per Mail."}
           {step === "profile" && "Wähle Username und Avatar, um deinen Account zu vervollständigen."}
           {step === "done" && "Du bist eingeloggt."}
@@ -228,7 +228,7 @@ export default function AuthForm() {
                   </FormItem>
                 )}
               />
-              <div className="rounded-md bg-muted p-3 text-xs text-foreground border mb-2">
+              <div className="rounded-md bg-muted p-3 text-xs text-foreground border mb-4">
                 <b>Hinweis zur Datennutzung</b><br />
                 Diese Plattform wird im Rahmen einer Bachelorarbeit betrieben. Während du die Anwendung nutzt, werden anonymisierte Daten zur Verbesserung der Plattform erhoben (mithilfe von Google Analytics). Deine Eingaben in den Aufgaben werden zudem zur automatisierten Auswertung an die Gemini API übermittelt.<br /><br />
                 Mit der Registrierung erklärst du dich damit einverstanden. Weitere Infos findest du in der <a href="/legal/datenschutz" className="underline" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a>.
