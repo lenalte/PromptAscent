@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { UserProgressProvider } from '@/context/UserProgressContext';
 import { JetBrains_Mono } from 'next/font/google';
 import AuthRedirect from '@/components/auth/AuthRedirect'; // Import the new component
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import CookieBanner from '@/components/CookieBanner';
 
 const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
@@ -23,13 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
+      
       <body className={`${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
+      <GoogleAnalytics />
         <UserProgressProvider>
           <AuthRedirect>
             {children}
           </AuthRedirect>
           <Toaster />
         </UserProgressProvider>
+        <CookieBanner />
       </body>
     </html>
   );
