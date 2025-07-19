@@ -3,40 +3,18 @@ export type BossIconType = 'ShieldAlert' | 'BossIcon' | 'Sword';
 
 export interface Boss {
   id: string;
-  name: string;
-  visual: BossIconType;
-  quote: string;
-  bonusPoints: number;
 }
 
 export const BOSS_LIBRARY: Boss[] = [
-  {
-    id: 'boss-1',
-    name: 'Der Wächter der Grundlagen',
-    visual: 'ShieldAlert',
-    quote: "Du denkst, du hast die Grundlagen gemeistert? Beweise es, bevor du weitermachst!",
-    bonusPoints: 50,
-  },
-  {
-    id: 'boss-2',
-    name: 'Der Logik-Lord',
-    visual: 'BossIcon',
-    quote: "Worte sind leicht, aber wahre Logik ist eine scharfe Klinge. Zeig mir deine Schärfe!",
-    bonusPoints: 75,
-  },
-  {
-    id: 'boss-3',
-    name: 'Der Meister der Anwendung',
-    visual: 'Sword',
-    quote: "Theorie ist nichts ohne Praxis. Wende an, was du gelernt hast, oder scheitere!",
-    bonusPoints: 100,
-  },
+  { id: 'boss-1' },
 ];
 
 export const getRandomBoss = (): Boss => {
-  return BOSS_LIBRARY[Math.floor(Math.random() * BOSS_LIBRARY.length)];
+  return BOSS_LIBRARY[0];
 };
 
 export const getBossById = (id: string): Boss | undefined => {
   return BOSS_LIBRARY.find(boss => boss.id === id);
 };
+
+    

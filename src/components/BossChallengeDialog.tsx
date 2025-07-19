@@ -7,7 +7,6 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { Loader2, ArrowRight, Forward } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
-import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 import { FreeResponseQuestion } from './FreeResponseQuestion';
 import { Separator } from './ui/separator';
@@ -26,7 +25,6 @@ interface BossChallengeDialogProps {
 const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, onSkip, lessonId, stageId, canSkip }) => {
   const { currentUser, userProgress, setUserProgress } = useUserProgress();
   const [view, setView] = useState<'intro' | 'challenge' | 'result'>('intro');
-  const [bossInfo, setBossInfo] = useState<BossInfo | null>(null);
   const [questions, setQuestions] = useState<BossQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +43,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
     setError(null);
     setAwardedBooster(null);
     try {
-      const { boss, questions: fetchedQuestions, challenge } = await populateBossChallengeQuestions(currentUser.uid, lessonId, stageId);
-      setBossInfo(boss);
+      const { questions: fetchedQuestions, challenge } = await populateBossChallengeQuestions(currentUser.uid, lessonId, stageId);
       setQuestions(fetchedQuestions);
       setQuestionStatus(challenge?.questionStatus || {});
       if (fetchedQuestions.length === 0) {
@@ -185,17 +182,6 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         </div>
       );
     }
-    if (!bossInfo) {
-      return (
-        <>
-          <DialogHeader>
-            <DialogTitle>Fehler</DialogTitle>
-            <DialogDescription>Boss-Informationen konnten nicht geladen werden.</DialogDescription>
-          </DialogHeader>
-          <div className="p-8">Boss-Informationen konnten nicht geladen werden.</div>
-        </>
-      );
-    }
 
     switch (view) {
       case 'intro':
@@ -203,11 +189,13 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
           <>
             <DialogHeader className="items-center text-center">
               <BossIcon className="h-20 w-20 text-primary mb-4" />
-              <DialogTitle className="text-2xl">Wiederholungs Herausforderung</DialogTitle>
-              <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">"{bossInfo.quote}"</DialogDescription>
+              <DialogTitle className="text-2xl">Wiederholungs-Herausforderung</DialogTitle>
+              <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">
+                "Du denkst, du hast die Grundlagen gemeistert? Beweise es, bevor du weitermachst!"
+              </DialogDescription>
             </DialogHeader>
             <div className="text-center mt-4">
-              <p>Besiege <span className="font-bold">{bossInfo.name}</span>, um einen Booster zu erhalten und fortzufahren!</p>
+              <p>Bestehe die Herausforderung, um einen Punkte-Booster zu erhalten und fortzufahren.</p>
             </div>
             <DialogFooter className="mt-6 sm:justify-center gap-4">
               {canSkip && (
@@ -236,7 +224,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         return (
           <>
             <DialogHeader>
-              <DialogTitle>Boss-Herausforderung: {bossInfo.name}</DialogTitle>
+              <DialogTitle>Boss-Herausforderung</DialogTitle>
               <DialogDescription>
                 Beantworte die folgenden Fragen, um fortzufahren.
               </DialogDescription>
@@ -260,7 +248,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                 <DialogHeader className="items-center text-center">
                   <BossIcon className="h-16 w-16 text-yellow-400 mb-4" />
                   <DialogTitle className="text-2xl font-bold text-yellow-400">Herausforderung gemeistert!</DialogTitle>
-                  <DialogDescription className="mt-2 text-muted-foreground">Du hast {bossInfo.name} besiegt!</DialogDescription>
+                  <DialogDescription className="mt-2 text-muted-foreground">Du hast die Herausforderung besiegt!</DialogDescription>
                 </DialogHeader>
                 {awardedBooster && (
                   <div className="mt-4 text-center">
@@ -299,3 +287,5 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
 };
 
 export default BossChallengeDialog;
+
+    
