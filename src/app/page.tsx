@@ -683,23 +683,31 @@ function HomePageContent() {
 
     return (
       <div className="w-full h-screen flex flex-col items-center p-8">
-        <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4 sticky top-12 bg-background z-30 py-4">
-          <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
-          <EightbitButton onClick={() => {
-            trackEvent({
-              action: "Lesson_Exited",
-              category: "Lesson",
-              // Falls du Infos hast, z.B. Label: `LessonID: ${selectedLesson.id}`
-              // label: `LessonID: ${selectedLesson.id}`,
-              label: "Lesson beendet",
-            });
-            handleExitLesson();
+        <div
+          className="fixed top-16 z-30 bg-background py-4 flex justify-between items-center px-6 shadow-lg pt-5"
+          style={{
+            left: currentSidebarTotalWidth,
+            width: `calc(100% - ${currentSidebarTotalWidth}px)`,
           }}
-            className="font-bold"
-          >Speichern und Zurück</EightbitButton>
+        >
+          <div className="w-full max-w-4xl mx-auto flex justify-between items-center px-6 gap-20">
+            <h1 className="text-3xl font-bold text-primary pr-12">{lessonData.title}</h1>
+            <EightbitButton onClick={() => {
+              trackEvent({
+                action: "Lesson_Exited",
+                category: "Lesson",
+                // Falls du Infos hast, z.B. Label: `LessonID: ${selectedLesson.id}`
+                // label: `LessonID: ${selectedLesson.id}`,
+                label: "Lesson beendet",
+              });
+              handleExitLesson();
+            }}
+              className="font-bold ml-12"
+            >Speichern und Zurück</EightbitButton>
+          </div>
         </div>
 
-        <div className="w-full max-w-3xl flex-1 min-h-0 flex flex-col">
+        <div className="w-full max-w-3xl flex-1 min-h-0 flex flex-col pt-4">
           <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
             <CardContent className="p-0">
               <div className="space-y-8">
