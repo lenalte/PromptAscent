@@ -775,23 +775,32 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
         unlockedLessonIds={userProgress?.unlockedLessons || []}
         isAuthenticated={!!currentUser && !currentUser.isAnonymous}
       />
-
-      <div
-        className="flex flex-col min-h-screen transition-all duration-300 ease-in-out"
-        style={{ marginLeft: `${currentSidebarTotalWidth}px` }}
-      >
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md">
+      <header className="fixed top-0 z-50 bg-background/80 backdrop-blur-md shadow-2xl transition-all duration-300"
+      style={{
+        left: currentSidebarTotalWidth,
+        width: `calc(100% - ${currentSidebarTotalWidth}px)`
+      }}>
           <ProgressBar progress={overallLevelProgressPercentage} />
           <LevelAndInformationBar currentLevel={currentOverallLevel} onInventoryToggle={() => setIsInventoryOpen(prev => !prev)} />
         </header>
 
-        <main className="flex-1 flex flex-col">
+      <div
+        className="flex flex-col min-h-screen transition-all duration-300 ease-in-out"
+        style={{
+          left: currentSidebarTotalWidth,
+          width: `calc(100% - ${currentSidebarTotalWidth}px)`
+        }}
+        style={{ marginLeft: `${currentSidebarTotalWidth}px` }}
+      >
+        
+
+        <main className="flex-1 flex flex-col pt-[96px] pb-[96px]">
             {isLessonViewActive ? (
                 renderLessonView()
             ) : (
                 <>
                     <div className="flex-grow p-8">
-                        <div className="w-full max-w-4xl mx-auto">
+                        <div className="w-full max-w-4xl ml-8">
                             {(isLoadingLessons && !selectedLesson) ? (
                                 <div className="text-center py-10 flex flex-col items-center justify-center">
                                     <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
@@ -837,7 +846,12 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
                         </div>
                     </div>
 
-                    <div className="flex w-full items-end mt-auto">
+                    <div className="fixed bottom-0 flex items-end z-50 transition-all duration-300"
+                    style={{
+                      left: currentSidebarTotalWidth,
+                      width: `calc(100% - ${currentSidebarTotalWidth}px)`
+                    }}
+                    >
                         {stageHeights.map((heightClass, index) => {
                             const stageId = `stage${index + 1}`;
                             const stageProgress = getStageProgressForSelectedLesson(stageId);
