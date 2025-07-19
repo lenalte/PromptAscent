@@ -694,7 +694,7 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
       label: "Lesson beendet",
     });
     handleExitLesson();
-  }}>BEENDEN</EightbitButton>
+  }}>Speichern und Zurück</EightbitButton>
             </div>
             
             <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
