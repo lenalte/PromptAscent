@@ -449,8 +449,6 @@ export async function resolveBossChallenge(
   if (!userProgress) throw new Error("User progress not found.");
   const challenge = userProgress.lessonStageProgress?.[lessonId]?.stages?.[stageId]?.bossChallenge;
   if (!challenge) throw new Error("Boss challenge not found.");
-  const boss = getBossById(challenge.bossId);
-  if (!boss) throw new Error("Boss definition not found.");
 
   const batch = writeBatch(db);
   const userDocRef = doc(db, USERS_COLLECTION, userId);
