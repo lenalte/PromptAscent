@@ -25,9 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      
-      <body className={`${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
       <GoogleAnalytics />
+      <body className={`${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
+      
         <UserProgressProvider>
           <AuthRedirect>
             {children}
