@@ -373,15 +373,12 @@ export async function populateBossChallengeQuestions(
   userId: string,
   lessonId: string,
   stageId: string
-): Promise<{ boss: Boss; questions: BossQuestion[]; challenge: any }> {
+): Promise<{ questions: BossQuestion[]; challenge: any }> {
   const userProgress = await getUserProgress(userId);
   if (!userProgress) throw new Error("User progress not found.");
 
   const challenge = userProgress.lessonStageProgress?.[lessonId]?.stages?.[stageId]?.bossChallenge;
   if (!challenge) throw new Error("Boss challenge not found for this stage.");
-
-  const boss = getBossById(challenge.bossId);
-  if (!boss) throw new Error("Boss definition not found in library.");
 
   if (challenge.questionIds && challenge.questionIds.length > 0) {
     console.log("Boss questions already populated. Fetching content.");
@@ -393,7 +390,7 @@ export async function populateBossChallengeQuestions(
         return { lessonId, item };
       })
     );
-    return { boss, questions, challenge };
+    return { questions, challenge };
   }
 
   console.log("Populating new boss questions.");
@@ -414,7 +411,7 @@ export async function populateBossChallengeQuestions(
         [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'passed',
     };
     await updateUserDocument(userId, updates);
-    return { boss, questions: [], challenge: {...challenge, status: 'passed', bossDefeated: true }};
+    return { questions: [], challenge: {...challenge, status: 'passed', bossDefeated: true }};
   }
 
   const questionIds = questions.map(q => ({ lessonId: q.lessonId, itemId: q.item.id }));
@@ -434,7 +431,7 @@ export async function populateBossChallengeQuestions(
   const updatedProgress = await getUserProgress(userId);
   const updatedChallenge = updatedProgress!.lessonStageProgress[lessonId].stages[stageId].bossChallenge;
 
-  return { boss, questions, challenge: updatedChallenge! };
+  return { questions, challenge: updatedChallenge! };
 }
 
 
@@ -641,3 +638,5 @@ export async function saveLikertScaleAnswer(answerData: { lessonId: string; ques
     throw error;
   }
 }
+
+    
