@@ -52,19 +52,19 @@ import { trackEvent } from '@/lib/gtagHelper';
 type LessonListing = Omit<Lesson, 'stages'>;
 
 type StageCompleteInfo = {
-    renderType: 'StageCompleteScreen';
-    key: string;
-    stageId: string;
-    stageTitle: string;
-    basePointsAdded: number;
-    activeBoosterMultiplier: number | null;
-    stageItemAttempts: { [itemId: string]: StageItemStatus };
-    stageItems: LessonItem[];
-    onNextStage: () => void;
-    onGoHome: () => void;
-    isLastStage: boolean;
-    stageStatus: StageStatusValue;
-    onRestart: () => void;
+  renderType: 'StageCompleteScreen';
+  key: string;
+  stageId: string;
+  stageTitle: string;
+  basePointsAdded: number;
+  activeBoosterMultiplier: number | null;
+  stageItemAttempts: { [itemId: string]: StageItemStatus };
+  stageItems: LessonItem[];
+  onNextStage: () => void;
+  onGoHome: () => void;
+  isLastStage: boolean;
+  stageStatus: StageStatusValue;
+  onRestart: () => void;
 };
 type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: string; };
 
@@ -73,18 +73,18 @@ type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo;
 
 function HomePageContent() {
   const { userProgress, currentUser, isLoadingAuth, isLoadingProgress, completeStageAndProceed, restartStage } = useUserProgress();
-  
+
   const [isSidebarContentAreaOpen, setIsSidebarContentAreaOpen] = useState(true);
   const [lessonList, setLessonList] = useState<LessonListing[]>([]);
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState<LessonListing | null>(null);
-  
+
   const [currentOverallLevel, setCurrentOverallLevel] = useState<OverallLevel | null>(null);
   const [overallLevelProgressPercentage, setOverallLevelProgressPercentage] = useState(0);
   const [isStartingLesson, setIsStartingLesson] = useState(false);
   const router = useRouter();
 
-  const [bossChallengeInfo, setBossChallengeInfo] = useState<{lessonId: string, stageId: string, canSkip: boolean} | null>(null);
+  const [bossChallengeInfo, setBossChallengeInfo] = useState<{ lessonId: string, stageId: string, canSkip: boolean } | null>(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [selectedSummaryLessonId, setSelectedSummaryLessonId] = useState<string | null>(null);
 
@@ -92,7 +92,7 @@ function HomePageContent() {
   // === State for embedded lesson view ===
   const [isLessonViewActive, setIsLessonViewActive] = useState(false);
   const { toast } = useToast();
-  
+
   const [lessonData, setLessonData] = useState<Lesson | null>(null);
   const [isLoadingLesson, setIsLoadingLesson] = useState(true);
   const [contentQueue, setContentQueue] = useState<ContentQueueItem[]>([]);
@@ -109,7 +109,7 @@ function HomePageContent() {
   const [showLevelCompleteScreen, setShowLevelCompleteScreen] = useState(false);
 
 
-  
+
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
@@ -124,10 +124,10 @@ function HomePageContent() {
         const availableLessons = await getAvailableLessons();
         setLessonList(availableLessons);
         if (availableLessons.length > 0 && !hasAutoSelectedLesson) {
-            const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
-            const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
-            setSelectedLesson(lessonToSelect);
-            setHasAutoSelectedLesson(true);
+          const initialSelectedLessonId = userProgress?.currentLessonId || availableLessons[0].id;
+          const lessonToSelect = availableLessons.find(l => l.id === initialSelectedLessonId) || availableLessons[0];
+          setSelectedLesson(lessonToSelect);
+          setHasAutoSelectedLesson(true);
         } else if (availableLessons.length === 0) {
           setSelectedLesson(null);
         }
@@ -138,7 +138,7 @@ function HomePageContent() {
       setIsLoadingLessons(false);
     }
     if (!isLoadingProgress && !isLoadingAuth && currentUser) {
-        fetchLessons();
+      fetchLessons();
     }
   }, [isLoadingAuth, isLoadingProgress, currentUser, hasAutoSelectedLesson]);
 
@@ -150,7 +150,7 @@ function HomePageContent() {
       setCurrentOverallLevel(level || null);
     } else if (lessonList.length > 0) {
       const level = getLevelForLessonId(lessonList[0].id);
-       setCurrentOverallLevel(level || OVERALL_LEVELS[0] || null);
+      setCurrentOverallLevel(level || OVERALL_LEVELS[0] || null);
     } else {
       setCurrentOverallLevel(OVERALL_LEVELS[0] || null);
     }
@@ -168,15 +168,15 @@ function HomePageContent() {
   }, [currentOverallLevel, completedLessonsString, userProgress?.completedLessons]);
 
   const handleSidebarContentToggle = useCallback((isOpen: boolean) => setIsSidebarContentAreaOpen(isOpen), []);
-  
+
   const handleLessonSelect = useCallback((lesson: LessonListing) => {
     if (isInventoryOpen) {
-        const isCompleted = userProgress?.completedLessons.includes(lesson.id) ?? false;
-        if (isCompleted) {
-            setSelectedSummaryLessonId(lesson.id);
-        }
+      const isCompleted = userProgress?.completedLessons.includes(lesson.id) ?? false;
+      if (isCompleted) {
+        setSelectedSummaryLessonId(lesson.id);
+      }
     } else {
-        setSelectedLesson(lesson);
+      setSelectedLesson(lesson);
     }
   }, [isInventoryOpen, userProgress?.completedLessons]);
 
@@ -224,8 +224,8 @@ function HomePageContent() {
       const stageId = `stage${lessonProg.currentStageIndex + 1}`;
       const stage = lessonProg.stages[stageId];
       if (stage?.hasBoss && !stage.bossDefeated) {
-          setBossChallengeInfo({ lessonId, stageId, canSkip: true });
-          return;
+        setBossChallengeInfo({ lessonId, stageId, canSkip: true });
+        return;
       }
     }
     handleStartLessonFlow();
@@ -256,26 +256,26 @@ function HomePageContent() {
     isProcessing.current = true;
     setIsSubmitting(true);
     try {
-        if (currentStageIndex < 5 && lessonData) {
-            const nextStage = lessonData.stages[currentStageIndex + 1];
-            setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id }))]);
-            setActiveContentIndex(prev => prev + 1);
-            setStageItemAttempts({});
-            setPointsThisStageSession(0);
-        } else {
-            setIsLessonFullyCompleted(true);
-        }
+      if (currentStageIndex < 5 && lessonData) {
+        const nextStage = lessonData.stages[currentStageIndex + 1];
+        setContentQueue(prev => [...prev, ...nextStage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id }))]);
+        setActiveContentIndex(prev => prev + 1);
+        setStageItemAttempts({});
+        setPointsThisStageSession(0);
+      } else {
+        setIsLessonFullyCompleted(true);
+      }
     } finally {
-        isProcessing.current = false;
-        setIsSubmitting(false);
+      isProcessing.current = false;
+      setIsSubmitting(false);
     }
   }, [currentStageIndex, lessonData]);
-  
+
   const handleRestartStage = useCallback(async () => {
-      if (!currentStage || !selectedLesson) return;
-      await restartStage(selectedLesson.id, currentStage.id);
-      // The reload is handled by the main useEffect watching userProgress,
-      // which will re-run loadLessonAndProgress.
+    if (!currentStage || !selectedLesson) return;
+    await restartStage(selectedLesson.id, currentStage.id);
+    // The reload is handled by the main useEffect watching userProgress,
+    // which will re-run loadLessonAndProgress.
   }, [selectedLesson, currentStage, restartStage]);
 
   const handleCompleteStage = useCallback(async (finalAttemptsState: { [itemId: string]: StageItemStatus }) => {
@@ -285,82 +285,82 @@ function HomePageContent() {
     setIsSubmitting(true);
 
     try {
-        const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, finalAttemptsState, 0, currentStage.items as LessonItem[]);
-        if (!stageResult || !stageResult.updatedProgress) {
-            toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
-            return;
-        }
+      const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, finalAttemptsState, 0, currentStage.items as LessonItem[]);
+      if (!stageResult || !stageResult.updatedProgress) {
+        toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
+        return;
+      }
 
-        setNextLessonId(stageResult.nextLessonIdIfAny);
-        const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
-        
-        const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
-            ? userProgress.activeBooster.multiplier
-            : null;
+      setNextLessonId(stageResult.nextLessonIdIfAny);
+      const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
 
-        const completionCard: StageCompleteInfo = {
-            renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
-            basePointsAdded: stageResult.basePointsAdded, activeBoosterMultiplier, stageItemAttempts: finalAttemptsState, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
-            onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
-        };
-        
-        if (finalStageStatus === 'failed-stage') {
-            const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
-            const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
-            
-            if (firstItemOfStageIndex !== -1) {
-                setContentQueue(prev => {
-                    const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
-                    return [...queueBeforeCurrentStage, completionCard];
-                });
-                setActiveContentIndex(firstItemOfStageIndex);
-            } else {
-                setContentQueue(prev => [...prev, completionCard]);
-                setActiveContentIndex(prev => prev + 1);
-            }
+      const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
+        ? userProgress.activeBooster.multiplier
+        : null;
+
+      const completionCard: StageCompleteInfo = {
+        renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
+        basePointsAdded: stageResult.basePointsAdded, activeBoosterMultiplier, stageItemAttempts: finalAttemptsState, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
+        onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
+      };
+
+      if (finalStageStatus === 'failed-stage') {
+        const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
+        const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
+
+        if (firstItemOfStageIndex !== -1) {
+          setContentQueue(prev => {
+            const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
+            return [...queueBeforeCurrentStage, completionCard];
+          });
+          setActiveContentIndex(firstItemOfStageIndex);
         } else {
-            setContentQueue(prev => {
-                const newQueue = [...prev];
-                newQueue.splice(activeContentIndex + 1, 0, completionCard);
-                return newQueue;
-            });
-            setActiveContentIndex(prev => prev + 1);
+          setContentQueue(prev => [...prev, completionCard]);
+          setActiveContentIndex(prev => prev + 1);
         }
+      } else {
+        setContentQueue(prev => {
+          const newQueue = [...prev];
+          newQueue.splice(activeContentIndex + 1, 0, completionCard);
+          return newQueue;
+        });
+        setActiveContentIndex(prev => prev + 1);
+      }
     } catch (error) {
-        console.error("Error in handleCompleteStage: ", error);
-        toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
+      console.error("Error in handleCompleteStage: ", error);
+      toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
     } finally {
-        isProcessing.current = false;
-        setIsSubmitting(false);
+      isProcessing.current = false;
+      setIsSubmitting(false);
     }
-}, [selectedLesson, currentStage, currentStageIndex, completeStageAndProceed, toast, userProgress, handleStartNextStage, handleExitLesson, handleRestartStage, contentQueue, activeContentIndex]);
+  }, [selectedLesson, currentStage, currentStageIndex, completeStageAndProceed, toast, userProgress, handleStartNextStage, handleExitLesson, handleRestartStage, contentQueue, activeContentIndex]);
 
-const handleProceed = useCallback(async () => {
+  const handleProceed = useCallback(async () => {
     if (isProcessing.current || !activeContent) return;
 
     if (activeContent.renderType === 'StageCompleteScreen') {
-        setActiveContentIndex(prev => prev + 1);
-        return;
+      setActiveContentIndex(prev => prev + 1);
+      return;
     }
 
     const currentStageItemIds = new Set(currentStage?.items.map(i => i.id));
     let isLastItemInCurrentStage = true;
     for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
-        const futureItem = contentQueue[i];
-        if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
-            isLastItemInCurrentStage = false;
-            break;
-        }
+      const futureItem = contentQueue[i];
+      if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
+        isLastItemInCurrentStage = false;
+        break;
+      }
     }
 
     if (isLastItemInCurrentStage) {
-        await handleCompleteStage(stageItemAttempts);
+      await handleCompleteStage(stageItemAttempts);
     } else {
-        setActiveContentIndex(prev => prev + 1);
+      setActiveContentIndex(prev => prev + 1);
     }
-}, [activeContent, activeContentIndex, contentQueue, currentStage, stageItemAttempts, handleCompleteStage]);
+  }, [activeContent, activeContentIndex, contentQueue, currentStage, stageItemAttempts, handleCompleteStage]);
 
-const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string, answer?: number) => {
+  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string, answer?: number) => {
     if (!currentStage) return;
 
     const updatedAttempts = { ...stageItemAttempts };
@@ -371,15 +371,15 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
 
     let awardedPoints = 0;
     if (isNowCorrect && !wasCorrectBefore) {
-        awardedPoints = pointsAwarded;
-        setPointsThisStageSession(p => p + awardedPoints);
+      awardedPoints = pointsAwarded;
+      setPointsThisStageSession(p => p + awardedPoints);
     }
 
     const newStatus: StageItemStatus = {
-        attempts: newAttemptsCount,
-        correct: isNowCorrect,
-        points: (itemStatus.points ?? 0) + awardedPoints,
-        answer: answer,
+      attempts: newAttemptsCount,
+      correct: isNowCorrect,
+      points: (itemStatus.points ?? 0) + awardedPoints,
+      answer: answer,
     };
 
     updatedAttempts[itemId] = newStatus;
@@ -388,34 +388,34 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
     // Check for stage failure
     const isLastItem = currentStage.items[currentStage.items.length - 1].id === itemId;
     if (isLastItem && !isCorrect && newAttemptsCount >= 3) {
-        setTimeout(() => handleCompleteStage(updatedAttempts), 500);
+      setTimeout(() => handleCompleteStage(updatedAttempts), 500);
     } else if (!isCorrect && newAttemptsCount >= 3) {
-        setTimeout(() => handleProceed(), 1000);
+      setTimeout(() => handleProceed(), 1000);
     }
 
-}, [stageItemAttempts, currentStage, handleProceed, handleCompleteStage]);
-  
+  }, [stageItemAttempts, currentStage, handleProceed, handleCompleteStage]);
+
   const handleGoToOverviewAfterLessonCompletion = useCallback(() => {
     // Check if the current level is now complete
     const allLevelLessonsCompleted =
-    currentOverallLevel &&
-    currentOverallLevel.lessonIds.every(id => userProgress?.completedLessons.includes(id));
+      currentOverallLevel &&
+      currentOverallLevel.lessonIds.every(id => userProgress?.completedLessons.includes(id));
 
     if (allLevelLessonsCompleted && !showLevelCompleteScreen) {
       setShowLevelCompleteScreen(true);
       return; // Stop here, wait for user to close level complete screen
     }
-  
+
     // Default behavior: just exit the lesson view
     handleExitLesson();
     if (nextLessonId) {
-        const nextLesson = lessonList.find(l => l.id === nextLessonId);
-        if (nextLesson) {
-          setSelectedLesson(nextLesson);
-        }
+      const nextLesson = lessonList.find(l => l.id === nextLessonId);
+      if (nextLesson) {
+        setSelectedLesson(nextLesson);
+      }
     }
   }, [currentOverallLevel, userProgress, nextLessonId, lessonList, showLevelCompleteScreen, handleExitLesson]);
-  
+
   const handleLevelCompleteScreenClose = useCallback(() => {
     setShowLevelCompleteScreen(false); // Hide the screen
     handleExitLesson(); // Go back to overview
@@ -426,112 +426,112 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
       }
     }
   }, [nextLessonId, lessonList, handleExitLesson]);
-  
-  
+
+
 
   useEffect(() => {
     if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet' && !stageItemAttempts[activeContent.id]) {
-        handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
+      handleAnswerSubmit(true, activeContent.pointsAwarded, activeContent.id);
     }
   }, [activeContent, stageItemAttempts, handleAnswerSubmit]);
 
   useEffect(() => {
     async function loadLessonAndProgress() {
-        if (!isLessonViewActive || !selectedLesson?.id || !currentUser) return;
-        
-        setIsLoadingLesson(true);
-        setErrorLoadingLesson(null);
-        const lessonId = selectedLesson.id;
+      if (!isLessonViewActive || !selectedLesson?.id || !currentUser) return;
 
-        try {
-            const loadedLesson = await getGeneratedLessonById(lessonId);
-            if (!loadedLesson || !loadedLesson.stages || loadedLesson.stages.length !== 6) {
-                setErrorLoadingLesson("Lesson content is invalid or missing.");
-                return;
-            }
-            setLessonData(loadedLesson);
+      setIsLoadingLesson(true);
+      setErrorLoadingLesson(null);
+      const lessonId = selectedLesson.id;
 
-            const lessonProg = userProgress?.lessonStageProgress?.[lessonId];
-            if (!lessonProg) {
-                setContentQueue(loadedLesson.stages[0].items.map(item => ({ ...item, renderType: 'LessonItem', key: item.id })));
-                setActiveContentIndex(0);
-                setStageItemAttempts({});
-                setPointsThisStageSession(0);
-            } else {
-                // Logic to build content queue from progress
-                const newQueue: ContentQueueItem[] = [];
-                for (let i = 0; i < lessonProg.currentStageIndex; i++) {
-                    const stage = loadedLesson.stages[i];
-                    const pastStageProg = lessonProg.stages[stage.id];
-                    newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
-                    
-                    let stagePoints = pastStageProg?.pointsEarned;
-                    if (typeof stagePoints !== 'number') {
-                        stagePoints = 0;
-                        if (pastStageProg?.items) {
-                            stage.items.forEach(item => {
-                                if (pastStageProg.items[item.id]?.correct) {
-                                    stagePoints += item.pointsAwarded;
-                                }
-                            });
-                        }
-                    }
-
-                    newQueue.push({
-                        renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title,
-                        basePointsAdded: stagePoints,
-                        activeBoosterMultiplier: null, // Booster not relevant for past stages display
-                        stageItemAttempts: pastStageProg?.items || {}, stageItems: stage.items as LessonItem[], onNextStage: () => {}, onGoHome: handleExitLesson,
-                        isLastStage: i === 5, stageStatus: pastStageProg?.status || 'completed-good', onRestart: () => {},
-                    });
-                }
-                const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
-                const currentStageProgress = lessonProg.stages[currentStageData.id];
-
-                if (currentStageProgress?.status === 'failed-stage') {
-                    const completionCard: StageCompleteInfo = {
-                        renderType: 'StageCompleteScreen',
-                        key: `complete-${currentStageData.id}`,
-                        stageId: currentStageData.id,
-                        stageTitle: currentStageData.title,
-                        basePointsAdded: 0,
-                        activeBoosterMultiplier: null,
-                        stageItemAttempts: currentStageProgress.items,
-                        stageItems: currentStageData.items as LessonItem[],
-                        onNextStage: () => {}, // Should not be called
-                        onGoHome: handleExitLesson,
-                        isLastStage: lessonProg.currentStageIndex === 5,
-                        stageStatus: 'failed-stage',
-                        onRestart: handleRestartStage,
-                    };
-                    newQueue.push(completionCard);
-                    setContentQueue(newQueue);
-                    setActiveContentIndex(newQueue.length -1);
-                    setIsLoadingLesson(false);
-                    return; // Stop processing further for this load
-                }
-
-                let activeItemIndex = 0;
-                if(currentStageProgress?.items){
-                    const firstIncompleteItemIndex = currentStageData.items.findIndex(item => !currentStageProgress.items[item.id]?.correct);
-                    activeItemIndex = firstIncompleteItemIndex !== -1 ? firstIncompleteItemIndex : currentStageData.items.length;
-                }
-                newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
-                setContentQueue(newQueue);
-                setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
-                setStageItemAttempts(currentStageProgress?.items || {});
-                setPointsThisStageSession(0);
-            }
-            setIsLessonFullyCompleted(userProgress?.completedLessons.includes(lessonId) ?? false);
-        } catch (err) {
-            console.error("[LessonView] Error loading lesson/progress:", err);
-            setErrorLoadingLesson(err instanceof Error ? err.message : "Failed to load lesson data.");
-        } finally {
-            setIsLoadingLesson(false);
+      try {
+        const loadedLesson = await getGeneratedLessonById(lessonId);
+        if (!loadedLesson || !loadedLesson.stages || loadedLesson.stages.length !== 6) {
+          setErrorLoadingLesson("Lesson content is invalid or missing.");
+          return;
         }
+        setLessonData(loadedLesson);
+
+        const lessonProg = userProgress?.lessonStageProgress?.[lessonId];
+        if (!lessonProg) {
+          setContentQueue(loadedLesson.stages[0].items.map(item => ({ ...item, renderType: 'LessonItem', key: item.id })));
+          setActiveContentIndex(0);
+          setStageItemAttempts({});
+          setPointsThisStageSession(0);
+        } else {
+          // Logic to build content queue from progress
+          const newQueue: ContentQueueItem[] = [];
+          for (let i = 0; i < lessonProg.currentStageIndex; i++) {
+            const stage = loadedLesson.stages[i];
+            const pastStageProg = lessonProg.stages[stage.id];
+            newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
+
+            let stagePoints = pastStageProg?.pointsEarned;
+            if (typeof stagePoints !== 'number') {
+              stagePoints = 0;
+              if (pastStageProg?.items) {
+                stage.items.forEach(item => {
+                  if (pastStageProg.items[item.id]?.correct) {
+                    stagePoints += item.pointsAwarded;
+                  }
+                });
+              }
+            }
+
+            newQueue.push({
+              renderType: 'StageCompleteScreen', key: `complete-${stage.id}`, stageId: stage.id, stageTitle: stage.title,
+              basePointsAdded: stagePoints,
+              activeBoosterMultiplier: null, // Booster not relevant for past stages display
+              stageItemAttempts: pastStageProg?.items || {}, stageItems: stage.items as LessonItem[], onNextStage: () => { }, onGoHome: handleExitLesson,
+              isLastStage: i === 5, stageStatus: pastStageProg?.status || 'completed-good', onRestart: () => { },
+            });
+          }
+          const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
+          const currentStageProgress = lessonProg.stages[currentStageData.id];
+
+          if (currentStageProgress?.status === 'failed-stage') {
+            const completionCard: StageCompleteInfo = {
+              renderType: 'StageCompleteScreen',
+              key: `complete-${currentStageData.id}`,
+              stageId: currentStageData.id,
+              stageTitle: currentStageData.title,
+              basePointsAdded: 0,
+              activeBoosterMultiplier: null,
+              stageItemAttempts: currentStageProgress.items,
+              stageItems: currentStageData.items as LessonItem[],
+              onNextStage: () => { }, // Should not be called
+              onGoHome: handleExitLesson,
+              isLastStage: lessonProg.currentStageIndex === 5,
+              stageStatus: 'failed-stage',
+              onRestart: handleRestartStage,
+            };
+            newQueue.push(completionCard);
+            setContentQueue(newQueue);
+            setActiveContentIndex(newQueue.length - 1);
+            setIsLoadingLesson(false);
+            return; // Stop processing further for this load
+          }
+
+          let activeItemIndex = 0;
+          if (currentStageProgress?.items) {
+            const firstIncompleteItemIndex = currentStageData.items.findIndex(item => !currentStageProgress.items[item.id]?.correct);
+            activeItemIndex = firstIncompleteItemIndex !== -1 ? firstIncompleteItemIndex : currentStageData.items.length;
+          }
+          newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
+          setContentQueue(newQueue);
+          setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
+          setStageItemAttempts(currentStageProgress?.items || {});
+          setPointsThisStageSession(0);
+        }
+        setIsLessonFullyCompleted(userProgress?.completedLessons.includes(lessonId) ?? false);
+      } catch (err) {
+        console.error("[LessonView] Error loading lesson/progress:", err);
+        setErrorLoadingLesson(err instanceof Error ? err.message : "Failed to load lesson data.");
+      } finally {
+        setIsLoadingLesson(false);
+      }
     }
     if (isLessonViewActive && selectedLesson?.id) {
-       loadLessonAndProgress();
+      loadLessonAndProgress();
     }
   }, [isLessonViewActive, selectedLesson?.id, currentUser, userProgress]);
 
@@ -570,24 +570,24 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeContentIndex]);
-  
+
 
 
   const stageProgressUi = useMemo(() => {
     if (!lessonData || !userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']) return null;
     const lessonProg = userProgress.lessonStageProgress[selectedLesson!.id];
     return lessonData.stages.map((stage, index) => {
-        const stageInfo = lessonProg.stages[stage.id];
-        let bgColor = 'bg-muted';
-        if (index < lessonProg.currentStageIndex || stageInfo?.status?.startsWith('completed')) {
-            if (stageInfo?.status === 'completed-perfect') bgColor = 'bg-green-500';
-            else if (stageInfo?.status === 'completed-good') bgColor = 'bg-yellow-500';
-            else if (stageInfo?.status === 'failed-stage') bgColor = 'bg-red-500';
-            else bgColor = 'bg-gray-300';
-        } else if (index === lessonProg.currentStageIndex) {
-             bgColor = 'bg-blue-500 animate-pulse';
-        }
-        return <div key={stage.id} className={`flex-1 h-3 rounded ${bgColor} mx-0.5`} />;
+      const stageInfo = lessonProg.stages[stage.id];
+      let bgColor = 'bg-muted';
+      if (index < lessonProg.currentStageIndex || stageInfo?.status?.startsWith('completed')) {
+        if (stageInfo?.status === 'completed-perfect') bgColor = 'bg-green-500';
+        else if (stageInfo?.status === 'completed-good') bgColor = 'bg-yellow-500';
+        else if (stageInfo?.status === 'failed-stage') bgColor = 'bg-red-500';
+        else bgColor = 'bg-gray-300';
+      } else if (index === lessonProg.currentStageIndex) {
+        bgColor = 'bg-blue-500 animate-pulse';
+      }
+      return <div key={stage.id} className={`flex-1 h-3 rounded ${bgColor} mx-0.5`} />;
     });
   }, [lessonData, userProgress, selectedLesson]);
 
@@ -595,39 +595,39 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
     if (!activeContent) return { visible: false };
 
     if (activeContent.renderType === 'StageCompleteScreen') {
-        if (activeContent.stageStatus === 'failed-stage') {
-            return {
-                visible: true,
-                onClick: handleRestartStage,
-                text: 'Stufe wiederholen',
-                icon: <RefreshCw className="h-5 w-5" />,
-                disabled: isSubmitting,
-            };
-        }
-        return { 
-            visible: true, 
-            onClick: handleStartNextStage, 
-            text: activeContent.isLastStage ? 'Beenden' : 'Nächste Stufe', 
-            icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />, 
-            disabled: isSubmitting 
+      if (activeContent.stageStatus === 'failed-stage') {
+        return {
+          visible: true,
+          onClick: handleRestartStage,
+          text: 'Stufe wiederholen',
+          icon: <RefreshCw className="h-5 w-5" />,
+          disabled: isSubmitting,
         };
+      }
+      return {
+        visible: true,
+        onClick: handleStartNextStage,
+        text: activeContent.isLastStage ? 'Beenden' : 'Nächste Stufe',
+        icon: activeContent.isLastStage ? <Trophy className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />,
+        disabled: isSubmitting
+      };
     }
 
     if (activeContent.renderType === 'LessonItem') {
-        const item = activeContent;
-        const itemStatus = stageItemAttempts[item.id];
-        const isAnsweredCorrectly = itemStatus?.correct === true;
-        const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
-        
-        if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isAnsweredCorrectly) || item.type === 'likertScale') {
-          return { 
-              visible: true, 
-              onClick: handleProceed, 
-              text: 'Nächste', 
-              icon: <ArrowRight className="h-5 w-5" />, 
-              disabled: isSubmitting 
-            };
-        }
+      const item = activeContent;
+      const itemStatus = stageItemAttempts[item.id];
+      const isAnsweredCorrectly = itemStatus?.correct === true;
+      const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
+
+      if (isAnsweredCorrectly || item.type === 'informationalSnippet' || (maxAttemptsReached && !isAnsweredCorrectly) || item.type === 'likertScale') {
+        return {
+          visible: true,
+          onClick: handleProceed,
+          text: 'Nächste',
+          icon: <ArrowIcon className="ml-2" />,
+          disabled: isSubmitting
+        };
+      }
     }
 
     return { visible: false }; // No button if question is not answered or max attempts not reached
@@ -639,7 +639,7 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
   const currentSidebarTotalWidth = isSidebarContentAreaOpen ? ICON_BAR_WIDTH_PX + CONTENT_AREA_WIDTH_PX : ICON_BAR_WIDTH_PX;
   const isLessonUnlocked = (lessonId: string) => userProgress?.unlockedLessons?.includes(lessonId) ?? false;
   const currentStageIndexOfSelectedLesson = selectedLesson && userProgress?.lessonStageProgress?.[selectedLesson.id]?.currentStageIndex !== undefined ? userProgress.lessonStageProgress[selectedLesson.id].currentStageIndex : -1;
-  
+
   const hasStartedSelectedLesson = useMemo(() => {
     if (!selectedLesson || !userProgress?.lessonStageProgress?.[selectedLesson.id]) {
       return false;
@@ -662,108 +662,110 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
 
   const renderLessonView = () => {
     if (isLoadingLesson || (isLoadingProgress && !currentUser && !userProgress)) {
-        return <div className="flex flex-col items-center justify-center h-full"><Loader2 className="h-16 w-16 animate-spin text-primary" /><p className="mt-4 text-muted-foreground">Loading Lesson...</p></div>;
+      return <div className="flex flex-col items-center justify-center h-full"><Loader2 className="h-16 w-16 animate-spin text-primary" /><p className="mt-4 text-muted-foreground">Loading Lesson...</p></div>;
     }
     if (errorLoadingLesson) {
-        return <div className="flex flex-col items-center justify-center h-full"><BrainCircuit className="h-16 w-16 text-destructive mb-4" /><h1 className="text-2xl font-semibold text-destructive">Error</h1><p>{errorLoadingLesson}</p></div>;
+      return <div className="flex flex-col items-center justify-center h-full"><BrainCircuit className="h-16 w-16 text-destructive mb-4" /><h1 className="text-2xl font-semibold text-destructive">Error</h1><p>{errorLoadingLesson}</p></div>;
     }
     if (!lessonData || !currentStage || contentQueue.length === 0) {
-        return <div className="flex flex-col items-center justify-center h-full"><Loader2 className="h-16 w-16 animate-spin text-primary" /><p className="mt-4 text-muted-foreground">Preparing Lesson...</p></div>;
+      return <div className="flex flex-col items-center justify-center h-full"><Loader2 className="h-16 w-16 animate-spin text-primary" /><p className="mt-4 text-muted-foreground">Preparing Lesson...</p></div>;
     }
-    
+
     // Determine if only the "failed" screen should be shown
     const activeContentItem = contentQueue[activeContentIndex];
     const showOnlyFailedScreen = activeContentItem?.renderType === 'StageCompleteScreen' && activeContentItem.stageStatus === 'failed-stage';
 
     const levelBadge = currentOverallLevel
-  ? BADGES.find(b => b.levelId === currentOverallLevel.id)
-  : undefined;
+      ? BADGES.find(b => b.levelId === currentOverallLevel.id)
+      : undefined;
 
 
 
     return (
-        <div className="w-full p-8">
-            <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4">
-                <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
-                <EightbitButton onClick={() => {
-    trackEvent({
-      action: "Lesson_Exited",
-      category: "Lesson",
-      // Falls du Infos hast, z.B. Label: `LessonID: ${selectedLesson.id}`
-      // label: `LessonID: ${selectedLesson.id}`,
-      label: "Lesson beendet",
-    });
-    handleExitLesson();
-  }}>Speichern und Zurück</EightbitButton>
+      <div className="w-full p-8">
+        <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4">
+          <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
+          <EightbitButton onClick={() => {
+            trackEvent({
+              action: "Lesson_Exited",
+              category: "Lesson",
+              // Falls du Infos hast, z.B. Label: `LessonID: ${selectedLesson.id}`
+              // label: `LessonID: ${selectedLesson.id}`,
+              label: "Lesson beendet",
+            });
+            handleExitLesson();
+          }}
+            className="font-bold"
+          >Speichern und Zurück</EightbitButton>
+        </div>
+
+        <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
+          <CardContent className="p-0">
+            <div className="space-y-8">
+              {showLevelCompleteScreen ? (
+                <LevelCompleteScreen
+                  onGoHome={handleLevelCompleteScreenClose}
+                  levelTitle={currentOverallLevel?.title ?? ""}
+                  badgeName={levelBadge?.name ?? ""}
+                  badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
+                />
+              ) : isLessonFullyCompleted ? (
+                <LessonCompleteScreen
+                  onGoHome={handleGoToOverviewAfterLessonCompletion}
+                  onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
+                />
+              ) : (
+                contentQueue.map((content, index) => {
+                  // If we are only showing the failed screen, hide everything that comes before it.
+                  if (showOnlyFailedScreen && index < activeContentIndex) {
+                    return null;
+                  }
+                  // And hide everything that comes after it.
+                  if (index > activeContentIndex) return null;
+
+                  const isReadOnly = index < activeContentIndex;
+                  const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
+                  const hasSubmittedCorrectly = itemStatus?.correct === true;
+                  const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
+
+                  return (
+                    <div key={content.key} ref={el => { if (el) itemRefs.current[index] = el; }}>
+                      {content.renderType === 'LessonItem' && (() => {
+                        const { key, ...rest } = content;
+                        switch (content.type) {
+                          case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                          case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                          case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
+                          case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                          case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
+                          default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                        }
+                      })()}
+                      {content.renderType === 'StageCompleteScreen' && (() => {
+                        const { key, ...rest } = content;
+                        return <StageCompleteScreen key={key} {...rest} />;
+                      })()}
+                    </div>
+                  );
+                })
+              )}
             </div>
-            
-            <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
-                <CardContent className="p-0">
-                <div className="space-y-8">
-  {showLevelCompleteScreen ? (
-    <LevelCompleteScreen
-      onGoHome={handleLevelCompleteScreenClose}
-      levelTitle={currentOverallLevel?.title ?? ""}
-      badgeName={levelBadge?.name ?? ""}
-      badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
-    />
-  ) : isLessonFullyCompleted ? (
-    <LessonCompleteScreen
-      onGoHome={handleGoToOverviewAfterLessonCompletion}
-      onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
-    />
-  ) : (
-    contentQueue.map((content, index) => {
-      // If we are only showing the failed screen, hide everything that comes before it.
-      if (showOnlyFailedScreen && index < activeContentIndex) {
-        return null;
-      }
-      // And hide everything that comes after it.
-      if (index > activeContentIndex) return null;
 
-      const isReadOnly = index < activeContentIndex;
-      const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
-      const hasSubmittedCorrectly = itemStatus?.correct === true;
-      const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
+          </CardContent>
+        </Card>
 
-      return (
-        <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
-          {content.renderType === 'LessonItem' && (() => {
-            const { key, ...rest } = content;
-            switch (content.type) {
-              case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-              case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-              case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-              case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-              case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
-              default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-            }
-          })()}
-          {content.renderType === 'StageCompleteScreen' && (() => {
-            const { key, ...rest } = content;
-            return <StageCompleteScreen key={key} {...rest} />;
-          })()}
-        </div>
-      );
-    })
-  )}
-</div>
-
-                </CardContent>
-            </Card>
-
-            {buttonConfig.visible && !isLessonFullyCompleted && !showLevelCompleteScreen && (
-                <div className="fixed bottom-8 right-8 z-50">
-                    <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
-                        {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> {buttonConfig.text} <span className="ml-2">{buttonConfig.icon}</span> </>}
-                    </EightbitButton>
-                </div>
-            )}
-        </div>
+        {buttonConfig.visible && !isLessonFullyCompleted && !showLevelCompleteScreen && (
+          <div className="fixed bottom-8 right-8 z-50">
+            <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
+              {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> {buttonConfig.text} <span className="ml-2">{buttonConfig.icon}</span> </>}
+            </EightbitButton>
+          </div>
+        )}
+      </div>
     );
   };
-  
-    return (
+
+  return (
     <>
       <BirdsBackground />
       <Sidebar
@@ -776,13 +778,13 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
         isAuthenticated={!!currentUser && !currentUser.isAnonymous}
       />
       <header className="fixed top-0 z-50 bg-background/80 backdrop-blur-md shadow-2xl transition-all duration-300"
-      style={{
-        left: currentSidebarTotalWidth,
-        width: `calc(100% - ${currentSidebarTotalWidth}px)`
-      }}>
-          <ProgressBar progress={overallLevelProgressPercentage} />
-          <LevelAndInformationBar currentLevel={currentOverallLevel} onInventoryToggle={() => setIsInventoryOpen(prev => !prev)} />
-        </header>
+        style={{
+          left: currentSidebarTotalWidth,
+          width: `calc(100% - ${currentSidebarTotalWidth}px)`
+        }}>
+        <ProgressBar progress={overallLevelProgressPercentage} />
+        <LevelAndInformationBar currentLevel={currentOverallLevel} onInventoryToggle={() => setIsInventoryOpen(prev => !prev)} />
+      </header>
 
       <div
         className="flex flex-col min-h-screen transition-all duration-300 ease-in-out"
@@ -792,129 +794,129 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
         }}
         style={{ marginLeft: `${currentSidebarTotalWidth}px` }}
       >
-        
+
 
         <main className="flex-1 flex flex-col pt-[96px] pb-[96px]">
-            {isLessonViewActive ? (
-                renderLessonView()
-            ) : (
-                <>
-                    <div className="flex-grow p-8">
-                        <div className="w-full max-w-4xl ml-8">
-                            {(isLoadingLessons && !selectedLesson) ? (
-                                <div className="text-center py-10 flex flex-col items-center justify-center">
-                                    <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                                    <p className="text-muted-foreground">Loading...</p>
-                                </div>
-                            ) : selectedLesson ? (
-                                <div className="text-left mb-8">
-                                    <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
-                                    <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
-                                    {isLessonUnlocked(selectedLesson.id) ? (
-                                        <EightbitButton onClick={() => {
-                                          // Analytics-Event: Lektion starten/weiterlernen
-                                          trackEvent({
-                                            action: "Lesson_Started",
-                                            category: "Lesson",
-                                            label: `LessonID: ${selectedLesson.id} - ${hasStartedSelectedLesson ? "Weiterlernen" : "Starten"}`,
-                                          });
-                                          handleStartLesson(selectedLesson.id);
-                                        }}
-                                        disabled={isStartingLesson}
-                                      >
-                                        {isStartingLesson ? (
-                                          <>
-                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...
-                                          </>
-                                        ) : (
-                                          <>
-                                            {hasStartedSelectedLesson ? "Weiterlernen" : "Lektion starten"}
-                                            <ArrowIcon className="ml-2" />
-                                          </>
-                                        )}
-                                        </EightbitButton>
-                                    ) : (
-                                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lektion gesperrt <ArrowIcon className="ml-2" /></EightbitButton>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="text-center py-10">
-                                    <h2 className="text-2xl font-semibold text-foreground mb-2">Willkommen bei Prompt Ascent!</h2>
-                                    <p className="text-muted-foreground">Wähle eine Lektion in der Seitenleiste, um zu beginnen.</p>
-                                </div>
-                            )}
-                        </div>
+          {isLessonViewActive ? (
+            renderLessonView()
+          ) : (
+            <>
+              <div className="flex-grow p-8">
+                <div className="w-full max-w-4xl ml-8">
+                  {(isLoadingLessons && !selectedLesson) ? (
+                    <div className="text-center py-10 flex flex-col items-center justify-center">
+                      <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                      <p className="text-muted-foreground">Loading...</p>
                     </div>
+                  ) : selectedLesson ? (
+                    <div className="text-left mb-8">
+                      <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
+                      <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
+                      {isLessonUnlocked(selectedLesson.id) ? (
+                        <EightbitButton onClick={() => {
+                          // Analytics-Event: Lektion starten/weiterlernen
+                          trackEvent({
+                            action: "Lesson_Started",
+                            category: "Lesson",
+                            label: `LessonID: ${selectedLesson.id} - ${hasStartedSelectedLesson ? "Weiterlernen" : "Starten"}`,
+                          });
+                          handleStartLesson(selectedLesson.id);
+                        }}
+                          disabled={isStartingLesson}
+                        >
+                          {isStartingLesson ? (
+                            <>
+                              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...
+                            </>
+                          ) : (
+                            <>
+                              {hasStartedSelectedLesson ? "Weiterlernen" : "Lektion starten"}
+                              <ArrowIcon className="ml-2" />
+                            </>
+                          )}
+                        </EightbitButton>
+                      ) : (
+                        <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lektion gesperrt <ArrowIcon className="ml-2" /></EightbitButton>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-10">
+                      <h2 className="text-2xl font-semibold text-foreground mb-2">Willkommen bei Prompt Ascent!</h2>
+                      <p className="text-muted-foreground">Wähle eine Lektion in der Seitenleiste, um zu beginnen.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                    <div className="fixed bottom-0 flex items-end z-50 transition-all duration-300"
-                    style={{
-                      left: currentSidebarTotalWidth,
-                      width: `calc(100% - ${currentSidebarTotalWidth}px)`
-                    }}
-                    >
-                        {stageHeights.map((heightClass, index) => {
-                            const stageId = `stage${index + 1}`;
-                            const stageProgress = getStageProgressForSelectedLesson(stageId);
-                            const status = stageProgress?.status || 'locked';
-                            const { title, icon: StageIcon } = stageDetails[index];
-                            let contentColorClass = 'text-primary-foreground';
-                            let showCheckIcon = false;
-                            let showBossIcon = stageProgress?.hasBoss && !stageProgress?.bossDefeated;
-                            if (status.startsWith('completed')) {
-                                showCheckIcon = true;
-                                contentColorClass = 'text-green-400';
-                            }
-                            const isLocked = status === 'locked';
-                            return (
-                                <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
-                                    {currentStageIndexOfSelectedLesson === index && <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
-                                    <div className={cn("w-full relative flex flex-col items-center justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
-                                        <div className="flex flex-col items-center w-full">
-                                            <div className={cn("flex items-center gap-2", contentColorClass)}>
-                                                <StageIcon className="h-4 w-4" />
-                                                <span className="font-semibold text-xs md:text-sm">{title}</span>
-                                            </div>
-                                            {showCheckIcon && <CheckIcon className="h-12 w-12 text-green-400 mt-4" />}
-                                            {showBossIcon && (
-                                                <button
-                                                  onClick={() => {
-                                                    trackEvent({
-                                                    action: "Repeat_Challenge_Started",
-                                                    category: "Challenge",
-                                                    label: `Stage: ${stageId} - ${title}`,
-                                                  });
-                                                  handleBossChallengeClick(stageId);
-                                                }}
-                                                disabled={isLocked}
-                                                className={cn(
-                                                  "mt-4",
-                                                  isLocked
-                                                    ? "cursor-not-allowed opacity-50"
-                                                    : "cursor-pointer hover:scale-110 transition-transform"
-                                                )}
-                                                aria-label={`Start boss challenge for ${title}`}
-                                                >
-                                                  <BossIcon className="h-12 w-12 text-accent animate-pulse" />
-                                                </button>
-                                              )}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+              <div className="fixed bottom-0 flex items-end z-50 transition-all duration-300"
+                style={{
+                  left: currentSidebarTotalWidth,
+                  width: `calc(100% - ${currentSidebarTotalWidth}px)`
+                }}
+              >
+                {stageHeights.map((heightClass, index) => {
+                  const stageId = `stage${index + 1}`;
+                  const stageProgress = getStageProgressForSelectedLesson(stageId);
+                  const status = stageProgress?.status || 'locked';
+                  const { title, icon: StageIcon } = stageDetails[index];
+                  let contentColorClass = 'text-primary-foreground';
+                  let showCheckIcon = false;
+                  let showBossIcon = stageProgress?.hasBoss && !stageProgress?.bossDefeated;
+                  if (status.startsWith('completed')) {
+                    showCheckIcon = true;
+                    contentColorClass = 'text-green-400';
+                  }
+                  const isLocked = status === 'locked';
+                  return (
+                    <div key={`stage-step-${index}`} className="flex-1 flex flex-col items-center justify-end">
+                      {currentStageIndexOfSelectedLesson === index && <AvatarDisplay avatarId={userProgress?.avatarId ?? 'avatar1'} className="h-20 w-20 text-[hsl(var(--foreground))] mb-2" />}
+                      <div className={cn("w-full relative flex flex-col items-center justify-start pt-2 px-2 text-center bg-foreground", heightClass)}>
+                        <div className="flex flex-col items-center w-full">
+                          <div className={cn("flex items-center gap-2", contentColorClass)}>
+                            <StageIcon className="h-4 w-4" />
+                            <span className="font-semibold text-xs md:text-sm">{title}</span>
+                          </div>
+                          {showCheckIcon && <CheckIcon className="h-12 w-12 text-green-400 mt-4" />}
+                          {showBossIcon && (
+                            <button
+                              onClick={() => {
+                                trackEvent({
+                                  action: "Repeat_Challenge_Started",
+                                  category: "Challenge",
+                                  label: `Stage: ${stageId} - ${title}`,
+                                });
+                                handleBossChallengeClick(stageId);
+                              }}
+                              disabled={isLocked}
+                              className={cn(
+                                "mt-4",
+                                isLocked
+                                  ? "cursor-not-allowed opacity-50"
+                                  : "cursor-pointer hover:scale-110 transition-transform"
+                              )}
+                              aria-label={`Start boss challenge for ${title}`}
+                            >
+                              <BossIcon className="h-12 w-12 text-accent animate-pulse" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                </>
-            )}
+                  );
+                })}
+              </div>
+            </>
+          )}
         </main>
       </div>
 
-       <Inventory 
-        isOpen={isInventoryOpen} 
-        onClose={() => setIsInventoryOpen(false)} 
+      <Inventory
+        isOpen={isInventoryOpen}
+        onClose={() => setIsInventoryOpen(false)}
         sidebarWidth={currentSidebarTotalWidth}
         selectedSummaryLessonId={selectedSummaryLessonId}
         onSummarySelectHandled={() => setSelectedSummaryLessonId(null)}
-        />
+      />
 
 
       {bossChallengeInfo && (
@@ -932,7 +934,7 @@ const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: numbe
 }
 
 export default function Home() {
-    return <HomePageContent />;
+  return <HomePageContent />;
 }
 
 
