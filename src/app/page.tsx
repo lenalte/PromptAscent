@@ -112,6 +112,10 @@ function HomePageContent() {
   
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
+  const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
+  const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
+
   // Effect to fetch available lessons
   useEffect(() => {
     async function fetchLessons() {
@@ -204,14 +208,15 @@ function HomePageContent() {
   };
 
   const handleGoToNextLesson = useCallback(() => {
-    handleExitLesson();
+    setIsLessonViewActive(false);
+    resetLessonState();
     if (nextLessonId) {
       const nextLesson = lessonList.find(l => l.id === nextLessonId);
       if (nextLesson) {
         setSelectedLesson(nextLesson);
       }
     }
-  }, [nextLessonId, lessonList, handleExitLesson]);
+  }, [nextLessonId, lessonList]);
 
   const handleStartLesson = useCallback((lessonId: string) => {
     if (userProgress?.lessonStageProgress?.[lessonId]) {
@@ -238,9 +243,6 @@ function HomePageContent() {
   };
 
   // === Logic for embedded lesson view ===
-  const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[selectedLesson?.id ?? '']?.currentStageIndex ?? 0, [userProgress, selectedLesson]);
-  const currentStage = useMemo(() => lessonData?.stages[currentStageIndex], [lessonData, currentStageIndex]);
-  const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
 
   useEffect(() => {
     const activeItemRef = itemRefs.current[activeContentIndex];
@@ -280,22 +282,34 @@ function HomePageContent() {
     if (isProcessing.current || !currentStage || !activeContent || !selectedLesson) return;
     isProcessing.current = true;
     setIsSubmitting(true);
+
     try {
-        const itemToProcess = activeContent;
-        if (itemToProcess.renderType === 'StageCompleteScreen') {
+        if (activeContent.renderType === 'StageCompleteScreen') {
             setActiveContentIndex(prev => prev + 1);
             return;
         }
+
+        const itemToProcess = activeContent as LessonItemWithRenderType;
+        const currentStageItemIds = new Set(currentStage.items.map(i => i.id));
         
-        const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
-        const isLastItemInCurrentStage = !contentQueue.slice(activeContentIndex + 1).some(futureItem => futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id));
+        let isLastItemInCurrentStage = true;
+        for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
+            const futureItem = contentQueue[i];
+            if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
+                isLastItemInCurrentStage = false;
+                break;
+            }
+        }
+        
+        const itemStatus = stageItemAttempts[itemToProcess.id];
+        const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
 
         if (isLastItemInCurrentStage) {
             const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, stageItemAttempts, 0, currentStage.items as LessonItem[]);
             if (!stageResult || !stageResult.updatedProgress) {
                 toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
-                isProcessing.current = false;
                 setIsSubmitting(false);
+                isProcessing.current = false;
                 return;
             }
             const basePoints = stageResult.basePointsAdded;
@@ -904,4 +918,3 @@ export default function Home() {
     return <HomePageContent />;
 }
 
-    
