@@ -199,7 +199,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             </div>
             <DialogFooter className="mt-6 sm:justify-center gap-4">
               {canSkip && (
-                <EightbitButton onClick={handleSkip} className="bg-muted text-muted-foreground hover:bg-muted/80">
+                <EightbitButton onClick={handleSkip} className="bg-muted text-[hsl(var(--background))] hover:bg-muted/80">
                   <Forward className="mr-2 h-4 w-4" />
                   Überspringen
                 </EightbitButton>
@@ -246,14 +246,14 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             {challengeResult === 'passed' ? (
               <>
                 <DialogHeader className="items-center text-center">
-                  <BossIcon className="h-16 w-16 text-accent mb-4" />
+                  <BossIcon className="h-16 w-16 text-accent mb-4 animate-pulse" />
                   <DialogTitle className="text-2xl font-bold text-accent">Herausforderung gemeistert!</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">Du hast die Herausforderung besiegt!</DialogDescription>
                 </DialogHeader>
                 {awardedBooster && (
                   <div className="mt-4 text-center">
                     <p className="text-lg font-semibold flex items-center justify-center gap-2">
-                      <BossIcon className="h-6 w-6 text-accent" /> {awardedBooster}x Punkte-Booster aktiviert!
+                      <BossIcon className="h-6 w-6 text-accent animate-pulse" /> {awardedBooster}x Punkte-Booster aktiviert!
                     </p>
                     <p className="text-muted-foreground">Sammle in den nächsten 10 Minuten mehr Punkte!</p>
                   </div>
