@@ -684,7 +684,7 @@ function HomePageContent() {
     return (
       <div className="w-full h-screen flex flex-col items-center p-8">
         <div
-          className="fixed top-16 z-30 bg-background py-4 flex justify-between items-center px-6 shadow-lg pt-5"
+          className="fixed top-16 z-30 bg-background py-4 flex justify-between items-center px-6 pt-5"
           style={{
             left: currentSidebarTotalWidth,
             width: `calc(100% - ${currentSidebarTotalWidth}px)`,
