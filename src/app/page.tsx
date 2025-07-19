@@ -278,120 +278,123 @@ function HomePageContent() {
       // which will re-run loadLessonAndProgress.
   }, [selectedLesson, currentStage, restartStage]);
 
-  const handleProceed = useCallback(async () => {
-    if (isProcessing.current || !currentStage || !activeContent || !selectedLesson) return;
+  const handleCompleteStage = useCallback(async (finalAttemptsState: { [itemId: string]: StageItemStatus }) => {
+    if (!selectedLesson || !currentStage) return;
+
     isProcessing.current = true;
     setIsSubmitting(true);
 
     try {
-        if (activeContent.renderType === 'StageCompleteScreen') {
-            setActiveContentIndex(prev => prev + 1);
+        const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, finalAttemptsState, 0, currentStage.items as LessonItem[]);
+        if (!stageResult || !stageResult.updatedProgress) {
+            toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
             return;
         }
 
-        const itemToProcess = activeContent as LessonItemWithRenderType;
-        const currentStageItemIds = new Set(currentStage.items.map(i => i.id));
+        setNextLessonId(stageResult.nextLessonIdIfAny);
+        const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
         
-        let isLastItemInCurrentStage = true;
-        for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
-            const futureItem = contentQueue[i];
-            if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
-                isLastItemInCurrentStage = false;
-                break;
-            }
-        }
+        const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
+            ? userProgress.activeBooster.multiplier
+            : null;
+
+        const completionCard: StageCompleteInfo = {
+            renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
+            basePointsAdded: stageResult.basePointsAdded, activeBoosterMultiplier, stageItemAttempts: finalAttemptsState, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
+            onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
+        };
         
-        const itemStatus = stageItemAttempts[itemToProcess.id];
-        const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
-
-        if (isLastItemInCurrentStage) {
-            const stageResult = await completeStageAndProceed(selectedLesson.id, currentStage.id, currentStageIndex, stageItemAttempts, 0, currentStage.items as LessonItem[]);
-            if (!stageResult || !stageResult.updatedProgress) {
-                toast({ title: "Error", description: "Could not save your progress.", variant: "destructive" });
-                setIsSubmitting(false);
-                isProcessing.current = false;
-                return;
-            }
-            const basePoints = stageResult.basePointsAdded;
-            setNextLessonId(stageResult.nextLessonIdIfAny);
-            const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[selectedLesson.id]?.stages?.[currentStage.id]?.status ?? 'completed-good';
+        if (finalStageStatus === 'failed-stage') {
+            const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
+            const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
             
-            const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
-                ? userProgress.activeBooster.multiplier
-                : null;
-
-            const completionCard: StageCompleteInfo = {
-                renderType: 'StageCompleteScreen', key: `complete-${currentStage.id}`, stageId: currentStage.id, stageTitle: currentStage.title,
-                basePointsAdded: basePoints, activeBoosterMultiplier, stageItemAttempts, stageItems: currentStage.items as LessonItem[], onNextStage: handleStartNextStage,
-                onGoHome: handleExitLesson, isLastStage: currentStageIndex === 5, stageStatus: finalStageStatus, onRestart: handleRestartStage
-            };
-            
-            if (finalStageStatus === 'failed-stage') {
-                const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
-                const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
-                
-                if (firstItemOfStageIndex !== -1) {
-                    setContentQueue(prev => {
-                        const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
-                        return [...queueBeforeCurrentStage, completionCard];
-                    });
-                    setActiveContentIndex(firstItemOfStageIndex);
-                } else {
-                    setContentQueue(prev => [...prev, completionCard]);
-                    setActiveContentIndex(prev => prev + 1);
-                }
-            } else {
+            if (firstItemOfStageIndex !== -1) {
                 setContentQueue(prev => {
-                    const newQueue = [...prev];
-                    newQueue.splice(activeContentIndex + 1, 0, completionCard);
-                    return newQueue;
+                    const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
+                    return [...queueBeforeCurrentStage, completionCard];
                 });
+                setActiveContentIndex(firstItemOfStageIndex);
+            } else {
+                setContentQueue(prev => [...prev, completionCard]);
                 setActiveContentIndex(prev => prev + 1);
             }
         } else {
+            setContentQueue(prev => {
+                const newQueue = [...prev];
+                newQueue.splice(activeContentIndex + 1, 0, completionCard);
+                return newQueue;
+            });
             setActiveContentIndex(prev => prev + 1);
         }
     } catch (error) {
-        console.error("Error in handleProceed: ", error);
+        console.error("Error in handleCompleteStage: ", error);
         toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
     } finally {
         isProcessing.current = false;
         setIsSubmitting(false);
     }
-  }, [activeContent, activeContentIndex, completeStageAndProceed, userProgress, contentQueue, currentStage, currentStageIndex, handleStartNextStage, lessonData, selectedLesson, stageItemAttempts, toast, handleExitLesson, handleRestartStage]);
-  
-  const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string, answer?: number) => {
-    let newAttempts = 0;
-    setStageItemAttempts(prev => {
-      const itemStatus = prev[itemId] || { attempts: 0, correct: null, points: 0 };
-      newAttempts = (itemStatus.attempts || 0) + 1;
-      const wasCorrectBefore = itemStatus.correct === true;
-      const isNowCorrect = wasCorrectBefore || isCorrect;
+}, [selectedLesson, currentStage, currentStageIndex, completeStageAndProceed, toast, userProgress, handleStartNextStage, handleExitLesson, handleRestartStage, contentQueue, activeContentIndex]);
 
-      let awardedPoints = 0;
-      if (isNowCorrect && !wasCorrectBefore) {
-        awardedPoints = pointsAwarded; // pointsAwarded already includes deductions from components
+const handleProceed = useCallback(async () => {
+    if (isProcessing.current || !activeContent) return;
+
+    if (activeContent.renderType === 'StageCompleteScreen') {
+        setActiveContentIndex(prev => prev + 1);
+        return;
+    }
+
+    const currentStageItemIds = new Set(currentStage?.items.map(i => i.id));
+    let isLastItemInCurrentStage = true;
+    for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
+        const futureItem = contentQueue[i];
+        if (futureItem.renderType === 'LessonItem' && currentStageItemIds.has(futureItem.id)) {
+            isLastItemInCurrentStage = false;
+            break;
+        }
+    }
+
+    if (isLastItemInCurrentStage) {
+        await handleCompleteStage(stageItemAttempts);
+    } else {
+        setActiveContentIndex(prev => prev + 1);
+    }
+}, [activeContent, activeContentIndex, contentQueue, currentStage, stageItemAttempts, handleCompleteStage]);
+
+const handleAnswerSubmit = useCallback((isCorrect: boolean, pointsAwarded: number, itemId: string, answer?: number) => {
+    if (!currentStage) return;
+
+    const updatedAttempts = { ...stageItemAttempts };
+    const itemStatus = updatedAttempts[itemId] || { attempts: 0, correct: null, points: 0 };
+    const newAttemptsCount = (itemStatus.attempts || 0) + 1;
+    const wasCorrectBefore = itemStatus.correct === true;
+    const isNowCorrect = wasCorrectBefore || isCorrect;
+
+    let awardedPoints = 0;
+    if (isNowCorrect && !wasCorrectBefore) {
+        awardedPoints = pointsAwarded;
         setPointsThisStageSession(p => p + awardedPoints);
-      }
-      
-      const newStatus: StageItemStatus = {
-        attempts: newAttempts,
+    }
+
+    const newStatus: StageItemStatus = {
+        attempts: newAttemptsCount,
         correct: isNowCorrect,
         points: (itemStatus.points ?? 0) + awardedPoints,
         answer: answer,
-      };
+    };
 
-      return {
-          ...prev,
-          [itemId]: newStatus
-      };
-    });
+    updatedAttempts[itemId] = newStatus;
+    setStageItemAttempts(updatedAttempts);
 
-    if (newAttempts >= 3 && !isCorrect) {
-        setTimeout(() => handleProceed(), 1000); 
+    // Check for stage failure
+    const isLastItem = currentStage.items[currentStage.items.length - 1].id === itemId;
+    if (isLastItem && !isCorrect && newAttemptsCount >= 3) {
+        setTimeout(() => handleCompleteStage(updatedAttempts), 500);
+    } else if (!isCorrect && newAttemptsCount >= 3) {
+        setTimeout(() => handleProceed(), 1000);
     }
-  }, [handleProceed]);
 
+}, [stageItemAttempts, currentStage, handleProceed, handleCompleteStage]);
+  
   const handleGoToOverviewAfterLessonCompletion = useCallback(() => {
     // Check if the current level is now complete
     const allLevelLessonsCompleted =
@@ -917,4 +920,5 @@ function HomePageContent() {
 export default function Home() {
     return <HomePageContent />;
 }
+
 
