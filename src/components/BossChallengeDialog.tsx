@@ -187,7 +187,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         return (
           <>
             <DialogHeader className="items-center text-center">
-              <BossIcon className="h-20 w-20 text-accent mb-4 animate-pulse" />
+              <BossIcon className="h-20 w-20 text-accent animate-pulse" />
               <DialogTitle className="text-2xl">Wiederholungs-Herausforderung</DialogTitle>
               <DialogDescription className="text-lg text-muted-foreground mt-4">
                 Du denkst, du hast die Grundlagen gemeistert? Beweise es, bevor du weitermachst!
@@ -228,7 +228,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
               </DialogDescription>
             </DialogHeader>
             <div className="p-4">{renderQuestion()}</div>
-            <DialogFooter className="mt-4 p-4 border-t">
+            <DialogFooter className="mt-4 p-4">
               {isAnswered && (
                 <EightbitButton onClick={handleNextQuestion}>
                   {currentQuestionIndex < questions.length - 1 ? 'Nächste Frage' : 'Herausforderung beenden'}
@@ -244,7 +244,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             {challengeResult === 'passed' ? (
               <>
                 <DialogHeader className="items-center text-center">
-                  <BossIcon className="h-16 w-16 text-accent mb-4 animate-pulse" />
+                  <BossIcon className="h-16 w-16 text-accent animate-pulse" />
                   <DialogTitle className="text-2xl font-bold text-accent">Herausforderung gemeistert!</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">Du hast die Herausforderung besiegt!</DialogDescription>
                 </DialogHeader>
@@ -260,7 +260,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             ) : (
               <>
                 <DialogHeader className="items-center text-center">
-                  <BossIcon className="h-16 w-16 text-destructive mb-4" />
+                  <BossIcon className="h-16 w-16 text-destructive" />
                   <DialogTitle className="text-2xl font-bold text-destructive">Herausforderung gescheitert</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">
                     Keine Sorge, du kannst trotzdem weitermachen. Die falschen Fragen wurden als Wissenslücke markiert.
