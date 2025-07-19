@@ -682,8 +682,8 @@ function HomePageContent() {
 
 
     return (
-      <div className="w-full p-8">
-        <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4">
+      <div className="w-full h-screen flex flex-col items-center p-8">
+        <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4 sticky top-12 bg-background z-30 py-4">
           <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
           <EightbitButton onClick={() => {
             trackEvent({
@@ -699,60 +699,62 @@ function HomePageContent() {
           >Speichern und Zurück</EightbitButton>
         </div>
 
-        <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
-          <CardContent className="p-0">
-            <div className="space-y-8">
-              {showLevelCompleteScreen ? (
-                <LevelCompleteScreen
-                  onGoHome={handleLevelCompleteScreenClose}
-                  levelTitle={currentOverallLevel?.title ?? ""}
-                  badgeName={levelBadge?.name ?? ""}
-                  badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
-                />
-              ) : isLessonFullyCompleted ? (
-                <LessonCompleteScreen
-                  onGoHome={handleGoToOverviewAfterLessonCompletion}
-                  onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
-                />
-              ) : (
-                contentQueue.map((content, index) => {
-                  // If we are only showing the failed screen, hide everything that comes before it.
-                  if (showOnlyFailedScreen && index < activeContentIndex) {
-                    return null;
-                  }
-                  // And hide everything that comes after it.
-                  if (index > activeContentIndex) return null;
+        <div className="w-full max-w-3xl flex-1 min-h-0 flex flex-col">
+          <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
+            <CardContent className="p-0">
+              <div className="space-y-8">
+                {showLevelCompleteScreen ? (
+                  <LevelCompleteScreen
+                    onGoHome={handleLevelCompleteScreenClose}
+                    levelTitle={currentOverallLevel?.title ?? ""}
+                    badgeName={levelBadge?.name ?? ""}
+                    badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
+                  />
+                ) : isLessonFullyCompleted ? (
+                  <LessonCompleteScreen
+                    onGoHome={handleGoToOverviewAfterLessonCompletion}
+                    onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
+                  />
+                ) : (
+                  contentQueue.map((content, index) => {
+                    // If we are only showing the failed screen, hide everything that comes before it.
+                    if (showOnlyFailedScreen && index < activeContentIndex) {
+                      return null;
+                    }
+                    // And hide everything that comes after it.
+                    if (index > activeContentIndex) return null;
 
-                  const isReadOnly = index < activeContentIndex;
-                  const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
-                  const hasSubmittedCorrectly = itemStatus?.correct === true;
-                  const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
+                    const isReadOnly = index < activeContentIndex;
+                    const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
+                    const hasSubmittedCorrectly = itemStatus?.correct === true;
+                    const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
 
-                  return (
-                    <div key={content.key} ref={el => { if (el) itemRefs.current[index] = el; }}>
-                      {content.renderType === 'LessonItem' && (() => {
-                        const { key, ...rest } = content;
-                        switch (content.type) {
-                          case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-                          case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-                          case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                          case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-                          case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
-                          default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-                        }
-                      })()}
-                      {content.renderType === 'StageCompleteScreen' && (() => {
-                        const { key, ...rest } = content;
-                        return <StageCompleteScreen key={key} {...rest} />;
-                      })()}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    return (
+                      <div key={content.key} ref={el => { if (el) itemRefs.current[index] = el; }}>
+                        {content.renderType === 'LessonItem' && (() => {
+                          const { key, ...rest } = content;
+                          switch (content.type) {
+                            case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                            case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                            case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
+                            case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                            case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
+                            default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                          }
+                        })()}
+                        {content.renderType === 'StageCompleteScreen' && (() => {
+                          const { key, ...rest } = content;
+                          return <StageCompleteScreen key={key} {...rest} />;
+                        })()}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
 
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {buttonConfig.visible && !isLessonFullyCompleted && !showLevelCompleteScreen && (
           <div className="fixed bottom-8 right-8 z-50">

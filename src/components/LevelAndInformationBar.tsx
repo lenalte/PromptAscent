@@ -46,7 +46,7 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
     return (
         <>
             <div
-                className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4 pt-2", className)}
+                className={cn("w-full flex justify-between items-center z-50 pl-4 pr-4 pt-2 bg-background", className)}
             >
                 <div>
                     <span className="text-primary-foreground">{currentLevel ? currentLevel.title : 'Level'}</span>
@@ -70,10 +70,10 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
                                 action: "Backpack_Button_Clicked",
                                 category: "UI",
                                 label: "Inventory Toggle Button",
-                              });
-                              onInventoryToggle();
-                              }} 
-                              className="cursor-pointer">
+                            });
+                            onInventoryToggle();
+                        }}
+                            className="cursor-pointer">
                             <BackpackIcon className="h-8 w-8 text-primary-foreground" />
                         </button>
                     </div>
