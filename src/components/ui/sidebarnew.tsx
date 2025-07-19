@@ -34,6 +34,7 @@ import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
 import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DeleteAccountDialogButton } from "@/components/auth/DeleteAccountDialogButton";
+import { trackEvent } from "@/lib/gtagHelper";
 
 
 interface SidebarProps {
@@ -171,11 +172,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                     <button
                         type="button"
-                        onClick={() => handleCategoryClick('leaderboard')}
+                        onClick={() => {
+                          trackEvent({
+                            action: "Category_Selected",
+                            category: "Navigation",
+                            label: "Leaderboard",
+                          });
+                          handleCategoryClick('leaderboard');
+                        }}
                         className={cn(
-                            "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
-                            "pt-4",
-                            activeCategory === 'leaderboard' && isContentOpen && "bg-[var(--sidebar-accent)]"
+                          "p-3 rounded-lg hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
+                          "pt-4",
+                          activeCategory === 'leaderboard' && isContentOpen && "bg-[var(--sidebar-accent)]"
                         )}
                         aria-label="Leaderboard"
                     >

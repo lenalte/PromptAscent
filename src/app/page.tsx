@@ -44,6 +44,7 @@ import { ArrowIcon } from '@/components/icons/ArrowIcon';
 import Inventory from '@/components/Inventory';
 import { LevelCompleteScreen } from "@/components/LevelCompleteScreen";
 import { BADGES, getBadgeById } from "@/data/badges";
+import { trackEvent } from '@/lib/gtagHelper';
 
 
 
@@ -630,7 +631,16 @@ function HomePageContent() {
         <div className="w-full p-8">
             <div className="w-full max-w-3xl flex justify-between items-center mx-auto mb-4">
                 <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
-                <EightbitButton onClick={handleExitLesson}>BEENDEN</EightbitButton>
+                <EightbitButton onClick={() => {
+    trackEvent({
+      action: "Lesson_Exited",
+      category: "Lesson",
+      // Falls du Infos hast, z.B. Label: `LessonID: ${selectedLesson.id}`
+      // label: `LessonID: ${selectedLesson.id}`,
+      label: "Lesson beendet",
+    });
+    handleExitLesson();
+  }}>BEENDEN</EightbitButton>
             </div>
             
             <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
@@ -738,15 +748,27 @@ function HomePageContent() {
                                     <h2 className="text-3xl font-bold text-primary-foreground mb-3">{selectedLesson.title}</h2>
                                     <p className="text-primary-foreground mb-6 text-lg">{selectedLesson.description}</p>
                                     {isLessonUnlocked(selectedLesson.id) ? (
-                                        <EightbitButton onClick={() => handleStartLesson(selectedLesson.id)} disabled={isStartingLesson}>
-                                            {isStartingLesson ? (
-                                                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...</>
-                                            ) : (
-                                                <>
-                                                    {hasStartedSelectedLesson ? 'Weiterlernen' : 'Lektion starten'}
-                                                    <ArrowIcon className="ml-2" />
-                                                </>
-                                            )}
+                                        <EightbitButton onClick={() => {
+                                          // Analytics-Event: Lektion starten/weiterlernen
+                                          trackEvent({
+                                            action: "Lesson_Started",
+                                            category: "Lesson",
+                                            label: `LessonID: ${selectedLesson.id} - ${hasStartedSelectedLesson ? "Weiterlernen" : "Starten"}`,
+                                          });
+                                          handleStartLesson(selectedLesson.id);
+                                        }}
+                                        disabled={isStartingLesson}
+                                      >
+                                        {isStartingLesson ? (
+                                          <>
+                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Wird gestartet...
+                                          </>
+                                        ) : (
+                                          <>
+                                            {hasStartedSelectedLesson ? "Weiterlernen" : "Lektion starten"}
+                                            <ArrowIcon className="ml-2" />
+                                          </>
+                                        )}
                                         </EightbitButton>
                                     ) : (
                                         <EightbitButton className="opacity-50 cursor-not-allowed" disabled>Lektion gesperrt <ArrowIcon className="ml-2" /></EightbitButton>
@@ -787,15 +809,22 @@ function HomePageContent() {
                                             {showCheckIcon && <CheckIcon className="h-12 w-12 text-green-400 mt-4" />}
                                             {showBossIcon && (
                                                 <button
-                                                  onClick={() => handleBossChallengeClick(stageId)}
-                                                  disabled={isLocked}
-                                                  className={cn(
-                                                    "mt-4",
-                                                    isLocked
-                                                      ? "cursor-not-allowed opacity-50"
-                                                      : "cursor-pointer hover:scale-110 transition-transform"
-                                                  )}
-                                                  aria-label={`Start boss challenge for ${title}`}
+                                                  onClick={() => {
+                                                    trackEvent({
+                                                    action: "Repeat_Challenge_Started",
+                                                    category: "Challenge",
+                                                    label: `Stage: ${stageId} - ${title}`,
+                                                  });
+                                                  handleBossChallengeClick(stageId);
+                                                }}
+                                                disabled={isLocked}
+                                                className={cn(
+                                                  "mt-4",
+                                                  isLocked
+                                                    ? "cursor-not-allowed opacity-50"
+                                                    : "cursor-pointer hover:scale-110 transition-transform"
+                                                )}
+                                                aria-label={`Start boss challenge for ${title}`}
                                                 >
                                                   <BossIcon className="h-12 w-12 text-accent animate-pulse" />
                                                 </button>

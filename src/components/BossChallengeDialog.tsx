@@ -12,6 +12,7 @@ import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 import { FreeResponseQuestion } from './FreeResponseQuestion';
 import { Separator } from './ui/separator';
 import { BossIcon as NewBossIcon } from '@/components/icons/BossIcon';
+import { trackEvent } from '@/lib/gtagHelper';
 
 interface BossChallengeDialogProps {
   isOpen: boolean;
@@ -229,7 +230,16 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
                   Überspringen
                 </EightbitButton>
               )}
-              <EightbitButton onClick={() => setView('challenge')}>Herausforderung annehmen</EightbitButton>
+              <EightbitButton onClick={() => {
+    trackEvent({
+      action: 'Challenge_Accepted',
+      category: 'UI',
+      label: 'Herausforderung annehmen',
+    });
+    setView('challenge');
+  }}>
+    Herausforderung annehmen
+    </EightbitButton>
             </DialogFooter>
           </>
         );
