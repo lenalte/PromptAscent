@@ -190,7 +190,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             <DialogHeader className="items-center text-center">
               <BossIcon className="h-20 w-20 text-primary mb-4" />
               <DialogTitle className="text-2xl">Wiederholungs-Herausforderung</DialogTitle>
-              <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">
+              <DialogDescription className="text-lg text-muted-foreground p-4 border rounded-md">
                 Du denkst, du hast die Grundlagen gemeistert? Beweise es, bevor du weitermachst!
               </DialogDescription>
             </DialogHeader>
