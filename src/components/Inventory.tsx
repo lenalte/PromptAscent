@@ -18,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { LockClosedIcon } from './icons/lock_closed';
 import { BADGES, getBadgeById, type Badge } from '@/data/badges';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { trackEvent } from "@/lib/gtagHelper";
 
 
 interface InventoryProps {
@@ -98,7 +99,13 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
     if (selectedSummaryLessonId) {
         setActiveTab("zusammenfassungen");
         setAccordionValue(selectedSummaryLessonId);
-        onSummarySelectHandled(); // Reset the selection in the parent
+        onSummarySelectHandled(); // Reset the selection in the 
+        
+        trackEvent({
+          action: "Summary_Opened",
+          category: "Lesson",
+          label: `LessonID: ${selectedSummaryLessonId}`,
+        });
     }
   }, [selectedSummaryLessonId, onSummarySelectHandled]);
 
