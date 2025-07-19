@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Loader2, ArrowRight, Forward } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
@@ -200,7 +200,6 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             <DialogFooter className="mt-6 sm:justify-center gap-4">
               {canSkip && (
                 <EightbitButton onClick={handleSkip} className="bg-muted text-[hsl(var(--background))] hover:bg-muted/80">
-                  <Forward className="mr-2 h-4 w-4" />
                   Überspringen
                 </EightbitButton>
               )}
