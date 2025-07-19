@@ -4,14 +4,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Loader2, ShieldQuestion, Trophy, XCircle, ShieldAlert, Sword, ArrowRight, Zap, Forward } from 'lucide-react';
+import { Loader2, ArrowRight, Forward } from 'lucide-react';
 import { useUserProgress, populateBossChallengeQuestions, resolveBossChallenge } from '@/context/UserProgressContext';
 import type { BossQuestion } from '@/data/lessons';
 import type { Boss as BossInfo, BossIconType } from '@/data/boss-data';
 import { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 import { FreeResponseQuestion } from './FreeResponseQuestion';
 import { Separator } from './ui/separator';
-import { BossIcon as NewBossIcon } from '@/components/icons/BossIcon';
+import { BossIcon } from '@/components/icons/BossIcon';
 import { trackEvent } from '@/lib/gtagHelper';
 
 interface BossChallengeDialogProps {
@@ -22,20 +22,6 @@ interface BossChallengeDialogProps {
   stageId: string;
   canSkip: boolean; // New prop to control skip button
 }
-
-// Helper component to render the correct icon based on the string identifier
-const BossIcon = ({ icon, className }: { icon: BossIconType, className?: string }) => {
-  switch (icon) {
-    case 'ShieldAlert':
-      return <ShieldAlert className={className} />;
-    case 'BossIcon':
-      return <NewBossIcon className={className} />;
-    case 'Sword':
-      return <Sword className={className} />;
-    default:
-      return <ShieldQuestion className={className} />; // Fallback icon
-  }
-};
 
 const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, onSkip, lessonId, stageId, canSkip }) => {
   const { currentUser, userProgress, setUserProgress } = useUserProgress();
@@ -194,7 +180,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
       return (
         <div className="flex flex-col items-center justify-center p-8 min-h-[300px]">
           <DialogTitle className="sr-only">Fehler</DialogTitle>
-          <XCircle className="h-12 w-12 text-destructive" />
+          <BossIcon className="h-12 w-12 text-destructive" />
           <p className="mt-4 text-destructive-foreground">{error}</p>
         </div>
       );
@@ -216,7 +202,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         return (
           <>
             <DialogHeader className="items-center text-center">
-              <BossIcon icon={bossInfo.visual} className="h-20 w-20 text-primary mb-4" />
+              <BossIcon className="h-20 w-20 text-primary mb-4" />
               <DialogTitle className="text-2xl">Ein Herausforderer erscheint!</DialogTitle>
               <DialogDescription className="text-lg italic text-muted-foreground p-4 border rounded-md">"{bossInfo.quote}"</DialogDescription>
             </DialogHeader>
@@ -272,25 +258,23 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             {challengeResult === 'passed' ? (
               <>
                 <DialogHeader className="items-center text-center">
-                  <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                  <BossIcon className="h-16 w-16 text-yellow-400 mb-4" />
                   <DialogTitle className="text-2xl font-bold text-yellow-400">Herausforderung gemeistert!</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">Du hast {bossInfo.name} besiegt!</DialogDescription>
                 </DialogHeader>
-                {awardedBooster ? (
+                {awardedBooster && (
                   <div className="mt-4 text-center">
                       <p className="text-lg font-semibold flex items-center justify-center gap-2">
-                         <Zap className="h-6 w-6 text-yellow-500" /> {awardedBooster}x Punkte-Booster aktiviert!
+                         <BossIcon className="h-6 w-6 text-yellow-500" /> {awardedBooster}x Punkte-Booster aktiviert!
                       </p>
                       <p className="text-muted-foreground">Sammle in den nächsten 10 Minuten mehr Punkte!</p>
                   </div>
-                ) : (
-                   <p className="mt-4 text-lg font-semibold">Du hast die Herausforderung abgeschlossen!</p>
                 )}
               </>
             ) : (
               <>
                 <DialogHeader className="items-center text-center">
-                  <XCircle className="h-16 w-16 text-destructive mb-4" />
+                  <BossIcon className="h-16 w-16 text-destructive mb-4" />
                   <DialogTitle className="text-2xl font-bold text-destructive">Herausforderung gescheitert</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">
                       Keine Sorge, du kannst trotzdem weitermachen. Die falschen Fragen wurden als Wissenslücke markiert.
