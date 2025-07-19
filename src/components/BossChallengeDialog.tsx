@@ -188,7 +188,7 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
         return (
           <>
             <DialogHeader className="items-center text-center">
-              <BossIcon className="h-20 w-20 text-primary mb-4" />
+              <BossIcon className="h-20 w-20 text-accent mb-4 animate-pulse" />
               <DialogTitle className="text-2xl">Wiederholungs-Herausforderung</DialogTitle>
               <DialogDescription className="text-lg text-muted-foreground p-4 border rounded-md mt-4">
                 Du denkst, du hast die Grundlagen gemeistert? Beweise es, bevor du weitermachst!
@@ -246,14 +246,14 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
             {challengeResult === 'passed' ? (
               <>
                 <DialogHeader className="items-center text-center">
-                  <BossIcon className="h-16 w-16 text-yellow-400 mb-4" />
-                  <DialogTitle className="text-2xl font-bold text-yellow-400">Herausforderung gemeistert!</DialogTitle>
+                  <BossIcon className="h-16 w-16 text-accent mb-4" />
+                  <DialogTitle className="text-2xl font-bold text-accent">Herausforderung gemeistert!</DialogTitle>
                   <DialogDescription className="mt-2 text-muted-foreground">Du hast die Herausforderung besiegt!</DialogDescription>
                 </DialogHeader>
                 {awardedBooster && (
                   <div className="mt-4 text-center">
                     <p className="text-lg font-semibold flex items-center justify-center gap-2">
-                      <BossIcon className="h-6 w-6 text-yellow-500" /> {awardedBooster}x Punkte-Booster aktiviert!
+                      <BossIcon className="h-6 w-6 text-accent" /> {awardedBooster}x Punkte-Booster aktiviert!
                     </p>
                     <p className="text-muted-foreground">Sammle in den nächsten 10 Minuten mehr Punkte!</p>
                   </div>
@@ -287,5 +287,3 @@ const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClo
 };
 
 export default BossChallengeDialog;
-
-    
