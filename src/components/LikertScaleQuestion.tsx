@@ -118,7 +118,7 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
                     <Label
                       htmlFor={`${id}-option-${index + 1}`}
                       className={cn(
-                        "font-medium text-lg",
+                        "font-medium text-lg text-white",
                         !isComponentReadOnly ? "cursor-pointer" : "cursor-default"
                       )}
                     >
