@@ -17,7 +17,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
   const totalPoints = userProgress?.totalPoints ?? 0;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-green-500 bg-green-50 dark:border-green-700 dark:bg-green-900/20">
+    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-green-500 dark:border-green-700">
       <CardHeader className="items-center">
         <LeaderboardIcon className="h-16 w-16 text-yellow-500 mb-4" />
         <CardTitle className="text-2xl font-bold text-green-800 dark:text-green-200">
