@@ -11,7 +11,7 @@ export default function AGBPage() {
 
       <div className="space-y-6 text-base">
         <p>
-          Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Plattform <strong>„Promptening“</strong>, erreichbar unter der jeweils mitgeteilten URL, die im Rahmen einer wissenschaftlichen Arbeit (Bachelorarbeit) bereitgestellt wird.
+          Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Plattform <strong>„Prompt-Ascent“</strong>, erreichbar unter der jeweils mitgeteilten URL, die im Rahmen einer wissenschaftlichen Arbeit (Bachelorarbeit) bereitgestellt wird.
         </p>
         <hr className="my-6 border-border" />
 
