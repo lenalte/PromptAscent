@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { EightbitButton } from './ui/eightbit-button';
+import Image from 'next/image';
 
 type Consent = 'granted' | 'denied';
 
@@ -45,6 +46,14 @@ export default function CookieBanner() {
       "
       style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
     >
+      <Image
+        src="https://placehold.co/100x100.png"
+        alt="Sad pixel art cookie"
+        width={100}
+        height={100}
+        data-ai-hint="pixelart cookie"
+        className="mb-2"
+      />
       <div className="space-y-2 text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-1 text-background">
           Bitte akzeptiere meine Cookies
