@@ -73,11 +73,6 @@ export default function AGBPage() {
           <li>Gerichtsstand ist – soweit zulässig – der Wohnsitz des Betreibers.</li>
         </ul>
         <hr className="my-6 border-border" />
-
-        <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">Kontakt für Rückfragen oder zur Beendigung der Teilnahme:</h2>
-        <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
-          datenschutz@deinprojekt.de
-        </blockquote>
       </div>
     </div>
   );

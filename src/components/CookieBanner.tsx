@@ -65,7 +65,7 @@ export default function CookieBanner() {
         <p className="text-background">
         Bitte unterstütze mich, indem du der Nutzung dieser Cookies zustimmst.
         Mehr Infos findest du {' '}
-          <Link href="/legal/cookies" className="underline text-sky-800 hover:text-sky-500">
+          <Link href="/legal/datenschutz" className="underline text-sky-800 hover:text-sky-500">
             hier
           </Link>{' '}
           .

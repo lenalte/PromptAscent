@@ -12,44 +12,6 @@
           "title": "Feedback zur Struktur",
           "question": "Das Leaderboard motiviert mich dazu, Erster sein zu wollen.",
           "pointsAwarded": 1
-        },
-        {
-          "content": "Eine Direktive ist eine prägnante Anweisung oder Frage, die der KI eine klare Aufgabe gibt. Sie sagt der KI genau, welche Aufgabe sie ausführen soll.",
-          "id": "s1_info1",
-          "pointsAwarded": 1,
-          "title": "Definition einer Direktive",
-          "type": "informationalSnippet"
-        },
-        {
-          "content": "Eine Rolle weist der KI eine bestimmte Persona oder Perspektive zu und ermutigt sie, ihre Antwort entsprechend der festgelegten Rolle anzupassen.",
-          "id": "s1_info2",
-          "pointsAwarded": 1,
-          "title": "Definition einer Rolle",
-          "type": "informationalSnippet"
-        },
-        {
-          "correctOptionIndex": 0,
-          "id": "s1_mcq1",
-          "options": [
-            "Die Hauptanweisung im Prompt, die der KI sagt, was sie tun soll.",
-            "Hintergrundinformationen, die der KI helfen, eine relevante Antwort zu generieren.",
-            "Gibt das Format an, in dem die KI ihre Ausgabe präsentieren soll.",
-            "Zuweisung einer bestimmten Persona an die KI."
-          ],
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0,
-          "question": "Was ist die Direktive?",
-          "title": "Verständnis der Direktive",
-          "type": "multipleChoice"
-        },
-        {
-          "expectedAnswer": "Das Rollenelement in einem Prompt weist der KI eine bestimmte Persona oder Perspektive zu und ermutigt sie, ihre Antwort entsprechend der zugewiesenen Rolle anzupassen. Zum Beispiel, der KI zu sagen, sie solle als Arzt handeln.",
-          "id": "s1_fr1",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0,
-          "question": "Definiere 'Rolle' (Persona) in deinen eigenen Worten und gib ein Beispiel.",
-          "title": "Rollendefinition in eigenen Worten",
-          "type": "freeResponse"
         }
       ],
       "title": "Stage 1: Verstehen"
@@ -58,29 +20,11 @@
       "id": "stage2",
       "items": [
         {
-          "expectedAnswer": "Der Prompt sollte überarbeitet werden, um mehr Details zu enthalten. Zum Beispiel: 'Du bist ein freundlicher Reiseführer. Erkläre einer Gruppe von Grundschülern die Geschichte des Eiffelturms.'",
-          "id": "s2_fr1",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0,
-          "question": "Der Prompt 'Erkläre den Eiffelturm' ist zu vage. Wie könntest du ihn durch Hinzufügen einer Rolle verbessern?",
-          "title": "Rollen anwenden",
-          "type": "freeResponse"
-        },
-        {
           "content": "Beispiele demonstrieren das erwartete Format, den Stil oder die Struktur der Ausgabe. Indem du sie in den Prompt einfügst, kannst du das Verhalten der KI steuern und ihr helfen, das gewünschte Ergebnis besser zu verstehen.",
           "id": "s2_info1",
           "pointsAwarded": 1,
           "title": "Die Bedeutung von Beispielen",
           "type": "informationalSnippet"
-        },
-        {
-          "expectedAnswer": "Der Prompt sollte überarbeitet werden, um zusätzlichen Kontext zu enthalten. Zum Beispiel: 'Du bist ein Finanzanalyst. Basierend auf den folgenden Börsendaten, prognostiziere die wahrscheinliche Leistung von Firma XYZ im nächsten Quartal.' gefolgt von relevanten Börsendaten.",
-          "id": "s2_fr2",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0,
-          "question": "Du möchtest, dass die KI die Leistung einer Aktie vorhersagt, gibst aber nur den Prompt 'Prognostiziere die Aktienleistung'. Welches entscheidende Element fehlt und wie würdest du es hinzufügen?",
-          "title": "Zusätzliche Informationen anwenden",
-          "type": "freeResponse"
         }
       ],
       "title": "Stage 2: Anwenden"
@@ -109,24 +53,6 @@
           "title": "Feedback zur Schwierigkeit",
           "question": "Die Plattform gibt mir das Gefühl neues zu entdecken.",
           "pointsAwarded": 1
-        },
-        {
-          "evaluationGuidance": "1. Hat der Benutzer das Fehlen einer spezifizierten Rolle identifiziert? 2. Hat der Benutzer eine Rolle vorgeschlagen, die dem Prompt Expertise hinzufügt? 3. Wie gut passt die hinzugefügte Rolle zur ursprünglichen Anfrage?",
-          "id": "s4_pt_error1",
-          "pointsAwarded": 12,
-          "pointsForIncorrect": 0,
-          "taskDescription": "Der folgende Prompt ist fehlerhaft: 'Schreibe eine E-Mail über den Klimawandel.' Identifiziere die Schwäche in diesem Prompt und schlage vor, wie man ihn verbessern kann. Konzentriere dich dabei gezielt auf eine fehlende Schlüsselkomponente. Schreibe den Prompt dann unter Einbeziehung deiner Vorschläge neu.",
-          "title": "Identifiziere und verbessere einen fehlerhaften Prompt",
-          "type": "promptingTask"
-        },
-        {
-          "expectedAnswer": "Häufige Fallstricke sind vage Direktiven, fehlender Kontext und das Weglassen gewünschter Ausgabeformate. Zu den besten Praktiken gehören die Verwendung klarer und prägnanter Direktiven, die Bereitstellung relevanter zusätzlicher Informationen und die Angabe des Ausgabeformats.",
-          "id": "s4_fr1",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0,
-          "question": "Was sind einige häufige Fallstricke, die man beim Erstellen von Prompts vermeiden sollte, und was sind einige bewährte Methoden, die man befolgen sollte?",
-          "title": "Häufige Fallstricke und bewährte Methoden",
-          "type": "freeResponse"
         }
       ],
       "title": "Stage 4: Reflektieren"
@@ -148,30 +74,6 @@
           "question": "Was ist der Hauptzweck der Bereitstellung von Beispielen in einem Prompt?",
           "title": "Zweck von Beispielen",
           "type": "multipleChoice"
-        },
-        {
-          "correctOptionIndex": 0,
-          "id": "s5_mcq2",
-          "options": [
-            "Beispiele, zusätzliche Informationen, Rolle, Direktive, Ausgabeformatierung",
-            "Direktive, Rolle, zusätzliche Informationen, Beispiele, Ausgabeformatierung",
-            "Ausgabeformatierung, Direktive, Rolle, zusätzliche Informationen, Beispiele",
-            "Rolle, Direktive, zusätzliche Informationen, Beispiele, Ausgabeformatierung"
-          ],
-          "pointsAwarded": 4,
-          "pointsForIncorrect": 0,
-          "question": "Was ist die empfohlene Reihenfolge für Prompt-Teile?",
-          "title": "Empfohlene Prompt-Reihenfolge",
-          "type": "multipleChoice"
-        },
-        {
-          "expectedAnswer": "Die Ausgabeformatierung verbessert die KI-Antworten, indem sie die KI anweist, ihre Antwort in einer bestimmten Struktur zu präsentieren, wie z.B. einer Liste, Tabelle oder einem Absatz – was das Ergebnis sofort nutzbar macht und den Bedarf an weiterer Bearbeitung reduziert.",
-          "id": "s5_fr1",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0,
-          "question": "Wie verbessert die Ausgabeformatierung die KI-Antworten?",
-          "title": "Verbesserung durch Ausgabeformatierung",
-          "type": "freeResponse"
         }
       ],
       "title": "Stage 5: Wiederholen"
@@ -179,15 +81,6 @@
     {
       "id": "stage6",
       "items": [
-        {
-          "evaluationGuidance": "1. Hat der Benutzer erfolgreich eine Rolle, eine Direktive und zusätzliche Informationen im Prompt kombiniert? 2. Ist der Prompt klar und spezifisch und leitet die KI effektiv? 3. Setzt der Prompt den Kontext für die Aufgabe angemessen? 4. Gibt der Prompt das gewünschte Ausgabeformat an?",
-          "id": "s6_pt_complex1",
-          "pointsAwarded": 18,
-          "pointsForIncorrect": 0,
-          "taskDescription": "Stell dir vor, du musst das Konzept der 'künstlichen Intelligenz' einer Gruppe von Oberstufenschülern ohne Vorkenntnisse erklären. Schreibe einen Prompt, der die KI anweist, als sachkundiger und engagierter Lehrer zu agieren, der komplexe Themen vereinfachen kann. Gib relevante zusätzliche Informationen über KI an und fordere, dass die Ausgabe als Unterrichtsplan mit Schlüsselthemen und kurzen Erklärungen strukturiert ist.",
-          "title": "Erstellen eines komplexen KI-Erklärungs-Prompts",
-          "type": "promptingTask"
-        },
         {
           "expectedAnswer": "Persönliche Reflexion des Benutzers",
           "id": "s6_fr_reflect1",

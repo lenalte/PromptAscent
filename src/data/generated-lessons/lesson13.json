@@ -14,28 +14,6 @@
           "title": "Was sind multimodale Modelle?",
           "content": "Multimodale KI-Modelle können verschiedene Arten von Daten gleichzeitig verarbeiten und integrieren, wie z.B. Text, Bilder und Ton. Sie können beispielsweise ein Bild analysieren und eine textliche Beschreibung dafür erstellen.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "informationalSnippet",
-          "id": "s1_info2",
-          "title": "Text-zu-Bild-Generierung",
-          "content": "Bei der Text-zu-Bild-Generierung verwendet die KI eine Textbeschreibung (einen Prompt), um ein völlig neues Bild zu erstellen. Tools wie DALL-E 3 und Midjourney sind darauf spezialisiert.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Anwendung von Bild-KI",
-          "question": "Welche der folgenden Aufgaben ist ein typischer Anwendungsfall für Text-zu-Bild-KI?",
-          "options": [
-            "Einen bestehenden Text korrigieren.",
-            "Ein Bild auf Basis einer Beschreibung wie 'Ein Astronaut, der auf einem Pferd reitet' erstellen.",
-            "Eine Excel-Tabelle analysieren.",
-            "Eine Audiodatei transkribieren."
-          ],
-          "correctOptionIndex": 1,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -50,15 +28,6 @@
           "question": "Du möchtest eine einfache Webseite erstellen. Gib einen Prompt an eine Code-generierende KI, um das grundlegende HTML-Gerüst dafür zu erstellen.",
           "expectedAnswer": "Ein guter Prompt wäre: 'Erstelle den grundlegenden HTML-Code für eine Webseite mit einem Titel, einer Überschrift und einem Absatz.'",
           "pointsAwarded": 6,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Audio-Generierung anwenden",
-          "question": "Du brauchst entspannende Hintergrundmusik für ein Video. Wie könnte ein Prompt für eine Audio-KI wie Google's MusicLM lauten, um dies zu erreichen?",
-          "expectedAnswer": "Ein passender Prompt könnte sein: 'Erzeuge einen ruhigen, atmosphärischen Lo-Fi-Jazz-Track, der sich gut für einen regnerischen Tag eignet.'",
-          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -111,15 +80,6 @@
           "correctOptionIndex": 1,
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s5_fr1",
-          "title": "Generative Vielfalt",
-          "question": "Nenne drei verschiedene Arten von Inhalten, die eine Generative KI außer Text noch erstellen kann.",
-          "expectedAnswer": "Drei Beispiele sind Bilder, Audio/Musik und Videos. Auch Code oder synthetische Daten sind korrekte Antworten.",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -127,15 +87,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Ein multimodales Projekt entwerfen",
-          "taskDescription": "Du möchtest eine kurze Social-Media-Story über dein fiktives Café 'Bohnen-Traum' erstellen. Schreibe einen einzigen, detaillierten Prompt für eine hypothetische, multimodale KI. Der Prompt soll die Erstellung von drei Elementen anleiten: 1. Ein Bild eines gemütlichen Cafés. 2. Ein kurzer Werbetext dazu. 3. Ein Vorschlag für passende Hintergrundmusik.",
-          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung von drei verschiedenen Medientypen an (Bild, Text, Musik)? 2. Sind die Anweisungen für jeden Medientyp spezifisch genug (z.B. Bildstil, Textinhalt, Musikgenre)? 3. Ergänzen sich die gewünschten Elemente thematisch (Café-Atmosphäre)? 4. Ist der Prompt als eine zusammenhängende Aufgabe für ein multimodales Modell formuliert?",
-          "pointsAwarded": 20,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

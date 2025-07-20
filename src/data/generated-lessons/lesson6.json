@@ -14,37 +14,6 @@
           "title": "Was ist In-Context Learning (ICL)?",
           "content": "In-Context Learning bedeutet, dass eine KI direkt aus den im Prompt gegebenen Beispielen lernt, ohne dass ihr Trainingsdatensatz geändert werden muss. Die KI erkennt Muster in den Beispielen und wendet sie auf neue, ähnliche Aufgaben an.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "informationalSnippet",
-          "id": "s1_info2",
-          "title": "Shot-Based Prompting: Zero, One und Few",
-          "content": "Je nach Anzahl der Beispiele spricht man von: 'Zero-Shot' (keine Beispiele), 'One-Shot' (ein Beispiel) oder 'Few-Shot' (mehrere Beispiele). Je mehr relevante Beispiele man gibt, desto besser wird in der Regel die Antwort der KI.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Few-Shot Prompting",
-          "question": "Was versteht man unter 'Few-Shot Prompting'?",
-          "options": [
-            "Der KI eine sehr kurze Frage stellen.",
-            "Der KI keine Beispiele geben.",
-            "Der KI zwei oder mehr Beispiele im Prompt zur Verfügung stellen.",
-            "Der KI nur ein einziges Beispiel geben."
-          ],
-          "correctOptionIndex": 2,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s1_fr1",
-          "title": "Zero-Shot erklären",
-          "question": "Was bedeutet 'Zero-Shot Prompting' und wann würdest du es verwenden?",
-          "expectedAnswer": "Zero-Shot Prompting bedeutet, dass man der KI eine Aufgabe gibt, ohne ihr irgendwelche Beispiele zu zeigen. Man verlässt sich voll auf ihr vortrainiertes Wissen. Es eignet sich für einfache, allgemeine Aufgaben, bei denen die KI die Anweisung wahrscheinlich bereits kennt.",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -58,24 +27,6 @@
           "title": "Beispiel: Sentiment-Analyse",
           "content": "Ein Zero-Shot-Prompt wäre: 'Klassifiziere den folgenden Text als positiv, negativ oder neutral: [Text]'. Ein Few-Shot-Prompt würde zuerst Beispiele zeigen, z.B. 'Text: Ich liebe es. Sentiment: positiv. Text: Es ist furchtbar. Sentiment: negativ.', bevor die eigentliche Aufgabe kommt. Dadurch 'lernt' die KI das gewünschte Format und die Logik.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "One-Shot Prompt erstellen",
-          "question": "Erstelle einen One-Shot Prompt, um einer KI beizubringen, englische Sätze ins Deutsche zu übersetzen. Benutze den Satz 'Hello world' als Beispiel.",
-          "expectedAnswer": "Ein korrekter Prompt wäre: 'Übersetze ins Deutsche. Beispiel: Hello world -> Hallo Welt. How are you? ->'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Strukturierte Ausgabe",
-          "question": "Wie würdest du einen Few-Shot Prompt gestalten, damit eine KI aus einem Satz wie 'Anna Schmidt ist 30 Jahre alt und CEO' die Informationen im JSON-Format extrahiert?",
-          "expectedAnswer": "Man würde Beispiele im gewünschten JSON-Format vorgeben, z.B. 'Text: Max Mustermann ist 40 Jahre alt und Entwickler. Output: {\"name\": \"Max Mustermann\", \"age\": 40, \"occupation\": \"Entwickler\"}'. Dann folgt der neue Satz zur Bearbeitung.",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -127,15 +78,6 @@
           "correctOptionIndex": 1,
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s5_fr1",
-          "title": "Zweck von Beispielen",
-          "question": "Fasse in einem Satz den Hauptzweck zusammen, warum man Beispiele in Prompts verwendet.",
-          "expectedAnswer": "Der Hauptzweck von Beispielen in Prompts ist es, der KI durch konkrete Demonstrationen beizubringen, wie sie eine Aufgabe ausführen soll, was besonders bei komplexen Anforderungen oder zur Einhaltung eines bestimmten Ausgabeformats hilfreich ist.",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -143,15 +85,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Few-Shot und Rolle kombinieren",
-          "taskDescription": "Du möchtest, dass eine KI als Social-Media-Manager für ein Tech-Unternehmen agiert und kurze, schlagfertige Antworten auf Kunden-Tweets gibt. Erstelle einen Few-Shot-Prompt, der zwei Beispiele für Kunden-Tweets und die gewünschten Antworten enthält. Kombiniere dies mit einer klaren Rollenzuweisung im selben Prompt.",
-          "evaluationGuidance": "1. Beginnt der Prompt mit einer klaren Rollenzuweisung ('Du bist ein Social-Media-Manager...')? 2. Enthält der Prompt mindestens zwei realistische Beispiele für Tweet-Antworten? 3. Passen die Beispielantworten zum zugewiesenen Rollenbild (schlagfertig, professionell)? 4. Ist der Prompt so aufgebaut, dass eine neue, dritte Anfrage klar als die zu lösende Aufgabe erkennbar ist?",
-          "pointsAwarded": 20,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

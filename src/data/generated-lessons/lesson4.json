@@ -14,37 +14,6 @@
           "title": "Was ist Instruction Prompting?",
           "content": "Instruction Prompting ist eine Technik, bei der einem KI-Modell klare und direkte Anweisungen gegeben werden, um eine bestimmte Aufgabe auszuführen. Anstatt der KI viele Beispiele zu zeigen, sagt man ihr einfach, was sie tun soll, z.B. 'Fasse diesen Text zusammen'.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "informationalSnippet",
-          "id": "s1_info2",
-          "title": "Warum ist das wichtig?",
-          "content": "Klare Anweisungen ermöglichen es, generative KI-Modelle für neue, ungesehene Aufgaben zu nutzen, ohne dass sie dafür speziell trainiert werden müssen. Dies macht die KI flexibel und vielseitig einsetzbar.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Kernidee des Instruction Prompting",
-          "question": "Was ist das Hauptziel von Instruction Prompting?",
-          "options": [
-            "Die KI dazu zu bringen, auf eine sehr spezifische Weise zu antworten, indem man ihr eine Rolle zuweist.",
-            "Dem Modell zu ermöglichen, neue Aufgaben nur durch das Verstehen von Anweisungen in natürlicher Sprache zu bewältigen.",
-            "Die Geschwindigkeit der Antwort des Modells zu erhöhen.",
-            "Die KI mit so vielen Beispielen wie möglich zu füttern."
-          ],
-          "correctOptionIndex": 1,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s1_fr1",
-          "title": "Eigene Worte",
-          "question": "Erkläre in deinen eigenen Worten, was ein 'Instruction Prompt' ist.",
-          "expectedAnswer": "Ein Instruction Prompt ist eine klare Anweisung oder ein Befehl an eine KI, eine bestimmte Aufgabe zu erledigen, z.B. einen Text zu übersetzen, Informationen zu extrahieren oder Daten zu formatieren.",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -58,24 +27,6 @@
           "title": "Beispiel: Namen parsen",
           "content": "Eine häufige Aufgabe ist die korrekte Formatierung von Namen. Anstatt komplizierter Regeln kann man der KI einfach sagen: 'Bitte konvertiere den Namen 'John Smith' in das Format '[Nachname], [Vorname]'. Die KI versteht die Anweisung und gibt 'Smith, John' aus.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Einfache Anweisung schreiben",
-          "question": "Schreibe einen einfachen Instruction Prompt, der eine KI anweist, den Satz 'Ich liebe Prompt Engineering' ins Englische zu übersetzen.",
-          "expectedAnswer": "Ein korrekter Prompt wäre zum Beispiel: 'Übersetze den folgenden Satz ins Englische: Ich liebe Prompt Engineering.' oder 'Translate 'Ich liebe Prompt Engineering' to English.'",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "PII-Entfernung anwenden",
-          "question": "Du hast folgenden Text: 'Kontaktieren Sie Jane Doe unter jane.doe@email.com'. Schreibe einen Prompt, der eine KI anweist, alle persönlich identifizierbaren Informationen (PII) zu entfernen und durch Platzhalter zu ersetzen.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Entferne alle PII aus dem folgenden Text und ersetze sie durch Platzhalter wie [NAME] und [EMAIL]: 'Kontaktieren Sie Jane Doe unter jane.doe@email.com'.'",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -98,15 +49,6 @@
       "id": "stage4",
       "title": "Stage 4: Reflektieren",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s4_pt_error1",
-          "title": "Fehlerhaften Prompt analysieren",
-          "taskDescription": "Der Prompt 'Bewerte diesen Aufsatz' ist nicht sehr hilfreich. Identifiziere, warum dieser Prompt schwach ist, und schlage eine verbesserte Version vor, die der KI spezifische Kriterien für die Bewertung gibt (z.B. Grammatik, Klarheit, Argumentationsstärke).",
-          "evaluationGuidance": "1. Erkennt der Benutzer, dass der ursprüngliche Prompt zu vage ist? 2. Schlägt der verbesserte Prompt spezifische, messbare Bewertungskriterien vor? 3. Ist der neue Prompt so formuliert, dass die KI eine strukturierte und nützliche Rückmeldung geben kann?",
-          "pointsAwarded": 15,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s4_fr1",
@@ -136,15 +78,6 @@
           "correctOptionIndex": 2,
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s5_fr1",
-          "title": "Zusammenfassung der Technik",
-          "question": "Fasse in zwei Sätzen zusammen, was die Kernstärke von Instruction Prompting ist.",
-          "expectedAnswer": "Die Kernstärke von Instruction Prompting liegt in seiner Flexibilität und Effizienz. Es ermöglicht, KI-Modelle für eine Vielzahl von Aufgaben einzusetzen, ohne dass dafür aufwendiges Training oder eine große Menge an Beispieldaten notwendig ist.",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -152,15 +85,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Komplexe Anweisungen kombinieren",
-          "taskDescription": "Du möchtest eine E-Mail an einen Kunden verfassen, um ihn über eine verspätete Lieferung zu informieren. Schreibe einen Prompt, der eine KI anweist, diese E-Mail zu erstellen. Der Prompt soll folgende Anweisungen kombinieren: 1. Der Ton soll professionell und entschuldigend sein. 2. Die E-Mail soll den neuen Liefertermin nennen. 3. Sie soll dem Kunden als Entschädigung einen Rabatt von 10% auf die nächste Bestellung anbieten.",
-          "evaluationGuidance": "1. Enthält der Prompt eine klare Anweisung zur Erstellung einer E-Mail? 2. Werden die drei spezifischen Anweisungen (Ton, neuer Termin, Rabatt) klar im Prompt formuliert? 3. Ist der Prompt so strukturiert, dass eine KI alle Bedingungen erfüllen kann?",
-          "pointsAwarded": 20,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

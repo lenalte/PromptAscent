@@ -14,30 +14,6 @@
           "title": "Was bedeutet das Kombinieren von Techniken?",
           "content": "Anstatt nur eine Methode zu verwenden, können verschiedene Elemente wie eine Rolle, eine Anweisung und Beispiele in einem einzigen Prompt kombiniert werden. Dies hilft der KI, komplexe Aufgaben besser zu verstehen und präzisere Antworten zu geben.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Warum Techniken kombinieren?",
-          "question": "Was ist der Hauptvorteil der Kombination verschiedener Prompting-Techniken?",
-          "options": [
-            "Um die Antwortzeit der KI zu verkürzen.",
-            "Um die KI dazu zu bringen, längere Texte zu schreiben.",
-            "Um die Genauigkeit, den Stil und die Relevanz der Antwort für komplexe Aufgaben zu verbessern.",
-            "Um die internen Parameter des Modells zu ändern."
-          ],
-          "correctOptionIndex": 2,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s1_fr1",
-          "title": "Eigene Worte",
-          "question": "Erkläre in deinen eigenen Worten, warum die Kombination von Rolle und Anweisung in einem Prompt nützlich sein kann.",
-          "expectedAnswer": "Die Kombination ist nützlich, weil die Rolle den Stil und die Perspektive vorgibt (z.B. als Experte), während die Anweisung die konkrete Aufgabe definiert. Zusammen führen sie zu einer präziseren und passenderen Antwort.",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -51,15 +27,6 @@
           "title": "Beispiel: Rolle und Anweisung",
           "content": "Ein Beispiel für die Kombination ist: 'Du bist ein erfahrener Historiker, der sich auf das Römische Reich spezialisiert hat. Schreibe eine kurze Zusammenfassung der wichtigsten Ereignisse während der Herrschaft von Julius Caesar.' Hier wird die Rolle des Historikers mit der klaren Anweisung zur Zusammenfassung kombiniert.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Kombination anwenden",
-          "question": "Du möchtest eine Produktbeschreibung für ein neues veganes Kochbuch. Kombiniere eine passende Rolle und eine klare Anweisung in einem Prompt.",
-          "expectedAnswer": "Ein möglicher Prompt wäre: 'Du bist ein begeisterter Food-Blogger. Schreibe eine überzeugende 2-Satz-Beschreibung für ein neues veganes Kochbuch, das sich auf schnelle 15-Minuten-Gerichte konzentriert.'",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -118,15 +85,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Meister-Prompt erstellen",
-          "taskDescription": "Du bist ein Marketing-Manager. Erstelle einen Prompt, der eine KI anweist, eine Social-Media-Anzeige für ein neues umweltfreundliches Reinigungsmittel zu erstellen. Kombiniere dabei die folgenden Elemente: eine Rolle ('Du bist ein Texter, der auf Nachhaltigkeit spezialisiert ist'), Kontext ('Das Produkt ist pflanzlich und plastikfrei verpackt'), eine klare Anweisung ('Schreibe drei Varianten für eine Instagram-Anzeige') und eine Formatvorgabe ('Jede Variante mit kurzer Überschrift und 2-3 Sätzen Text').",
-          "evaluationGuidance": "1. Enthält der Prompt alle vier geforderten Elemente (Rolle, Kontext, Anweisung, Format)? 2. Ist die zugewiesene Rolle passend zur Aufgabe? 3. Ist der Kontext präzise genug? 4. Ist die Anweisung klar und unmissverständlich formuliert?",
-          "pointsAwarded": 20,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
