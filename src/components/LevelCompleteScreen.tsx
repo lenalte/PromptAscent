@@ -54,7 +54,6 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <Trophy className="h-8 w-8 mr-2 text-accent" />
           <span className="text-base text-accent/80 font-medium">
             Weiter so – das nächste Level wartet schon auf dich!
           </span>
@@ -62,7 +61,7 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
         <EightbitButton onClick={onGoHome}>
-          <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Übersicht
+            Zurück zur Übersicht
         </EightbitButton>
       </CardFooter>
     </Card>

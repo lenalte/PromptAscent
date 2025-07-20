@@ -14,28 +14,6 @@
           "title": "Was sind Chatbots?",
           "content": "Chatbots sind KI-Systeme, die darauf ausgelegt sind, menschliche Konversationen zu simulieren. Sie können sich an vorherige Nachrichten erinnern, was ihnen ermöglicht, kohärente und kontextbezogene Antworten zu geben.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "informationalSnippet",
-          "id": "s1_info2",
-          "title": "Was sind große Sprachmodelle (LLMs)?",
-          "content": "LLMs wie GPT-4 sind die Motoren, die Chatbots antreiben. Sie verarbeiten Sprache und erzeugen Antworten, aber für sich allein genommen behalten sie keinen Gesprächskontext oder erinnern sich an vergangene Interaktionen.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Hauptunterschied",
-          "question": "Was ist der größte Vorteil von Chatbots gegenüber eigenständigen LLMs?",
-          "options": [
-            "Sie antworten schneller.",
-            "Sie können sich den Gesprächsverlauf 'merken'.",
-            "Sie können komplexere Sprachen verstehen.",
-            "Sie benötigen weniger Rechenleistung."
-          ],
-          "correctOptionIndex": 1,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -109,15 +87,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Den richtigen Anwendungsfall wählen",
-          "taskDescription": "Du möchtest eine kurze, prägnante Zusammenfassung eines einzelnen Nachrichtenartikels erstellen. Würdest du dafür eher einen Chatbot oder ein eigenständiges LLM verwenden? Begründe deine Entscheidung, indem du die jeweiligen Stärken und Schwächen der beiden Systeme für diese spezifische Aufgabe abwägst.",
-          "evaluationGuidance": "1. Wählt der Benutzer korrekt das eigenständige LLM? 2. Wird als Begründung angeführt, dass keine fortlaufende Konversation oder Kontexterhaltung nötig ist? 3. Wird erwähnt, dass ein LLM für eine solche einmalige Aufgabe effizienter ist?",
-          "pointsAwarded": 18,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

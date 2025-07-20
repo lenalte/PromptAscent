@@ -14,28 +14,6 @@
           "title": "Klarheit und Spezifität",
           "content": "Der wichtigste Tipp für gute Prompts ist, klar und spezifisch zu sein. Vage Anweisungen führen zu vagen Ergebnissen. Sagen Sie der KI genau, was Sie von ihr erwarten.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "informationalSnippet",
-          "id": "s1_info2",
-          "title": "Kontext ist entscheidend",
-          "content": "KI-Modelle liefern bessere Ergebnisse, wenn sie mehr Informationen über die Aufgabe haben. Geben Sie Hintergrunddetails, Richtlinien oder Einschränkungen an, um der KI zu helfen, Ihre Anfrage besser zu verstehen.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Vage vs. Spezifisch",
-          "question": "Welcher der folgenden Prompts ist am effektivsten?",
-          "options": [
-            "Schreib was über Autos.",
-            "Schreibe einen 150-Wörter-Absatz über die Vorteile von Elektroautos für den Stadtverkehr und konzentriere dich auf Lärmreduzierung und geringere Emissionen.",
-            "Elektroautos.",
-            "Erkläre Autos."
-          ],
-          "correctOptionIndex": 1,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -50,15 +28,6 @@
           "question": "Der Prompt 'Erstelle ein Bild' ist zu vage. Formuliere ihn neu, um ein spezifisches Bild eines 'sonnigen Strandes bei Sonnenuntergang mit Palmen' zu erhalten.",
           "expectedAnswer": "Ein verbesserter Prompt wäre: 'Erstelle ein Bild von einem tropischen Strand bei Sonnenuntergang. Im Vordergrund sollen zwei Palmen stehen und der Himmel soll in warmen Orange- und Lilatönen leuchten.'",
           "pointsAwarded": 6,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Kontext hinzufügen",
-          "question": "Du möchtest eine Zusammenfassung eines wissenschaftlichen Artikels. Der Prompt 'Fasse den Artikel zusammen' ist zu einfach. Wie kannst du Kontext hinzufügen, um eine bessere Zusammenfassung für Laien zu erhalten?",
-          "expectedAnswer": "Man könnte hinzufügen: 'Fasse den folgenden wissenschaftlichen Artikel über Quantenphysik in einfachen Worten zusammen, sodass ihn jemand ohne Vorkenntnisse verstehen kann. Konzentriere dich auf die Haupterkenntnis.'",
-          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -111,15 +80,6 @@
           "correctOptionIndex": 2,
           "pointsAwarded": 4,
           "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s5_fr1",
-          "title": "Zusammenfassung der Tipps",
-          "question": "Fasse die drei wichtigsten Tipps für das Schreiben besserer Prompts in einem Satz zusammen.",
-          "expectedAnswer": "Für bessere Prompts sollte man klare und spezifische Anweisungen geben, relevanten Kontext hinzufügen und bereit sein, den Prompt basierend auf den Ergebnissen schrittweise zu verfeinern.",
-          "pointsAwarded": 7,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -127,15 +87,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen meisterhaften Prompt erstellen",
-          "taskDescription": "Du planst eine Marketing-Kampagne für ein neues Videospiel. Das Spiel ist ein Fantasy-Rollenspiel mit einer düsteren Atmosphäre. Erstelle einen einzigen, umfassenden Prompt für eine KI, der sie anweist, einen kurzen Werbetext zu schreiben. Der Prompt soll eine Rolle, Kontext, eine klare Anweisung, eine Zielgruppenangabe (erfahrene Rollenspieler) und eine Längenbeschränkung (ca. 50 Wörter) enthalten.",
-          "evaluationGuidance": "1. Sind alle geforderten Elemente (Rolle, Kontext, Anweisung, Zielgruppe, Länge) im Prompt enthalten? 2. Ist die Rolle ('erfahrener Marketing-Texter für Videospiele') gut gewählt? 3. Beschreibt der Kontext das Spiel präzise? 4. Ist die Anweisung klar und die Zielgruppe korrekt definiert?",
-          "pointsAwarded": 20,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

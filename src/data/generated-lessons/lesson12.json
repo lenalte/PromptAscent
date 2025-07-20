@@ -14,28 +14,6 @@
           "title": "Halluzinationen (Erfinden von Informationen)",
           "content": "Eine der seltsamsten Eigenschaften von LLMs ist, dass sie oft Informationen erfinden, wenn sie die Antwort nicht wissen. Anstatt zuzugeben, dass sie etwas nicht wissen, erzeugen sie überzeugend klingende, aber falsche Fakten. Dies wird als 'Halluzination' bezeichnet.",
           "pointsAwarded": 1
-        },
-        {
-          "type": "informationalSnippet",
-          "id": "s1_info2",
-          "title": "Begrenzte Argumentationsfähigkeiten",
-          "content": "Obwohl LLMs sehr intelligent wirken können, haben sie oft Schwierigkeiten mit grundlegender Mathematik oder komplexen, mehrstufigen logischen Problemen. Sie sind für das Verstehen und Generieren von Sprache konzipiert, nicht für das Lösen von Rätseln oder komplexen Berechnungen.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "multipleChoice",
-          "id": "s1_mcq1",
-          "title": "Veraltetes Wissen",
-          "question": "Warum kann ein LLM oft keine Fragen zu aktuellen Ereignissen beantworten?",
-          "options": [
-            "Weil es kein Interesse an Nachrichten hat.",
-            "Weil es nur auf Daten trainiert wurde, die in der Vergangenheit gesammelt wurden, und keinen Echtzeitzugriff auf neue Informationen hat.",
-            "Weil aktuelle Ereignisse zu komplex sind.",
-            "Weil es absichtlich veraltete Informationen gibt."
-          ],
-          "correctOptionIndex": 1,
-          "pointsAwarded": 3,
-          "pointsForIncorrect": 0
         }
       ]
     },
@@ -50,15 +28,6 @@
           "question": "Gib ein Beispiel dafür, wie sich ein Bias (Voreingenommenheit) aus den Trainingsdaten in der Antwort einer KI widerspiegeln könnte.",
           "expectedAnswer": "Ein Beispiel wäre, wenn die KI bei der Beschreibung eines 'typischen Programmierers' hauptsächlich männliche Eigenschaften nennt, weil die Trainingsdaten überwiegend aus Texten stammen, in denen Männer als Programmierer dargestellt werden. Dies würde geschlechtsspezifische Stereotypen reproduzieren.",
           "pointsAwarded": 6,
-          "pointsForIncorrect": 0
-        },
-        {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Umgang mit Halluzinationen",
-          "question": "Du fragst eine KI nach dem Geburtsdatum einer weniger bekannten historischen Figur und sie gibt dir eine exakte, aber falsche Antwort. Was solltest du tun, um diese Art von Fehler zu vermeiden?",
-          "expectedAnswer": "Man sollte die von der KI gelieferten Informationen immer überprüfen, besonders bei Fakten. Man könnte eine zuverlässige Quelle wie eine Enzyklopädie oder eine historische Datenbank konsultieren, anstatt sich blind auf die KI-Antwort zu verlassen.",
-          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -118,15 +87,6 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
-        {
-          "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einschränkungen umgehen",
-          "taskDescription": "Du benötigst eine Zusammenfassung der wichtigsten Finanznachrichten der letzten 24 Stunden. Da du weißt, dass LLMs kein Echtzeitwissen haben, wie würdest du einen Prompt gestalten, der dieses Problem umgeht? (Tipp: Denke darüber nach, wie du der KI aktuelle Informationen zur Verfügung stellen könntest).",
-          "evaluationGuidance": "1. Erkennt der Benutzer das Problem des fehlenden Echtzeitwissens? 2. Enthält der vorgeschlagene Prompt die relevanten Nachrichtenartikel als Kontext? 3. Ist die Anweisung klar, dass die KI ihre Zusammenfassung NUR auf den bereitgestellten Text stützen soll?",
-          "pointsAwarded": 18,
-          "pointsForIncorrect": 0
-        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
