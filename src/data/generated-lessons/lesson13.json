@@ -1,8 +1,7 @@
-
 {
   "id": "lesson13",
-  "title": "Was kann KI über Text hinaus erstellen?",
-  "description": "Entdecke die vielfältigen kreativen Fähigkeiten von Generativer KI jenseits von Text.",
+  "title": "Was kann Generative KI erschaffen?",
+  "description": "Lerne die wichtigsten Anwendungsfelder generativer KI: Text, Bild, Audio, Video, Code, Multimodalität und synthetische Daten.",
   "stages": [
     {
       "id": "stage1",
@@ -11,9 +10,40 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was sind multimodale Modelle?",
-          "content": "Multimodale KI-Modelle können verschiedene Arten von Daten gleichzeitig verarbeiten und integrieren, wie z.B. Text, Bilder und Ton. Sie können beispielsweise ein Bild analysieren und eine textliche Beschreibung dafür erstellen.",
+          "title": "Generative KI – Überblick",
+          "content": "Generative KI kann mehr als nur Text: Sie erzeugt Bilder, Audio, Video, Code, multimodale Outputs und synthetische Daten.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Anwendungen im Alltag",
+          "content": "Ob ChatGPT für Texte, DALL-E für Bilder oder MusicLM für Musik – generative KI verändert viele Bereiche unseres Lebens und Arbeitens.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Anwendungsfelder erkennen",
+          "question": "Welche dieser Aufgaben kann eine generative KI *nicht* erledigen?",
+          "options": [
+            "Neue Musik komponieren",
+            "Eigene Bilder erstellen",
+            "Steuerbescheide erlassen",
+            "Code generieren"
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Anwendung",
+          "question": "Nenne zwei Bereiche, in denen du generative KI in deinem Alltag nutzen könntest.",
+          "expectedAnswer": "Zum Beispiel: Textzusammenfassung, Bilderstellung, Musik- oder Videoerstellung, Code-Assistenz.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -22,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Von Prompt zu Output",
+          "content": "Der Output hängt davon ab, wie spezifisch und kreativ du deine Prompts gestaltest – egal ob Text, Bild, Audio oder Code.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Code-Generierung anwenden",
-          "question": "Du möchtest eine einfache Webseite erstellen. Gib einen Prompt an eine Code-generierende KI, um das grundlegende HTML-Gerüst dafür zu erstellen.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Erstelle den grundlegenden HTML-Code für eine Webseite mit einem Titel, einer Überschrift und einem Absatz.'",
-          "pointsAwarded": 6,
+          "title": "Bildprompt schreiben",
+          "question": "Schreibe einen Prompt, mit dem eine KI ein Bild eines Roboters auf einem Skateboard bei Sonnenuntergang erstellt.",
+          "expectedAnswer": "Zum Beispiel: 'Erzeuge ein Bild eines Roboters, der bei Sonnenuntergang auf einem Skateboard fährt, im Comicstil.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Typische KI-Ausgaben",
+          "question": "Welcher Prompt eignet sich, um Musik im Stil von Jazz zu generieren?",
+          "options": [
+            "Erzeuge ein Jazzstück im Stil von Miles Davis für eine entspannte Abendstimmung.",
+            "Erkläre die Geschichte des Jazz.",
+            "Beschreibe einen Sonnenuntergang.",
+            "Zeige ein Bild von einem Saxophon."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -39,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Video-Prompt variieren",
-          "taskDescription": "Du möchtest, dass eine Video-KI wie Runway oder Sora einen kurzen Clip erstellt. Schreibe einen Prompt, der eine 'Zeitrafferaufnahme einer blühenden Blume auf einer Wiese' anfordert. Füge mindestens drei spezifische Details hinzu, um den Stil zu variieren (z.B. Lichtstimmung, Kamerawinkel, Wetter).",
-          "evaluationGuidance": "1. Fordert der Prompt klar eine Zeitrafferaufnahme einer blühenden Blume an? 2. Enthält der Prompt mindestens drei beschreibende Details, die den Stil beeinflussen? 3. Ist der Prompt präzise genug, um ein visuell ansprechendes Ergebnis zu erzeugen?",
-          "pointsAwarded": 12,
+          "title": "Code-Prompting ausprobieren",
+          "taskDescription": "Formuliere einen Prompt, mit dem die KI ein Python-Programm zur Addition zweier Zahlen generiert.",
+          "evaluationGuidance": "Prompt muss klar, spezifisch und mit gewünschtem Programmnamen sein.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Multimodalen Prompt entwerfen",
+          "taskDescription": "Entwerfe einen Prompt, der Text und ein Bild kombiniert (z.B. eine Bildbeschreibung mit einer Frage dazu).",
+          "evaluationGuidance": "Prompt muss klar machen, dass beides (Text und Bild) einbezogen wird.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Synthetische Daten reflektieren",
-          "question": "Erkläre, warum die Generierung von synthetischen Daten, z.B. für das Training von selbstfahrenden Autos, sowohl eine große Chance als auch eine potenzielle Gefahr darstellt.",
-          "expectedAnswer": "Die Chance liegt darin, dass man seltene oder gefährliche Situationen (wie Unfälle) risikofrei simulieren kann, um die KI besser zu trainieren. Die Gefahr besteht darin, dass die synthetischen Daten möglicherweise nicht alle Nuancen der realen Welt abbilden und die KI dadurch Lücken in ihrer 'Erfahrung' hat.",
+          "title": "Chancen & Risiken reflektieren",
+          "question": "Welche Chancen und welche Risiken siehst du bei der Nutzung generativer KI für kreative Aufgaben?",
+          "expectedAnswer": "Chancen: Kreativität, Zeitersparnis, neue Möglichkeiten. Risiken: Missbrauch, Fehlinformation, Abhängigkeit.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: KI-Limitierungen",
+          "taskDescription": "Gib ein Beispiel, wo KI bei der Bild- oder Audioerstellung an ihre Grenzen stößt (z.B. beim Verständnis von Emotionen oder Details).",
+          "evaluationGuidance": "Beispiel muss zeigen, dass KI nicht immer versteht, was gewünscht ist.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -69,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Multimodale KI erkennen",
-          "question": "Welche der folgenden Aufgaben ist ein klares Beispiel für eine multimodale KI?",
+          "title": "Quiz: KI-Typen",
+          "question": "Was ist ein typischer Anwendungsfall für synthetische Daten aus KI?",
           "options": [
-            "Einen Text von Deutsch nach Englisch übersetzen.",
-            "Ein Bild analysieren und eine passende textliche Beschreibung dafür generieren.",
-            "Eine Liste von Zahlen sortieren.",
-            "Einen einzelnen Ton erzeugen."
+            "Echte Fotos für Zeitungsartikel erzeugen",
+            "Trainingsdaten für andere KI-Modelle simulieren",
+            "Nur Songtexte dichten",
+            "Neue Sprachen erfinden"
           ],
           "correctOptionIndex": 1,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Wiederholung: KI-Output",
+          "question": "Nenne drei verschiedene Ausgaben, die generative KI erzeugen kann.",
+          "expectedAnswer": "Text, Bild, Audio, Video, Code, synthetische Daten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -88,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexe KI-Prompt-Aufgabe",
+          "taskDescription": "Entwickle einen Prompt, der eine KI dazu bringt, eine kurze Geschichte zu schreiben und ein passendes Bild zu generieren. Beschreibe, wie du den Prompt strukturierst.",
+          "evaluationGuidance": "Prompt und Begründung zur Struktur (zuerst Geschichte, dann Bild, mit klarer Rollenbeschreibung).",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Welche Anwendung von generativer KI möchtest du künftig ausprobieren – und warum?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

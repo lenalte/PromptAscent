@@ -1,4 +1,3 @@
-
 {
   "id": "lesson2",
   "title": "Einführung in Prompt Engineering",
@@ -11,38 +10,38 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was ist ein Prompt?",
-          "content": "Ein Prompt ist die Eingabe oder Anweisung, die einem KI-Modell gegeben wird, um eine Antwort zu generieren. Es kann eine einfache Frage oder ein komplexer Satz von Anweisungen mit Kontext, Ton und Formatvorgaben sein.",
+          "title": "Was ist Prompt Engineering?",
+          "content": "Prompt Engineering ist die Kunst, gezielte und klare Eingaben (Prompts) für generative KI-Modelle zu gestalten und zu verfeinern. Dadurch kann man die Antworten und die Qualität der generierten Ergebnisse deutlich verbessern.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Was ist Prompt Engineering?",
-          "content": "Prompt Engineering ist der Prozess des Erstellens und Verfeinerns von Prompts, um die Leistung von generativen KI-Modellen zu verbessern. Es leitet die KI an, genauere und relevantere Ausgaben zu liefern.",
+          "title": "Was ist ein Prompt?",
+          "content": "Ein Prompt ist die Eingabe oder Anweisung, die du einer KI gibst. Sie kann ganz einfach sein („Was ist KI?“) oder sehr detailliert, etwa mit Kontext, Stil und Formatvorgaben.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Ziel des Prompt Engineering",
-          "question": "Was ist das Hauptziel des Prompt Engineering?",
+          "title": "Prompt Engineering im Überblick",
+          "question": "Was ist das Ziel von Prompt Engineering?",
           "options": [
-            "Die KI dazu bringen, schneller zu antworten.",
-            "Die Genauigkeit und Relevanz der KI-Ausgabe zu verbessern.",
-            "Die Speicherkapazität der KI zu testen.",
-            "Komplexere KI-Modelle zu erstellen."
+            "Die KI durch spezifische Prompts zu präziseren und relevanteren Ergebnissen führen.",
+            "Die KI durch Zufallsgeneratoren testen.",
+            "Prompts möglichst kurz zu halten, damit die KI schneller antwortet.",
+            "Der KI immer denselben Prompt zu geben, unabhängig von der Aufgabe."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s1_fr1",
-          "title": "Definiere Prompt",
-          "question": "Was ist in deinen eigenen Worten ein Prompt im Kontext von Generativer KI?",
-          "expectedAnswer": "Ein Prompt ist die Anweisung oder Frage, die man einer KI gibt, um eine Antwort wie Text, Bilder oder Code zu generieren.",
+          "title": "Prompt vs. Prompt Engineering",
+          "question": "Erkläre mit eigenen Worten den Unterschied zwischen einem Prompt und Prompt Engineering.",
+          "expectedAnswer": "Ein Prompt ist die Eingabe an die KI, während Prompt Engineering bedeutet, diese Eingabe gezielt zu gestalten und zu verbessern, damit die KI bessere Ergebnisse liefert.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
@@ -62,26 +61,32 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Beispiel: Matheaufgabe",
-          "content": "Ein vager Prompt wie 'Was ist 923 * 99?' könnte zu einer falschen Antwort führen. Ein verfeinerter Prompt wie 'Was ist 923 * 99? Gehen wir Schritt für Schritt vor.' fördert logisches Denken und verbessert die Genauigkeit.",
+          "title": "Warum ist Prompt Engineering wichtig?",
+          "content": "Gute Prompts sind der Schlüssel zu relevanten, klaren und fehlerfreien KI-Antworten. Sie helfen, Missverständnisse zu vermeiden und steuern, wie kreativ, präzise oder umfangreich die Antwort der KI ausfällt.",
           "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Anwendung von Prompt Engineering auf Text",
-          "question": "Du möchtest eine Zusammenfassung eines Nachrichtenartikels. Schreibe einen einfachen, anfänglichen Prompt für diese Aufgabe.",
-          "expectedAnswer": "Ein einfacher Prompt wäre: 'Fasse diesen Artikel zusammen.' oder 'Schreibe eine Zusammenfassung für den folgenden Text.'",
+          "title": "Prompt verbessern",
+          "question": "Wie kann ein unklarer Prompt zu schlechten Ergebnissen führen? Nenne ein Beispiel.",
+          "expectedAnswer": "Ein vager Prompt wie 'Erkläre Geschichte' ist zu allgemein. Die KI weiß nicht, auf welche Epoche, welches Land oder welchen Kontext sie eingehen soll – die Antwort bleibt dann unspezifisch.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Verfeinerung des Text-Prompts",
-          "question": "Verfeinere nun den Prompt aus der vorherigen Frage, um spezifischer zu sein. Erwähne die gewünschte Länge und den Fokus.",
-          "expectedAnswer": "Ein verfeinerter Prompt könnte sein: 'Fasse diesen Artikel in drei Sätzen zusammen und konzentriere dich auf die Hauptergebnisse.'",
-          "pointsAwarded": 7,
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Typische Probleme ohne Prompt Engineering",
+          "question": "Welche Probleme können bei KI-Antworten auftreten, wenn Prompts ungenau oder zu allgemein sind?",
+          "options": [
+            "Die Antworten werden oft zu vage oder passen nicht zur Aufgabe.",
+            "Die KI wird schneller.",
+            "Die KI braucht weniger Strom.",
+            "Die KI erzeugt immer perfekte Ergebnisse."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -91,21 +96,28 @@
       "title": "Stage 3: Variieren",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s3_info1",
+          "title": "Prompts für verschiedene Aufgaben",
+          "content": "Prompts können für Text-, Bild- und Code-Generierung genutzt werden. Durch Variation im Prompt kann die KI anders reagieren: z.B. durch Längenvorgaben, Zielgruppe oder Stil.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Bildgenerierungs-Prompt",
-          "taskDescription": "Schreibe zwei verschiedene Prompts, um ein Bild eines 'Drachen' zu generieren. Der erste sollte einfach und der zweite ein verfeinerter, detaillierterer Prompt sein.",
-          "evaluationGuidance": "1. Gibt der Benutzer einen einfachen ein- oder zweiwörtigen Prompt an? 2. Enthält der verfeinerte Prompt mindestens drei spezifische Details (z. B. Farbe, Umgebung, Aktion, Stil)? 3. Ist der verfeinerte Prompt wahrscheinlich ein spezifischeres und interessanteres Bild zu erzeugen?",
-          "pointsAwarded": 10,
+          "title": "Eigenen Prompt verfassen (Text)",
+          "taskDescription": "Du möchtest, dass ChatGPT eine kurze Produktbeschreibung für einen neuen, umweltfreundlichen Rucksack schreibt. Formuliere einen Prompt, der folgende Vorgaben enthält: maximal 60 Wörter, Zielgruppe: Studierende, Stil: überzeugend und sachlich.",
+          "evaluationGuidance": "Der Prompt sollte alle drei Vorgaben klar machen (Wortzahl, Zielgruppe, Stil).",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         },
         {
           "type": "promptingTask",
           "id": "s3_pt2",
-          "title": "Codegenerierungs-Prompt",
-          "taskDescription": "Du benötigst eine Python-Funktion, die zwei Zahlen addiert. Schreibe zuerst einen einfachen Prompt. Schreibe dann einen verfeinerten Prompt, der auch nach Fehlerbehandlung fragt.",
-          "evaluationGuidance": "1. Ist der einfache Prompt eine klare Anforderung für eine Funktion, die zwei Zahlen addiert? 2. Fragt der verfeinerte Prompt explizit nach Fehlerbehandlung (z. B. für Nicht-Ganzzahl-Eingaben)? 3. Ist der verfeinerte Prompt robuster für eine reale Anwendung?",
-          "pointsAwarded": 15,
+          "title": "Prompt verbessern (Bild-Task)",
+          "taskDescription": "Gegeben ist der Prompt für ein KI-Bildtool: 'Ein Hund.' Wie könntest du diesen Prompt verbessern, um ein präziseres Bild zu erzeugen?",
+          "evaluationGuidance": "Die Verbesserung sollte Details hinzufügen (z.B. Hunderasse, Umgebung, Stimmung, Licht).",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -115,12 +127,21 @@
       "title": "Stage 4: Reflektieren",
       "items": [
         {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Prompt-Analyse: Was fehlt?",
+          "question": "Analysiere folgenden Prompt für eine Code-Aufgabe: 'Schreibe eine Funktion in Python.' Was fehlt, damit die KI präzise arbeiten kann?",
+          "expectedAnswer": "Es fehlt eine genaue Angabe, was die Funktion tun soll (z.B. Eingaben, Zweck), evtl. auch Anforderungen an Fehlerbehandlung oder Rückgabeformat.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "promptingTask",
-          "id": "s4_pt_error1",
-          "title": "Analysiere einen Tweet-Prompt",
-          "taskDescription": "Der Prompt 'Schreibe einen Tweet über ArchaeologistAI' ist fehlerhaft, weil ihm der Kontext fehlt. Erkläre, warum dies ein Problem ist und wie das Hinzufügen der Information 'ArchaeologistAI erzählt Geschichten über berühmte Archäologen' das Ergebnis verbessert.",
-          "evaluationGuidance": "1. Erkennt der Benutzer korrekt, dass dem ursprünglichen Prompt der Kontext zur Funktion des Produkts fehlt? 2. Erklärt der Benutzer, dass dies zu einem ungenauen oder generischen Tweet führt? 3. Erkennt der Benutzer, dass das Hinzufügen der spezifischen Funktion der KI hilft, einen genaueren und relevanteren Tweet zu generieren?",
-          "pointsAwarded": 15,
+          "id": "s4_pt1",
+          "title": "Schlechten Prompt verbessern (Code)",
+          "taskDescription": "Verbessere folgenden Prompt: 'Schreibe eine Python-Funktion.' Die Funktion soll zwei Zahlen multiplizieren und Fehlermeldungen ausgeben, wenn Eingaben nicht korrekt sind.",
+          "evaluationGuidance": "Die Verbesserung sollte klar und vollständig formulieren, was die Funktion tun soll und die Fehlerprüfung erwähnen.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -139,24 +160,24 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Kern des Prompt Engineering",
-          "question": "Prompt Engineering ist ein ______ Prozess.",
+          "title": "Prompt Engineering Grundlagen",
+          "question": "Was ist beim Prompt Engineering besonders wichtig?",
           "options": [
-            "automatisierter",
-            "einmaliger",
-            "iterativer",
-            "optionaler"
+            "Klarheit, Kontext und präzise Anweisungen.",
+            "Prompts möglichst kurz halten.",
+            "Die KI immer mit denselben Prompts testen.",
+            "Nie Feedback geben."
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s5_fr1",
-          "title": "Warum Prompts verfeinern?",
-          "question": "Erkläre, warum es oft notwendig ist, einen Prompt zu verfeinern, nachdem man eine erste Antwort von einer KI erhalten hat.",
-          "expectedAnswer": "Es ist notwendig, Prompts zu verfeinern, weil die anfängliche Ausgabe zu allgemein, ungenau oder nicht im gewünschten Format sein könnte. Die Verfeinerung des Prompts mit spezifischeren Anweisungen, Kontext oder Beispielen hilft, die KI zu einem besseren Ergebnis zu führen.",
+          "title": "Was macht einen guten Prompt aus?",
+          "question": "Nenne zwei Eigenschaften, die einen guten Prompt auszeichnen.",
+          "expectedAnswer": "Klarheit, Details, Kontext, klare Anforderungen an Stil, Länge oder Zielgruppe.",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -168,11 +189,11 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Kreativer Prompt mit Stil",
-          "taskDescription": "Du vermarktest ein fiktives KI-Produkt namens 'StoryWeaver', das beim Schreiben von Kinderbüchern hilft. Schreibe einen Prompt, um einen Tweet über dieses Produkt zu generieren. Der Prompt sollte die Funktion des Produkts enthalten und darum bitten, den Tweet in einem wunderlichen und magischen Stil zu verfassen.",
-          "evaluationGuidance": "1. Gibt der Prompt den Produktnamen und die Funktion klar an? 2. Gibt er einen Stil an (wunderlich/magisch)? 3. Ist der Prompt gut strukturiert, damit eine KI die kreative Aufgabe verstehen und ausführen kann? 4. Impliziert er, dass die Zielgruppe Eltern oder Kinderbuchautoren sind?",
-          "pointsAwarded": 20,
+          "id": "s6_pt1",
+          "title": "Komplexe Prompt-Aufgabe (Tweet)",
+          "taskDescription": "Entwickle einen Prompt für ChatGPT, mit dem die KI einen Tweet über ein fiktives Produkt 'ArchaeologistAI' verfassen soll. Die Anforderungen: 1. Erkläre kurz, dass das Tool Geschichten über berühmte Archäologen erzählt. 2. Die Tonalität soll abenteuerlich und an Indiana Jones erinnern. 3. Nutze maximal 40 Wörter.",
+          "evaluationGuidance": "Prompt muss alle Anforderungen enthalten: Beschreibung, Tonalität/Stil, Längenbegrenzung.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {

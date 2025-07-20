@@ -1,8 +1,7 @@
-
 {
   "id": "lesson24",
-  "title": "Digitales Marketing",
-  "description": "Erfahre, wie KI bei verschiedenen Aufgaben im digitalen Marketing eingesetzt werden kann.",
+  "title": "Digital Marketing mit KI",
+  "description": "Lerne, wie du KI für Keyword-Recherche, Social Media, Content, SEO und Kampagnenplanung optimal nutzt.",
   "stages": [
     {
       "id": "stage1",
@@ -11,30 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "KI als Marketing-Assistent",
-          "content": "Künstliche Intelligenz ist ein vielseitiges Werkzeug für digitales Marketing. Sie kann bei der Keyword-Recherche, der Erstellung von Social-Media-Inhalten, der Anzeigenoptimierung und der Analyse von Daten helfen.",
+          "title": "KI im Digital Marketing",
+          "content": "KI-Chatbots können für Keyword-Recherche, Content-Generierung, Social Media-Strategien, Kampagnen und sogar für Feedbackmanagement genutzt werden.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Rolle zuweisen",
-          "content": "Um die besten Ergebnisse zu erzielen, ist es hilfreich, der KI eine Rolle wie 'Senior Digital Marketing Specialist' zuzuweisen. Dadurch werden die Antworten fachmännischer und auf die Marketing-Perspektive zugeschnitten.",
+          "title": "Prompting für Marketing",
+          "content": "Die besten Ergebnisse im Marketing bekommst du, wenn du die KI gezielt nach Varianten, Clustern, Hashtags oder Kanälen fragst und ihr eine klare Rolle zuweist.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Anwendungsbereich im Marketing",
-          "question": "Welche der folgenden Aufgaben ist ein typischer Anwendungsfall für KI im digitalen Marketing?",
+          "title": "Keyword-Recherche",
+          "question": "Was kann ein KI-Chatbot NICHT direkt für dich erledigen?",
           "options": [
-            "Den Kaffee für das Marketing-Team kochen.",
-            "Die Buchhaltung des Unternehmens führen.",
-            "SEO-freundliche Titel-Tags und Meta-Beschreibungen für einen Blogartikel generieren.",
-            "Den CEO des Unternehmens anrufen."
+            "Keyword-Cluster erstellen",
+            "SEO-Titel generieren",
+            "Marketing-Budget automatisch ausgeben",
+            "Hashtags recherchieren"
           ],
           "correctOptionIndex": 2,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Vorteil KI-Marketing",
+          "question": "Nenne einen Vorteil, den KI bei der Content-Erstellung im Marketing bietet.",
+          "expectedAnswer": "Schneller Varianten erstellen, zielgruppenorientierte Texte, kreative Ideen auf Knopfdruck.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -44,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Keywords generieren",
-          "question": "Du betreibst einen Online-Shop für handgemachte Seifen. Schreibe einen Prompt, der die KI bittet, eine Liste von relevanten Keywords für deine Produkte zu generieren.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Generiere eine Liste von SEO-Keywords für einen Online-Shop, der handgemachte, natürliche Seifen verkauft.'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Rolle der KI im Prompt",
+          "content": "Mit 'Act as a digital marketing expert' erzielst du spezifischere und professionellere Ergebnisse von der KI.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Social-Media-Post erstellen",
-          "question": "Du möchtest einen neuen handgemachten Lavendel-Seifenbarren auf Instagram bewerben. Wie würdest du einen Prompt formulieren, um einen ansprechenden Beitragstext inklusive relevanter Hashtags zu erhalten?",
-          "expectedAnswer": "Ein passender Prompt wäre: 'Schreibe einen kurzen, ansprechenden Instagram-Post, um einen neuen handgemachten Lavendel-Seifenbarren zu bewerben. Füge am Ende 5 relevante Hashtags hinzu.'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Hashtags",
+          "question": "Formuliere einen Prompt, um von der KI eine Liste der wichtigsten Twitter-Hashtags zu Pez-Dispensern zu bekommen.",
+          "expectedAnswer": "'Act as a social media expert. List the top Twitter hashtags related to Pez dispensers.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Kampagnenplanung",
+          "question": "Wie kannst du die KI für Marketing-Kampagnen einsetzen?",
+          "options": [
+            "Prompt: 'Generiere eine Tabelle mit Budgetverteilung für Marketingkanäle'",
+            "KI fragt automatisch nach dem Produktnamen",
+            "KI postet direkt im Namen der Firma",
+            "Nur für SEO nutzbar"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -70,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Anzeigentexte für PPC variieren",
-          "taskDescription": "Du schaltest eine Google-Anzeige für deinen Seifen-Shop. Erstelle einen Prompt, der die KI anweist, 3 verschiedene, überzeugende Überschriften für die Anzeige zu schreiben. Jede Überschrift darf maximal 30 Zeichen lang sein und sollte einen klaren Call-to-Action enthalten.",
-          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung von 3 Anzeigenüberschriften an? 2. Wird die Längenbeschränkung (max. 30 Zeichen) erwähnt? 3. Beinhaltet die Anweisung die Forderung nach einem Call-to-Action? 4. Sind die resultierenden Überschriften für eine Google-Anzeige geeignet?",
-          "pointsAwarded": 12,
+          "title": "Kreativer Social-Prompt",
+          "taskDescription": "Schreibe einen Prompt, mit dem die KI fünf Social-Media-Post-Ideen für die Einführung eines neuen Produktes generiert.",
+          "evaluationGuidance": "Prompt muss Thema, Ziel und gewünschte Plattform (z.B. Instagram) enthalten.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "SEO-Title-Generator",
+          "taskDescription": "Formuliere einen Prompt, der die KI auffordert, fünf SEO-optimierte Titel und passende Meta-Descriptions für einen Blogpost zu generieren.",
+          "evaluationGuidance": "Prompt muss Keyword und Format der Ausgabe verlangen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Zielgruppenansprache",
-          "question": "Warum ist es wichtig, bei Marketing-Prompts immer die Zielgruppe zu berücksichtigen und dies der KI mitzuteilen?",
-          "expectedAnswer": "Die Berücksichtigung der Zielgruppe ist entscheidend, weil die Tonalität, Wortwahl und die hervorgehobenen Vorteile je nach Publikum stark variieren. Eine Ansprache für Teenager unterscheidet sich grundlegend von einer für Geschäftsleute. Indem man die Zielgruppe im Prompt definiert, kann die KI den Inhalt passgenau und damit wirksamer gestalten.",
+          "title": "Fehlerquellen bei KI-Marketing",
+          "question": "Warum solltest du KI-generierte Marketing-Texte immer auf Fakten und Zielgruppenrelevanz prüfen?",
+          "expectedAnswer": "Weil die KI Inhalte halluzinieren oder Zielgruppe/Nutzen verfehlen kann.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Unklarer Social Prompt",
+          "taskDescription": "Zeige ein Beispiel für einen zu vagen Prompt für Social Media Posts und verbessere ihn.",
+          "evaluationGuidance": "Vergleich: 'Schreibe einen Social Media Post' vs. spezifischer Prompt mit Zielgruppe und Plattform.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -100,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Technisches SEO",
-          "question": "Welche der folgenden technischen SEO-Aufgaben kann eine KI unterstützen?",
+          "title": "Quiz: KI-Marketingaufgaben",
+          "question": "Welche Aufgaben kann die KI im Marketing unterstützen?",
           "options": [
-            "Die Ladezeit der Webseite physisch verbessern.",
-            "Hreflang-Tags für mehrsprachige Webseiten erstellen.",
-            "Einen neuen Server für die Webseite kaufen.",
-            "Die Domain der Webseite ändern."
+            "Keyword-Clustering, Social-Posts, SEO-Titel",
+            "Nur Rechnungen schreiben",
+            "Nur Werbebanner designen",
+            "Gar keine"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Social Prompts",
+          "question": "Was sollte in einem Prompt stehen, damit die KI optimale Social-Media-Posts erstellt?",
+          "expectedAnswer": "Plattform, Zielgruppe, Thema, gewünschter Stil und Hashtags angeben.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -120,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Eine komplette Kampagnenidee entwickeln",
-          "taskDescription": "Du planst eine Social-Media-Kampagne für die Einführung eines neuen, nachhaltigen Kaffeebechers. Erstelle einen umfassenden Prompt, der die KI anweist, eine Kampagnenidee zu entwickeln. Der Prompt soll fordern: 1. Eine Zielgruppendefinition (umweltbewusste Studenten). 2. Drei Ideen für Social-Media-Posts (Instagram & TikTok). 3. Fünf passende Hashtags. 4. Eine Idee für einen kleinen Wettbewerb zur Einführung.",
-          "evaluationGuidance": "1. Enthält der Prompt alle vier geforderten Elemente (Zielgruppe, Post-Ideen, Hashtags, Wettbewerb)? 2. Ist die Zielgruppe klar definiert? 3. Sind die Anweisungen für die Post-Ideen spezifisch genug für die genannten Plattformen? 4. Ist die resultierende Kampagnenidee schlüssig und für das Produkt geeignet?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexe Marketingaufgabe",
+          "taskDescription": "Erstelle einen Prompt, der die KI bittet, eine komplette Digital-Marketing-Kampagne für ein neues Produkt inkl. Contentideen, Budgetaufteilung, Hashtags und Social-Media-Plan zu entwickeln.",
+          "evaluationGuidance": "Prompt muss Kampagnenziel, Budget, Plattformen und konkrete Outputs verlangen.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie kannst du KI künftig in deinem digitalen Marketing einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

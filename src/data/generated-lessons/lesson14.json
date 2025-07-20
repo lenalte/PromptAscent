@@ -1,8 +1,7 @@
-
 {
   "id": "lesson14",
-  "title": "Problemlösung mit Generativer KI: Eine einfache Methode",
-  "description": "Lerne eine 5-Schritte-Methode, um Probleme strukturiert mit Generativer KI zu lösen.",
+  "title": "Problemlösung mit GenAI – Die Learn Prompting Methode",
+  "description": "Erlerne einen strukturierten 5-Schritte-Ansatz für KI-Projekte: Problem erkennen, Infos prüfen, Lösung vorschlagen, anpassen und launchen.",
   "stages": [
     {
       "id": "stage1",
@@ -11,9 +10,40 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Die Learn Prompting Methode",
-          "content": "Die Learn Prompting Methode ist ein strukturierter 5-Schritte-Ansatz, um Probleme mit Generativer KI zu lösen. Sie hilft dabei, zu bestimmen, ob KI die richtige Lösung ist, und leitet den Prozess von der Idee bis zur finalen Anwendung.",
+          "title": "5-Schritte-Methode",
+          "content": "Die Learn Prompting Methode besteht aus fünf Schritten: 1. Problem benennen, 2. Infos prüfen, 3. Lösung vorschlagen, 4. Lösung anpassen, 5. Lösung launchen.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Warum strukturierte Problemlösung?",
+          "content": "Mit klaren Schritten vermeidest du Chaos und kannst gezielt testen, verbessern und launchen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Methode erkennen",
+          "question": "Was ist KEIN Schritt der Learn Prompting Methode?",
+          "options": [
+            "Infos prüfen",
+            "Lösung launchen",
+            "Unbegrenzt brainstormen",
+            "Problem benennen"
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Methode",
+          "question": "Erkläre mit eigenen Worten, wie du die Learn Prompting Methode bei einer eigenen Aufgabe einsetzen würdest.",
+          "expectedAnswer": "Zum Beispiel: Ich analysiere mein Problem, sammle Infos, schlage eine Lösung vor, teste und optimiere, dann setze ich sie ein.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -22,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Case Study: Hut-Info-Bot",
+          "content": "Im Beispiel wird ein Bot für Hut-Fragen entwickelt – mit allen fünf Schritten: Problem, Info, Lösung, Anpassung, Launch.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
           "title": "Problem formulieren",
-          "question": "Dein Team verbringt zu viel Zeit damit, Meeting-Protokolle manuell zu schreiben. Formuliere dieses Problem gemäß dem ersten Schritt der Methode.",
-          "expectedAnswer": "Ein gut formuliertes Problem wäre: 'Unser Team verliert wöchentlich mehrere Stunden durch das manuelle Erstellen und Zusammenfassen von Meeting-Protokollen, was die Produktivität senkt.'",
-          "pointsAwarded": 6,
+          "question": "Formuliere ein Problem aus deinem Alltag, das sich mit GenAI lösen ließe.",
+          "expectedAnswer": "Offen für Alltagsbeispiel (z.B. Ich vergesse wichtige Termine – ein KI-Bot soll mich erinnern).",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Lösungsschritt erkennen",
+          "question": "Was gehört zum Schritt 'Adjust the Solution'?",
+          "options": [
+            "Prompt testen und optimieren",
+            "Einfach launchen ohne Feedback",
+            "Nur brainstormen",
+            "Problem ignorieren"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -39,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Lösung anpassen",
-          "taskDescription": "Stell dir vor, die erste Version deines Protokoll-Bots fasst zwar zusammen, aber die To-Dos sind unklar. Beschreibe, wie du den Prompt anpassen würdest (Schritt 4), um die Ausgabe zu verbessern.",
-          "evaluationGuidance": "1. Erkennt der Benutzer das Problem (unklare To-Dos)? 2. Schlägt die Anpassung eine spezifischere Anweisung vor (z.B. 'Liste alle To-Dos mit verantwortlicher Person und Fälligkeitsdatum auf')? 3. Verbessert die Anpassung die Nützlichkeit der KI-Ausgabe klar?",
-          "pointsAwarded": 12,
+          "title": "Prompt für Schritt 3 (Lösung)",
+          "taskDescription": "Formuliere einen Prompt für eine KI, die als Sprachtrainer arbeitet. Der Prompt soll auf einen typischen Nutzerfehler reagieren und Verbesserungsvorschläge machen.",
+          "evaluationGuidance": "Prompt muss Rolle, Aufgabe und Verbesserung beinhalten.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Iteration (Schritt 4) simulieren",
+          "taskDescription": "Wie würdest du nach dem ersten Test dein KI-Produkt (z.B. einen Chatbot) verbessern? Nenne eine Änderung am Prompt.",
+          "evaluationGuidance": "Antwort muss zeigen, wie Feedback in den Prompt einfließt (z.B. Ton, Präzision, Zielgruppe).",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Zyklischer Prozess",
-          "question": "Warum wird die Learn Prompting Methode als 'zyklisch' beschrieben? Was passiert nach dem letzten Schritt ('Lösung einführen')?",
-          "expectedAnswer": "Sie ist zyklisch, weil nach der Einführung einer Lösung weiterhin Feedback gesammelt und die Leistung überwacht wird. Diese neuen Erkenntnisse fließen dann wieder in den Prozess ein (beginnend bei Schritt 2 oder 4), um die Lösung kontinuierlich zu verbessern.",
+          "title": "Reflexion: Methode",
+          "question": "Warum ist es sinnvoll, beim Einsatz von GenAI strukturiert vorzugehen? Was könnte passieren, wenn man die Schritte ignoriert?",
+          "expectedAnswer": "Man übersieht wichtige Anforderungen, macht mehr Fehler und kann schlechter nachbessern.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Case Study",
+          "taskDescription": "Analysiere: Was wurde im Hut-Bot-Beispiel besonders am Prompt geändert, um die Zielgruppe besser anzusprechen?",
+          "evaluationGuidance": "Antwort muss zeigen, wie auf Nutzerinteressen (z.B. formal vs. informell) eingegangen wurde.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -69,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Relevante Informationen",
-          "question": "Welche Aktivität gehört zu Schritt 2, 'Relevante Informationen prüfen'?",
+          "title": "Quiz: 5-Schritte-Ansatz",
+          "question": "Was ist der letzte Schritt der Learn Prompting Methode?",
           "options": [
-            "Die finale Lösung programmieren.",
-            "Die Farbe des App-Logos auswählen.",
-            "Ähnliche Probleme und bestehende Lösungen analysieren, um zu sehen, ob KI geeignet ist.",
-            "Die Lösung auf Social Media bewerben."
+            "Prompt testen",
+            "Lösung launchen und beobachten",
+            "Problem definieren",
+            "Infos recherchieren"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 1,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Problemlösung",
+          "question": "Nenne einen Vorteil, wenn du die Learn Prompting Methode im Alltag anwendest.",
+          "expectedAnswer": "Struktur, bessere Ergebnisse, einfachere Optimierung, weniger Fehler.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -88,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexe Problemlösung mit 5 Schritten",
+          "taskDescription": "Beschreibe ein Problem, entwirf einen passenden Prompt, erkläre, wie du die Lösung testest und anpasst – und wie du das Produkt launchst.",
+          "evaluationGuidance": "Alle 5 Schritte (Problem, Info, Lösung, Anpassung, Launch) müssen nachvollziehbar erklärt sein.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie könntest du die Learn Prompting Methode in deinem Alltag oder Beruf nutzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

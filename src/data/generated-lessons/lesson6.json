@@ -1,8 +1,7 @@
-
 {
   "id": "lesson6",
-  "title": "Technik #3: Beispiele in Prompts",
-  "description": "Erkunde die Nutzung von Beispielen in Prompts, von Zero-Shot bis Few-Shot.",
+  "title": "Technik #3: Beispiele in Prompts (Few-Shot Prompting)",
+  "description": "Lerne, wie du mit Beispielen in Prompts (Zero-Shot, One-Shot, Few-Shot) die Genauigkeit und Flexibilität von KI steigerst.",
   "stages": [
     {
       "id": "stage1",
@@ -11,9 +10,40 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was ist In-Context Learning (ICL)?",
-          "content": "In-Context Learning bedeutet, dass eine KI direkt aus den im Prompt gegebenen Beispielen lernt, ohne dass ihr Trainingsdatensatz geändert werden muss. Die KI erkennt Muster in den Beispielen und wendet sie auf neue, ähnliche Aufgaben an.",
+          "title": "Was sind Beispiele in Prompts?",
+          "content": "Durch das Einfügen von Beispielen in den Prompt lernt die KI direkt im Kontext (In-Context Learning), was von ihr erwartet wird.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Zero-, One-, Few-Shot Prompting",
+          "content": "Zero-Shot: Keine Beispiele. One-Shot: Ein Beispiel. Few-Shot: Zwei oder mehr Beispiele. Mehr Beispiele helfen der KI, Muster zu erkennen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Prompt-Techniken unterscheiden",
+          "question": "Was ist typisch für Few-Shot Prompting?",
+          "options": [
+            "Viele Beispiele zeigen, um Muster zu vermitteln.",
+            "Immer nur eine Aufgabe geben.",
+            "Die KI nur mit Daten trainieren.",
+            "Rollenspiele simulieren."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Few-Shot Prompting",
+          "question": "Erkläre mit eigenen Worten, wie Few-Shot Prompting funktioniert.",
+          "expectedAnswer": "Man gibt der KI mehrere Beispiele, damit sie das gewünschte Format und Muster erkennt und anwendet.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -24,9 +54,33 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Beispiel: Sentiment-Analyse",
-          "content": "Ein Zero-Shot-Prompt wäre: 'Klassifiziere den folgenden Text als positiv, negativ oder neutral: [Text]'. Ein Few-Shot-Prompt würde zuerst Beispiele zeigen, z.B. 'Text: Ich liebe es. Sentiment: positiv. Text: Es ist furchtbar. Sentiment: negativ.', bevor die eigentliche Aufgabe kommt. Dadurch 'lernt' die KI das gewünschte Format und die Logik.",
+          "title": "Anwendung von Beispielen",
+          "content": "Beispiele eignen sich besonders für Aufgaben wie Sentimentanalyse, Informationsextraktion oder kreative Content-Generierung.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "One-Shot Prompt schreiben",
+          "question": "Formuliere einen One-Shot Prompt, der der KI zeigt, wie man Feedback als positiv oder negativ klassifiziert.",
+          "expectedAnswer": "Zum Beispiel: 'Feedback: Das Produkt ist toll. Bewertung: Positiv\nFeedback: Es funktioniert nicht. Bewertung:'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Vorteil von Beispielen",
+          "question": "Warum erhöhen Beispiele oft die Genauigkeit der KI?",
+          "options": [
+            "Weil die KI Muster in den Beispielen erkennt und überträgt.",
+            "Weil sie die KI langsamer machen.",
+            "Weil sie automatisch Code ausführen.",
+            "Weil sie die Trainingdaten ersetzen."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -37,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Kreatives Schreiben mit Few-Shot",
-          "taskDescription": "Du möchtest, dass eine KI kurze, poetische Beschreibungen für Städte schreibt. Erstelle einen Few-Shot-Prompt mit zwei Beispielen (z.B. für Paris und New York) und bitte die KI dann, eine Beschreibung für 'Tokio' im selben Stil zu verfassen.",
-          "evaluationGuidance": "1. Enthält der Prompt mindestens zwei klare Beispiele für Städtebeschreibungen? 2. Haben die Beispiele einen erkennbar ähnlichen, poetischen Stil? 3. Folgt nach den Beispielen eine klare Aufforderung, eine Beschreibung für Tokio zu erstellen? 4. Ist der Prompt so aufgebaut, dass die KI das Muster leicht erkennen und anwenden kann?",
-          "pointsAwarded": 15,
+          "title": "Prompt mit zwei Beispielen (Few-Shot)",
+          "taskDescription": "Schreibe einen Prompt, der drei Beispiele (input/output) für die Übersetzung Deutsch–Englisch enthält und einen neuen zu übersetzenden Satz als Aufgabe stellt.",
+          "evaluationGuidance": "Prompt muss drei Input/Output-Paare enthalten und eine neue Aufgabe formulieren.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Strukturierte Ausgabe mit Beispielen",
+          "taskDescription": "Formuliere einen Prompt, der der KI anhand von Beispielen zeigt, wie man Jobanzeigen in strukturierte Listen umwandelt.",
+          "evaluationGuidance": "Prompt soll mehrere Beispiele im Stil 'INPUT: ... OUTPUT: ...' zeigen und eine neue Anzeige als Aufgabe stellen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -50,12 +113,21 @@
       "title": "Stage 4: Reflektieren",
       "items": [
         {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Prompt-Analyse: Shot-Auswahl",
+          "question": "Wann würdest du Zero-, wann Few-Shot Prompting verwenden? Begründe.",
+          "expectedAnswer": "Zero-Shot bei einfachen Aufgaben, Few-Shot bei komplexen Aufgaben oder wenn das gewünschte Format besonders ist.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "promptingTask",
-          "id": "s4_pt_error1",
-          "title": "Grenzen erkennen",
-          "taskDescription": "Ein Benutzer gibt der KI 100 Beispiele, um eine einfache Ja/Nein-Frage zu beantworten. Warum könnte dies trotz vieler Beispiele problematisch sein und welche Nachteile hat es?",
-          "evaluationGuidance": "1. Erkennt der Benutzer das Problem des begrenzten Kontextfensters (Context Window) von KI-Modellen? 2. Erklärt der Benutzer, dass zu viele Beispiele den Prompt überladen und zu abgeschnittenen oder fehlerhaften Antworten führen können? 3. Wird erwähnt, dass dies ineffizient ist und mehr Kosten (Token-Verbrauch) verursacht?",
-          "pointsAwarded": 12,
+          "id": "s4_pt1",
+          "title": "Schlechten Few-Shot Prompt verbessern",
+          "taskDescription": "Ein Prompt enthält zwei identische Beispiele für eine Aufgabe. Wie würdest du diesen Prompt verbessern, damit die KI verlässlichere Ergebnisse liefert?",
+          "evaluationGuidance": "Antwort soll auf Varianz, Muster und Klarheit der Beispiele eingehen.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -67,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Technik-Auswahl",
-          "question": "Welche Technik würdest du für eine sehr komplexe Aufgabe verwenden, bei der die KI ein spezifisches, schwer zu beschreibendes Format einhalten muss?",
+          "title": "Quiz: Beispiele",
+          "question": "Was ist eine typische Grenze beim Few-Shot Prompting?",
           "options": [
-            "Zero-Shot, weil es am einfachsten ist.",
-            "Few-Shot, weil mehrere Beispiele das Muster am besten verdeutlichen.",
-            "One-Shot, weil ein Beispiel immer ausreicht.",
-            "Keine Beispiele, nur eine sehr lange Anweisung."
+            "Der Kontext-Window der KI kann zu viele Beispiele begrenzen.",
+            "Beispiele machen die KI immer langsamer.",
+            "Man kann nie strukturierte Ausgaben erzeugen.",
+            "Zero-Shot ist immer besser."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Beispiele",
+          "question": "Nenne zwei Tipps für effektive Few-Shot Prompts.",
+          "expectedAnswer": "Beispiele sollen relevant und verschieden sein; das gewünschte Ausgabeformat muss im Beispiel vorkommen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -86,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexer Few-Shot Prompt",
+          "taskDescription": "Erstelle einen Few-Shot Prompt, mit dem die KI einen neuen Reisetipp im Stil vorgegebener Beispiele generiert. Mindestens drei verschiedene Reiseziele und jeweils ein zu generierendes neues Ziel.",
+          "evaluationGuidance": "Prompt muss mindestens drei Input/Output-Beispiele zeigen und ein neues Ziel vorgeben.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wann würdest du Few-Shot Prompting im Alltag nutzen? Welche Vorteile siehst du persönlich?",
+          "expectedAnswer": "Persönliche Reflexion des Nutzers.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

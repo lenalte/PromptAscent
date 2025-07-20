@@ -1,8 +1,7 @@
-
 {
   "id": "lesson33",
-  "title": "Rollen neu betrachtet",
-  "description": "Erfahre, warum Rollen-Prompting bei neuen Modellen anders wirkt und wie du es weiterhin effektiv einsetzt.",
+  "title": "Revisiting Roles",
+  "description": "Was bringt Rollen-Prompting heute noch? Tipps, Tricks & Beispiele für fortgeschrittene Rollenarbeit mit modernen LLMs.",
   "stages": [
     {
       "id": "stage1",
@@ -11,30 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Veränderte Wirksamkeit",
-          "content": "Während Rollen-Prompting bei älteren KI-Modellen die Antwortqualität erheblich steigerte, ist der Effekt bei modernen Modellen wie GPT-4 weniger ausgeprägt. Diese Modelle haben bereits ein so breites Wissen, dass eine einfache Rollenzuweisung oft nicht mehr nötig ist.",
+          "title": "Was ist Rollen-Prompting?",
+          "content": "Rollen-Prompting heißt, der KI eine bestimmte Rolle (z.B. Ärztin, Etymologe, absurdiste Dichterin) zuzuweisen, um Stil, Inhalt oder Tiefe der Antwort zu steuern.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Weiterhin nützlich",
-          "content": "Trotz der geringeren Notwendigkeit bleibt Rollen-Prompting nützlich. Besonders detaillierte Rollenbeschreibungen oder die Kombination mehrerer Personas können immer noch helfen, den Stil und die Perspektive der KI-Antworten präzise zu steuern.",
+          "title": "Wandel der Effektivität",
+          "content": "Früher (z.B. GPT-3) war Rollen-Prompting sehr effektiv. In GPT-4 und ähnlichen Modellen ist der Unterschied oft geringer, aber mit komplexeren Rollen weiterhin nützlich.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Entwicklung des Promptings",
-          "question": "Warum ist einfaches Rollen-Prompting (z.B. 'Du bist ein Arzt') bei GPT-4 weniger wirksam als bei älteren Modellen?",
+          "title": "Quiz: Rollenwirkung",
+          "question": "Wie kann Rollen-Prompting mit GPT-4 noch effektiv sein?",
           "options": [
-            "Weil GPT-4 keine Rollen mehr versteht.",
-            "Weil GPT-4 bereits über ein sehr breites und tiefes Fachwissen verfügt und die Rolle oft schon aus dem Kontext der Frage ableiten kann.",
-            "Weil Rollen-Prompting generell veraltet ist.",
-            "Weil es zu lange dauert, eine Rolle zuzuweisen."
+            "Durch längere, detaillierte Rollenbeschreibungen",
+            "Nur mit sehr kurzen Prompts",
+            "Gar nicht mehr",
+            "Wenn die Rolle immer Arzt ist"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Rollenbeispiel",
+          "question": "Nenne eine Rolle, die du in einem Prompt nutzen würdest, und erkläre warum.",
+          "expectedAnswer": "Beispiel: 'Du bist eine Reiseexpertin für nachhaltigen Tourismus...' – weil so gezielt Expertise und Sprachstil gesteuert werden.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -44,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Detaillierte Rolle erstellen",
-          "question": "Anstatt nur 'Du bist ein Etymologe' zu sagen, wie könntest du eine detailliertere Rolle für eine KI formulieren, die die Herkunft eines Wortes erforschen soll?",
-          "expectedAnswer": "Eine detailliertere Rolle wäre: 'Du bist ein Etymologe, der sich darauf spezialisiert hat, die Wurzeln von Wörtern bis in die Antike zurückzuverfolgen. Du solltest auch erklären, wie sich die Bedeutung des Wortes über die Zeit verändert hat.'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Komplexe Rollen erzeugen",
+          "content": "Statt nur 'Du bist ein Arzt' kann die Rolle ausführlich und mit Biografie, Motivationen oder speziellen Aufgaben gestaltet werden.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Automatische Rollengenerierung",
-          "question": "Beschreibe, wie du die KI selbst nutzen könntest, um eine passende Rolle für eine Aufgabe zu erstellen. Gib ein Beispiel für einen Prompt, der das tut.",
-          "expectedAnswer": "Man kann die KI bitten, eine Rolle zu generieren, die zu einer bestimmten Aufgabe passt. Beispiel-Prompt: 'Erstelle eine detaillierte Rollenbeschreibung für eine KI, die als kreativer Werbetexter für Luxusmarken agieren soll.'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Rolle schreiben",
+          "question": "Formuliere einen Prompt, der die KI als erfahrene Detektivin handeln lässt. Gib der Rolle einen kurzen Hintergrund.",
+          "expectedAnswer": "Beispiel: 'Du bist Maria Sanchez, eine erfahrene Detektivin aus Barcelona...' usw.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Automatisierte Rollen",
+          "question": "Was kann die KI in Sachen Rollen selbst übernehmen?",
+          "options": [
+            "Eine passende Rolle/Bio generieren, die später im Prompt verwendet wird",
+            "Nur vorgefertigte Rollen nutzen",
+            "Immer eine zufällige Rolle wählen",
+            "Rollen sind immer gleich"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -70,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Mehrere Personas kombinieren",
-          "taskDescription": "Du möchtest eine ausgewogene Analyse der Vor- und Nachteile von künstlicher Intelligenz. Erstelle einen Prompt, der die KI anweist, einen Dialog zwischen zwei Personas zu schreiben: einem optimistischen Tech-Evangelisten und einem skeptischen Ethiker. Lass beide ihre Argumente austauschen.",
-          "evaluationGuidance": "1. Enthält der Prompt die Anweisung, einen Dialog zu schreiben? 2. Werden die beiden gegensätzlichen Rollen (Optimist vs. Skeptiker) klar definiert? 3. Ist die Aufgabenstellung so formuliert, dass eine ausgewogene Diskussion entsteht? 4. Führt dieser Ansatz zu einer nuancierteren Antwort als eine einfache Pro/Contra-Liste?",
-          "pointsAwarded": 12,
+          "title": "Prompt: Absurdist-Rolle",
+          "taskDescription": "Schreibe einen Prompt, der die KI als 'Absurdist' Texte produzieren lässt. Die Sätze sollen sinnlos und kreativ sein.",
+          "evaluationGuidance": "Prompt muss explizite Beschreibung der Rolle und des Stils enthalten.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Mehrere Rollen kombinieren",
+          "taskDescription": "Formuliere einen Prompt, bei dem zwei Rollen (z.B. 'Wissenschaftler' und 'Kritikerin') gemeinsam ein Thema diskutieren.",
+          "evaluationGuidance": "Prompt muss beide Rollen klar zuweisen und die Zusammenarbeit anleiten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Wann ist Rollen-Prompting heute noch wichtig?",
-          "question": "In welchen Situationen ist das Zuweisen einer Rolle auch bei modernen KI-Modellen immer noch besonders wertvoll?",
-          "expectedAnswer": "Es ist besonders wertvoll, wenn ein sehr spezifischer Stil, ein ungewöhnlicher Tonfall oder eine bestimmte Perspektive erforderlich ist, die die KI nicht allein aus dem Kontext ableiten kann. Beispiele sind kreatives Schreiben, das Nachahmen einer bestimmten Persönlichkeit oder das Einnehmen einer konträren Meinung in einer Debatte.",
+          "title": "Grenzen reflektieren",
+          "question": "Warum ist Rollen-Prompting mit GPT-4 weniger wirksam als mit GPT-3?",
+          "expectedAnswer": "Weil moderne Modelle Kontext und Aufgaben schon sehr gut ohne explizite Rolle erfassen.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Verbesserte Rolle",
+          "taskDescription": "Nenne einen zu simplen Rollenprompt und verbessere ihn mit mehr Details, Bio oder Motivation.",
+          "evaluationGuidance": "Prompt muss von kurz zu komplex umgeschrieben werden.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -100,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Effektive Rollen",
-          "question": "Welche Art von Rolle ist bei modernen Modellen am ehesten noch wirksam?",
+          "title": "Quiz: Rollenstrategie",
+          "question": "Wie kann man Rollenarbeit für neue Modelle effektiv gestalten?",
           "options": [
-            "Eine sehr kurze Rolle wie 'Du bist klug'.",
-            "Eine detaillierte, mehrsätzige Rollenbeschreibung mit spezifischen Anweisungen.",
-            "Eine Rolle, die der Aufgabe widerspricht.",
-            "Gar keine Rolle."
+            "Mit längeren und spezifischeren Rollentexten",
+            "Mit möglichst wenig Kontext",
+            "Indem man immer dieselbe Rolle verwendet",
+            "Gar nicht mehr"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice",
+          "question": "Wie kannst du Rollen-Prompts für deine Aufgaben weiterentwickeln?",
+          "expectedAnswer": "Komplexere, an die Aufgabe angepasste Rollen kreieren, ggf. automatisiert mit der KI.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -120,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Eine komplexe Rollen-Simulation erstellen",
-          "taskDescription": "Du möchtest einen realistischen Kundenservice-Dialog simulieren. Erstelle einen Prompt, der die KI anweist, zwei Rollen gleichzeitig zu spielen: einen frustrierten Kunden, dessen Lieferung verloren gegangen ist, und einen geduldigen, lösungsorientierten Servicemitarbeiter. Der Dialog soll das Problem beschreiben, mögliche Lösungen durchspielen und zu einer Einigung führen.",
-          "evaluationGuidance": "1. Weist der Prompt die KI an, einen Dialog zwischen zwei Rollen zu führen? 2. Sind die beiden Rollen (frustrierter Kunde, hilfsbereiter Mitarbeiter) klar und mit gegensätzlichen Emotionen definiert? 3. Wird ein klares Ziel für den Dialog vorgegeben (Problem, Lösung, Einigung)? 4. Ist dieser Ansatz geeignet, um eine realistische und nuancierte Konversation zu generieren?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Prompt: Rollenbiografie & Team",
+          "taskDescription": "Erstelle einen Prompt, in dem die KI erst eine Rollenbiografie generiert und anschließend als diese Figur gemeinsam mit einer zweiten Rolle eine Streitfrage diskutiert.",
+          "evaluationGuidance": "Prompt muss Biografie, Rollenzuweisung und Teamdiskussion fordern.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wann wirst du künftig auf Rollen zurückgreifen – und wann eher nicht?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

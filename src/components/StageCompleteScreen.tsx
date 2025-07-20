@@ -3,7 +3,7 @@
 
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Trophy, XCircle, Zap } from 'lucide-react';
+import { Trophy, XCircle } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
 import { EightbitButton } from './ui/eightbit-button';
@@ -15,6 +15,7 @@ import { VaryIcon } from './icons/VaryIcon';
 import { MagnifyingGlassIcon } from './icons/MagnifyingGlassIcon';
 import { RepeatIcon } from './icons/RepeatIcon';
 import { PassIcon } from './icons/PassIcon';
+import { BossIcon } from './icons/BossIcon';
 
 interface StageCompleteScreenProps {
   stageId: string;
@@ -130,7 +131,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
               </div>
               <div className="text-right">
                   <p className={cn("font-bold text-lg flex items-center justify-end gap-2", pointsColorClass)}>
-                    {isBoosterActive && <Zap className="h-5 w-5 text-yellow-500" />}
+                    {isBoosterActive && <BossIcon className="h-5 w-5 text-yellow-500 animate-pulse" />}
                     +{pointsEarnedInStage} Punkte
                   </p>
                   {isBoosterActive && (

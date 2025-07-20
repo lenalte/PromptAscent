@@ -1,8 +1,7 @@
-
 {
   "id": "lesson26",
-  "title": "Wissensdatenbank-Chatbot",
-  "description": "Lerne, wie du Chatbots erstellst, die auf Basis von Wissensdatenbanken antworten.",
+  "title": "Knowledge Base Chatbots",
+  "description": "Verstehe, wie KI-Chatbots mit Wissensdatenbanken arbeiten, mit Dokumenten argumentieren und Limits umgehen.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was ist ein Wissensdatenbank-Chatbot?",
-          "content": "Im Gegensatz zu traditionellen Chatbots mit festen Antworten, nutzt ein Wissensdatenbank-Chatbot Dokumente als Kontext, um Fragen zu beantworten. Das macht seine Antworten flexibler und spezifischer auf die jeweilige Anfrage zugeschnitten.",
+          "title": "Intent-basierte vs. KI-Chatbots",
+          "content": "Traditionelle Chatbots sind intent-basiert. Moderne LLMs können als Wissensdatenbank-Chatbots eingesetzt werden, indem sie Dokumente als Kontext verwenden.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Grenzen der KI",
+          "content": "LLMs können nicht beliebig große Wissensbasen auf einmal verarbeiten, sondern arbeiten mit einzelnen Dokumenten als Kontext.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Hauptherausforderung",
-          "question": "Warum kann man nicht einfach die gesamte Wissensdatenbank in einen einzigen Prompt an die KI übergeben?",
+          "title": "Technik-Quiz",
+          "question": "Warum kann man nicht die ganze Wissensdatenbank an die KI senden?",
           "options": [
-            "Weil es zu teuer wäre.",
-            "Weil die KI dann zu langsam antworten würde.",
-            "Weil LLMs eine maximale Kontextlänge (Token-Limit) haben, die nicht überschritten werden darf.",
-            "Weil die Wissensdatenbank zu viele verschiedene Themen enthält."
+            "Prompt-Limit der LLMs",
+            "KI will nicht alles wissen",
+            "Datenschutz",
+            "Zu teuer"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Vorteil der neuen Chatbots",
+          "question": "Was ist ein Vorteil, wenn Chatbots LLMs statt Intent-Logik nutzen?",
+          "expectedAnswer": "Flexiblere, spezifischere Antworten, weniger Intents notwendig.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -39,17 +54,32 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Zweistufiger Prozess",
-          "content": "Ein solcher Chatbot funktioniert in zwei Schritten: 1. Semantische Suche, um das relevanteste Dokument aus der Wissensdatenbank zu finden. 2. Übergabe dieses Dokuments als Kontext an die KI, um eine Antwort zu generieren.",
+          "title": "Rolle und Kontext im Prompt",
+          "content": "Im Prompt solltest du eine Rolle, das relevante Dokument und die Nutzerfrage kombinieren, damit die KI spezifisch antworten kann.",
           "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Prompt erstellen",
-          "question": "Du hast ein Dokument, das den Login-Prozess für eine App beschreibt. Wie würdest du einen Prompt formulieren, der der KI (in der Rolle eines Chatbots) dieses Dokument als Kontext gibt, um eine Nutzerfrage zu beantworten?",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Du bist ein hilfsbereiter Chatbot. Beantworte die folgende Frage des Nutzers nur auf Basis des bereitgestellten Kontexts. START KONTEXT [Dokument einfügen] END KONTEXT. Nutzerfrage: [Frage einfügen]'",
-          "pointsAwarded": 7,
+          "title": "Prompt: Dokument als Kontext",
+          "question": "Formuliere einen Prompt, der die KI anweist, aus einem bereitgestellten Dokument eine Nutzerfrage zu beantworten.",
+          "expectedAnswer": "'Nutze den folgenden Kontext, um die Nutzerfrage präzise zu beantworten: [Dokument] Nutzerfrage: ...'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Semantische Suche",
+          "question": "Wozu dient die semantische Suche im KB-Chatbot?",
+          "options": [
+            "Das relevanteste Dokument zum Prompt holen",
+            "Automatisch alle Fragen zu beantworten",
+            "Daten zu anonymisieren",
+            "Ein Dokument löschen"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -61,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Umgang mit unklaren Fragen",
-          "taskDescription": "Ein Nutzer fragt nur 'Kann nicht einloggen'. Der Kontext-Dokument beschreibt den Login für die Website und die mobile App. Erstelle einen Prompt, der die KI anweist, eine klärende Gegenfrage zu stellen, bevor sie eine detaillierte Antwort gibt.",
-          "evaluationGuidance": "1. Erkennt der Prompt die Mehrdeutigkeit der Nutzerfrage? 2. Weist der Prompt die KI an, eine Gegenfrage zur Unterscheidung (Website vs. App) zu stellen? 3. Zielt die Anweisung darauf ab, dem Nutzer gezielter zu helfen, anstatt eine allgemeine Antwort zu geben?",
-          "pointsAwarded": 12,
+          "title": "Rollenspiel-Prompt",
+          "taskDescription": "Schreibe einen Prompt, bei dem die KI als 'freundlicher Support-Chatbot' auf Basis eines Dokuments individuelle Antworten gibt.",
+          "evaluationGuidance": "Prompt muss Rolle, Kontext und Nutzerfrage kombinieren.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Disambiguation-Prompt",
+          "taskDescription": "Formuliere einen Prompt, mit dem die KI eine unklare Nutzerfrage durch gezielte Rückfrage präzisiert.",
+          "evaluationGuidance": "Prompt muss erkennen lassen, dass mehr Kontext benötigt wird.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -76,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Gefahr der Halluzination",
-          "question": "Was ist das größte Risiko, wenn die semantische Suche kein passendes Dokument findet und die KI die Nutzerfrage trotzdem beantworten soll?",
-          "expectedAnswer": "Das größte Risiko ist, dass die KI 'halluziniert', also Informationen erfindet, die nicht in der Wissensdatenbank stehen. Für einen Kundenservice-Chatbot kann dies zu falschen Anweisungen und unzufriedenen Kunden führen.",
+          "title": "Risiken bei Wissens-Chatbots",
+          "question": "Worin besteht die größte Gefahr bei KI-Chatbots mit Wissensdatenbank?",
+          "expectedAnswer": "Falsche (halluzinierte) Antworten, wenn Information fehlt oder der Kontext falsch gewählt ist.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Halluzinationen",
+          "taskDescription": "Zeige einen Prompt, bei dem die KI Informationen erfindet (halluziniert), und verbessere ihn.",
+          "evaluationGuidance": "Vergleich eines unpräzisen vs. eines kontextgebundenen Prompts.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -91,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Rolle des Kontexts",
-          "question": "Welche Rolle spielt der Kontext (das Dokument aus der Wissensdatenbank) im Prompt?",
+          "title": "Quiz: KB-Chatbots",
+          "question": "Wie stellst du sicher, dass der Chatbot nur aus dem KB-Dokument antwortet?",
           "options": [
-            "Er dient nur als Beispiel und wird ignoriert.",
-            "Er gibt der KI die alleinige Informationsgrundlage, um die Nutzerfrage zu beantworten.",
-            "Er wird verwendet, um die Rechtschreibung der Nutzerfrage zu korrigieren.",
-            "Er wird am Ende der Antwort angehängt."
+            "Im Prompt explizit fordern, nur Kontext zu verwenden",
+            "KI einfach raten lassen",
+            "Alles aus dem Internet nutzen lassen",
+            "Prompt beliebig schreiben"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: KB-Prompts",
+          "question": "Wie kannst du die Halluzinationen der KI beim Chatbot minimieren?",
+          "expectedAnswer": "Prompt: Antworte ausschließlich auf Basis des gegebenen Kontexts.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -111,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen vollständigen Prompt entwerfen",
-          "taskDescription": "Entwirf einen vollständigen Prompt für einen Wissensdatenbank-Chatbot. Der Prompt soll eine Rolle ('fortschrittlicher Chatbot namens Skippy'), die Kontext-Markierungen (START/END KONTEXT), einen Platzhalter für den Konversationsverlauf und einen Platzhalter für die aktuelle Nutzerfrage enthalten.",
-          "evaluationGuidance": "1. Enthält der Prompt alle geforderten Elemente (Rolle, Kontext-Markierungen, Platzhalter)? 2. Ist die Rollenzuweisung klar? 3. Sind die Kontext-Markierungen eindeutig und helfen sie, den Inhalt zu strukturieren? 4. Ist die Struktur des Prompts logisch und für die Verarbeitung durch eine KI geeignet?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer KB-Chatbot-Prompt",
+          "taskDescription": "Erstelle einen Prompt, der die KI als Support-Chatbot mit Rolle, Kontext, Konversationsverlauf und Nutzerfrage steuert.",
+          "evaluationGuidance": "Prompt muss alle Elemente (Rolle, Kontext, Verlauf, Frage) enthalten.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du KI-Chatbots mit Wissensdatenbank künftig einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

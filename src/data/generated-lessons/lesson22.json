@@ -1,8 +1,7 @@
-
 {
   "id": "lesson22",
-  "title": "Juristische Dokumente",
-  "description": "Erfahre, wie KI beim Lesen und Erstellen von juristischen Dokumenten unterstützen kann.",
+  "title": "Legal Documents – Verträge lesen & schreiben mit KI",
+  "description": "Lerne, wie KI beim Verstehen, Überprüfen und Erstellen von juristischen Dokumenten assistiert – aber kein Ersatz für juristische Beratung ist!",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "KI als juristischer Assistent",
-          "content": "Künstliche Intelligenz kann lange, komplizierte Verträge und Rechtsdokumente analysieren und in einfachen Worten zusammenfassen. Sie kann auch dabei helfen, erste Entwürfe für Standarddokumente wie NDAs zu erstellen.",
+          "title": "KI und Verträge",
+          "content": "Mit KI kannst du Verträge und rechtliche Dokumente leichter verstehen und prüfen – aber niemals als Ersatz für einen Anwalt.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Wichtige Warnung",
+          "content": "KI kann Fehler machen – im Zweifel immer einen Juristen fragen! KI ist nur ein Assistenz-Tool, keine Rechtsberatung.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Grenzen der KI",
-          "question": "Was ist eine wichtige Einschränkung beim Einsatz von KI für juristische Dokumente?",
+          "title": "Risiko KI-Verträge",
+          "question": "Was solltest du bei KI-generierten Verträgen beachten?",
           "options": [
-            "Die KI kann nur Dokumente bis zu einer Seite Länge lesen.",
-            "Die KI ersetzt keine professionelle Rechtsberatung und sollte nur unterstützend eingesetzt werden.",
-            "Die KI kann keine Verträge erstellen.",
-            "Die KI versteht nur englische Rechtsdokumente."
+            "Vor Nutzung durch eine:n Jurist:in prüfen lassen",
+            "Immer sofort unterschreiben",
+            "KI-Output blind vertrauen",
+            "Niemals Fragen stellen"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Gefahren KI-Verträge",
+          "question": "Nenne eine Gefahr, wenn du KI-generierte Verträge ohne Prüfung nutzt.",
+          "expectedAnswer": "Wichtige Klauseln oder Formulierungen könnten fehlerhaft oder unfair sein.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Juristische Sprache vereinfachen",
-          "question": "Du hast folgende Klausel in einem Vertrag: 'WHEREAS, the Contractor agrees to maintain the confidentiality of such information...'. Wie würdest du einen Prompt formulieren, um die Bedeutung von 'WHEREAS' in einfachem Deutsch zu erfahren?",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Erkläre mir in einfachen Worten, was 'WHEREAS' in einem juristischen Vertrag bedeutet.'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Klauseln verständlich machen",
+          "content": "Du kannst mit einem Prompt juristische Fachsprache oder Klauseln von der KI in einfache Sprache übersetzen lassen.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Gefährliche Klauseln finden",
-          "question": "Du hast einen langen Arbeitsvertrag erhalten. Wie könntest du die KI anweisen, potenziell problematische oder für dich nachteilige Klauseln in diesem Vertrag zu identifizieren?",
-          "expectedAnswer": "Ein passender Prompt wäre: 'Analysiere den folgenden Arbeitsvertrag und markiere alle Klauseln, die für mich als Arbeitnehmer nachteilig sein könnten: [VERTRAGSTEXT EINFÜGEN]'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Klausel erklären",
+          "question": "Formuliere einen Prompt, der die KI auffordert, eine schwer verständliche Vertragsklausel in einfachen Worten zu erklären.",
+          "expectedAnswer": "'Erkläre folgende Klausel in einfachen Worten: ...'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Dangerous Language",
+          "question": "Wie kann dir KI helfen, gefährliche Klauseln zu entdecken?",
+          "options": [
+            "Prompt: 'Gibt es gefährliche oder einseitige Klauseln in diesem Vertrag? Markiere sie!'",
+            "Keine Hinweise geben",
+            "KI nie nach gefährlichen Stellen fragen",
+            "Vertrag nicht prüfen"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -63,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Einen Vertragsentwurf erstellen",
-          "taskDescription": "Du benötigst eine einfache Geheimhaltungsvereinbarung (NDA) für ein Projekt. Erstelle einen Prompt, der die KI anweist, einen NDA-Entwurf zu erstellen. Der Prompt soll die Namen der beiden Parteien (Partei A, Partei B) und den Zweck der Vereinbarung (Diskussion über ein neues App-Projekt) enthalten.",
-          "evaluationGuidance": "1. Enthält der Prompt eine klare Anweisung zur Erstellung eines NDA? 2. Werden die beiden Parteien benannt? 3. Wird der Zweck der Vereinbarung klar kommuniziert? 4. Ist der resultierende Entwurf eine solide Grundlage für ein juristisches Dokument?",
-          "pointsAwarded": 12,
+          "title": "Prompt: Vertrag auf Gefahren prüfen",
+          "taskDescription": "Formuliere einen Prompt, der die KI auffordert, einen NDA auf gefährliche oder einseitige Klauseln für den Auftragnehmer zu prüfen.",
+          "evaluationGuidance": "Prompt muss NDA und Hinweis auf Risiken/Klauseln nennen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt: Vertrag erstellen",
+          "taskDescription": "Schreibe einen Prompt, mit dem die KI einen Vertrag für einen Webentwickler-Auftrag erstellt (inkl. Laufzeit, Bezahlung, NDA, Rechte).",
+          "evaluationGuidance": "Prompt muss Thema, Laufzeit, Bezahlung, NDA, Rechte verlangen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -78,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Die Wichtigkeit menschlicher Überprüfung",
-          "question": "Warum sollte man einen von einer KI erstellten Vertragsentwurf niemals ohne die Überprüfung durch einen qualifizierten Anwalt verwenden?",
-          "expectedAnswer": "Man sollte ihn niemals ohne anwaltliche Prüfung verwenden, weil die KI keine rechtliche Verantwortung übernimmt und möglicherweise lokale Gesetze oder spezifische Fallnuancen nicht kennt. Nur ein Anwalt kann sicherstellen, dass der Vertrag rechtlich bindend ist und die eigenen Interessen vollständig schützt.",
+          "title": "Reflexion: Fehlerquellen",
+          "question": "Warum solltest du Vertragstexte mit KI nie ungeprüft übernehmen?",
+          "expectedAnswer": "Fehler, gefährliche Klauseln, kein rechtlicher Schutz.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Juristischer Prompt",
+          "taskDescription": "Zeige ein Beispiel für einen schlechten Prompt zur Vertragserstellung und verbessere ihn.",
+          "evaluationGuidance": "Vergleich unspezifischer/spezifischer Prompt mit mehr Anforderungen.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -93,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "KI-Anwendung",
-          "question": "Welche der folgenden Aufgaben ist eine typische Anwendung von KI im juristischen Bereich?",
+          "title": "Quiz: Verträge mit KI",
+          "question": "Was ist KEIN typischer Schritt bei juristischen KI-Texten?",
           "options": [
-            "Ein Gerichtsurteil fällen.",
-            "Einen Zeugen vor Gericht vertreten.",
-            "Lange Dokumente nach relevanten Informationen durchsuchen und zusammenfassen (eDiscovery).",
-            "Einen neuen Gesetzestext verabschieden."
+            "Prüfung durch einen Juristen",
+            "Klauseln in einfacher Sprache erklären lassen",
+            "Vertrag ungeprüft abschließen",
+            "Nach gefährlichen Stellen suchen"
           ],
           "correctOptionIndex": 2,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: KI-Verträge",
+          "question": "Was ist ein Best-Practice-Tipp für Vertragsarbeit mit KI?",
+          "expectedAnswer": "Immer eine juristische Prüfung und konkrete Anforderungen im Prompt stellen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -113,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen komplexen Vertrag anpassen",
-          "taskDescription": "Du hast einen Standard-Arbeitsvertrag von der KI erstellen lassen. Nun möchtest du ihn anpassen. Erstelle einen Folge-Prompt, der die KI anweist, eine spezifische Klausel zum Thema 'Home-Office-Regelung' hinzuzufügen. Die Klausel soll festlegen, dass der Mitarbeiter an drei Tagen pro Woche im Home-Office arbeiten darf und dafür eine monatliche Pauschale von 50 Euro erhält.",
-          "evaluationGuidance": "1. Bezieht sich der Prompt klar auf die Anpassung eines bestehenden Dokuments? 2. Fordert der Prompt das Hinzufügen einer spezifischen Klausel (Home-Office)? 3. Werden die Details der Regelung (Anzahl der Tage, Pauschale) klar im Prompt genannt? 4. Ist die Anweisung präzise genug, um die Klausel korrekt in den Vertrag zu integrieren?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Vertrags-Prompt",
+          "taskDescription": "Erstelle einen Prompt, der die KI auffordert, einen Arbeitsvertrag zu erstellen und alle kritischen Klauseln explizit hervorzuheben.",
+          "evaluationGuidance": "Prompt muss Vertrag, Hinweise auf kritische Stellen fordern.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du KI künftig beim Thema Verträge sinnvoll nutzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

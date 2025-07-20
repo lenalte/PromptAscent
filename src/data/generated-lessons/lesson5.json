@@ -12,8 +12,39 @@
           "type": "informationalSnippet",
           "id": "s1_info1",
           "title": "Was ist Role Prompting?",
-          "content": "Role Prompting ist eine Technik, bei der man der KI eine bestimmte Rolle oder Persona zuweist, z.B. 'Du bist ein erfahrener Reiseführer' oder 'Du bist ein professioneller Koch'. Dies hilft der KI, den Stil, Ton und die Perspektive ihrer Antwort anzupassen.",
+          "content": "Beim Role Prompting weist du der KI eine bestimmte Rolle zu (z.B. Food Critic, Mathematiker). Dadurch beeinflusst du Ton, Stil und Tiefe der Antwort.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Wofür sind Rollen gut?",
+          "content": "Rollen helfen, die Antwort an eine Zielgruppe anzupassen oder Expertenwissen einzubringen (z.B. als Arzt erklären, als Historiker zusammenfassen).",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Rollen erkennen",
+          "question": "Was bewirkt das Zuweisen einer Rolle im Prompt?",
+          "options": [
+            "Die KI antwortet zufälliger.",
+            "Die KI passt Ton, Stil und Detailtiefe an.",
+            "Die KI wird weniger präzise.",
+            "Die KI ignoriert den Prompt."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Rolle erklären",
+          "question": "Beschreibe mit eigenen Worten, was mit einer Rolle im Prompt gemeint ist.",
+          "expectedAnswer": "Eine Rolle gibt vor, wie die KI antworten soll – z.B. als Experte, Kritiker oder Berater.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -24,9 +55,33 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Beispiel: Restaurantkritik",
-          "content": "Ein einfacher Prompt wie 'Schreibe eine Kritik über [Restaurant]' erzeugt eine generische Antwort. Weist man der KI jedoch die Rolle 'Du bist ein Michelin-Restaurantkritiker' zu, wird die Antwort detaillierter, eloquenter und fachmännischer.",
+          "title": "Rollen in verschiedenen Anwendungen",
+          "content": "Mit Rollen kannst du z.B. Rezensionen als Food Critic, Werbetexte als Marketingexperte oder E-Mails als Kundenservice schreiben lassen.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Einfache Rollenvergabe",
+          "question": "Schreibe einen Prompt, in dem die KI als Arzt Tipps für gesunde Ernährung gibt.",
+          "expectedAnswer": "Zum Beispiel: 'Du bist ein Arzt. Gib Tipps für gesunde Ernährung.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Rollen in E-Mails",
+          "question": "Wie beeinflusst die Rolle 'Marketingexperte' eine E-Mail an Kunden?",
+          "options": [
+            "Sie macht den Text sachlich und knapp.",
+            "Sie sorgt für einen positiven, überzeugenden Ton.",
+            "Sie führt zu mathematischen Formeln.",
+            "Sie verändert nichts."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -37,10 +92,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Verschiedene Rollen testen",
-          "taskDescription": "Du möchtest eine Produktbeschreibung für ein neues Smartphone. Schreibe zwei verschiedene Prompts: 1. Weise der KI die Rolle eines 'Technik-Journalisten' zu. 2. Weise der KI die Rolle eines 'begeisterten Teenagers' zu. Beobachte, wie sich Stil und Fokus der Beschreibung ändern.",
-          "evaluationGuidance": "1. Hat der Benutzer zwei klar getrennte Prompts mit unterschiedlichen Rollen erstellt? 2. Ist die erste Rolle (Technik-Journalist) auf Fakten und technische Details ausgerichtet? 3. Ist die zweite Rolle (begeisterter Teenager) auf Emotionen und umgangssprachlichen Stil ausgerichtet? 4. Zeigt das Ergebnis den deutlichen Unterschied im Output durch die Rollenzuweisung?",
-          "pointsAwarded": 15,
+          "title": "Prompt mit wechselnder Rolle",
+          "taskDescription": "Formuliere zwei Prompts, die dieselbe Aufgabe jeweils einmal aus Sicht eines Sportjournalisten und einmal aus Sicht eines Mathelehrers lösen lassen (Thema: ein Schulfest zusammenfassen).",
+          "evaluationGuidance": "Beide Prompts müssen explizit die jeweilige Rolle vorgeben.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Schlechten Rollen-Prompt verbessern",
+          "taskDescription": "Der Prompt lautet: 'Schreibe eine Restaurantkritik.' Wie kannst du den Prompt so verbessern, dass die KI als Food Critic (Gastronomiekritiker) schreibt?",
+          "evaluationGuidance": "Prompt soll explizit die Rolle 'Food Critic' oder 'Gastronomiekritiker' vorgeben.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -52,10 +116,19 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Kombination mit Anweisungen",
-          "question": "Warum ist es oft sinnvoll, eine Rolle mit einer klaren Anweisung zu kombinieren?",
-          "expectedAnswer": "Die Kombination ist sinnvoll, weil die Rolle den allgemeinen Stil und die Perspektive vorgibt, während die Anweisung die spezifische Aufgabe definiert. Zusammen führen sie zu einem präziseren Ergebnis, da die KI sowohl weiß, 'wer' sie ist, als auch, 'was' sie tun soll.",
-          "pointsAwarded": 6,
+          "title": "Rollen analysieren",
+          "question": "Warum ist es sinnvoll, der KI für manche Aufgaben eine bestimmte Rolle zu geben? Nenne ein Beispiel.",
+          "expectedAnswer": "Eine Rolle sorgt für passenderen Stil, Fachwissen oder Zielgruppenansprache (z.B. Arzt für Gesundheitstipps).",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt vergleichen & reflektieren",
+          "taskDescription": "Vergleiche folgende Prompts:\n1. 'Schreibe eine Produktbewertung.'\n2. 'Du bist ein Technikjournalist. Schreibe eine Produktbewertung.'\nWorin unterscheiden sich die möglichen KI-Antworten? Begründe.",
+          "evaluationGuidance": "Antwort soll Unterschiede im Stil, in der Tiefe und ggf. Fachsprache benennen.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -67,16 +140,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Anwendung von Rollen",
-          "question": "In welchem der folgenden Szenarien wäre Role Prompting am nützlichsten?",
+          "title": "Wiederholungsquiz: Rollen",
+          "question": "Was ist KEIN Vorteil von Role Prompting?",
           "options": [
-            "Um eine einfache Addition zu berechnen.",
-            "Um eine formelle Beschwerde-E-Mail im Namen eines Anwalts zu verfassen.",
-            "Um eine Liste von Hauptstädten zu erstellen.",
-            "Um die aktuelle Uhrzeit abzufragen."
+            "Spezialisierung der Antwort",
+            "Kontrolle über Stil und Ton",
+            "Erhöhung der Rechenleistung der KI",
+            "Expertise im Output"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 2,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Rolle im Prompt",
+          "question": "Nenne zwei mögliche Rollen, die in einem Prompt verwendet werden können.",
+          "expectedAnswer": "Z.B. Food Critic, Historiker, Arzt, Mathematiker, Marketingexperte.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,6 +167,15 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexe Prompt-Aufgabe: Rollen & E-Mail",
+          "taskDescription": "Erstelle einen Prompt, mit dem die KI als Customer Service Representative eine höfliche E-Mail zu einer verspäteten Lieferung schreibt. Die Antwort soll professionell, verständnisvoll und lösungsorientiert sein.",
+          "evaluationGuidance": "Prompt muss Rolle, Ton, Aufgabe und gewünschte Eigenschaften (Lösung, Verständnis) enthalten.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

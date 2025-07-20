@@ -1,8 +1,7 @@
-
 {
   "id": "lesson34",
-  "title": "Mehr über Prompt-Elemente",
-  "description": "Lerne, warum das Format und das Label-Spektrum wichtiger sind als die Korrektheit von Beispielen.",
+  "title": "Prompt Format und Label Space",
+  "description": "Wie beeinflussen Format, Labels und Beispiele die Qualität von KI-Antworten? Best Practices für den Aufbau deiner Prompts.",
   "stages": [
     {
       "id": "stage1",
@@ -11,30 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Format ist entscheidend",
-          "content": "Die Art und Weise, wie Beispiele in einem Prompt formatiert sind, ist entscheidend. Die KI lernt aus der Struktur Ihrer Beispiele, wie sie ihre eigene Antwort formatieren soll, selbst wenn die Beispiele inhaltlich falsch sind.",
+          "title": "Prompt-Format & Exemplars",
+          "content": "Das Format deiner Beispiele (Exemplars) im Prompt beeinflusst, wie die KI antwortet – unabhängig davon, ob die Beispielantworten korrekt sind.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Was ist der Label Space?",
-          "content": "Der 'Label Space' bezeichnet die Menge der möglichen Antworten für eine Klassifizierungsaufgabe (z.B. 'positiv', 'negativ', 'neutral'). Es ist wichtig, der KI zu zeigen, welche Art von Labels möglich sind.",
+          "title": "Label Space",
+          "content": "Der 'Label Space' ist die Menge aller möglichen Kategorien oder Ausgaben. Ein klar definierter Label Space im Prompt verbessert die Ergebnisse deutlich.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Wichtigkeit der Elemente",
-          "question": "Was ist laut Lektion wichtiger für die Struktur der KI-Antwort?",
+          "title": "Quiz: Formatwirkung",
+          "question": "Was passiert, wenn du bei Exemplars immer großgeschriebene Antworten verwendest?",
           "options": [
-            "Die Korrektheit der Antworten in den Beispielen.",
-            "Das Format der Beispiele im Prompt.",
-            "Die Länge des Prompts.",
-            "Die Anzahl der Fragen im Prompt."
+            "Die KI antwortet meist auch in Großbuchstaben.",
+            "Die Antworten werden immer korrekt.",
+            "Das Format spielt keine Rolle.",
+            "Die KI verweigert die Antwort."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Label Space Beispiel",
+          "question": "Nenne ein Beispiel für einen Label Space in einer Prompt-Klassifikationsaufgabe.",
+          "expectedAnswer": "Z.B. Sentimentanalyse: Label Space = ['positiv', 'negativ']",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -44,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Formatvorgabe anwenden",
-          "question": "Du möchtest, dass eine KI auf eine Frage immer mit einem einzigen Wort in Großbuchstaben antwortet. Gib ein Beispiel für einen Prompt mit einem falschen Beispiel, der der KI trotzdem das richtige Format beibringt.",
-          "expectedAnswer": "Ein gutes Beispiel wäre: 'Frage: Was ist 2+2? Antwort: FÜNFZIG. Frage: Was ist 1+1? Antwort:'. Die KI wird lernen, in Großbuchstaben zu antworten, auch wenn das Beispiel falsch ist.",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Beispiel: Label Space",
+          "content": "Wenn du einer KI mehrere Beispiele mit unterschiedlichen Labeln gibst, lernt sie die Struktur. Entscheidend ist, alle Labels im Prompt abzubilden.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Label Space definieren",
-          "question": "Du klassifizierst Kundenfeedback in die Kategorien 'DRINGEND' und 'NORMAL'. Warum ist es wichtig, im Prompt Beispiele für beide Kategorien zu zeigen, auch wenn die meisten Anfragen 'NORMAL' sind?",
-          "expectedAnswer": "Es ist wichtig, beide Kategorien zu zeigen, damit die KI den gesamten 'Label Space' (also alle möglichen Antwortkategorien) kennt. Ohne ein Beispiel für 'DRINGEND' würde die KI möglicherweise nie diese Kategorie auswählen, selbst wenn es passend wäre.",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Label Space",
+          "question": "Schreibe einen Prompt für eine Textklassifikation (z.B. Restaurant-Bewertungen), in dem der Label Space explizit gemacht wird.",
+          "expectedAnswer": "Prompt gibt Beispiele mit 'positiv' und 'negativ' als Labels und fordert auf, neuen Text entsprechend zu labeln.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Verteilung abbilden",
+          "question": "Wie sollte der Label Space in den Exemplars vertreten sein?",
+          "options": [
+            "Im selben Verhältnis wie in den echten Daten",
+            "Jede Kategorie genau einmal",
+            "Labels sind unwichtig",
+            "Immer nur positive Labels"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -70,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Verteilungsgetreue Beispiele",
-          "taskDescription": "Du hast Restaurantbewertungen, von denen 80% positiv und 20% negativ sind. Erstelle einen Few-Shot-Prompt zur Klassifizierung einer neuen Bewertung. Die Beispiele in deinem Prompt sollen diese 80/20-Verteilung widerspiegeln (z.B. 4 positive und 1 negatives Beispiel).",
-          "evaluationGuidance": "1. Enthält der Prompt mehrere Beispiele? 2. Spiegelt die Verteilung der Beispiele (positiv/negativ) ungefähr das Verhältnis 4:1 wider? 3. Ist die Anweisung zur Klassifizierung der neuen Bewertung klar?",
-          "pointsAwarded": 12,
+          "title": "Prompt: Exemplar-Formatierung",
+          "taskDescription": "Schreibe einen Prompt für eine Klassifikationsaufgabe, bei dem die Antworten der Beispiele immer das Format '[LABEL]' haben, und füge dann einen neuen Fall hinzu.",
+          "evaluationGuidance": "Prompt muss mindestens vier Beispielsätze mit [LABEL] enthalten.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt: Label-Verteilung",
+          "taskDescription": "Formuliere einen Prompt für Sentimentanalyse, bei dem 60% der Beispiele 'positiv' und 40% 'negativ' gelabelt sind.",
+          "evaluationGuidance": "Prompt muss Beispiele mit richtiger Verteilung enthalten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Die 'Ground Truth' Falle",
-          "question": "Warum ist es eine überraschende Erkenntnis, dass die inhaltliche Richtigkeit (Ground Truth) der Beispiele in einem Prompt weniger wichtig ist als das Format und der Label Space?",
-          "expectedAnswer": "Es ist überraschend, weil man intuitiv annehmen würde, dass korrekte Beispiele entscheidend sind. Die Erkenntnis zeigt jedoch, dass LLMs primär Muster in der Struktur und den Antwortmöglichkeiten lernen. Solange das Format und die möglichen Labels klar sind, kann die KI oft selbst die richtige inhaltliche Antwort ableiten, selbst wenn die gezeigten Beispiele falsch waren.",
+          "title": "Grenzen von Exemplars",
+          "question": "Warum ist die tatsächliche Korrektheit der Labels in den Exemplars weniger wichtig als das Format?",
+          "expectedAnswer": "Die KI orientiert sich mehr am Format und an den vorhandenen Labels als an der Wahrheit der Antworten.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Schlechte Formatierung",
+          "taskDescription": "Gib ein Beispiel für einen Prompt mit uneinheitlicher Formatierung und verbessere ihn.",
+          "evaluationGuidance": "Prompt muss von uneinheitlich zu konsistent umformuliert werden.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -100,24 +139,24 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Anzahl der Beispiele",
-          "question": "Welcher Bereich für die Anzahl der Beispiele in einem Prompt liefert oft gute Ergebnisse?",
+          "title": "Quiz: Label Space",
+          "question": "Warum ist der Label Space so wichtig für Klassifikations-Prompts?",
           "options": [
-            "Immer nur ein Beispiel.",
-            "Zwischen 4 und 8 Beispiele.",
-            "Immer mehr als 20 Beispiele.",
-            "Gar keine Beispiele."
+            "Die KI kann nur dann richtig klassifizieren, wenn alle Labels klar sind.",
+            "Labels sind immer zufällig.",
+            "Man kann die Labels weglassen.",
+            "Nur die Reihenfolge zählt."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s5_fr1",
-          "title": "Zusammenfassung der Kernerkenntnis",
-          "question": "Fasse in einem Satz zusammen, was beim Erstellen von Prompts mit Beispielen am wichtigsten ist.",
-          "expectedAnswer": "Am wichtigsten ist es, ein klares Format vorzugeben und den Raum möglicher Antworten (Label Space) klar zu definieren, da dies die KI-Antwort stärker beeinflusst als die inhaltliche Korrektheit der Beispiele selbst.",
+          "title": "Best Practice",
+          "question": "Wie kannst du das Verhältnis der Labels in deinen Prompts optimieren?",
+          "expectedAnswer": "Die Beispielverteilung im Prompt an die echte Verteilung im Datensatz anpassen.",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -129,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen robusten Prompt entwerfen",
-          "taskDescription": "Du möchtest eine KI, die medizinische Anfragen von Patienten in die drei Kategorien 'Notfall', 'Termin vereinbaren' und 'Allgemeine Frage' einteilt. Entwirf einen Few-Shot-Prompt, der ein klares Format vorgibt (z.B. 'Anfrage: [Text] -> Kategorie: [Label]') und Beispiele für alle drei Kategorien enthält, um den Label Space klar zu definieren.",
-          "evaluationGuidance": "1. Enthält der Prompt Beispiele für alle drei geforderten Kategorien? 2. Ist das Format der Beispiele konsistent und klar? 3. Ist die Anweisung zur Klassifizierung einer neuen Anfrage eindeutig? 4. Ist der Prompt so gestaltet, dass er zu einer zuverlässigen Klassifizierung führt?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Prompt: Multi-Label-Format",
+          "taskDescription": "Erstelle einen Prompt für eine Multilabel-Klassifikation mit mindestens drei unterschiedlichen Labels und mindestens zwei Beispielen pro Label.",
+          "evaluationGuidance": "Prompt muss konsistentes Format, klare Label-Benennung und Verteilung zeigen.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du Format und Label Space künftig für bessere Prompts nutzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
