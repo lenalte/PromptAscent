@@ -9,7 +9,8 @@ import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { saveLikertScaleAnswer } from '@/services/userProgressService';
 import { useToast } from '@/hooks/use-toast';
-import { Check, Star } from 'lucide-react';
+import { CheckIcon } from './icons/CheckIcon';
+import { Star } from 'lucide-react';
 
 interface LikertScaleQuestionProps {
   question: string;
@@ -143,7 +144,7 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
         )}
         {isComponentReadOnly && (
             <div className="flex items-center text-green-600 font-semibold">
-                <Check className="mr-2 h-5 w-5" /> Danke für dein Feedback!
+                <CheckIcon className="mr-2 h-5 w-5 text-green-600 dark:text-green-400" /> Danke für dein Feedback!
             </div>
         )}
       </CardFooter>
