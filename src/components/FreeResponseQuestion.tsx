@@ -95,13 +95,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-white">{title}</CardTitle>
         <CardDescription>{question}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor={`frq-${id}`}>Deine Antwort</Label>
+            <Label htmlFor={`frq-${id}`} className="text-white">Deine Antwort</Label>
             <Textarea
               id={`frq-${id}`}
               placeholder="Gib hier deine Antwort ein..."
