@@ -229,8 +229,8 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
                                     <Image
                                         src={badge.imageUrl}
                                         alt={badge.name}
-                                        width={64}
-                                        height={64}
+                                        width={96}
+                                        height={96}
                                         data-ai-hint="level badge"
                                     />
                                 ) : (
