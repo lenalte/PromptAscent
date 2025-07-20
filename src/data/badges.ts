@@ -1,10 +1,12 @@
-import { Award, Star, Medal, type LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Award, Star, Medal } from 'lucide-react';
+
 
 export interface Badge {
   id: string;
   name: string;
   description: string;
-  icon: LucideIcon;
+  imageUrl: string; // Changed from icon to imageUrl
   levelId: string; // The level required to unlock this badge
 }
 
@@ -13,21 +15,21 @@ export const BADGES: Badge[] = [
     id: 'badge-basics-completed',
     name: 'Basics-Meister',
     description: 'Für den Abschluss aller Lektionen im "Basics"-Level.',
-    icon: Award,
+    imageUrl: '/assets/images/badge-level-1.png',
     levelId: 'level-1',
   },
   {
     id: 'badge-application-completed',
     name: 'Anwendungs-Profi',
     description: 'Für den Abschluss aller Lektionen im "Application"-Level.',
-    icon: Star,
+    imageUrl: '/assets/images/badge-level-2.png',
     levelId: 'level-2',
   },
   {
     id: 'badge-intermediate-completed',
     name: 'Fortgeschrittener-Experte',
     description: 'Für den Abschluss aller Lektionen im "Intermediate"-Level.',
-    icon: Medal,
+    imageUrl: '/assets/images/badge-level-3.png',
     levelId: 'level-3',
   },
 ];

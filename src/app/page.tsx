@@ -45,6 +45,7 @@ import Inventory from '@/components/Inventory';
 import { LevelCompleteScreen } from "@/components/LevelCompleteScreen";
 import { BADGES, getBadgeById } from "@/data/badges";
 import { trackEvent } from '@/lib/gtagHelper';
+import Image from 'next/image';
 
 
 
@@ -716,7 +717,7 @@ function HomePageContent() {
                     onGoHome={handleLevelCompleteScreenClose}
                     levelTitle={currentOverallLevel?.title ?? ""}
                     badgeName={levelBadge?.name ?? ""}
-                    badgeIcon={levelBadge ? <levelBadge.icon className="h-24 w-24 text-accent" /> : undefined}
+                    badgeImageUrl={levelBadge?.imageUrl}
                   />
                 ) : isLessonFullyCompleted ? (
                   <LessonCompleteScreen
