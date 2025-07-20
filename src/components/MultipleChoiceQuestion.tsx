@@ -125,7 +125,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                 {isCorrect
                   ? 'Gut gemacht!'
                   : `Die richtige Antwort war: "${options[correctOptionIndex]}"`}
-                {!isCorrect && attempts < MAX_ATTEMPTS && (
+                {!isCorrect && canAttempt && (
                   <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
                 )}
               </AlertDescription>

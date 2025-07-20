@@ -37,10 +37,16 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<ValidateUserAnswerOutput | null>(null);
   const [attempts, setAttempts] = useState(0);
+  const [pulsate, setPulsate] = useState(false);
 
   const MAX_ATTEMPTS = 3;
   const isCorrect = result?.isValid === true;
   const canAttempt = !isCorrect && attempts < MAX_ATTEMPTS;
+
+  const triggerPulsate = () => {
+    setPulsate(true);
+    setTimeout(() => setPulsate(false), 1500); // Duration of the animation
+  };
 
   const handleSubmit = useCallback(() => {
     if (isReadOnly || !canAttempt || userAnswer.trim().length === 0) return;
@@ -59,12 +65,17 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         const awardedPointsForAttempt = validation.isValid ? Math.max(0, pointsAwarded - attempts) : 0;
         onAnswerSubmit(validation.isValid, awardedPointsForAttempt, id.toString());
 
+        if (!validation.isValid) {
+            triggerPulsate();
+        }
+
       } catch (error) {
         console.error('Validation error:', error);
         setResult({ isValid: false, feedback: error instanceof Error ? error.message : 'Bei der Überprüfung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.' });
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
         onAnswerSubmit(false, 0, id.toString());
+        triggerPulsate();
       }
     });
   }, [isReadOnly, canAttempt, userAnswer, question, expectedAnswer, onAnswerSubmit, pointsAwarded, id, attempts]);
@@ -95,7 +106,8 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               placeholder="Gib hier deine Antwort ein..."
               className={cn(
                 "resize-none",
-                hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive"
+                hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive",
+                pulsate && "animate-pulse-destructive"
               )}
               rows={4}
               value={userAnswer}
@@ -131,10 +143,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               </AlertTitle>
               <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {result.feedback}
-                 {!result.isValid && attempts < MAX_ATTEMPTS && (
+                 {!result.isValid && canAttempt && (
                   <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
                 )}
-                {!result.isValid && attempts >= MAX_ATTEMPTS && expectedAnswer && (
+                {!result.isValid && !canAttempt && expectedAnswer && (
                   <p className="mt-2">
                     Die erwartete Antwort (Leitfaden) war: <span className="font-semibold">{expectedAnswer}</span>
                   </p>
