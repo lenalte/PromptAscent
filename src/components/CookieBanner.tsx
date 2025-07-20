@@ -40,8 +40,8 @@ export default function CookieBanner() {
       className="
         fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50
         max-w-lg md:max-w-xl lg:max-w-2xl w-full
-        bg-gray-800 text-gray-100 p-8 rounded-2xl shadow-2xl
-        flex flex-col items-center space-y-6 border border-gray-700
+        bg-white text-background p-8 rounded-2xl shadow-2xl
+        flex flex-col items-center space-y-6 border border-[hsl(var(--background))]
       "
       style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
     >
@@ -64,7 +64,7 @@ export default function CookieBanner() {
       </div>
       <div className="flex gap-4 mt-4">
         <button
-          className="px-6 py-2 border border-gray-400 text-gray-200 rounded-lg hover:bg-gray-700 transition"
+          className="px-6 py-2 border border-gray-400 text-gray-700 rounded-lg hover:bg-gray-200 transition"
           onClick={() => setConsent('denied')}
         >
           Ablehnen
