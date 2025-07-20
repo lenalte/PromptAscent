@@ -3,8 +3,9 @@
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Trophy, HomeIcon } from 'lucide-react';
+import { HomeIcon } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
+import { LeaderboardIcon } from './icons/LeaderboardIcon';
 
 interface LessonCompleteScreenProps {
   onGoHome: () => void;
@@ -17,7 +18,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-green-500 bg-green-50 dark:border-green-700 dark:bg-green-900/20">
       <CardHeader className="items-center">
-        <Trophy className="h-16 w-16 text-yellow-500 mb-4" />
+        <LeaderboardIcon className="h-16 w-16 text-yellow-500 mb-4" />
         <CardTitle className="text-2xl font-bold text-green-800 dark:text-green-200">
           Lektion abgeschlossen!
         </CardTitle>
