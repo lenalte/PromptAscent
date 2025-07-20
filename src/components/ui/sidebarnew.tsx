@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
@@ -193,11 +194,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )} />
                     </button>
                 </div>
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-4 w-full px-2">
                     <button
                         onClick={() => handleCategoryClick('einstellungen')}
                         className={cn(
-                            "!p-2 !w-auto !h-auto",
+                            "p-2 w-full flex justify-center items-center",
                             "rounded-lg",
                             "bg-transparent hover:bg-[var(--sidebar-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--sidebar-ring)]",
                             activeCategory === 'einstellungen' && isContentOpen && "bg-[var(--sidebar-accent)]"
@@ -205,8 +206,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                         aria-label="Einstellungen"
                     >
                         <SettingsIcon className={cn(
-                            "h-5 w-5 shrink-0",
-                            activeCategory === 'einstellungen' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
+                            "h-5 w-5 shrink-0 text-white",
+                             activeCategory === 'einstellungen' && isContentOpen ? "opacity-100" : "opacity-70"
                         )} />
                     </button>
                 </div>
