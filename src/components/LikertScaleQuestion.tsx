@@ -109,10 +109,10 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
                      {option}
                   </Label>
                   <div className={cn(
-                    "flex items-center flex-col space-y-2 p-2 rounded-md border-2 w-full justify-center",
+                    "flex items-center flex-col space-y-2 p-2 rounded-md w-full justify-center",
                     selectedValue === (index + 1).toString()
-                      ? "border-amber-500 bg-amber-100 dark:bg-amber-900/40"
-                      : "border-transparent",
+                      ? "bg-amber-100 dark:bg-amber-900/40"
+                      : "",
                     !isComponentReadOnly && "cursor-pointer hover:bg-amber-100/50"
                   )}>
                     <Label
