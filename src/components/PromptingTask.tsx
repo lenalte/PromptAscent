@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { CheckIcon } from '@/components/icons/CheckIcon';
+import { CloseIcon } from '@/components/icons/closeIcon';
 
 interface PromptingTaskProps {
   taskDescription: string;
@@ -101,7 +102,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-purple-800 dark:text-purple-300 flex items-center">
-          <FilePenLine className="mr-2 h-5 w-5" /> {title}
+          {title}
         </CardTitle>
         <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription>
       </CardHeader>
@@ -147,7 +148,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 {evaluationResult.isCorrect ? (
                   <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
                 ) : (
-                  <CheckIcon className="h-4 w-4 text-destructive dark:text-red-400" />
+                  <CloseIcon className="h-4 w-4 text-destructive dark:text-red-400" />
                 )}
                 <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
                   {evaluationResult.isCorrect ? `Effektiver Prompt! +${awardedPoints} Punkte` : 'Verbesserungswürdig'}
