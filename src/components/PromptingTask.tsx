@@ -183,10 +183,6 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
             {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
           </EightbitButton>
         )}
-        <div className="flex justify-between w-full text-xs text-purple-600 dark:text-purple-500">
-            <p>Max. Punkte: +{pointsAwarded}</p>
-            <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
-        </div>
       </CardFooter>
     </Card>
   );

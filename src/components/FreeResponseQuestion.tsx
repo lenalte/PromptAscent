@@ -163,10 +163,6 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Antwort prüfen'}
           </EightbitButton>
         )}
-        <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <p>Max. Punkte: +{pointsAwarded}</p>
-            <p>Verbleibende Versuche: {Math.max(0, MAX_ATTEMPTS - attempts)}</p>
-        </div>
       </CardFooter>
     </Card>
   );

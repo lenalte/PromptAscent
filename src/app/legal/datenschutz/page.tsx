@@ -11,7 +11,7 @@ export default function DatenschutzPage() {
 
       <div className="space-y-6 text-base">
         <p>
-          Diese Datenschutzerklärung informiert Sie über die Art, den Umfang und Zweck der Verarbeitung personenbezogener Daten auf der Plattform <strong>„Promptening“</strong>. Die Nutzung erfolgt im Rahmen einer <strong>Bachelorarbeit</strong> an der Hochschule für angewandte Wissenschaften München und dient ausschließlich zu <strong>Evaluations- und Testzwecken</strong>. Die Plattform wird für ca. 1–2 Monate öffentlich zugänglich sein.
+          Diese Datenschutzerklärung informiert Sie über die Art, den Umfang und Zweck der Verarbeitung personenbezogener Daten auf der Plattform <strong>„Prompt-Ascent“</strong>. Die Nutzung erfolgt im Rahmen einer <strong>Bachelorarbeit</strong> an der Hochschule für angewandte Wissenschaften München und dient ausschließlich zu <strong>Evaluations- und Testzwecken</strong>. Die Plattform wird für ca. 1–2 Monate öffentlich zugänglich sein.
         </p>
 
         <hr className="my-6 border-border" />
