@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, Loader2, FilePenLine } from 'lucide-react';
+import { XCircle, Loader2, FilePenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
@@ -84,6 +84,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   const isComponentReadOnly = isReadOnly || isCorrect || attempts >= MAX_ATTEMPTS;
   const isInputValid = userPrompt.trim().length >= 10;
   const awardedPoints = isCorrect ? Math.max(0, pointsAwarded - (attempts - 1)) : 0;
+  const hasSubmittedAndIsIncorrect = evaluationResult !== null && !evaluationResult.isCorrect;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isComponentReadOnly && "bg-muted/50")}>
@@ -100,7 +101,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
               <Textarea
                 id={`pt-${id}`}
                 placeholder="Schreibe deinen Prompt hier, um die Aufgabe zu lösen..."
-                className="resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400"
+                className={cn(
+                  "resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400",
+                  hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive"
+                )}
                 rows={6}
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
@@ -148,6 +152,9 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                     )}
                   />
                   <p className="pt-2 whitespace-pre-line">{evaluationResult.explanation}</p>
+                   {!evaluationResult.isCorrect && attempts < MAX_ATTEMPTS && (
+                    <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
+                  )}
                 </AlertDescription>
               </Alert>
             )}

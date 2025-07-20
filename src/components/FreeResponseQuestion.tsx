@@ -7,7 +7,7 @@ import { validateUserAnswer, type ValidateUserAnswerOutput } from '@/ai/flows/va
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
@@ -78,6 +78,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
 
   const isComponentReadOnly = isReadOnly || isCorrect || attempts >= MAX_ATTEMPTS;
   const awardedPoints = isCorrect ? Math.max(0, pointsAwarded - (attempts - 1)) : 0;
+  const hasSubmittedAndIsIncorrect = result !== null && !result.isValid;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
@@ -92,7 +93,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
             <Textarea
               id={`frq-${id}`}
               placeholder="Gib hier deine Antwort ein..."
-              className="resize-none"
+              className={cn(
+                "resize-none",
+                hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive"
+              )}
               rows={4}
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
@@ -127,6 +131,9 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               </AlertTitle>
               <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {result.feedback}
+                 {!result.isValid && attempts < MAX_ATTEMPTS && (
+                  <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
+                )}
                 {!result.isValid && attempts >= MAX_ATTEMPTS && expectedAnswer && (
                   <p className="mt-2">
                     Die erwartete Antwort (Leitfaden) war: <span className="font-semibold">{expectedAnswer}</span>
