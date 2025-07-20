@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -37,8 +38,8 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
             <Image
                 src={badgeImageUrl}
                 alt={badgeName}
-                width={128}
-                height={128}
+                width={160}
+                height={160}
                 className="drop-shadow-lg"
                 data-ai-hint="level badge"
             />
