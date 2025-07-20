@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
@@ -125,6 +125,9 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                 {isCorrect
                   ? 'Gut gemacht!'
                   : `Die richtige Antwort war: "${options[correctOptionIndex]}"`}
+                {!isCorrect && attempts < MAX_ATTEMPTS && (
+                  <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
+                )}
               </AlertDescription>
             </Alert>
           )}
