@@ -69,16 +69,17 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   const isComponentReadOnly = isReadOnly || hasSubmittedCorrectly || attempts >= MAX_ATTEMPTS;
   const hasAttempted = submittedValue !== undefined;
   const awardedPoints = isCorrect ? Math.max(0, pointsAwarded - (attempts - 1)) : 0;
+  const hasSubmittedAndIsIncorrect = isCorrect === false;
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-white">{title}</CardTitle>
         <CardDescription>{question}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <Label>Wähle die beste Antwort:</Label>
+          <Label className="text-white">Wähle die beste Antwort:</Label>
           <RadioGroup
             onValueChange={setSelectedValue}
             value={selectedValue}
@@ -96,7 +97,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
               )}>
                 <RadioGroupItem value={index.toString()} id={`${id}-option-${index}`} disabled={isComponentReadOnly} />
                 <Label htmlFor={`${id}-option-${index}`} className={cn(
-                  "font-normal flex-1",
+                  "font-normal flex-1 text-white",
                   !isComponentReadOnly ? "cursor-pointer" : "cursor-default",
                   hasAttempted && index === correctOptionIndex && "text-green-800 dark:text-green-300",
                   hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "text-red-800 dark:text-red-300"
