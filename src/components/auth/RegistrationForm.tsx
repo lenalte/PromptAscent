@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -198,7 +199,7 @@ export default function AuthForm() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">
+        <CardTitle className="text-2xl text-white">
           {step === "email" && "Anmelden"}
           {step === "waitingLink" && "Checke deine E-Mails und deinen Spam Ordner"}
           {step === "profile" && "Profil vervollständigen"}
@@ -220,7 +221,7 @@ export default function AuthForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor="email">E-Mail</Label>
+                    <Label htmlFor="email" className="text-white">E-Mail</Label>
                     <FormControl>
                       <Input id="email" type="email" placeholder="m@example.com" {...field} disabled={isLoading} />
                     </FormControl>
