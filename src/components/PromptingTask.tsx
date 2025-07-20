@@ -12,6 +12,7 @@ import { CheckCircle2, XCircle, Loader2, FilePenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
+import { CheckIcon } from '@/components/icons/CheckIcon';
 
 interface PromptingTaskProps {
   taskDescription: string;
@@ -128,7 +129,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 )}
               >
                 {evaluationResult.isCorrect ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
                 ) : (
                   <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
                 )}

@@ -10,6 +10,7 @@ import { CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
+import { CheckIcon } from '@/components/icons/CheckIcon';
 
 interface MultipleChoiceQuestionProps {
   question: string;
@@ -102,7 +103,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                 )}>
                   {option}
                 </Label>
-                {hasAttempted && index === correctOptionIndex && <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />}
+                {hasAttempted && index === correctOptionIndex && <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400" />}
                 {hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && <XCircle className="h-5 w-5 text-destructive dark:text-red-400" />}
               </div>
             ))}
