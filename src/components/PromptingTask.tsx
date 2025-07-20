@@ -37,10 +37,16 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   const [isPending, startTransition] = useTransition();
   const [evaluationResult, setEvaluationResult] = useState<EvaluatePromptOutput | null>(null);
   const [attempts, setAttempts] = useState(0);
+  const [pulsate, setPulsate] = useState(false);
 
   const MAX_ATTEMPTS = 3;
   const isCorrect = evaluationResult?.isCorrect === true;
   const canAttempt = !isCorrect && attempts < MAX_ATTEMPTS;
+
+  const triggerPulsate = () => {
+    setPulsate(true);
+    setTimeout(() => setPulsate(false), 1500); // Duration of the animation
+  };
 
   const handleSubmit = useCallback(() => {
     if (isReadOnly || !canAttempt || userPrompt.trim().length < 10) return;
@@ -58,6 +64,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
 
         const awardedPointsForAttempt = result.isCorrect ? Math.max(0, pointsAwarded - attempts) : 0;
         onAnswerSubmit(result.isCorrect, awardedPointsForAttempt, id.toString());
+
+        if (!result.isCorrect) {
+          triggerPulsate();
+        }
         
       } catch (error) {
         console.error('Prompt evaluation error:', error);
@@ -70,6 +80,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
         onAnswerSubmit(false, 0, id.toString());
+        triggerPulsate();
       }
     });
   }, [isReadOnly, canAttempt, userPrompt, taskDescription, evaluationGuidance, onAnswerSubmit, pointsAwarded, id, attempts]);
@@ -103,7 +114,8 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 placeholder="Schreibe deinen Prompt hier, um die Aufgabe zu lösen..."
                 className={cn(
                   "resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400",
-                  hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive"
+                  hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive",
+                  pulsate && "animate-pulse-destructive"
                 )}
                 rows={6}
                 value={userPrompt}
@@ -152,7 +164,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                     )}
                   />
                   <p className="pt-2 whitespace-pre-line">{evaluationResult.explanation}</p>
-                   {!evaluationResult.isCorrect && attempts < MAX_ATTEMPTS && (
+                   {!evaluationResult.isCorrect && canAttempt && (
                     <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
                   )}
                 </AlertDescription>

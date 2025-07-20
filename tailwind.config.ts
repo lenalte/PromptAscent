@@ -83,11 +83,16 @@ export default {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+        'pulse-destructive': {
+          '0%, 100%': { ring: '0px hsl(var(--destructive) / 0.7)' },
+          '50%': { ring: '4px hsl(var(--destructive) / 0)' },
+        }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+        'pulse-destructive': 'pulse-destructive 1.5s ease-out',
   		}
   	}
   },
