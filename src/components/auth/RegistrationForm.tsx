@@ -296,7 +296,7 @@ export default function AuthForm() {
 
         {step === "done" && (
           <div className="flex flex-col items-center py-8">
-            <div className="text-lg font-bold mb-2">Erfolgreich eingeloggt 🎉</div>
+            <div className="text-lg font-bold mb-2 text-white">Erfolgreich eingeloggt 🎉</div>
             <EightbitButton className="w-full" onClick={() => router.push("/")}>
               Zum Dashboard
             </EightbitButton>
