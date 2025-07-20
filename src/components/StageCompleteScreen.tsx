@@ -63,11 +63,11 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     return null;
   }
   
-  const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet').length;
+  const totalItemsInStage = stageItems.filter(item => item.type !== 'informationalSnippet' && item.type !== 'likertScale').length;
   let firstTrySuccesses = 0;
   stageItems.forEach(item => {
     const attemptData = stageItemAttempts[item.id];
-    if (attemptData && item.type !== 'informationalSnippet') {
+    if (attemptData && item.type !== 'informationalSnippet' && item.type !== 'likertScale') {
       if (attemptData.correct && (attemptData.attempts ?? 1) === 1) {
         firstTrySuccesses++;
       }
@@ -92,13 +92,15 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     ? <Trophy className="h-10 w-10 text-yellow-500" />
     : <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />;
 
-  const titleText = allPerfect
-    ? "Stufe Perfekt abgeschlossen!"
-    : isLastStage ? "Lektion abgeschlossen!" : `Stufe abgeschlossen: ${stageTitle}`;
+  const titleText = `Stufe abgeschlossen: ${stageTitle}`;
 
-  const descriptionText = allPerfect
-    ? "Perfekt! Alle Aufgaben im ersten Versuch gelöst."
-    : "Gut gemacht! Du hast die Stufe abgeschlossen.";
+  let descriptionText = "Gut gemacht! Du hast die Stufe abgeschlossen.";
+  if (allPerfect) {
+    descriptionText = "Perfekt! Alle Aufgaben im ersten Versuch gelöst.";
+  }
+  if (isLastStage) {
+    descriptionText = "Herzlichen Glückwunsch! Du hast die letzte Stufe und damit die Lektion beendet.";
+  }
 
 
   return (
@@ -110,7 +112,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
                   <CardTitle className={cn("text-lg", cardTitleColorClass)}>
                       {titleText}
                   </CardTitle>
-                  <CardDescription className="text-sm">
+                  <CardDescription className="text-sm mt-1">
                       {descriptionText}
                   </CardDescription>
               </div>
