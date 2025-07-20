@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { EightbitButton } from './ui/eightbit-button';
 
 type Consent = 'granted' | 'denied';
 
@@ -45,22 +46,20 @@ export default function CookieBanner() {
       style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
     >
       <div className="space-y-2 text-center">
-        <h2 className="text-xl md:text-2xl font-bold mb-1 text-primary">
-          Cookies für wissenschaftliche Evaluation
+        <h2 className="text-xl md:text-2xl font-bold mb-1 text-background">
+          Bitte akzeptiere meine Cookies
         </h2>
-        <p>
-          Diese Plattform verwendet Cookies und Google Analytics ausschließlich zur anonymen Auswertung und Verbesserung im Rahmen einer wissenschaftlichen Bachelorarbeit. 
+        <p className="text-background">
+        Um meine Lernplattform im Rahmen meiner Bachelorarbeit zu evaluieren, sammle ich mithilfe von Google Analytics anonyme Nutzungsdaten (z.B. wie oft Levels abgeschlossen werden oder welche Buttons geklickt werden).  
           Deine Daten werden <b>nicht</b> für Werbung oder kommerzielle Zwecke genutzt. Die Erhebung dient allein der Forschung und der Evaluation dieser Lernplattform.
         </p>
-        <p>
-          Du kannst die Nutzung von Analyse-Cookies ablehnen oder akzeptieren. Alle Details findest du in unserer{' '}
-          <Link href="/legal/cookies" className="underline text-sky-400 hover:text-sky-300">
-            Cookie-Info
+        <p className="text-background">
+        Bitte unterstütze mich, indem du der Nutzung dieser Cookies zustimmst.
+        Mehr Infos findest du {' '}
+          <Link href="/legal/cookies" className="underline text-sky-800 hover:text-sky-500">
+            hier
           </Link>{' '}
-          und der{' '}
-          <Link href="/legal/datenschutz" className="underline text-sky-400 hover:text-sky-300">
-            Datenschutzerklärung
-          </Link>.
+          .
         </p>
       </div>
       <div className="flex gap-4 mt-4">
@@ -71,7 +70,7 @@ export default function CookieBanner() {
           Ablehnen
         </button>
         <button
-          className="px-6 py-2 bg-sky-500 text-white rounded-lg font-semibold hover:bg-sky-600 transition"
+          className="px-6 py-2 bg-foreground text-white rounded-lg font-semibold hover:bg-background transition"
           onClick={() => setConsent('granted')}
         >
           Akzeptieren
