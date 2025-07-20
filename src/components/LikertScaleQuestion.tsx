@@ -9,7 +9,7 @@ import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { saveLikertScaleAnswer } from '@/services/userProgressService';
 import { CheckIcon } from './icons/CheckIcon';
-import { Star } from 'lucide-react';
+import { StarIcon } from './icons/StarIcon';
 
 interface LikertScaleQuestionProps {
   question: string;
@@ -68,7 +68,7 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-accent bg-card", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-accent flex items-center">
-            <Star className="mr-2 h-5 w-5" /> {title}
+            <StarIcon className="mr-2 h-5 w-5" /> {title}
         </CardTitle>
         <CardDescription className="text-accent pt-2">{question}</CardDescription>
       </CardHeader>
