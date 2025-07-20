@@ -41,7 +41,13 @@ export default function AGBPage() {
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">4. Datenschutz</h2>
         <ul className="list-disc list-inside space-y-1">
           <li>Die bei der Nutzung erhobenen personenbezogenen Daten (z.B. E-Mail-Adresse, Lernfortschritt, Eingaben) werden ausschließlich für den Zweck der wissenschaftlichen Evaluation verwendet.</li>
-          <li>Details hierzu finden Sie in der <strong>Datenschutzerklärung</strong>.</li>
+          <li>
+            Details hierzu finden Sie in der{' '}
+            <Link href="/legal/datenschutz" className="underline hover:text-accent transition-colors">
+              <strong>Datenschutzerklärung</strong>
+            </Link>
+            .
+          </li>
           <li>Die Daten werden nach Abschluss der Projektlaufzeit gelöscht.</li>
         </ul>
         <hr className="my-6 border-border" />
