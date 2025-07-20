@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -14,6 +14,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { TrashIcon } from "../icons/TrashIcon";
 
 export function DeleteAccountDialogButton() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -52,7 +53,7 @@ export function DeleteAccountDialogButton() {
         <button
           className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-destructive"
         >
-          <Trash2 className="mr-3 ml-1 h-5 w-5" /> Account löschen
+          <TrashIcon className="mr-3 ml-1 h-5 w-5" /> Account löschen
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
