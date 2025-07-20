@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { XCircle, Loader2, FilePenLine } from 'lucide-react';
+import { Loader2, FilePenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
@@ -147,7 +147,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
                 {evaluationResult.isCorrect ? (
                   <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
+                  <CheckIcon className="h-4 w-4 text-destructive dark:text-red-400" />
                 )}
                 <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
                   {evaluationResult.isCorrect ? `Effektiver Prompt! +${awardedPoints} Punkte` : 'Verbesserungswürdig'}

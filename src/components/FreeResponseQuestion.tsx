@@ -7,7 +7,7 @@ import { validateUserAnswer, type ValidateUserAnswerOutput } from '@/ai/flows/va
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { XCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
@@ -136,7 +136,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               {result.isValid ? (
                 <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
               ) : (
-                <XCircle className="h-4 w-4 text-destructive dark:text-red-400" />
+                <CheckIcon className="h-4 w-4 text-destructive dark:text-red-400" />
               )}
               <AlertTitle className={cn(result.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
                 {result.isValid ? `Korrekt! +${awardedPoints} Punkte` : 'Inkorrekt'}

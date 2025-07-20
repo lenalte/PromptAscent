@@ -85,8 +85,8 @@ export default {
   				}
   			},
         'pulse-destructive': {
-          '0%, 100%': { ring: '0px hsl(var(--destructive) / 0.7)' },
-          '50%': { ring: '4px hsl(var(--destructive) / 0)' },
+          '0%, 100%': { 'box-shadow': '0 0 0 0px hsl(var(--destructive) / 0.7)' },
+          '50%': { 'box-shadow': '0 0 0 4px hsl(var(--destructive) / 0)' },
         }
   		},
   		animation: {
