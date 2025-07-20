@@ -69,7 +69,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
                 Du hast nicht alle Aufgaben bestanden. Versuche es noch einmal!
             </CardDescription>
             <EightbitButton onClick={onRestart}>
-                <RefreshCw className="mr-2 h-4 w-4" />
+                <RepeatIcon className="mr-2 h-4 w-4" />
                 Stufe wiederholen
             </EightbitButton>
         </CardContent>
