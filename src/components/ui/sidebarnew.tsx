@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
@@ -6,7 +5,7 @@ import Link from 'next/link'; // Import Link
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { getLeaderboardData } from '@/services/userProgressService';
 import type { LeaderboardEntry } from '@/services/userProgressService';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Settings, Trash2 } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Trash2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
 import { useToast } from "@/hooks/use-toast";
@@ -35,6 +34,7 @@ import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DeleteAccountDialogButton } from "@/components/auth/DeleteAccountDialogButton";
 import { trackEvent } from "@/lib/gtagHelper";
+import { SettingsIcon } from "../icons/SettingsIcon";
 
 
 interface SidebarProps {
@@ -204,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         )}
                         aria-label="Einstellungen"
                     >
-                        <Settings className={cn(
+                        <SettingsIcon className={cn(
                             "h-5 w-5 shrink-0",
                             activeCategory === 'einstellungen' && isContentOpen ? "text-[hsl(var(--sidebar-foreground))]" : "text-[hsl(var(--sidebar-foreground))] opacity-70"
                         )} />
