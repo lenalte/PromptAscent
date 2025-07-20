@@ -3,13 +3,21 @@
 
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CheckCircle, Trophy, XCircle, Zap, RefreshCw } from 'lucide-react';
+import { Trophy, XCircle, Zap, RefreshCw } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
 import { EightbitButton } from './ui/eightbit-button';
 import { useUserProgress } from '@/context/UserProgressContext';
 
+import { LightbulbIcon } from './icons/LightbulbIcon';
+import { ApplyIcon } from './icons/ApplyIcon';
+import { VaryIcon } from './icons/VaryIcon';
+import { MagnifyingGlassIcon } from './icons/MagnifyingGlassIcon';
+import { RepeatIcon } from './icons/RepeatIcon';
+import { PassIcon } from './icons/PassIcon';
+
 interface StageCompleteScreenProps {
+  stageId: string;
   stageTitle: string;
   basePointsAdded: number;
   stageItemAttempts: { [itemId: string]: StageItemStatus };
@@ -17,10 +25,20 @@ interface StageCompleteScreenProps {
   isLastStage: boolean;
   stageStatus: StageStatusValue;
   onRestart: () => void;
-  // activeBoosterMultiplier is removed as we get it from context now
 }
 
+const STAGE_ICONS: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
+  stage1: LightbulbIcon,
+  stage2: ApplyIcon,
+  stage3: VaryIcon,
+  stage4: MagnifyingGlassIcon,
+  stage5: RepeatIcon,
+  stage6: PassIcon,
+};
+
+
 export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
+  stageId,
   stageTitle,
   basePointsAdded,
   stageItemAttempts,
@@ -46,7 +64,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
       )}>
         <CardContent className="p-4 flex flex-col items-center justify-center text-center">
             <XCircle className="h-10 w-10 text-destructive mb-3" />
-            <CardTitle className="text-lg text-destructive">Stufe nicht geschafft</CardTitle>
+            <CardTitle className="text-lg text-destructive">{stageTitle}</CardTitle>
             <CardDescription className="text-sm text-destructive/90 mt-1 mb-4">
                 Du hast nicht alle Aufgaben bestanden. Versuche es noch einmal!
             </CardDescription>
@@ -88,20 +106,18 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
     ? "border-yellow-400 bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-900/20"
     : "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-900/20";
     
-  const mainIcon = allPerfect 
-    ? <Trophy className="h-10 w-10 text-yellow-500" />
-    : <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />;
+  const StageIcon = STAGE_ICONS[stageId] || Trophy; // Fallback to Trophy icon
+  const iconColorClass = allPerfect ? "text-yellow-500" : "text-green-600 dark:text-green-400";
+  
+  const mainIcon = <StageIcon className={cn("h-10 w-10", iconColorClass)} />;
 
-  const titleText = `Stufe abgeschlossen: ${stageTitle}`;
+  let descriptionText = allPerfect
+    ? "Perfekt! Alle Aufgaben im ersten Versuch gelöst."
+    : "Gut gemacht! Du hast die Stufe abgeschlossen.";
 
-  let descriptionText = "Gut gemacht! Du hast die Stufe abgeschlossen.";
-  if (allPerfect) {
-    descriptionText = "Perfekt! Alle Aufgaben im ersten Versuch gelöst.";
-  }
   if (isLastStage) {
     descriptionText = "Herzlichen Glückwunsch! Du hast die letzte Stufe und damit die Lektion beendet.";
   }
-
 
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-md rounded-lg my-4", cardContainerClass)}>
@@ -110,7 +126,7 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
               <div className="shrink-0">{mainIcon}</div>
               <div className="flex-1 text-left">
                   <CardTitle className={cn("text-lg", cardTitleColorClass)}>
-                      {titleText}
+                      {stageTitle}
                   </CardTitle>
                   <CardDescription className="text-sm mt-1">
                       {descriptionText}
