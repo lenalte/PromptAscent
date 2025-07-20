@@ -81,16 +81,16 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
   const isComponentReadOnly = isReadOnly;
 
   return (
-    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700", isComponentReadOnly && "bg-muted/50")}>
+    <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-accent bg-card", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-amber-800 dark:text-amber-300 flex items-center">
+        <CardTitle className="text-accent flex items-center">
             <Star className="mr-2 h-5 w-5" /> {title}
         </CardTitle>
-        <CardDescription className="text-amber-700 dark:text-amber-400 pt-2">{question}</CardDescription>
+        <CardDescription className="text-accent pt-2">{question}</CardDescription>
       </CardHeader>
       <CardContent>
           <div className="space-y-3">
-            <Label className="text-amber-800 dark:text-amber-300">Deine Einschätzung:</Label>
+            <Label className="text-accent">Deine Einschätzung:</Label>
             <RadioGroup
               onValueChange={setSelectedValue}
               value={selectedValue}
