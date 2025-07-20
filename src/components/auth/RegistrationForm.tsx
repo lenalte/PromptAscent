@@ -272,7 +272,7 @@ export default function AuthForm() {
                 name="avatarId"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Avatar</Label>
+                    <Label className="text-white">Avatar</Label>
                     <AvatarSelector
                       value={field.value as AvatarId}
                       onChange={field.onChange}
