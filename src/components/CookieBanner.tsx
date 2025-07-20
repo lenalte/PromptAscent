@@ -47,7 +47,7 @@ export default function CookieBanner() {
       style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
     >
       <Image
-        src="https://placehold.co/100x100.png"
+        src="/assets/images/Cookie.png"
         alt="Sad pixel art cookie"
         width={100}
         height={100}
