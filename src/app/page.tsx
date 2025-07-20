@@ -767,7 +767,7 @@ function HomePageContent() {
         {buttonConfig.visible && !isLessonFullyCompleted && !showLevelCompleteScreen && (
           <div className="fixed bottom-8 right-8 z-50">
             <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
-              {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> {buttonConfig.text} <span className="ml-2">{buttonConfig.icon}</span> </>}
+              {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> <span className="mr-2">{buttonConfig.icon}</span> {buttonConfig.text} </>}
             </EightbitButton>
           </div>
         )}
