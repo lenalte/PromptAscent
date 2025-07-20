@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { CheckIcon } from '@/components/icons/CheckIcon';
+import { CloseIcon } from '@/components/icons/closeIcon';
 
 
 interface FreeResponseQuestionProps {
@@ -136,7 +137,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               {result.isValid ? (
                 <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
               ) : (
-                <CheckIcon className="h-4 w-4 text-destructive dark:text-red-400" />
+                <CloseIcon className="h-4 w-4 text-destructive dark:text-red-400" />
               )}
               <AlertTitle className={cn(result.isValid ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
                 {result.isValid ? `Korrekt! +${awardedPoints} Punkte` : 'Inkorrekt'}
