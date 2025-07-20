@@ -38,8 +38,8 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
             <Image
                 src={badgeImageUrl}
                 alt={badgeName}
-                width={200}
-                height={200}
+                width={250}
+                height={250}
                 className="drop-shadow-lg"
                 data-ai-hint="level badge"
             />
