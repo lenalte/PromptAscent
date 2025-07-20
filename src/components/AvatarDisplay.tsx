@@ -13,7 +13,7 @@ export const AvatarDisplay: React.FC<AvatarDisplayProps> = ({ avatarId, classNam
 
   return (
     <AvatarIcon
-      className={cn("h-8 w-8 shrink-0", className)}
+      className={cn("h-8 w-8 shrink-0 text-foreground", className)}
       {...props}
     />
   );
