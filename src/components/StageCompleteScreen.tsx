@@ -3,7 +3,7 @@
 
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Trophy, XCircle, Zap, RefreshCw } from 'lucide-react';
+import { Trophy, XCircle, Zap } from 'lucide-react';
 import type { StageItemStatus, StageStatusValue, LessonItem } from '@/ai/schemas/lesson-schemas';
 import { cn } from '@/lib/utils';
 import { EightbitButton } from './ui/eightbit-button';
@@ -94,20 +94,16 @@ export const StageCompleteScreen: React.FC<StageCompleteScreenProps> = ({
 
   const allPerfect = stageStatus === 'completed-perfect';
 
-  const pointsColorClass = isBoosterActive 
-    ? "text-yellow-500 dark:text-yellow-400" 
+  const pointsColorClass = isBoosterActive
+    ? "text-yellow-500 dark:text-yellow-400"
     : "text-green-700 dark:text-green-300";
   
-  const cardTitleColorClass = allPerfect 
-    ? "text-yellow-700 dark:text-yellow-300"
-    : "text-green-800 dark:text-green-200";
+  const cardTitleColorClass = "text-green-800 dark:text-green-200";
 
-  const cardContainerClass = allPerfect
-    ? "border-yellow-400 bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-900/20"
-    : "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-900/20";
+  const cardContainerClass = "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-900/20";
     
   const StageIcon = STAGE_ICONS[stageId] || Trophy; // Fallback to Trophy icon
-  const iconColorClass = allPerfect ? "text-yellow-500" : "text-green-600 dark:text-green-400";
+  const iconColorClass = "text-green-600 dark:text-green-400";
   
   const mainIcon = <StageIcon className={cn("h-10 w-10", iconColorClass)} />;
 
