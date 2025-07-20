@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -19,17 +20,17 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center">
       <CardHeader className="items-center">
-        <LeaderboardIcon className="h-16 w-16 text-yellow-500 mb-4" />
-        <CardTitle className="text-2xl font-bold text-green-800 dark:text-green-200">
+        <LeaderboardIcon className="h-16 w-16 text-[#00FF6A] mb-4" />
+        <CardTitle className="text-2xl font-bold text-[#00FF6A]">
           Lektion abgeschlossen!
         </CardTitle>
-        <CardDescription className="text-green-700 dark:text-green-300">
+        <CardDescription className="text-[#00FF6A]">
           Herzlichen Glückwunsch! Du hast die Lektion erfolgreich beendet.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-center space-x-2 pt-4">
-          <p className="text-xl font-semibold text-foreground dark:text-card-foreground">
+          <p className="text-xl font-semibold text-foreground">
             Gesamtpunktestand: <span className="font-bold text-foreground">{totalPoints}</span>
           </p>
         </div>
