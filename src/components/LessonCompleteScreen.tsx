@@ -37,7 +37,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
         <EightbitButton onClick={onGoHome} disabled={isContextLoading}>
-          <HomeIcon className="mr-2 h-4 w-4" /> Zurück zur Übersicht
+          Zurück zur Übersicht
         </EightbitButton>
       </CardFooter>
     </Card>
