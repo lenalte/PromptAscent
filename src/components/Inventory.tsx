@@ -16,7 +16,7 @@ import ProgressBar from './ui/progressbar';
 import { getLessonSummaries, type LessonSummary } from '@/data/lessons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LockClosedIcon } from './icons/lock_closed';
-import { BADGES, getBadgeById, type Badge } from '@/data/badges';
+import { BADGES, getBadgeById, type Badge } from "@/data/badges";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { trackEvent } from "@/lib/gtagHelper";
 import Image from 'next/image';
@@ -229,8 +229,8 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
                                     <Image
                                         src={badge.imageUrl}
                                         alt={badge.name}
-                                        width={96}
-                                        height={96}
+                                        width={128}
+                                        height={128}
                                         data-ai-hint="level badge"
                                     />
                                 ) : (
