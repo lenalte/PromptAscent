@@ -1,8 +1,7 @@
-
 {
   "id": "lesson7",
-  "title": "Kombination von Prompting-Techniken",
-  "description": "Lerne, wie du verschiedene Prompting-Techniken effektiv kombinierst.",
+  "title": "Kombinieren von Prompting-Techniken",
+  "description": "Lerne, wie du durch das geschickte Kombinieren von Rollen, Kontext, Anweisungen und Beispielen noch bessere KI-Ergebnisse erhältst.",
   "stages": [
     {
       "id": "stage1",
@@ -11,9 +10,40 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was bedeutet das Kombinieren von Techniken?",
-          "content": "Anstatt nur eine Methode zu verwenden, können verschiedene Elemente wie eine Rolle, eine Anweisung und Beispiele in einem einzigen Prompt kombiniert werden. Dies hilft der KI, komplexe Aufgaben besser zu verstehen und präzisere Antworten zu geben.",
+          "title": "Prompt-Techniken kombinieren",
+          "content": "Oft ist ein Prompt besonders effektiv, wenn er mehrere Methoden vereint: z.B. Rolle, Anweisung, Kontext und Beispiele.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Warum kombinieren?",
+          "content": "Durch das Kombinieren verschiedener Techniken versteht die KI komplexere Aufgaben besser und liefert genauere, nuanciertere Antworten.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Mehrere Techniken erkennen",
+          "question": "Welche Vorteile hat das Kombinieren verschiedener Prompting-Techniken?",
+          "options": [
+            "Die KI arbeitet dadurch langsamer.",
+            "Du kannst Aufgaben präziser und nuancierter beschreiben.",
+            "Die KI gibt immer nur Ja/Nein-Antworten.",
+            "Du brauchst nie mehr Kontext geben."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Kombination",
+          "question": "Erkläre mit eigenen Worten, was es bedeutet, Prompting-Techniken zu kombinieren.",
+          "expectedAnswer": "Verschiedene Methoden wie Rolle, Kontext, Beispiele und Anweisung werden in einem Prompt zusammengeführt, um bessere Ergebnisse zu erzielen.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -24,9 +54,33 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Beispiel: Rolle und Anweisung",
-          "content": "Ein Beispiel für die Kombination ist: 'Du bist ein erfahrener Historiker, der sich auf das Römische Reich spezialisiert hat. Schreibe eine kurze Zusammenfassung der wichtigsten Ereignisse während der Herrschaft von Julius Caesar.' Hier wird die Rolle des Historikers mit der klaren Anweisung zur Zusammenfassung kombiniert.",
+          "title": "Wann kombinieren?",
+          "content": "Gerade bei komplexen Aufgaben oder speziellen Anforderungen (z.B. Ton, Format, Beispiele) lohnt es sich, mehrere Techniken zu kombinieren.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Beispiel für Kombi-Prompt",
+          "question": "Formuliere einen Prompt, der folgende Techniken kombiniert: Rolle (Marketing-Experte) + Anweisung (Produktvorteile aufzählen).",
+          "expectedAnswer": "Zum Beispiel: 'Du bist Marketing-Experte. Zähle die drei wichtigsten Vorteile von Produkt X für kleine Unternehmen auf.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Kombination in der Praxis",
+          "question": "Welche Prompt-Kombination eignet sich gut für Textklassifikation?",
+          "options": [
+            "Kontext + Anweisung + Beispiele",
+            "Nur Kontext",
+            "Nur Rolle",
+            "Keine Angabe"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -37,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Drei Techniken kombinieren",
-          "taskDescription": "Du möchtest Kundenrezensionen automatisch als 'Positiv', 'Negativ' oder 'Neutral' klassifizieren. Erstelle einen Prompt, der Kontext ('Du analysierst Kundenfeedback für einen Online-Shop'), eine klare Anweisung UND zwei Few-Shot-Beispiele kombiniert, um eine neue Rezension zu klassifizieren.",
-          "evaluationGuidance": "1. Beginnt der Prompt mit einem klaren Kontext? 2. Enthält er eine explizite Anweisung zur Klassifizierung? 3. Werden mindestens zwei Beispiele (Input und erwarteter Output) gezeigt? 4. Ist der Prompt so strukturiert, dass die KI eine neue Rezension eindeutig klassifizieren kann?",
-          "pointsAwarded": 12,
+          "title": "Kombi-Prompt: Few-Shot + Rolle + Kontext",
+          "taskDescription": "Erstelle einen Prompt, in dem du der KI als Arzt drei Beispiele gibst, wie Symptome klassifiziert werden, und dann einen neuen Fall beschreiben lässt.",
+          "evaluationGuidance": "Prompt muss Rolle, Kontext und mindestens drei Beispiele enthalten, plus einen neuen Fall.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Schlechten Kombi-Prompt verbessern",
+          "taskDescription": "Der Prompt lautet: 'Klassifiziere diesen Tweet.' Ergänze mindestens zwei weitere Techniken, damit der Prompt für die KI verständlicher und nützlicher wird.",
+          "evaluationGuidance": "Verbesserung soll Kontext, Beispiel(e), Rolle oder weitere Anweisungen enthalten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -52,10 +115,19 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Wann ist eine Kombination sinnvoll?",
-          "question": "In welchen Situationen ist es besonders sinnvoll, mehrere Prompting-Techniken zu kombinieren, anstatt nur eine einfache Anweisung zu geben?",
-          "expectedAnswer": "Eine Kombination ist besonders sinnvoll bei komplexen Aufgaben, die Nuancen erfordern, wie z.B. wenn ein spezifischer Stil (Rolle), ein bestimmtes Format (Anweisung/Beispiele) und Hintergrundwissen (Kontext) gleichzeitig benötigt werden, um ein hochwertiges Ergebnis zu erzielen.",
-          "pointsAwarded": 7,
+          "title": "Prompt-Analyse: Kombinieren",
+          "question": "Warum kann es sinnvoll sein, mehrere Prompting-Techniken zu verbinden? Nenne ein Beispiel.",
+          "expectedAnswer": "Dadurch kann die KI Aufgaben differenzierter und genauer bearbeiten – z.B. durch eine Rolle plus Beispiele plus klare Anweisung.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt vergleichen und reflektieren",
+          "taskDescription": "Vergleiche folgende Prompts:\n1. 'Bewerte diesen Text.'\n2. 'Du bist Literaturkritiker. Bewerte diesen Text in 3 Sätzen, gib Stärken und Schwächen an. Beispiel: ...' Was ist am zweiten Prompt besser?",
+          "evaluationGuidance": "Unterschiede bzgl. Genauigkeit, Stil, Ergebnis, Nachvollziehbarkeit reflektieren.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -67,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Best-Practice-Kombination",
-          "question": "Welche Kombination eignet sich am besten, um der KI beizubringen, Daten in einem sehr spezifischen JSON-Format auszugeben?",
+          "title": "Wiederholung: Techniken",
+          "question": "Was sollte man beim Kombinieren von Prompting-Techniken beachten?",
           "options": [
-            "Nur eine Rolle zuweisen.",
-            "Nur eine sehr detaillierte Anweisung geben.",
-            "Eine Anweisung mit mehreren Few-Shot-Beispielen, die das exakte Format zeigen.",
-            "Nur Kontext über JSON bereitstellen."
+            "Klare Struktur und Beispiele, nicht zu viele unnötige Details.",
+            "Immer alle Techniken gleichzeitig nutzen.",
+            "Niemals Kontext geben.",
+            "Die KI ignorieren lassen, was sie nicht versteht."
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Kombi-Prompts",
+          "question": "Nenne zwei Tipps für effektive Kombi-Prompts.",
+          "expectedAnswer": "Klare Rollen und Beispiele, Struktur im Prompt, Aufgaben gezielt formulieren.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -86,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexer Kombi-Prompt",
+          "taskDescription": "Erstelle einen Prompt, der folgende Elemente kombiniert: Rolle (Historiker), Kontext (Zeitraum, Ereignisse), zwei Beispiele für Zusammenfassungen und eine explizite Anweisung für eine neue Zusammenfassung.",
+          "evaluationGuidance": "Alle vier Elemente (Rolle, Kontext, Beispiele, Directive) müssen klar erkennbar sein.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Welchen Unterschied macht das Kombinieren von Prompting-Techniken für deine eigene Arbeit? In welchen Situationen wirst du das einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion des Nutzers.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

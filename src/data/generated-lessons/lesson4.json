@@ -12,8 +12,39 @@
           "type": "informationalSnippet",
           "id": "s1_info1",
           "title": "Was ist Instruction Prompting?",
-          "content": "Instruction Prompting ist eine Technik, bei der einem KI-Modell klare und direkte Anweisungen gegeben werden, um eine bestimmte Aufgabe auszuführen. Anstatt der KI viele Beispiele zu zeigen, sagt man ihr einfach, was sie tun soll, z.B. 'Fasse diesen Text zusammen'.",
+          "content": "Instruction Prompting bedeutet, eine Aufgabe durch eine klare Anweisung (Directive) in natürlicher Sprache zu beschreiben, sodass die KI diese direkt umsetzen kann.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Warum Anweisungen wichtig sind",
+          "content": "Klare Anweisungen helfen der KI, neue Aufgaben auch ohne spezielle Trainingsdaten zu bewältigen. Sie machen die KI flexibel und skalierbar.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Instruction Prompting erkennen",
+          "question": "Was ist das Ziel von Instruction Prompting?",
+          "options": [
+            "Der KI möglichst viele Beispiele zeigen.",
+            "Der KI klar sagen, was sie tun soll – auch bei neuen Aufgaben.",
+            "Immer den Output der KI kontrollieren.",
+            "Die KI durch Tests zu überlisten."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Instruction Prompt",
+          "question": "Beschreibe mit eigenen Worten, was ein Instruction Prompt ist.",
+          "expectedAnswer": "Ein Instruction Prompt ist eine klare Anweisung an die KI, um eine Aufgabe ohne Beispiele oder spezielle Trainingsdaten zu lösen.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -24,9 +55,33 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Beispiel: Namen parsen",
-          "content": "Eine häufige Aufgabe ist die korrekte Formatierung von Namen. Anstatt komplizierter Regeln kann man der KI einfach sagen: 'Bitte konvertiere den Namen 'John Smith' in das Format '[Nachname], [Vorname]'. Die KI versteht die Anweisung und gibt 'Smith, John' aus.",
+          "title": "Instruction Prompting in Aktion",
+          "content": "Mit klaren Anweisungen lassen sich z.B. Namen formatieren, PII entfernen oder Essays bewerten.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Einfache Anweisung schreiben",
+          "question": "Schreibe einen Instruction Prompt, der eine KI anweist, den dritten Buchstaben eines beliebigen Wortes auszugeben.",
+          "expectedAnswer": "Zum Beispiel: 'Gib den dritten Buchstaben des folgenden Wortes aus: ...'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Instruction Prompt Fehler vermeiden",
+          "question": "Welcher Fehler führt häufig zu schlechten KI-Antworten bei Anweisungen?",
+          "options": [
+            "Zu vage oder unklare Anweisung",
+            "Zu viele Beispiele im Prompt",
+            "Falsche KI-Version",
+            "Zu viele Emojis"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -37,10 +92,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Variiere die Anweisungen",
-          "taskDescription": "Du hast einen langen Artikel über die Geschichte des Internets. Schreibe einen Prompt, der die KI anweist, eine Zusammenfassung zu erstellen. Die Zusammenfassung soll aber eine spezifische Längenbeschränkung haben (z.B. 50 Wörter) und sich nur auf die frühen 1990er Jahre konzentrieren.",
-          "evaluationGuidance": "1. Enthält der Prompt eine klare Anweisung zur Zusammenfassung? 2. Gibt der Prompt eine spezifische Längenbeschränkung vor? 3. Fokussiert der Prompt die Zusammenfassung auf den korrekten Zeitrahmen (frühe 1990er)? 4. Ist die Anweisung präzise und leicht verständlich?",
-          "pointsAwarded": 12,
+          "title": "Prompt für Datenformatierung",
+          "taskDescription": "Schreibe einen Prompt, der eine KI anweist, den Namen 'Maria Schmidt' in das Format '[Nachname], [Vorname]' umzuwandeln.",
+          "evaluationGuidance": "Prompt soll explizit beschreiben, wie das neue Format aussehen muss.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Schlechten Prompt verbessern",
+          "taskDescription": "Der Prompt lautet: 'Formatiere Namen.' Verbessere diesen Prompt, damit die KI besser versteht, was zu tun ist.",
+          "evaluationGuidance": "Verbesserung soll Format, Reihenfolge und ggf. Beispiel angeben.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -53,9 +117,18 @@
           "type": "freeResponse",
           "id": "s4_fr1",
           "title": "Grenzen von Anweisungen",
-          "question": "Warum ist es manchmal nicht ausreichend, nur eine Anweisung zu geben, besonders bei sehr komplexen oder kreativen Aufgaben?",
-          "expectedAnswer": "Bei komplexen oder kreativen Aufgaben fehlt der KI oft der Kontext oder die genaue Vorstellung vom gewünschten Ergebnis. Reine Anweisungen können zu vage sein. In solchen Fällen sind zusätzliche Techniken wie das Vorgeben von Beispielen (Few-Shot) oder das Zuweisen einer Rolle notwendig, um die KI besser zu leiten.",
-          "pointsAwarded": 6,
+          "question": "Wann reicht eine einfache Anweisung nicht aus? Nenne ein Beispiel.",
+          "expectedAnswer": "Bei komplexen Aufgaben (z.B. kreative Texte), wenn Kontext oder Beispiele fehlen, kann die KI die Aufgabe falsch verstehen.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: PII-Entfernung",
+          "taskDescription": "Ein Nutzer schreibt: 'Entferne PII.' Warum ist das zu ungenau? Wie könnte der Prompt verbessert werden?",
+          "evaluationGuidance": "Verbesserung soll z.B. Platzhalter nennen und Anweisung ausformulieren.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -67,16 +140,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "PII-Entfernung",
-          "question": "Was bedeutet es, wenn eine KI PII aus einem Text entfernt?",
+          "title": "Instruction Prompting wiederholen",
+          "question": "Wofür ist Instruction Prompting besonders geeignet?",
           "options": [
-            "Sie korrigiert Rechtschreibfehler im Text.",
-            "Sie fasst den Text zusammen.",
-            "Sie entfernt persönliche Daten wie Namen, E-Mails oder Telefonnummern.",
-            "Sie übersetzt den Text in eine andere Sprache."
+            "Schnelles Lösen neuer Aufgaben durch klare Anweisungen",
+            "Erstellen von KI-Trainingsdaten",
+            "Automatisches Debugging",
+            "Bilderkennung"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Instruction Prompt Merkmale",
+          "question": "Nenne zwei Eigenschaften eines guten Instruction Prompts.",
+          "expectedAnswer": "Klarheit, Präzision, explizite Anweisung, gewünschtes Ausgabeformat.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,6 +167,15 @@
       "id": "stage6",
       "title": "Stage 6: Meistern",
       "items": [
+        {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexe Prompt-Aufgabe: Essay-Bewertung",
+          "taskDescription": "Entwickle einen Instruction Prompt, der eine KI anweist, einen Schüleraufsatz anhand folgender Kriterien zu bewerten: Grammatik, Klarheit, Argumentationsqualität, und ein Feedback mit je einem Punktwert (1-10) zu geben.",
+          "evaluationGuidance": "Prompt soll Kriterien, Bewertungsskala und Rückmeldung verlangen.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",

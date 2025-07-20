@@ -1,8 +1,7 @@
-
 {
   "id": "lesson10",
-  "title": "Prompt Priming: Kontext für die KI setzen",
-  "description": "Verstehe Prompt Priming und wie man den Kontext für eine KI richtig setzt.",
+  "title": "Prompt Priming – Chatbots gezielt steuern",
+  "description": "Lerne, wie du mit gezielten Priming-Prompts das Verhalten, den Stil und die Sicherheit von Chatbots steuerst.",
   "stages": [
     {
       "id": "stage1",
@@ -12,8 +11,39 @@
           "type": "informationalSnippet",
           "id": "s1_info1",
           "title": "Was ist Prompt Priming?",
-          "content": "Prompt Priming (auch Inception Prompting genannt) ist eine Technik, bei der man zu Beginn einer Konversation der KI eine grundlegende Anweisung oder einen Rahmen gibt. Dies 'primed' (oder 'stimmt') die KI darauf ein, ihre nachfolgenden Antworten in einem bestimmten Stil, Ton oder Format zu geben.",
+          "content": "Prompt Priming ist eine Technik, mit der du Chatbots gezielt auf einen bestimmten Stil, ein Format oder spezielle Regeln „einstimmen“ kannst.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Warum ist Priming nützlich?",
+          "content": "Mit Priming kannst du Chatbots so steuern, dass sie zielgerichtet, konsistent und sicher antworten – zum Beispiel als Experte, Berater oder besonders höflich.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Anwendungsbeispiel für Priming",
+          "question": "Was kann man mit einem Priming-Prompt NICHT erreichen?",
+          "options": [
+            "Den Stil der KI anpassen (z.B. Piratenstil)",
+            "Ein festes Antwortformat erzwingen",
+            "Die KI dazu bringen, immer zu schweigen",
+            "Regeln für Umgang mit heiklen Themen setzen"
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Priming",
+          "question": "Beschreibe mit eigenen Worten, wie Priming das Verhalten einer KI beeinflusst.",
+          "expectedAnswer": "Priming gibt der KI einen Rahmen für Verhalten, Ton oder spezielle Regeln, damit sie gezielter und passender antwortet.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -22,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Priming für Rollen & Formate",
+          "content": "Du kannst mit Priming eine Rolle (z.B. Marketing-Experte), einen Stil (z.B. Pirat) oder ein festes Antwortformat vorgeben.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Stil-Priming anwenden",
-          "question": "Du möchtest, dass eine KI dir als persönlicher Fitnesstrainer antwortet. Schreibe einen Priming-Prompt, der die KI anweist, immer motivierend und ermutigend zu sein.",
-          "expectedAnswer": "Ein guter Priming-Prompt wäre: 'Du bist jetzt mein persönlicher Fitnesstrainer. Deine Aufgabe ist es, mich zu motivieren. Antworte immer positiv und ermutigend, egal was ich frage.'",
-          "pointsAwarded": 6,
+          "title": "Eigener Priming-Prompt",
+          "question": "Schreibe einen Priming-Prompt für eine KI, die wie ein Mathelehrer agieren soll, der nie die Lösung direkt verrät.",
+          "expectedAnswer": "Zum Beispiel: 'Du bist mein Mathelehrer. Gib mir bei jeder Aufgabe Hinweise und Lösungswege, aber nenne nie das Endergebnis.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Priming in der Praxis",
+          "question": "Wie kann man Chatbots durch Priming sicherer machen?",
+          "options": [
+            "Durch Vorgaben, welche Themen ausgeschlossen werden und wie auf kritische Sprache reagiert wird.",
+            "Indem man immer denselben Prompt nutzt.",
+            "Indem man die KI immer alles beantworten lässt.",
+            "Indem man keine Regeln vorgibt."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -39,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Sonderfall-Anweisung erstellen",
-          "taskDescription": "Du erstellst einen Tutor-Bot für Schüler. Der Bot soll bei Matheaufgaben helfen, aber nie die direkte Antwort verraten. Erstelle einen Priming-Prompt, der diese Regel festlegt und die KI anweist, stattdessen den nächsten logischen Schritt zu erklären.",
-          "evaluationGuidance": "1. Weist der Prompt der KI klar die Rolle eines Tutors zu? 2. Enthält er eine explizite Regel, die direkte Antworten verbietet? 3. Fordert der Prompt die KI auf, stattdessen Hilfestellungen oder den nächsten Schritt zu erklären? 4. Ist der Prompt klar und für eine langfristige Interaktion geeignet?",
-          "pointsAwarded": 12,
+          "title": "Stil-Primer kreativ einsetzen",
+          "taskDescription": "Formuliere einen Priming-Prompt, der die KI dazu bringt, alle Antworten wie ein höflicher britischer Butler zu geben.",
+          "evaluationGuidance": "Prompt muss explizit Rolle, Ton und Sprache vorgeben.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt-Format vorgeben",
+          "taskDescription": "Schreibe einen Priming-Prompt, mit dem die KI als Bewerbungstrainer jedes Feedback in einem festen Dreisatz (Lob, Kritik, Vorschlag) gibt.",
+          "evaluationGuidance": "Antwort soll feste Feedback-Struktur enthalten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Die Grenzen von Priming",
-          "question": "Was ist eine mögliche Herausforderung bei der Verwendung von Priming-Prompts in sehr langen Konversationen?",
-          "expectedAnswer": "In sehr langen Konversationen kann die KI das ursprüngliche Priming 'vergessen', da ihr Kontextfenster begrenzt ist. Die Antworten können dann allmählich vom vorgegebenen Stil oder den Regeln abweichen, weshalb ein erneutes Priming notwendig werden kann.",
+          "title": "Sinn von Priming",
+          "question": "Warum ist Priming gerade bei sensiblen Themen (z.B. toxische Sprache, Datenschutz) besonders wichtig? Gib ein Beispiel.",
+          "expectedAnswer": "So kann die KI gefährliche, unpassende oder sensible Inhalte blockieren – etwa mit dem Prompt: 'Wenn toxische Sprache erkannt wird, bitte höflich um Neuformulierung.'",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Schlechten Prompt analysieren",
+          "taskDescription": "Ein Prompt: 'Gib immer einfach die Lösung.' Was ist daran kritisch und wie könnte ein besserer Prompt lauten?",
+          "evaluationGuidance": "Antwort soll Risiken (z.B. Cheating, falsche Nutzung) und Verbesserungsvorschlag nennen.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -69,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Anwendungsfälle",
-          "question": "Welcher Anwendungsfall ist KEIN typisches Beispiel für Prompt Priming?",
+          "title": "Quiz: Priming",
+          "question": "Was solltest du bei langen Chats mit viel Kontext beachten?",
           "options": [
-            "Den Stil einer Konversation festlegen (z.B. Piratensprache).",
-            "Eine einmalige Frage zur Hauptstadt von Frankreich beantworten.",
-            "Die KI anweisen, bei sensiblen Themen keine Meinung zu äußern.",
-            "Die KI bitten, Feedback immer in einer bestimmten Tabellenform zu geben."
+            "Regelmäßig neu primen, damit die Regeln erhalten bleiben.",
+            "Priming nur am Anfang reicht immer.",
+            "Sicherheit ist nicht nötig.",
+            "Antworten immer gleich lassen."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Priming",
+          "question": "Nenne zwei Tipps, um Priming-Prompts effektiver zu machen.",
+          "expectedAnswer": "Klare Rollen, feste Struktur, spezifische Regeln, kurze und eindeutige Formulierungen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -88,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexes Priming: Sicherheit + Stil + Feedback",
+          "taskDescription": "Erstelle einen Priming-Prompt für eine Chatbot-Lernplattform, bei der die KI immer freundlich, sicher (keine toxischen Inhalte), motivierend und im festen Feedback-Format antwortet.",
+          "evaluationGuidance": "Prompt muss alle genannten Elemente kombinieren.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du Priming künftig beim Entwickeln oder Nutzen von Chatbots einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

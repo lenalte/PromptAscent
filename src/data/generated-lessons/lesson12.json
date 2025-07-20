@@ -1,8 +1,7 @@
-
 {
   "id": "lesson12",
-  "title": "LLM-Einschränkungen: Wenn Modelle und Chatbots Fehler machen",
-  "description": "Verstehe die häufigsten Einschränkungen und Fallstricke von LLMs.",
+  "title": "Grenzen und Schwächen von LLMs",
+  "description": "Verstehe, wo KI-Modelle an ihre Grenzen stoßen und wie du typische Fehler und Probleme erkennst und vermeidest.",
   "stages": [
     {
       "id": "stage1",
@@ -11,9 +10,40 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Halluzinationen (Erfinden von Informationen)",
-          "content": "Eine der seltsamsten Eigenschaften von LLMs ist, dass sie oft Informationen erfinden, wenn sie die Antwort nicht wissen. Anstatt zuzugeben, dass sie etwas nicht wissen, erzeugen sie überzeugend klingende, aber falsche Fakten. Dies wird als 'Halluzination' bezeichnet.",
+          "title": "LLMs: Stärken und Schwächen",
+          "content": "LLMs sind mächtige Textgeneratoren – aber sie machen Fehler: Sie halluzinieren Fakten, rechnen schlecht, erinnern sich nicht an frühere Chats und können Vorurteile haben.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Wichtige Begriffe",
+          "content": "Halluzination = KI denkt sich Dinge aus. Bias = KI spiegelt Vorurteile aus Trainingsdaten wider. Prompt Hacking = Nutzer tricksen die KI zu unerwünschten Outputs.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Limitations-Quiz",
+          "question": "Was ist eine typische Schwäche von LLMs?",
+          "options": [
+            "Sie können aktuelle, reale Ereignisse immer korrekt beschreiben.",
+            "Sie erinnern sich an alle früheren Chats.",
+            "Sie halluzinieren manchmal oder machen Fehler bei Mathe.",
+            "Sie liefern immer perfekte Fakten."
+          ],
+          "correctOptionIndex": 2,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Beispiel für einen KI-Fehler",
+          "question": "Beschreibe mit eigenen Worten ein Beispiel, wie eine KI einen Fakt „halluzinieren“ kann.",
+          "expectedAnswer": "Wenn die KI nach einem Ereignis fragt, das nicht im Training war, erfindet sie Details oder nennt falsche Namen.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -22,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Wie umgeht man Schwächen?",
+          "content": "Immer kritisch prüfen! Kombiniere LLMs mit anderen Tools, und frage gezielt nach Quellen, wenn es wichtig ist.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Bias erkennen",
-          "question": "Gib ein Beispiel dafür, wie sich ein Bias (Voreingenommenheit) aus den Trainingsdaten in der Antwort einer KI widerspiegeln könnte.",
-          "expectedAnswer": "Ein Beispiel wäre, wenn die KI bei der Beschreibung eines 'typischen Programmierers' hauptsächlich männliche Eigenschaften nennt, weil die Trainingsdaten überwiegend aus Texten stammen, in denen Männer als Programmierer dargestellt werden. Dies würde geschlechtsspezifische Stereotypen reproduzieren.",
-          "pointsAwarded": 6,
+          "title": "Prompt für Faktencheck",
+          "question": "Formuliere einen Prompt, der die KI zwingt, ihre Antwort mit einer Quelle zu belegen.",
+          "expectedAnswer": "'Bitte beantworte die folgende Frage und gib eine glaubwürdige Quelle (z.B. wissenschaftlicher Artikel oder offizielle Website) an.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Mathe und LLMs",
+          "question": "Wie solltest du mit KI-Outputs umgehen, wenn es um komplexe Rechenaufgaben geht?",
+          "options": [
+            "Immer blind vertrauen.",
+            "Ergebnisse kritisch prüfen und ggf. nachrechnen.",
+            "Die KI beschimpfen.",
+            "Nur mit Chatbots rechnen lassen."
+          ],
+          "correctOptionIndex": 1,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -39,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Prompt Hacking vermeiden",
-          "taskDescription": "Ein Benutzer versucht, eine KI dazu zu bringen, eine Anleitung für eine schädliche Aktivität zu geben, indem er den Prompt trickreich formuliert (z.B. als Teil eines fiktiven Drehbuchs). Wie könnte ein guter Priming-Prompt für den Chatbot aussehen, der solche Versuche erkennt und ablehnt?",
-          "evaluationGuidance": "1. Enthält der Priming-Prompt eine klare Regel, die die Generierung von schädlichen oder unethischen Inhalten verbietet? 2. Weist der Prompt die KI an, auch auf Versuche zu achten, diese Regel zu umgehen? 3. Ist die vorgegebene Antwort im Falle eines Regelverstoßes eine höfliche, aber bestimmte Ablehnung?",
-          "pointsAwarded": 12,
+          "title": "Fehlerhafte KI-Ausgabe erkennen",
+          "taskDescription": "Schreibe einen Prompt, bei dem die KI mit hoher Wahrscheinlichkeit halluziniert oder einen Fehler macht. Erkläre, warum das passiert.",
+          "evaluationGuidance": "Prompt muss einen typischen Schwachpunkt triggern (z.B. nach zukünftigen Ereignissen fragen), Begründung nennen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Bias sichtbar machen",
+          "taskDescription": "Erstelle einen Prompt, der das Risiko von Vorurteilen (Bias) demonstriert. Erkläre, warum Bias in KI ein Problem ist.",
+          "evaluationGuidance": "Prompt soll Bias zeigen, Begründung muss Vorurteil/Quelle benennen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Grenzen des Gedächtnisses",
-          "question": "Warum ist die Aussage 'Jedes Mal, wenn du mit einem LLM interagierst, beginnt es mit einem leeren Blatt' eine wichtige Einschränkung, die man beachten sollte?",
-          "expectedAnswer": "Es ist eine wichtige Einschränkung, weil es bedeutet, dass das LLM keine persönlichen Erfahrungen oder Erinnerungen an frühere Gespräche hat. Man muss den gesamten relevanten Kontext in jeder neuen Sitzung erneut bereitstellen, was bei längeren Projekten oder Diskussionen umständlich sein kann.",
+          "title": "Reflexion: Vertrauen in KI",
+          "question": "Warum sollte man KI-Antworten nie ungeprüft übernehmen? Wann ist ein Faktencheck besonders wichtig?",
+          "expectedAnswer": "Weil KIs Fehler machen können – besonders bei sensiblen oder wichtigen Entscheidungen sollte man kritisch sein.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Schwachstellen gezielt umgehen",
+          "taskDescription": "Analysiere: Wie kannst du LLM-Fehler vermeiden, wenn du sie für Recherche oder wichtige Aufgaben nutzt?",
+          "evaluationGuidance": "Antwort soll auf Kontrolle, Quellenprüfung und Kombination mit anderen Tools eingehen.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -69,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Kernschwäche",
-          "question": "Welche der folgenden Aufgaben ist für ein LLM typischerweise am schwierigsten?",
+          "title": "Quiz: KI-Grenzen",
+          "question": "Was gehört NICHT zu typischen Schwächen einer KI?",
           "options": [
-            "Einen kurzen Text zusammenfassen.",
-            "Eine mehrstufige mathematische Textaufgabe lösen.",
-            "Einen Satz in eine andere Sprache übersetzen.",
-            "Ein Gedicht im Stil eines berühmten Autors schreiben."
+            "Halluzinationen",
+            "Vorurteile/Bias",
+            "Allwissende Live-Daten",
+            "Prompt Hacking"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 2,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: KI-Limitations",
+          "question": "Nenne zwei Maßnahmen, wie man typische KI-Fehler erkennt oder vermeidet.",
+          "expectedAnswer": "Immer kritisch hinterfragen, Fakten prüfen, zusätzliche Tools/Quellen nutzen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -88,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexes Fehler-Management",
+          "taskDescription": "Beschreibe ein Szenario, in dem ein LLM mehrere typische Fehler (z.B. Halluzination, Bias, Rechenfehler) macht. Erstelle daraufhin einen Prompt und eine Strategie, um diese Fehler abzufangen oder zu verhindern.",
+          "evaluationGuidance": "Szenario + Prompt + Maßnahmen gegen Fehler, Bias und Halluzination.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du künftig mit den Schwächen und Grenzen von LLMs umgehen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

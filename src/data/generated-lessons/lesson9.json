@@ -1,8 +1,7 @@
-
 {
   "id": "lesson9",
-  "title": "Prompt Priming: Kontext für die KI setzen",
-  "description": "Verstehe Prompt Priming und wie man den Kontext für eine KI richtig setzt.",
+  "title": "Prompt Priming: Kontext für KI setzen",
+  "description": "Lerne, wie du mit gezielten Priming-Prompts den Stil, das Verhalten und die Sicherheit der KI steuerst.",
   "stages": [
     {
       "id": "stage1",
@@ -12,8 +11,39 @@
           "type": "informationalSnippet",
           "id": "s1_info1",
           "title": "Was ist Prompt Priming?",
-          "content": "Prompt Priming (auch Inception Prompting genannt) ist eine Technik, bei der man zu Beginn einer Konversation der KI eine grundlegende Anweisung oder einen Rahmen gibt. Dies 'primed' (oder 'stimmt') die KI darauf ein, ihre nachfolgenden Antworten in einem bestimmten Stil, Ton oder Format zu geben.",
+          "content": "Priming bedeutet, die KI mit einem einleitenden Prompt gezielt auf Verhalten, Stil oder Format vorzubereiten. So kannst du Antworten besser steuern.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Wozu dient Priming?",
+          "content": "Mit Priming kannst du z.B. die Tonalität, Struktur, Sicherheit (z.B. keine verbotenen Antworten) und den Umgang mit Spezialfällen festlegen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Priming erkennen",
+          "question": "Was ist eine typische Anwendung von Prompt Priming?",
+          "options": [
+            "Stil und Ton für den KI-Chat festlegen.",
+            "KI immer schweigen lassen.",
+            "KI für Zahlenspiele nutzen.",
+            "Zufallsergebnisse garantieren."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Priming",
+          "question": "Erkläre mit eigenen Worten, wie Priming die KI beeinflusst.",
+          "expectedAnswer": "Priming gibt der KI einen Rahmen (Stil, Ton, Verhalten), sodass sie gezielt und konsistent antwortet.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
       ]
     },
@@ -22,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Priming in der Praxis",
+          "content": "Priming kann z.B. die KI dazu bringen, wie ein Pirat, Arzt oder Marketingberater zu sprechen, oder Antworten immer nach einem bestimmten Muster zu formatieren.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Stil-Priming anwenden",
-          "question": "Du möchtest, dass eine KI dir als persönlicher Fitnesstrainer antwortet. Schreibe einen Priming-Prompt, der die KI anweist, immer motivierend und ermutigend zu sein.",
-          "expectedAnswer": "Ein guter Priming-Prompt wäre: 'Du bist jetzt mein persönlicher Fitnesstrainer. Deine Aufgabe ist es, mich zu motivieren. Antworte immer positiv und ermutigend, egal was ich frage.'",
-          "pointsAwarded": 6,
+          "title": "Prompt-Priming umsetzen",
+          "question": "Formuliere einen Priming-Prompt, der die KI zu einem höflichen Kundenservice-Chat macht.",
+          "expectedAnswer": "Zum Beispiel: 'Du bist ein höflicher Kundenservice-Chat. Antworte stets freundlich, verständlich und hilfsbereit.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Priming und Sicherheit",
+          "question": "Wie kann Priming helfen, KI-Ausgaben sicherer zu machen?",
+          "options": [
+            "Indem bestimmte Verhaltensregeln oder Einschränkungen vorgegeben werden.",
+            "Indem die KI keine Anweisungen bekommt.",
+            "Indem alle Regeln ignoriert werden.",
+            "Indem immer Ja geantwortet wird."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -39,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Sonderfall-Anweisung erstellen",
-          "taskDescription": "Du erstellst einen Tutor-Bot für Schüler. Der Bot soll bei Matheaufgaben helfen, aber nie die direkte Antwort verraten. Erstelle einen Priming-Prompt, der diese Regel festlegt und die KI anweist, stattdessen den nächsten logischen Schritt zu erklären.",
-          "evaluationGuidance": "1. Weist der Prompt der KI klar die Rolle eines Tutors zu? 2. Enthält er eine explizite Regel, die direkte Antworten verbietet? 3. Fordert der Prompt die KI auf, stattdessen Hilfestellungen oder den nächsten Schritt zu erklären? 4. Ist der Prompt klar und für eine langfristige Interaktion geeignet?",
-          "pointsAwarded": 12,
+          "title": "Stil-Prompting (Piratenstil)",
+          "taskDescription": "Schreibe einen Priming-Prompt, mit dem die KI dauerhaft im Stil eines Piraten spricht.",
+          "evaluationGuidance": "Prompt muss explizit Rolle, Stil und Sprachmuster vorgeben.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt mit Formatvorgabe",
+          "taskDescription": "Formuliere einen Priming-Prompt, bei dem die KI jeden Input als Schreibtrainer bewertet und dabei ein festes Bewertungsformat nutzt.",
+          "evaluationGuidance": "Prompt muss explizit Bewertungsformat und Feedbackstruktur enthalten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Die Grenzen von Priming",
-          "question": "Was ist eine mögliche Herausforderung bei der Verwendung von Priming-Prompts in sehr langen Konversationen?",
-          "expectedAnswer": "In sehr langen Konversationen kann die KI das ursprüngliche Priming 'vergessen', da ihr Kontextfenster begrenzt ist. Die Antworten können dann allmählich vom vorgegebenen Stil oder den Regeln abweichen, weshalb ein erneutes Priming notwendig werden kann.",
+          "title": "Sinn von Priming",
+          "question": "Warum ist es sinnvoll, KI mit Priming-Prompts auf Spezialfälle oder sensible Themen vorzubereiten? Nenne ein Beispiel.",
+          "expectedAnswer": "So können unerwünschte oder gefährliche Ausgaben verhindert werden (z.B. keine Antwort auf illegale Anfragen).",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Sicherheit",
+          "taskDescription": "Analysiere folgenden Priming-Prompt: 'Wenn jemand toxische Sprache nutzt, antworte mit: „Diese Sprache ist nicht erlaubt. Bitte formuliere neu.“' Welche Vorteile hat dieser Ansatz?",
+          "evaluationGuidance": "Antwort soll auf Sicherheit, Deeskalation und Nutzerführung eingehen.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -69,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Anwendungsfälle",
-          "question": "Welcher Anwendungsfall ist KEIN typisches Beispiel für Prompt Priming?",
+          "title": "Wiederholung: Priming",
+          "question": "Was solltest du bei langen KI-Chats beachten?",
           "options": [
-            "Den Stil einer Konversation festlegen (z.B. Piratensprache).",
-            "Eine einmalige Frage zur Hauptstadt von Frankreich beantworten.",
-            "Die KI anweisen, bei sensiblen Themen keine Meinung zu äußern.",
-            "Die KI bitten, Feedback immer in einer bestimmten Tabellenform zu geben."
+            "Regelmäßig re-primen, falls die KI den ursprünglichen Stil oder Regeln „vergisst“. ",
+            "Priming immer ignorieren.",
+            "Priming nur bei Bildgeneratoren nutzen.",
+            "Immer nur einen Satz pro Prompt schreiben."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Priming",
+          "question": "Nenne zwei Best Practices für Priming-Prompts.",
+          "expectedAnswer": "Klare Regeln, explizite Rollen, gewünschte Formatvorgaben, Sicherheitshinweise.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -88,11 +167,20 @@
       "title": "Stage 6: Meistern",
       "items": [
         {
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexes Priming: Sicherheit + Format",
+          "taskDescription": "Erstelle einen Priming-Prompt für eine Lernplattform, die sichere, sachliche und stets motivierende Antworten für Schüler garantieren soll. Das Feedbackformat soll aus Bewertung, Begründung und Verbesserungsvorschlag bestehen.",
+          "evaluationGuidance": "Prompt muss Sicherheit, Motivationsstil und Feedbackstruktur verbinden.",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du Priming-Techniken künftig beim Prompting nutzen? Wo siehst du Vorteile?",
+          "expectedAnswer": "Persönliche Reflexion des Nutzers.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

@@ -1,8 +1,7 @@
-
 {
   "id": "lesson17",
-  "title": "Multiple-Choice-Fragen",
-  "description": "Lerne Techniken, um die Leistung von LLMs bei der Lösung von Multiple-Choice-Fragen zu verbessern.",
+  "title": "Multiple Choice Aufgaben – KI als Problemlöser",
+  "description": "Lerne, wie KI Multiple Choice Fragen durch Schritt-für-Schritt-Denken, Kontext und gezielte Prompts besser löst.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Der 'Magische Satz'",
-          "content": "Einfache Prompts können bei komplexen Fragen versagen. Die Anweisung 'Erklären wir es Schritt für Schritt' (Chain-of-Thought Prompting) veranlasst die KI, ihren Denkprozess offenzulegen, was oft zu genaueren Antworten führt.",
+          "title": "Was ist Chain-of-Thought-Prompting?",
+          "content": "KIs beantworten Multiple Choice Fragen besser, wenn sie aufgefordert werden, Schritt für Schritt zu begründen ('Let's explain step by step').",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Kontext hilft!",
+          "content": "Je mehr Hintergrundwissen oder Formeln der KI mitgegeben wird, desto besser kann sie auch komplexe Fragen lösen.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Chain-of-Thought Prompting",
-          "question": "Was bewirkt die Anweisung 'Erklären wir es Schritt für Schritt' bei einer KI?",
+          "title": "Quiz: MC-Aufgaben",
+          "question": "Was verbessert typischerweise die Qualität der KI-Antwort auf Multiple Choice?",
           "options": [
-            "Sie verkürzt die Antwort der KI.",
-            "Sie veranlasst die KI, ihre logischen Schritte zur Lösungsfindung zu zeigen.",
-            "Sie stellt sicher, dass die KI immer falsch antwortet.",
-            "Sie ändert die Schriftart der Antwort."
+            "Prompt mit 'Erkläre Schritt für Schritt'",
+            "Nur die Aufgabe kopieren",
+            "Antwort raten lassen",
+            "Alle Antwortmöglichkeiten streichen"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Schritt-für-Schritt",
+          "question": "Erkläre in eigenen Worten, warum Chain-of-Thought-Prompting der KI hilft.",
+          "expectedAnswer": "Weil die KI so gezwungen ist, logisch und nachvollziehbar zu argumentieren.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Schritt-für-Schritt-Anweisung anwenden",
-          "question": "Du hast die Frage: 'Ein Zug fährt um 14:00 Uhr in Stadt A ab und kommt um 17:30 Uhr in Stadt B an. Die Entfernung beträgt 210 km. Was ist die Durchschnittsgeschwindigkeit?' Wie würdest du den Prompt formulieren, um eine schrittweise Lösung zu erhalten?",
-          "expectedAnswer": "Man sollte die Frage stellen und am Ende hinzufügen: 'Erklären wir es Schritt für Schritt.' oder 'Lass uns das Schritt für Schritt durchgehen.'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Prompt-Variationen",
+          "content": "Du kannst Items umsortieren, Fragen umformulieren oder Kontext ergänzen, um die KI zu besseren Ergebnissen zu führen.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Kontext hinzufügen",
-          "question": "Bei einer komplexen Physikfrage zur Berechnung der Fallzeit eines Objekts könnte die KI die Luftreibung ignorieren. Welchen zusätzlichen Kontext könntest du im Prompt geben, um eine genauere Antwort zu erhalten?",
-          "expectedAnswer": "Man könnte die relevante physikalische Formel direkt im Prompt erwähnen, z.B. 'Bitte löse das folgende Problem unter Verwendung der Formel für den freien Fall unter Berücksichtigung der Luftreibung.'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt für Schritt-für-Schritt",
+          "question": "Formuliere einen Prompt, der eine Multiple Choice Frage inklusive Schritt-für-Schritt-Erklärung löst.",
+          "expectedAnswer": "'Löse die folgende Multiple-Choice-Aufgabe und erkläre jeden Schritt ausführlich.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Kontext nutzen",
+          "question": "Was ist ein gutes Beispiel für hilfreichen Kontext in einem KI-Prompt?",
+          "options": [
+            "Wichtige Formeln dazuschreiben",
+            "Alles offen lassen",
+            "Unklare Anweisungen",
+            "Antwortmöglichkeiten weglassen"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -63,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Frage umformulieren",
-          "taskDescription": "Du hast eine Multiple-Choice-Frage, bei der du unsicher bist, welche Antwort am besten passt. Anstatt nur nach der richtigen Antwort zu fragen, formuliere den Prompt so um, dass die KI jede einzelne Antwortoption bewerten und erklären soll, warum sie richtig oder falsch ist.",
-          "evaluationGuidance": "1. Ist der Prompt so umformuliert, dass er nach einer Bewertung jeder einzelnen Option fragt? 2. Fordert der Prompt eine Begründung für jede Bewertung? 3. Hilft dieser Ansatz, ein tieferes Verständnis für die Frage und die Antwortmöglichkeiten zu entwickeln?",
-          "pointsAwarded": 12,
+          "title": "MC-Fragen verbessern",
+          "taskDescription": "Formuliere einen Prompt, der die Antwortmöglichkeiten neu sortiert oder jede Möglichkeit auf ihre Wirkung hin überprüft.",
+          "evaluationGuidance": "Prompt muss Sortierung oder Bewertung der Optionen explizit verlangen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Fehlerquellen aufdecken",
+          "taskDescription": "Schreibe einen Prompt, der eine KI bittet, typische Fehlerquellen bei Multiple Choice zu erklären.",
+          "evaluationGuidance": "Prompt muss auf Fehleranalyse und MC-Format eingehen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -78,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Wert des Denkprozesses",
-          "question": "Warum ist es wertvoller, die KI ihren Denkprozess zeigen zu lassen, anstatt nur die endgültige Antwort auf eine Multiple-Choice-Frage zu erhalten?",
-          "expectedAnswer": "Den Denkprozess zu sehen, hilft zu verstehen, wie die KI zu ihrer Schlussfolgerung kommt. Man kann logische Fehler erkennen, die Argumentation nachvollziehen und sicherstellen, dass die Antwort nicht nur zufällig richtig ist, sondern auf einer korrekten Herleitung basiert.",
+          "title": "Reflexion: Systematisches Lösen",
+          "question": "Warum ist es hilfreich, bei schwierigen Aufgaben systematisch und in mehreren Schritten vorzugehen?",
+          "expectedAnswer": "Man übersieht weniger, Fehler werden sichtbar und das Ergebnis ist besser nachvollziehbar.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Mathe-Kontext",
+          "taskDescription": "Schreibe einen Prompt, der explizit fordert, dass bei Mathe-Aufgaben nur der Lösungsweg (z.B. Formel) und kein Ergebnis ausgegeben wird.",
+          "evaluationGuidance": "Prompt muss Rechenweg oder Formel verlangen, aber keine Zahl.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -93,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Verbesserungstechniken",
-          "question": "Welche der folgenden Techniken verbessert die Antwortqualität bei Multiple-Choice-Fragen NICHT?",
+          "title": "Quiz: Chain-of-Thought",
+          "question": "Was bewirkt die Phrase 'Let’s explain step by step' im Prompt?",
           "options": [
-            "Den Denkprozess schrittweise erklären lassen.",
-            "Die Frage so kurz wie möglich halten und jeglichen Kontext entfernen.",
-            "Die Antwortmöglichkeiten neu anordnen.",
-            "Zusätzliche relevante Formeln oder Informationen bereitstellen."
+            "Die KI erläutert ihren Denkprozess ausführlich",
+            "Die KI überspringt Teile der Aufgabe",
+            "Die KI ignoriert die Frage",
+            "Die KI antwortet kürzer als sonst"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: MC-Prompt",
+          "question": "Nenne eine Strategie, wie du bei schwierigen Multiple Choice Aufgaben mit KI bessere Ergebnisse erzielst.",
+          "expectedAnswer": "Den Prompt mit 'Schritt für Schritt erklären' oder mit Zusatzinfos/Begründungen ergänzen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -113,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Komplexe Analyse-Anweisung",
-          "taskDescription": "Du hast eine komplexe Multiple-Choice-Frage aus einem juristischen Text, bei der es auf Nuancen ankommt. Erstelle einen Prompt, der die KI anweist, als Rechtsexperte zu agieren. Der Prompt soll die KI anleiten, nicht nur die beste Antwort auszuwählen, sondern auch zu erklären, warum die anderen Optionen weniger zutreffend sind, und dabei auf spezifische Paragraphen (fiktiv, z.B. §123) aus einem angenommenen Gesetzestext zu verweisen.",
-          "evaluationGuidance": "1. Weist der Prompt der KI eine passende Expertenrolle zu (Rechtsexperte)? 2. Fordert der Prompt eine Analyse aller Antwortoptionen? 3. Beinhaltet die Anweisung den Verweis auf fiktive Belege (Paragraphen)? 4. Ist der Prompt so gestaltet, dass er zu einer tiefgehenden und gut begründeten Analyse führt?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexe MC-Analyse",
+          "taskDescription": "Erstelle einen Prompt, der eine sehr schwierige Multiple Choice Aufgabe inklusive Rechenweg, Fehlerquellen und Bewertung aller Antwortmöglichkeiten behandelt.",
+          "evaluationGuidance": "Prompt muss Rechenweg, Fehleranalyse und Bewertung aller Optionen anfordern.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du Chain-of-Thought-Prompting künftig bei MC-Aufgaben einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

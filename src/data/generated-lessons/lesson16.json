@@ -1,8 +1,7 @@
-
 {
   "id": "lesson16",
-  "title": "Tabellengenerierung",
-  "description": "Lerne, wie du mit KI unstrukturierte Daten in klare Tabellen umwandelst.",
+  "title": "Tabellengenerierung mit KI",
+  "description": "Erfahre, wie KI-Tools Informationen aus Texten in strukturierte Tabellen verwandeln und so Überblick und Vergleich ermöglichen.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was können KI-Tabellen?",
-          "content": "KI kann wichtige Zahlen und Fakten aus langen Texten wie Berichten oder Artikeln extrahieren und sie in übersichtlichen, strukturierten Tabellen zusammenfassen. Dies erleichtert die Analyse und Weiterverwendung der Daten.",
+          "title": "Tabellen – Überblick",
+          "content": "Mit Prompts wie 'Erstelle eine Tabelle aus diesem Text' kannst du Geschäftsberichte, Fakten und Vergleiche strukturieren.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Typische Anwendungen",
+          "content": "Tabellen helfen, Zahlen, Fakten und Entwicklungen schnell zu erfassen – zum Beispiel für Präsentationen oder Analysen.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Hauptvorteil",
-          "question": "Was ist der Hauptvorteil bei der Erstellung von Tabellen mit KI?",
+          "title": "Tabellen – Einsatzbereiche",
+          "question": "Was ist KEIN typischer Anwendungsfall für KI-generierte Tabellen?",
           "options": [
-            "Die KI kann nur Tabellen mit maximal 3 Spalten erstellen.",
-            "Die Umwandlung von unstrukturiertem Text in ein klares, organisiertes Format zur einfachen Analyse.",
-            "Die KI ändert die Originaldaten, um sie interessanter zu machen.",
-            "Die Erstellung von Tabellen dauert mit KI länger als manuell."
+            "Vergleich von Produkten",
+            "Übersicht über Geschäftszahlen",
+            "Musik komponieren",
+            "Forschungsergebnisse zusammenfassen"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 2,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Tabelle",
+          "question": "Warum sind Tabellen als KI-Output nützlich?",
+          "expectedAnswer": "Weil sie komplexe Informationen übersichtlich und vergleichbar machen.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Prompting für Tabellen",
+          "content": "Mit klaren Prompts kannst du den KI-Output in Spalten, Reihen oder Kategorien ordnen lassen.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Einfache Tabelle erstellen",
-          "question": "Du hast folgenden Text: 'Unser Team besteht aus drei Mitgliedern: Anna (Marketing), Ben (Entwickler) und Clara (Design)'. Schreibe einen Prompt, der die KI anweist, daraus eine Tabelle mit den Spalten 'Name' und 'Abteilung' zu erstellen.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Erstelle eine Tabelle mit den Spalten Name und Abteilung aus dem folgenden Text: Unser Team besteht aus drei Mitgliedern: Anna (Marketing), Ben (Entwickler) und Clara (Design).'",
-          "pointsAwarded": 6,
+          "title": "Eigener Tabellenprompt",
+          "question": "Schreibe einen Prompt, der einen Forschungsbericht zu Kundenzufriedenheit in eine Tabelle mit mindestens drei Spalten bringt.",
+          "expectedAnswer": "Zum Beispiel: 'Erstelle eine Tabelle aus dem folgenden Bericht mit den Spalten Jahr, Bewertung, Hauptgrund.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Tabellen gestalten",
+          "question": "Wie kannst du eine KI bitten, eine Tabelle noch übersichtlicher zu machen?",
+          "options": [
+            "Spalten sortieren, Farbcode anfordern, Symbole für Veränderungen nutzen",
+            "Texte ganz weglassen",
+            "Tabellen als Meme generieren",
+            "Zeilen verstecken"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Tabelle mit spezifischem Format",
-          "taskDescription": "Du hast einen Text mit Verkaufszahlen für drei Produkte: Produkt A (150 Einheiten), Produkt B (250 Einheiten), Produkt C (80 Einheiten). Schreibe einen Prompt, der die KI anweist, eine Tabelle zu erstellen, die nicht nur die Verkaufszahlen zeigt, sondern auch eine dritte Spalte 'Status' enthält. Der Status soll 'Gut verkauft' sein, wenn mehr als 100 Einheiten verkauft wurden, und 'Nachbestellen' sonst.",
-          "evaluationGuidance": "1. Fordert der Prompt die Erstellung einer Tabelle mit drei Spalten an? 2. Sind die Spalten korrekt benannt (Produkt, Verkaufszahlen, Status)? 3. Enthält der Prompt die logische Regel für die Status-Spalte (basierend auf der Verkaufszahl)? 4. Ist der Prompt klar und für die KI leicht umsetzbar?",
-          "pointsAwarded": 12,
+          "title": "Vergleichstabellen-Prompt",
+          "taskDescription": "Schreibe einen Prompt, der eine KI eine Vergleichstabelle zwischen drei KI-Tools (z.B. ChatGPT, DALL-E, Copilot) erstellen lässt.",
+          "evaluationGuidance": "Prompt muss Tools nennen und Vergleichskriterien verlangen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Daten umstrukturieren",
+          "taskDescription": "Formuliere einen Prompt, mit dem aus einer Liste von Umsatzzahlen pro Quartal eine Wachstumstabelle mit Prozentangaben erstellt wird.",
+          "evaluationGuidance": "Prompt muss Listeninput und gewünschtes Ergebnis (Prozent) klar machen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -69,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Datenüberprüfung",
-          "question": "Warum ist es wichtig, die von einer KI erstellten Tabellen immer mit dem Originaltext zu vergleichen, besonders bei Zahlen und Fakten?",
-          "expectedAnswer": "Es ist wichtig, weil die KI manchmal Zahlen falsch interpretieren oder extrahieren kann (Halluzination). Eine manuelle Überprüfung stellt sicher, dass die Daten in der Tabelle korrekt sind und keine Fehler aus dem Generierungsprozess enthalten.",
+          "title": "Reflexion: Fehlerquellen",
+          "question": "Warum solltest du KI-Tabellen immer gegen das Original überprüfen? Nenne ein Beispiel für typische Fehler.",
+          "expectedAnswer": "Zahlen können falsch übertragen oder verdreht werden, z.B. bei Währungs- oder Prozentangaben.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Lesbarkeit",
+          "taskDescription": "Gib ein Beispiel für einen Tabellen-Prompt, der zu unübersichtlichen Ergebnissen führt, und verbessere ihn.",
+          "evaluationGuidance": "Beispiel für schlechten und verbesserten Prompt mit Erklärung.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -84,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Anwendungsbereiche",
-          "question": "Für welche der folgenden Aufgaben ist die Tabellengenerierung durch KI NICHT ideal?",
+          "title": "Quiz: Tabellen",
+          "question": "Wie sollte ein guter Tabellenprompt formuliert sein?",
           "options": [
-            "Zusammenfassen von Geschäftszahlen aus einem Bericht.",
-            "Erstellen einer Vergleichstabelle für Produktdaten.",
-            "Schreiben eines kreativen Gedichts.",
-            "Umwandeln von unstrukturierten Notizen in eine Aufgabenliste."
+            "Klar, mit Spaltenüberschriften und ggf. Formatwunsch",
+            "So allgemein wie möglich",
+            "Mit Zufallszahlen füllen",
+            "Ohne Kontext"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Tabellen",
+          "question": "Nenne eine Best Practice, um von KI bessere Tabellen zu erhalten.",
+          "expectedAnswer": "Spaltenüberschriften vorgeben, Wunsch nach Sortierung oder Farbcode direkt nennen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -104,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Komplexe Tabelle erstellen",
-          "taskDescription": "Du hast einen langen Projektbericht. Erstelle einen Prompt, der die KI anweist, eine Tabelle zu generieren, die die folgenden Informationen extrahiert: 1. Projektmeilenstein, 2. Verantwortliche Person, 3. Fälligkeitsdatum, 4. Status (Abgeschlossen/In Arbeit). Der Prompt soll auch anweisen, die Tabelle nach dem Fälligkeitsdatum zu sortieren.",
-          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung einer Tabelle mit vier spezifischen Spalten an? 2. Beinhaltet der Prompt die Anweisung, die Tabelle nach dem Fälligkeitsdatum zu sortieren? 3. Ist der Prompt so formuliert, dass die KI alle relevanten Daten aus einem längeren Text extrahieren kann? 4. Ist der Prompt präzise und für einen professionellen Kontext geeignet?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexe Tabellengenerierung",
+          "taskDescription": "Erstelle einen Prompt, der die KI aus einem langen Geschäftsbericht eine Tabelle mit den wichtigsten KPIs, Vergleich zu Vorjahr und einer zusätzlichen Spalte mit Handlungsempfehlung generieren lässt.",
+          "evaluationGuidance": "Prompt muss KPIs, Vergleich und Handlungsempfehlung fordern.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du KI-Tabellen künftig in Schule, Studium oder Beruf nutzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

@@ -1,8 +1,7 @@
-
 {
   "id": "lesson31",
-  "title": "Least-to-Most-Prompting",
-  "description": "Lerne, wie du komplexe Probleme löst, indem du sie in einfachere, aufeinander aufbauende Schritte zerlegst.",
+  "title": "Least-to-Most Prompting",
+  "description": "Lerne, wie du Probleme in kleine, aufeinander aufbauende Teilprobleme zerlegst und sequenziell löst.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was ist Least-to-Most (LtM) Prompting?",
-          "content": "Least-to-Most (LtM) Prompting ist eine fortgeschrittene Technik, die komplexe Probleme in eine Reihe von einfacheren Teilproblemen zerlegt. Diese Teilprobleme werden dann nacheinander gelöst, wobei die Lösung eines Schrittes als Grundlage für den nächsten dient.",
+          "title": "Was ist Least-to-Most?",
+          "content": "Hier wird ein Problem in möglichst einfache Teilprobleme zerlegt. Die KI löst diese nacheinander und nutzt die vorherigen Ergebnisse als Basis.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Unterschied zu CoT",
+          "content": "Bei Chain-of-Thought (CoT) sind die Schritte unabhängig. Bei Least-to-Most baut jeder Schritt auf dem Ergebnis des vorherigen auf.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Unterschied zu CoT",
-          "question": "Was ist der Hauptunterschied zwischen Least-to-Most- und Chain-of-Thought-Prompting?",
+          "title": "Vorteil von Least-to-Most",
+          "question": "Was ist ein zentraler Vorteil von Least-to-Most Prompting?",
           "options": [
-            "LtM verwendet keine Beispiele.",
-            "Bei LtM wird die Lösung eines vorherigen Teilproblems explizit in den nächsten Schritt eingebracht.",
-            "LtM ist nur für mathematische Aufgaben geeignet.",
-            "CoT ist immer genauer als LtM."
+            "Komplexe Aufgaben werden in kleine, lösbare Schritte zerlegt.",
+            "Alle Antworten kommen gleichzeitig.",
+            "Es funktioniert nur bei Mathe-Aufgaben.",
+            "Die KI benötigt keine Beispiele mehr."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Aufbauende Schritte",
+          "question": "Warum ist es wichtig, dass jeder Teilschritt auf dem vorherigen aufbaut?",
+          "expectedAnswer": "So bleibt die KI im Lösungsweg und macht weniger Fehler.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,12 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "LtM Beispiel",
+          "content": "Ein Kundenanliegen wird in Einzelfragen zerlegt (z.B. Rückgabefrist, Guthabenhöhe, Preise vergleichen).",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Problem zerlegen",
-          "question": "Du hast die komplexe Frage: 'Wie viel kostet es, eine Party für 50 Personen mit Pizza und Getränken zu organisieren?'. Liste die Teilprobleme auf, die du mit dem LtM-Ansatz lösen müsstest.",
-          "expectedAnswer": "Teilprobleme könnten sein: 1. Wie viele Pizzen braucht man für 50 Personen? 2. Was kostet eine Pizza? 3. Wie viele Getränke braucht man? 4. Was kostet ein Getränk? 5. Was sind die Gesamtkosten?",
-          "pointsAwarded": 7,
+          "title": "Prompt: Zerlegung",
+          "question": "Schreibe einen Prompt, der die KI bittet, ein Problem (z.B. 'Kann ich zwei T-Shirts kaufen?') in Teilprobleme zu zerlegen und dann die Einzelfragen nacheinander zu beantworten.",
+          "expectedAnswer": "Prompt muss beide Schritte klar auffordern: 1. Zerlegen, 2. Schrittweise beantworten.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Sequenzielle Lösung",
+          "question": "Was macht LtM gegenüber CoT einzigartig?",
+          "options": [
+            "Teillösungen werden immer in den nächsten Prompt übernommen.",
+            "Jeder Schritt ist unabhängig.",
+            "Prompt ist zufällig.",
+            "Nur für kreative Aufgaben geeignet."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -54,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "LtM für eine Planungsaufgabe",
-          "taskDescription": "Du planst eine Reiseroute von Berlin nach Rom mit dem Zug. Erstelle einen ersten Prompt für den LtM-Prozess, der die KI anweist, die möglichen Zugverbindungen und ihre Dauer aufzulisten. Formuliere dann einen zweiten Prompt, der diese Information als Kontext nutzt, um die günstigste Verbindung auszuwählen.",
-          "evaluationGuidance": "1. Hat der Benutzer zwei separate Prompts erstellt? 2. Zielt der erste Prompt darauf ab, die Teilprobleme (Verbindungen auflisten) zu lösen? 3. Nutzt der zweite Prompt die Ausgabe des ersten als Kontext? 4. Führt dieser zweistufige Prozess zu einer fundierteren Entscheidung?",
-          "pointsAwarded": 12,
+          "title": "Prompt: Wortverarbeitung",
+          "taskDescription": "Formuliere einen Prompt, bei dem die KI schrittweise aus mehreren Wörtern die letzten Buchstaben extrahiert und jeweils zusammenführt.",
+          "evaluationGuidance": "Prompt muss explizite Zwischenschritte und schrittweise Verkettung einfordern.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt: Komplexe Zerlegung",
+          "taskDescription": "Schreibe einen Prompt, bei dem eine lange Anweisung (z.B. 'Gehe dreimal nach links, dann zweimal springen') zuerst in Einzelschritte zerlegt und dann jeder Schritt einzeln abgearbeitet wird.",
+          "evaluationGuidance": "Prompt muss für jede Unteraufgabe ein separates Ergebnis verlangen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -69,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Vorteile von LtM",
-          "question": "Warum ist das schrittweise Lösen von Teilproblemen mit LtM oft erfolgreicher als der Versuch, eine komplexe Frage in einem einzigen Schritt zu beantworten?",
-          "expectedAnswer": "Das schrittweise Lösen reduziert die Komplexität jedes einzelnen Schrittes für die KI. Indem sie sich auf ein kleineres Teilproblem konzentriert und auf bereits gelösten Schritten aufbaut, sinkt die Fehlerwahrscheinlichkeit und die Genauigkeit der endgültigen Lösung steigt.",
+          "title": "Grenzen reflektieren",
+          "question": "Wann kann Least-to-Most Prompting Nachteile haben?",
+          "expectedAnswer": "Wenn zu viele Zwischenschritte nötig sind oder der Kontext verloren geht.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Fehleranalyse",
+          "taskDescription": "Beschreibe einen Prompt, bei dem die KI durch schlechte Zerlegung falsche Ergebnisse liefert, und verbessere ihn.",
+          "evaluationGuidance": "Prompt muss zur richtigen Zerlegung auffordern.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -84,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Hauptanwendungsfall",
-          "question": "Für welche Art von Aufgabe eignet sich LtM-Prompting besonders gut?",
+          "title": "Quiz: LtM",
+          "question": "Wann solltest du LtM einsetzen?",
           "options": [
-            "Das Schreiben eines kurzen Gedichts.",
-            "Die Übersetzung eines einzelnen Wortes.",
-            "Das Lösen einer Aufgabe, die aus mehreren voneinander abhängigen logischen Schritten besteht.",
-            "Die Generierung eines zufälligen Namens."
+            "Bei Aufgaben mit mehreren logisch aufbauenden Schritten",
+            "Immer bei kurzen Fakten",
+            "Nie bei Mathe",
+            "Nur bei kreativen Aufgaben"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice",
+          "question": "Wie erkennst du, ob dein Problem für LtM geeignet ist?",
+          "expectedAnswer": "Wenn sich das Problem klar in Einzelschritte unterteilen lässt und jeder Schritt auf dem vorherigen aufbaut.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -104,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen vollständigen LtM-Prozess simulieren",
-          "taskDescription": "Du möchtest eine komplexe Kundenanfrage beantworten. Die Anfrage lautet: 'Ich habe am 1. März ein T-Shirt für 30€ mit 40% Rabatt gekauft. Heute ist der 29. März und es gibt 50% Rabatt. Kann ich das Shirt zurückgeben und mit dem Guthaben zwei neue Hemden kaufen?'\n\nErstelle einen Prompt, der die KI anweist, zuerst die Teilprobleme zu identifizieren (z.B. Rückgabefrist prüfen, Guthaben berechnen, Kosten für zwei neue Hemden berechnen) und diese dann nacheinander zu lösen, um eine umfassende Antwort zu formulieren.",
-          "evaluationGuidance": "1. Fordert der Prompt die KI auf, das Problem in logische Teilprobleme zu zerlegen? 2. Werden die Teilprobleme korrekt identifiziert? 3. Weist der Prompt die KI an, die Teilprobleme nacheinander zu lösen und die Ergebnisse zu verwenden? 4. Ist der LtM-Ansatz für diese Art von Service-Anfrage geeignet?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer LtM-Prompt",
+          "taskDescription": "Formuliere einen Prompt zu einer mehrstufigen Aufgabe (z.B. komplexe Textumwandlung), die zuerst komplett zerlegt und dann Schritt für Schritt gelöst wird.",
+          "evaluationGuidance": "Prompt muss explizit alle Einzelschritte erzeugen und nacheinander abarbeiten.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie kannst du Least-to-Most für komplexe Aufgaben praktisch nutzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

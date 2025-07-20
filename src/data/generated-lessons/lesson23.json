@@ -1,8 +1,7 @@
-
 {
   "id": "lesson23",
-  "title": "Lernpartner",
-  "description": "Erfahre, wie du KI als effektiven Partner beim Lernen einsetzen kannst.",
+  "title": "Study Buddy – KI als Lern- und Quizpartner",
+  "description": "Lerne, wie du KI als Lernhilfe für Erklärungen, Zusammenfassungen und Quiz-Fragen optimal einsetzt.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "KI als dein persönlicher Tutor",
-          "content": "LLMs wie ChatGPT sind hervorragende Lernwerkzeuge. Sie können komplexe Begriffe einfach erklären, dir beim Verstehen schwieriger Textpassagen helfen und dich sogar mit maßgeschneiderten Fragen zu deinen Lerninhalten abfragen.",
+          "title": "KI als Erklärer",
+          "content": "KI kann schwierige Begriffe einfach erklären und so beim Lernen helfen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "KI als Quiz-Generator",
+          "content": "Mit KI kannst du schnell Quizfragen zu beliebigen Themen und deinen eigenen Notizen erstellen lassen.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Hauptvorteil beim Lernen",
-          "question": "Was ist ein großer Vorteil bei der Nutzung von KI als Lernpartner?",
+          "title": "Quiz: KI fürs Lernen",
+          "question": "Wie kann KI beim Lernen helfen?",
           "options": [
-            "Die KI lernt an deiner Stelle.",
-            "Die KI kann dir personalisierte Erklärungen und Quizfragen zu jedem Thema erstellen.",
-            "Die KI hat immer dieselbe Antwort auf eine Frage.",
-            "Die KI kann nur bei mathematischen Fächern helfen."
+            "Erklärt Fachbegriffe, erstellt Quizfragen",
+            "Liest Hausaufgaben vor",
+            "Malt nur Bilder",
+            "Erfindet neue Schulfächer"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Vorteil KI-Lernen",
+          "question": "Warum nutzt du KI als Lernhilfe? Nenne einen Vorteil.",
+          "expectedAnswer": "Schnelle, verständliche Erklärungen und passgenaue Quizfragen.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Begriffe erklären lassen",
-          "question": "Du liest in einem Biologiebuch den Satz: 'Die Mitose ist ein zentraler Prozess der Zellteilung.' und verstehst den Begriff 'Mitose' nicht vollständig. Schreibe einen Prompt, der die KI bittet, dir diesen Begriff einfach zu erklären.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Erkläre mir in einfachen Worten, was Mitose ist.' oder 'Was bedeutet Mitose im Kontext der Zellteilung?'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Eigene Notizen nutzen",
+          "content": "Je spezifischer die Infos oder Notizen im Prompt, desto besser und zielgenauer die KI-Antwort oder Quizfragen.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Quizfragen generieren",
-          "question": "Du bereitest dich auf eine Geschichtsprüfung über die Französische Revolution vor. Wie würdest du einen Prompt formulieren, um 5 Quizfragen zu diesem Thema zu erhalten?",
-          "expectedAnswer": "Ein passender Prompt wäre: 'Erstelle 5 Quizfragen zum Thema Französische Revolution für eine Geschichtsprüfung.'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Begriff erklären lassen",
+          "question": "Schreibe einen Prompt, um die KI zu bitten, einen Fachbegriff (z.B. 'Less derived woods') einfach zu erklären.",
+          "expectedAnswer": "'Erkläre den Begriff 'Less derived woods' in einfachen Worten.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Quiz-Prompts",
+          "question": "Wie bekommst du ein Quiz zu deinen eigenen Notizen?",
+          "options": [
+            "Notizen in den Prompt kopieren und um Quizfragen bitten",
+            "KI raten lassen",
+            "Ohne Kontext abfragen",
+            "Einfach Thema nennen"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -63,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Lernen mit eigenen Notizen",
-          "taskDescription": "Du hast dir Notizen zum Thema 'Marketing-Grundlagen' gemacht. Erstelle einen Prompt, der die KI anweist, dir basierend auf deinen Notizen drei Multiple-Choice-Fragen zu erstellen, um dein Wissen zu testen. Füge deine Notizen dem Prompt als Kontext hinzu.",
-          "evaluationGuidance": "1. Fordert der Prompt die Erstellung von Multiple-Choice-Fragen an? 2. Wird die Anzahl der Fragen (drei) spezifiziert? 3. Beinhaltet der Prompt die eigenen Notizen als Kontext für die KI? 4. Sind die resultierenden Fragen relevant für die bereitgestellten Notizen?",
-          "pointsAwarded": 12,
+          "title": "Fachgebiet-Quiz-Prompt",
+          "taskDescription": "Schreibe einen Prompt, mit dem die KI fünf Quizfragen zu einem bestimmten Fachgebiet erstellt (z.B. Marketing, Biologie, Mathematik).",
+          "evaluationGuidance": "Prompt muss Thema und Quizfragen verlangen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Notiz-basiertes Quiz",
+          "taskDescription": "Formuliere einen Prompt, der die KI bittet, auf Basis deiner eigenen Notizen (Textauszug) Quizfragen zu generieren.",
+          "evaluationGuidance": "Prompt muss Notizen als Input verlangen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -78,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Grenzen der KI als Lernpartner",
-          "question": "Warum ist es wichtig, die von einer KI gegebenen Erklärungen oder Antworten kritisch zu hinterfragen und nicht blind darauf zu vertrauen?",
-          "expectedAnswer": "Es ist wichtig, kritisch zu bleiben, weil KI-Modelle manchmal Fehler machen, Informationen veraltet sein können oder sie den Kontext falsch verstehen. Eine Überprüfung mit zuverlässigen Quellen wie Lehrbüchern oder Fachartikeln ist unerlässlich, um sicherzustellen, dass man korrekte Informationen lernt.",
+          "title": "Reflexion: KI-Erklärungen",
+          "question": "Warum reicht es nicht immer, Begriffe einfach zu googeln? Was kann KI besser machen?",
+          "expectedAnswer": "KI kann individuell erklären, Quizfragen passgenau zu eigenen Lerninhalten formulieren.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Unklare Anfrage",
+          "taskDescription": "Zeige ein Beispiel für einen schlechten Prompt an die KI für eine Erklärung und verbessere ihn.",
+          "evaluationGuidance": "Schlechter Prompt vs. präziser Prompt, der z.B. Zielgruppe, Kontext, Tiefe vorgibt.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -93,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Effektives Lernen",
-          "question": "Welche Vorgehensweise ist am effektivsten, um mit einer KI für eine Prüfung zu lernen?",
+          "title": "Quiz: KI als Lernhilfe",
+          "question": "Was hilft, damit die KI besonders hilfreiche Lerninhalte erstellt?",
           "options": [
-            "Die KI bitten, die Prüfung für einen zu schreiben.",
-            "Sich nur die Antworten auf Quizfragen geben lassen, ohne sie selbst zu versuchen.",
-            "Die KI bitten, komplexe Themen zu erklären und dann das eigene Verständnis mit selbst generierten Quizfragen zu überprüfen.",
-            "Die KI bitten, nur lustige Fakten zum Thema zu erzählen."
+            "Eigene Notizen, genaue Fragen und Kontext angeben",
+            "KI raten lassen",
+            "Keine Infos geben",
+            "KI nur für Mathe verwenden"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Study Buddy",
+          "question": "Nenne eine Best Practice, wie du mit KI für eine Prüfung lernen kannst.",
+          "expectedAnswer": "Eigene Zusammenfassungen eingeben, gezielte Quizfragen generieren lassen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -113,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen Lernplan erstellen",
-          "taskDescription": "Du musst dich in einer Woche auf eine wichtige Prüfung im Fach 'Künstliche Intelligenz' vorbereiten. Erstelle einen Prompt, der die KI anweist, einen detaillierten 5-Tages-Lernplan zu erstellen. Der Plan soll die wichtigsten Themen des Faches (z.B. Neuronale Netze, Maschinelles Lernen, NLP) auf die Tage verteilen und für jeden Tag spezifische Lernziele und eine kleine Übungsaufgabe vorschlagen.",
-          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung eines Lernplans an? 2. Werden die Dauer (5 Tage) und das Fach (KI) genannt? 3. Werden die wichtigsten zu behandelnden Themen im Prompt erwähnt? 4. Beinhaltet die Anweisung, Lernziele und Übungsaufgaben für jeden Tag zu definieren? 5. Ist der resultierende Plan eine nützliche und strukturierte Hilfe für die Prüfungsvorbereitung?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Lern-Prompt",
+          "taskDescription": "Erstelle einen Prompt, mit dem die KI eine komplette Lerneinheit zu einem Thema inkl. Erklärungen, Quiz und Zusammenfassung erzeugt.",
+          "evaluationGuidance": "Prompt muss Thema, Erklärungen, Quizfragen und Zusammenfassung verlangen.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du KI in Zukunft als Lernpartner einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

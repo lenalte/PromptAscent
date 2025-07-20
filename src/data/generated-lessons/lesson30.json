@@ -1,8 +1,7 @@
-
 {
   "id": "lesson30",
-  "title": "Generated Knowledge",
-  "description": "Lerne, wie du die KI dazu bringst, Fakten zu generieren, bevor sie antwortet, um die Genauigkeit zu erhöhen.",
+  "title": "Generated Knowledge Prompting",
+  "description": "Lerne, wie du durch das Generieren von Wissen vor der Antwort die Qualität der KI-Ausgabe steigerst.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was ist der 'Generated Knowledge'-Ansatz?",
-          "content": "Bei diesem Ansatz wird die KI zuerst aufgefordert, relevantes Wissen oder Fakten zu einem Thema zu generieren. Diese Fakten werden dann als Kontext verwendet, um eine fundiertere und genauere endgültige Antwort zu erstellen.",
+          "title": "Was ist Generated Knowledge?",
+          "content": "Bei dieser Technik erzeugt die KI zunächst relevantes Wissen (Fakten, Hintergrund) zum Thema, bevor sie die eigentliche Antwort generiert.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Single vs. Dual Prompt",
+          "content": "Beim Single Prompt wird das Wissen und die Antwort in einem Schritt erzeugt, beim Dual Prompt erst das Wissen und dann die Antwort auf Basis dieses Wissens.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Zwei Ansätze",
-          "question": "Welche zwei Hauptmethoden gibt es beim 'Generated Knowledge'-Ansatz?",
+          "title": "Vorteil",
+          "question": "Was ist ein Vorteil der Generated Knowledge Technik?",
           "options": [
-            "Kurzer und langer Prompt.",
-            "Einzelner und doppelter Prompt.",
-            "Einfacher und komplexer Prompt.",
-            "Text- und Bild-Prompt."
+            "Die Antwort ist oft faktenreicher und präziser.",
+            "Die KI braucht weniger Rechenzeit.",
+            "Es gibt keine Nachteile.",
+            "Man benötigt keine Prompts mehr."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Erklärung",
+          "question": "Warum hilft es, wenn die KI erst relevantes Wissen sammelt, bevor sie antwortet?",
+          "expectedAnswer": "Die Antwort wird dadurch fundierter und nutzt mehr relevante Fakten.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Einzel-Prompt-Ansatz anwenden",
-          "question": "Du möchtest einen Blogbeitrag über den Spirit Bear (Kermodebär) schreiben. Formuliere einen Einzel-Prompt, der die KI anweist, zuerst Fakten zu generieren und diese dann in einem Blogbeitrag zu verwenden.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Generiere 4 Fakten über den Kermodebären und nutze diese Fakten dann, um einen kurzen Blogbeitrag darüber zu schreiben.'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Beispiel: Blogartikel",
+          "content": "Erzeuge erst Fakten über ein Thema (z.B. Spirit Bear), dann verwende diese zum Schreiben eines Blogartikels.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Doppel-Prompt-Ansatz anwenden",
-          "question": "Beschreibe, wie du den Doppel-Prompt-Ansatz verwenden würdest, um denselben Blogbeitrag über den Kermodebären zu schreiben. Was wären deine zwei Prompts?",
-          "expectedAnswer": "Prompt 1: 'Generiere 4 Fakten über den Kermodebären.' Prompt 2: 'Nutze die folgenden Fakten, um einen Blogbeitrag zu schreiben: [hier die von der KI generierten Fakten einfügen].'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt schreiben",
+          "question": "Schreibe einen Single-Prompt, der die KI bittet, erst 3 Fakten über Eisbären zu erzeugen und dann eine kurze Beschreibung daraus zu schreiben.",
+          "expectedAnswer": "Prompt sollte beide Aufgaben (Fakten + Text) kombinieren.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Single oder Dual?",
+          "question": "Wann empfiehlt sich ein Dual-Prompt?",
+          "options": [
+            "Wenn die Aufgabe komplexer ist oder längere Antworten benötigt werden.",
+            "Immer nur bei Mathe-Aufgaben.",
+            "Nie.",
+            "Wenn die KI keine Fakten kennt."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -63,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Anwendung bei einer Frage",
-          "taskDescription": "Du möchtest die Frage 'Welches Land ist größer, Kongo oder Südafrika?' beantworten. Wende den Doppel-Prompt-Ansatz an: Erstelle zuerst einen Prompt, um Fakten über die Größe beider Länder zu generieren. Formuliere dann einen zweiten Prompt, der diese Fakten als Kontext nutzt, um die Frage eindeutig zu beantworten.",
-          "evaluationGuidance": "1. Hat der Benutzer zwei separate Prompts erstellt? 2. Zielt der erste Prompt darauf ab, relevante Fakten (Größe der Länder) zu generieren? 3. Verwendet der zweite Prompt diese Fakten als Kontext, um die ursprüngliche Frage zu beantworten? 4. Führt dieser Ansatz zu einer fundierteren Antwort?",
-          "pointsAwarded": 12,
+          "title": "Prompt für Wissensgenerierung",
+          "taskDescription": "Schreibe einen Prompt für ein Thema deiner Wahl, bei dem die KI erst Hintergrundwissen generiert und anschließend einen erklärenden Text.",
+          "evaluationGuidance": "Prompt muss explizit zwei Schritte vorgeben: Wissen generieren und danach Antwort geben.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Fakten für Entscheidungsfindung",
+          "taskDescription": "Formuliere einen Prompt, bei dem die KI für eine Entscheidungsfrage (z.B. Welches Land ist größer?) erst Fakten zu den Optionen auflistet und dann ein Fazit zieht.",
+          "evaluationGuidance": "Prompt muss Wissen und Schlussfolgerung trennen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -78,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Ähnlichkeit mit CoT",
-          "question": "Warum ist der 'Generated Knowledge'-Ansatz dem Chain-of-Thought (CoT) Prompting ähnlich?",
-          "expectedAnswer": "Er ist ähnlich, weil beide Techniken die KI dazu anleiten, eine Form von Zwischenüberlegung zu generieren, bevor die endgültige Antwort kommt. Bei CoT ist es der Denkprozess, bei Generated Knowledge sind es relevante Fakten. Beides hilft, die Genauigkeit und Nachvollziehbarkeit der Antwort zu erhöhen.",
+          "title": "Fehleranalyse",
+          "question": "Was könnte schiefgehen, wenn die KI falsche Fakten generiert? Wie kann man das erkennen?",
+          "expectedAnswer": "Falsche Ausgangsdaten führen zu falscher Antwort; Quellprüfung und gesunder Menschenverstand helfen.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse",
+          "taskDescription": "Gib einen Prompt an, bei dem die KI Wissen falsch generiert hat, und verbessere ihn so, dass die Fakten geprüft werden.",
+          "evaluationGuidance": "Prompt muss zur Überprüfung anregen oder Quellen einfordern.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -93,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Hauptvorteil",
-          "question": "Was ist der Hauptvorteil des 'Generated Knowledge'-Ansatzes?",
+          "title": "Quiz: Generated Knowledge",
+          "question": "Wozu dient der Zwischenschritt der Wissensgenerierung?",
           "options": [
-            "Die Antworten der KI werden kürzer.",
-            "Die Antworten werden informativer und basieren auf explizit generierten Fakten.",
-            "Die KI antwortet schneller.",
-            "Die KI wird kreativer."
+            "Erzeugt Faktenbasis für die Antwort",
+            "Reduziert Rechenzeit",
+            "Vereinfacht den Prompt",
+            "Ist immer optional"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice",
+          "question": "Wie kannst du Generated Knowledge sinnvoll einsetzen?",
+          "expectedAnswer": "Bei komplexen oder wissensintensiven Aufgaben: Fakten generieren lassen und erst dann antworten.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -113,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Wissensgenerierung für eine komplexe Aufgabe",
-          "taskDescription": "Du musst einen überzeugenden Absatz schreiben, warum Elektroautos eine gute Investition sind. Wende den Doppel-Prompt-Ansatz an: 1. Erstelle einen Prompt, der die KI anweist, Fakten über die finanziellen und ökologischen Vorteile von Elektroautos zu generieren. 2. Erstelle einen zweiten Prompt, der diese Fakten nutzt, um einen überzeugenden, gut begründeten Absatz zu schreiben.",
-          "evaluationGuidance": "1. Sind die beiden Prompts klar getrennt? 2. Zielt der erste Prompt auf die Generierung relevanter Fakten zu den Vorteilen von E-Autos? 3. Nutzt der zweite Prompt diese Fakten als Grundlage für einen argumentativen Text? 4. Ist der resultierende Ansatz geeignet, um einen überzeugenderen Text als ein einzelner, einfacher Prompt zu erzeugen?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Generated Knowledge Prompt",
+          "taskDescription": "Erstelle einen Prompt, bei dem die KI erst eine strukturierte Wissenssammlung zu einem Thema (mind. 5 Fakten) erzeugt und diese im Anschluss nutzt, um einen längeren Erklärtext oder eine Empfehlung zu schreiben.",
+          "evaluationGuidance": "Prompt muss explizit strukturierte Wissensgenerierung und anschließende Synthese fordern.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie wirst du Generated Knowledge künftig einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

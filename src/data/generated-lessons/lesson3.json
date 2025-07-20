@@ -1,10 +1,11 @@
-
 {
-  "description": "Verstehe die Schlüsselkomponenten effektiver Prompts.",
   "id": "lesson3",
+  "title": "Grundstruktur und Schlüsselteile von Prompts",
+  "description": "Verstehe die Schlüsselkomponenten effektiver Prompts.",
   "stages": [
     {
       "id": "stage1",
+      "title": "Stage 1: Verstehen",
       "items": [
         {
           "type": "likertScale",
@@ -12,40 +13,118 @@
           "title": "Feedback zur Struktur",
           "question": "Das Leaderboard motiviert mich dazu, Erster sein zu wollen.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info1",
+          "title": "Bausteine eines Prompts",
+          "content": "Gute Prompts bestehen meist aus einer klaren Anweisung (Directive), manchmal Beispielen, einer Rollenbeschreibung, Formatvorgaben und gegebenenfalls weiteren Informationen.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Was ist eine Directive?",
+          "content": "Die Directive ist die Hauptanweisung im Prompt. Sie sagt der KI genau, welche Aufgabe sie erledigen soll. Ist sie unklar, gibt die KI meist nur allgemeine Antworten.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s1_mcq1",
+          "title": "Bestandteile erkennen",
+          "question": "Welche der folgenden Elemente gehören NICHT typischerweise zu einem gut strukturierten Prompt?",
+          "options": [
+            "Beispiele für erwartete Ausgaben",
+            "Eine klar formulierte Directive",
+            "Hintergrundinformationen zur Aufgabe",
+            "Unklare, mehrdeutige Anweisungen"
+          ],
+          "correctOptionIndex": 3,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Directive erklären",
+          "question": "Beschreibe mit eigenen Worten, was eine Directive in einem Prompt ist.",
+          "expectedAnswer": "Die Directive ist die Hauptanweisung oder Aufgabe, die die KI ausführen soll.",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
-      ],
-      "title": "Stage 1: Verstehen"
+      ]
     },
     {
       "id": "stage2",
+      "title": "Stage 2: Anwenden",
       "items": [
         {
-          "content": "Beispiele demonstrieren das erwartete Format, den Stil oder die Struktur der Ausgabe. Indem du sie in den Prompt einfügst, kannst du das Verhalten der KI steuern und ihr helfen, das gewünschte Ergebnis besser zu verstehen.",
+          "type": "informationalSnippet",
           "id": "s2_info1",
-          "pointsAwarded": 1,
-          "title": "Die Bedeutung von Beispielen",
-          "type": "informationalSnippet"
+          "title": "Beispiele in Prompts nutzen",
+          "content": "Mit Beispielen (z.B. in Few-Shot-Prompts) kannst du der KI zeigen, wie das gewünschte Ergebnis aussehen soll. Das ist besonders hilfreich bei komplexen Aufgaben.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s2_fr1",
+          "title": "Beispiel-Prompt entwerfen",
+          "question": "Formuliere einen Prompt für eine KI, die Sätze ins Französische übersetzen soll. Gib im Prompt ein Beispiel, wie die Ausgabe aussehen soll.",
+          "expectedAnswer": "Zum Beispiel: 'Übersetze den folgenden Satz ins Französische.\nBeispiel:\nDeutsch: Ich habe Hunger. Französisch: J'ai faim.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Wozu dienen Beispiele im Prompt?",
+          "question": "Welchen Vorteil bieten Beispiele im Prompt?",
+          "options": [
+            "Sie helfen der KI, Struktur und Stil der Antwort zu erkennen.",
+            "Sie machen die Antwort immer kürzer.",
+            "Sie ersetzen die Directive.",
+            "Sie sind nur bei Bild-KIs sinnvoll."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
+          "pointsForIncorrect": 0
         }
-      ],
-      "title": "Stage 2: Anwenden"
+      ]
     },
     {
       "id": "stage3",
+      "title": "Stage 3: Variieren",
       "items": [
         {
-          "evaluationGuidance": "1. Hat der Benutzer eine klare und prägnante Direktive erstellt? 2. Hat der Benutzer das gewünschte Ausgabeformat angegeben (z.B. eine Liste, ein Absatz oder eine Tabelle)? 3. Hat der Prompt angemessene zusätzliche Informationen verwendet, um die KI zu leiten?",
+          "type": "informationalSnippet",
+          "id": "s3_info1",
+          "title": "Rollen und Formatierung",
+          "content": "Die KI kann mit einer Rollenbeschreibung (z.B. 'Du bist ein Arzt') und mit Formatvorgaben (z.B. 'Antworte in Tabellenform') gezielt gesteuert werden.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "promptingTask",
           "id": "s3_pt1",
-          "pointsAwarded": 10,
-          "pointsForIncorrect": 0,
-          "taskDescription": "Schreibe einen Prompt, der die KI anweist, einen gegebenen Nachrichtenartikel zusammenzufassen. Gib an, dass die Ausgabe eine prägnante Stichpunktliste sein soll, die die Kernpunkte des Artikels hervorhebt.",
-          "title": "Zusammenfassungs-Prompt",
-          "type": "promptingTask"
+          "title": "Prompt mit Rolle und Format",
+          "taskDescription": "Formuliere einen Prompt für ChatGPT, in dem es als Sportjournalist über ein Fußballspiel berichtet. Die Ausgabe soll in drei kurzen Absätzen erfolgen.",
+          "evaluationGuidance": "Der Prompt soll die Rolle 'Sportjournalist' vorgeben und die Formatierung (drei Absätze) klar machen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt mit zusätzlicher Information",
+          "taskDescription": "Du willst eine KI nutzen, um für einen Kollegen einen Geburtstagsgruß zu verfassen. Füge dem Prompt zusätzliche Informationen hinzu: Name (Alex), Hobby (Radfahren), Stil (humorvoll), Format (zwei Sätze). Schreibe den vollständigen Prompt.",
+          "evaluationGuidance": "Prompt sollte Name, Hobby, Stil, Format und die Aufgabe (Gruß verfassen) enthalten.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
         }
-      ],
-      "title": "Stage 3: Variieren"
+      ]
     },
     {
       "id": "stage4",
+      "title": "Stage 4: Reflektieren",
       "items": [
         {
           "type": "likertScale",
@@ -53,46 +132,80 @@
           "title": "Feedback zur Schwierigkeit",
           "question": "Die Plattform gibt mir das Gefühl neues zu entdecken.",
           "pointsAwarded": 1
+        },
+        {
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Prompt analysieren",
+          "question": "Analysiere den folgenden Prompt: 'Fasse die wichtigsten Ereignisse des Jahres 2023 zusammen.' Welche Elemente fehlen, damit die KI präziser antworten kann?",
+          "expectedAnswer": "Es fehlen Formatvorgaben (z.B. Länge, Liste/Text), evtl. Zielgruppe oder Schwerpunkte, ggf. ein Beispiel.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Schlechten Prompt verbessern",
+          "taskDescription": "Verbessere diesen Prompt: 'Gib Tipps für gesunden Schlaf.' Die Antwort soll: a) als Arzt formuliert sein, b) drei Stichpunkte enthalten, c) sich an Studierende richten.",
+          "evaluationGuidance": "Prompt muss die Rolle (Arzt), Zielgruppe (Studierende), Format (drei Stichpunkte) und Aufgabe enthalten.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
         }
-      ],
-      "title": "Stage 4: Reflektieren"
+      ]
     },
     {
       "id": "stage5",
+      "title": "Stage 5: Wiederholen",
       "items": [
         {
-          "correctOptionIndex": 1,
+          "type": "multipleChoice",
           "id": "s5_mcq1",
+          "title": "Struktur guter Prompts",
+          "question": "Welche Reihenfolge ist für komplexe Prompts oft besonders sinnvoll?",
           "options": [
-            "Falsche Informationen bereitstellen, um die KI zu verwirren.",
-            "Das erwartete Format, den Stil oder die Struktur der Ausgabe demonstrieren.",
-            "Die Aufgabe ignorieren und irrelevante Details angeben.",
-            "Mehrdeutige Sprache verwenden."
+            "Beispiele, Zusatzinfos, Rolle, Directive, Formatvorgabe",
+            "Directive, Beispiele, Rolle, Zusatzinfos, Formatvorgabe",
+            "Formatvorgabe, Directive, Rolle, Zusatzinfos, Beispiele",
+            "Nur Directive, ohne weitere Elemente"
           ],
-          "pointsAwarded": 4,
-          "pointsForIncorrect": 0,
-          "question": "Was ist der Hauptzweck der Bereitstellung von Beispielen in einem Prompt?",
-          "title": "Zweck von Beispielen",
-          "type": "multipleChoice"
+          "correctOptionIndex": 0,
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Bausteine nennen",
+          "question": "Nenne drei wichtige Bestandteile, die einen guten Prompt ausmachen.",
+          "expectedAnswer": "Directive (Aufgabe), Formatvorgabe, Beispiele, Rolle, Zusatzinformationen (mindestens drei nennen).",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
         }
-      ],
-      "title": "Stage 5: Wiederholen"
+      ]
     },
     {
       "id": "stage6",
+      "title": "Stage 6: Meistern",
       "items": [
         {
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "type": "promptingTask",
+          "id": "s6_pt1",
+          "title": "Komplexe Prompt-Aufgabe: Medizinfall",
+          "taskDescription": "Erstelle einen Prompt für ChatGPT, der alle fünf Elemente eines komplexen Prompts nutzt. Szenario: Die KI soll als Arzt auf Basis einer medizinischen Fallbeschreibung Risiken für die Gesundheit einschätzen. Die Antwort soll tabellarisch im CSV-Format ausgegeben werden. Füge ein Beispiel für die Formatierung hinzu.",
+          "evaluationGuidance": "Prompt muss alle fünf Elemente enthalten: Beispiel, Zusatzinfos (Fallbeschreibung), Rolle (Arzt), Directive (Risiken einschätzen), Format (CSV).",
+          "pointsAwarded": 12,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
           "id": "s6_fr_reflect1",
-          "pointsAwarded": 5,
-          "pointsForIncorrect": 0,
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
           "title": "Lektionsreflexion",
-          "type": "freeResponse"
+          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
+          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
         }
-      ],
-      "title": "Stage 6: Meistern"
+      ]
     }
-  ],
-  "title": "Grundlegende Prompt-Struktur und Schlüsselteile"
+  ]
 }

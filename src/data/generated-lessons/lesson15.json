@@ -1,8 +1,7 @@
-
 {
   "id": "lesson15",
-  "title": "Textzusammenfassung",
-  "description": "Lerne, wie du mit KI komplexe Texte schnell und verständlich zusammenfassen kannst.",
+  "title": "Textzusammenfassung und Analyse",
+  "description": "Lerne, wie KI-Tools komplexe Texte verständlich machen, an verschiedene Zielgruppen anpassen und Informationen strukturieren.",
   "stages": [
     {
       "id": "stage1",
@@ -11,30 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was kann KI bei Texten tun?",
-          "content": "Künstliche Intelligenz kann lange Texte wie Bücher, Artikel oder Dokumente zusammenfassen, komplexe Ideen einfach erklären, Gliederungen erstellen und Informationen für verschiedene Zielgruppen anpassen.",
+          "title": "Was kann KI mit Texten tun?",
+          "content": "KI kann Texte zusammenfassen, schwierige Begriffe erklären, Gliederungen erstellen und Informationen für verschiedene Zielgruppen anpassen.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Zielgruppenspezifische Anpassung",
-          "content": "Die wahre Stärke von KI-Modellen liegt in ihrer Fähigkeit, Inhalte an verschiedene Zielgruppen anzupassen. Man kann zum Beispiel eine technische Erklärung für Laien vereinfachen lassen oder eine Geschichte für Kinder zusammenfassen.",
+          "title": "Praxisbeispiel Zusammenfassung",
+          "content": "Mit Prompts wie 'Fasse den Text einfach zusammen' oder 'Erkläre den Text für ein Kind' kannst du schnell den Überblick gewinnen.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Kernkompetenz der KI",
-          "question": "Welche der folgenden Aufgaben ist eine zentrale Fähigkeit von KI bei der Textanalyse?",
+          "title": "Wozu eignet sich Textzusammenfassung?",
+          "question": "Welche Aufgabe kann eine KI beim Umgang mit Texten übernehmen?",
           "options": [
-            "Nur Rechtschreibfehler finden.",
-            "Die Schriftart eines Dokuments ändern.",
-            "Komplexe Inhalte für verschiedene Zielgruppen vereinfachen und zusammenfassen.",
-            "Die Länge eines Textes immer verdoppeln."
+            "Lange Texte vereinfachen",
+            "Alte Bücher drucken",
+            "Handschrift entschlüsseln",
+            "Texte löschen"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Zusammenfassung",
+          "question": "Erkläre in eigenen Worten, warum eine Zusammenfassung durch KI hilfreich sein kann.",
+          "expectedAnswer": "Man kann Zeit sparen, schwierige Texte leichter verstehen und gezielt Informationen filtern.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -44,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Publikumsorientierte Analyse",
+          "content": "Du kannst die Zielgruppe vorgeben, z.B. 'Erkläre das Thema wie für einen 10-jährigen' oder 'für Fachleute'.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Einfache Zusammenfassung erstellen",
-          "question": "Du hast einen langen Nachrichtenartikel über ein politisches Ereignis. Schreibe einen einfachen Prompt, um die Kernaussagen des Artikels zusammenzufassen.",
-          "expectedAnswer": "Ein einfacher, aber effektiver Prompt wäre: 'Fasse diesen Artikel zusammen: [ARTIKEL EINFÜGEN]' oder 'Gib mir eine Zusammenfassung des folgenden Textes.'",
+          "title": "Prompt für Zielgruppenanpassung",
+          "question": "Schreibe einen Prompt, um einen komplizierten Text für Grundschüler zusammenzufassen.",
+          "expectedAnswer": "Zum Beispiel: 'Fasse den folgenden Text so zusammen, dass Grundschüler ihn verstehen.'",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Zielgruppe anpassen",
-          "question": "Der folgende Text ist sehr wissenschaftlich: 'Quantum entanglement is the phenomenon...'. Wie würdest du den Prompt formulieren, um diesen Text für ein fünfjähriges Kind zu erklären?",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Fasse das für mich zusammen, als wäre ich 5 Jahre alt: [TEXT EINFÜGEN]'.",
-          "pointsAwarded": 7,
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Formatwahl",
+          "question": "Wie kannst du KI bitten, Infos in eine Gliederung zu bringen?",
+          "options": [
+            "Mit der Bitte um ein Outline oder eine stichpunktartige Liste",
+            "Durch Bitte um ein Gedicht",
+            "Indem man nach einer Tabelle fragt",
+            "Durch „Erkläre als Meme“"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -70,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Informationen strukturieren",
-          "taskDescription": "Du hast einen langen historischen Text über die Französische Revolution. Schreibe einen Prompt, der die KI anweist, die wichtigsten Ereignisse in Form einer chronologischen Zeitleiste zu extrahieren und darzustellen.",
-          "evaluationGuidance": "1. Fordert der Prompt klar die Erstellung einer Zeitleiste an? 2. Gibt der Prompt an, dass die Ereignisse chronologisch geordnet sein sollen? 3. Ist der Prompt spezifisch genug, damit die KI die relevanten Daten aus dem Text extrahieren kann?",
-          "pointsAwarded": 10,
+          "title": "Domain-spezifische Zusammenfassung",
+          "taskDescription": "Schreibe einen Prompt, der eine KI bittet, einen historischen Text im Stil eines Sportreporters zusammenzufassen.",
+          "evaluationGuidance": "Prompt muss Zielgruppe (Sportreporter-Stil) und Thema klar machen.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Outline erstellen lassen",
+          "taskDescription": "Formuliere einen Prompt, der eine KI eine gegliederte Übersicht zu einem beliebigen Sachthema erstellen lässt.",
+          "evaluationGuidance": "Prompt muss Struktur (Gliederung) und Thema klar machen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,19 +115,19 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Gefahr von Halluzinationen",
-          "question": "Warum ist es wichtig, die von einer KI zusammengefassten Fakten und Daten immer zu überprüfen?",
-          "expectedAnswer": "Es ist wichtig, die Informationen zu überprüfen, weil KI-Modelle dazu neigen können, Fakten zu 'halluzinieren', also falsche, aber plausibel klingende Informationen zu erfinden. Besonders bei wichtigen Daten oder spezifischen Fakten ist eine Überprüfung unerlässlich.",
+          "title": "Reflexion: Zielgruppen",
+          "question": "Warum ist es wichtig, Zusammenfassungen an die Zielgruppe anzupassen? Gib ein Beispiel.",
+          "expectedAnswer": "Nur so wird der Inhalt verständlich und nützlich – z.B. unterschiedliche Sprache für Kinder vs. Fachleute.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         },
         {
           "type": "promptingTask",
-          "id": "s4_pt_error1",
-          "title": "Iterative Verfeinerung",
-          "taskDescription": "Ein erster Prompt 'Fasse den Text zusammen' liefert eine zu lange und unstrukturierte Antwort. Beschreibe, wie du diesen Prompt iterativ verfeinern würdest, um eine kurze Zusammenfassung mit den drei wichtigsten Kernpunkten zu erhalten.",
-          "evaluationGuidance": "1. Erkennt der Benutzer das Problem der zu allgemeinen Antwort? 2. Schlägt die Verfeinerung eine Längenbeschränkung vor (z.B. 'in drei Sätzen')? 3. Fordert die Verfeinerung eine Fokussierung auf die 'drei wichtigsten Punkte'? 4. Zeigt die Antwort ein Verständnis für den iterativen Prozess?",
-          "pointsAwarded": 12,
+          "id": "s4_pt1",
+          "title": "Prompt-Analyse: Schwächen",
+          "taskDescription": "Gib ein Beispiel, wo eine KI-Zusammenfassung wichtige Details weglässt oder fehlerhaft vereinfacht. Wie kann man das vermeiden?",
+          "evaluationGuidance": "Beispiel und Lösung (z.B. „Bitte mehr Details!“).",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -109,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Ausgabeformate",
-          "question": "Welches der folgenden Formate kann eine KI nutzen, um Informationen aus einem Text zu strukturieren?",
+          "title": "Quiz: Zusammenfassungsformate",
+          "question": "Welches Format eignet sich NICHT für Textzusammenfassungen?",
           "options": [
-            "Nur Fließtext.",
-            "Nur Bilder.",
-            "Zeitleisten, Stichpunktlisten, Gliederungen oder Frage-Antwort-Formate.",
-            "Nur Tabellen."
+            "Timeline",
+            "Stichpunkte",
+            "Schritt-für-Schritt-Anleitung",
+            "Ungegliederter Fließtext ohne Bezug"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 3,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Zusammenfassung",
+          "question": "Nenne eine Best Practice, um mit KI bessere Zusammenfassungen zu erhalten.",
+          "expectedAnswer": "Zielgruppe klar nennen, gewünschte Länge und Details angeben.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -129,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Komplexe Analyse",
-          "taskDescription": "Du hast einen Geschäftsbericht für das letzte Quartal. Erstelle einen Prompt, der die KI anweist, eine Zusammenfassung für das Management zu erstellen. Der Prompt soll fordern, dass die Zusammenfassung nicht länger als 150 Wörter ist, die drei wichtigsten finanziellen Kennzahlen hervorhebt und eine Empfehlung für den nächsten Schritt ausspricht.",
-          "evaluationGuidance": "1. Enthält der Prompt eine klare Längenbeschränkung? 2. Fordert er die Fokussierung auf die wichtigsten Kennzahlen? 3. Beinhaltet die Anweisung die Erstellung einer Handlungsempfehlung? 4. Ist der Prompt spezifisch genug für eine geschäftliche Zielgruppe (Management)?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexe Analyse-Aufgabe",
+          "taskDescription": "Erstelle einen Prompt, der die KI dazu bringt, ein Forschungspapier zu gliedern, wichtige Daten als Liste herauszuziehen und die zentralen Aussagen für Experten und Laien unterschiedlich zusammenzufassen.",
+          "evaluationGuidance": "Prompt und Zielgruppen-Benennung, unterschiedliche Zusammenfassungen und Listen.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie willst du KI-Zusammenfassungen künftig in deinem Alltag oder Beruf nutzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

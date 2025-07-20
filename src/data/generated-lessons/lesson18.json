@@ -1,8 +1,7 @@
-
 {
   "id": "lesson18",
-  "title": "Kurzform-Inhalte",
-  "description": "Lerne, wie du mit KI gut strukturierte Kurztexte wie Diskussionsbeiträge oder Essays erstellst.",
+  "title": "Short-Form Content – Kurze Texte und Diskussionen mit KI",
+  "description": "Lerne, wie KI bei kurzen Essays, Diskussionen oder Blogposts hilft – mit klaren Prompts, Struktur und Iteration.",
   "stages": [
     {
       "id": "stage1",
@@ -11,23 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "KI für Kurztexte",
-          "content": "LLMs wie ChatGPT eignen sich hervorragend für das Verfassen von kurzen Texten (100-700 Wörter). Da die KI bei kürzeren Inhalten den Fokus besser behalten kann, sind die Ergebnisse oft kohärenter und qualitativ hochwertiger als bei sehr langen Texten.",
+          "title": "Was ist Short-Form Content?",
+          "content": "Kurze Texte (100-700 Wörter) sind perfekt für KI, da sie Fokus und Struktur besser halten kann – etwa für Diskussionen, Blogposts oder Essays.",
+          "pointsAwarded": 1
+        },
+        {
+          "type": "informationalSnippet",
+          "id": "s1_info2",
+          "title": "Iteratives Prompting",
+          "content": "Kurze Texte kannst du in mehreren Schritten generieren – zum Beispiel erst eine Einleitung, dann die Hauptpunkte, dann das Fazit.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Effektive Prompts",
-          "question": "Was ist laut Lektion der Schlüssel zu einem guten, strukturierten Ergebnis bei der Erstellung von Kurztexten mit KI?",
+          "title": "Warum hilft Struktur?",
+          "question": "Was verbessert die Qualität kurzer KI-Texte am meisten?",
           "options": [
-            "Den Prompt so kurz wie möglich zu halten.",
-            "Dem Prompt spezifische Anweisungen zu Format und Inhalt zu geben.",
-            "Die KI zu bitten, einen Witz einzubauen.",
-            "Den Prompt mehrmals hintereinander zu senden."
+            "Lange und unstrukturierte Prompts",
+            "Klare Vorgaben zu Aufbau und Inhalt",
+            "Möglichst viele Themen vermischen",
+            "Immer nur einen Satz verlangen"
           ],
           "correctOptionIndex": 1,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Eigene Worte: Vorteile",
+          "question": "Nenne einen Vorteil, warum du KI für kurze Antworten oder Diskussionen nutzen würdest.",
+          "expectedAnswer": "Zum Beispiel: Schnell strukturierte, verständliche Texte erhalten.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -37,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Struktur vorgeben",
-          "question": "Du möchtest einen kurzen Blogbeitrag über die Vorteile von regelmäßigem Sport schreiben. Formuliere einen Prompt, der die KI anweist, eine klare Struktur mit Einleitung, Hauptteil und Schluss zu verwenden.",
-          "expectedAnswer": "Ein guter Prompt wäre: 'Schreibe einen kurzen Blogbeitrag über die Vorteile von regelmäßigem Sport. Gliedere den Text in eine Einleitung, einen Hauptteil mit drei Vorteilen und einen Schluss.'",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Prompting für Diskussionen",
+          "content": "Statt offener Fragen lieber Aufgaben geben wie: 'Schreibe einen strukturierten Text mit Einleitung, Hauptteil, Schluss.'",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Offene Frage umformulieren",
-          "question": "Der Diskussionsbeitrag 'War die Mondlandung echt?' ist sehr offen. Wie würdest du den Prompt umformulieren, damit die KI einen ausgewogenen Beitrag schreibt, der Argumente beider Seiten berücksichtigt?",
-          "expectedAnswer": "Ein besserer Prompt wäre: 'Schreibe einen Diskussionsbeitrag zur Frage, ob die Mondlandung echt war. Erkläre die Hauptargumente der Befürworter und die der Zweifler und schließe mit einer ausgewogenen Einschätzung.'",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Kurzer Essay",
+          "question": "Schreibe einen Prompt, der eine KI zu einem strukturierten Text (Einleitung, Hauptteil, Schluss) zum Thema Umweltschutz auffordert.",
+          "expectedAnswer": "Zum Beispiel: 'Verfasse einen strukturierten Text mit Einleitung, Hauptteil und Schluss zum Thema Umweltschutz.'",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Promptverbesserung",
+          "question": "Wie kann man eine offene Frage in einen besseren Prompt für KI umwandeln?",
+          "options": [
+            "Konkretisieren, welche Punkte und Struktur gefordert sind",
+            "Weniger Kontext geben",
+            "Alles offen lassen",
+            "Nur eine Antwort ohne Begründung verlangen"
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -63,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Iteratives Schreiben",
-          "taskDescription": "Du möchtest einen kurzen Essay zum Thema 'Die Zukunft der Arbeit' schreiben. Wende den iterativen Ansatz an: 1. Schreibe einen Prompt, der nur die Einleitung generiert. 2. Schreibe dann einen Folge-Prompt, der basierend auf dieser Einleitung den nächsten Absatz über 'Automatisierung' erstellt.",
-          "evaluationGuidance": "1. Hat der Benutzer zwei separate Prompts erstellt? 2. Generiert der erste Prompt nur die Einleitung? 3. Bezieht sich der zweite Prompt klar auf die generierte Einleitung und fordert die Erstellung des nächsten Absatzes zu einem spezifischen Thema? 4. Zeigt dieser Ansatz ein Verständnis für den schrittweisen Schreibprozess mit KI?",
-          "pointsAwarded": 12,
+          "title": "Prompt iterativ ausbauen",
+          "taskDescription": "Formuliere einen Prompt, mit dem die KI zuerst nur die Einleitung, dann den Hauptteil, dann das Fazit eines Textes einzeln schreibt.",
+          "evaluationGuidance": "Prompt soll die KI anweisen, jeweils nur einen Abschnitt zu schreiben.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Unklare vs. gute Diskussionsfrage",
+          "taskDescription": "Gib eine zu offene Diskussionsfrage und schreibe einen Prompt, der daraus eine klarere Aufgabe für die KI macht.",
+          "evaluationGuidance": "Beide Varianten und Begründung.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -78,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Vorteile der Iteration",
-          "question": "Warum ist es oft besser, einen Text mit der KI schrittweise (iterativ) zu entwickeln, anstatt sofort einen fertigen Text zu verlangen?",
-          "expectedAnswer": "Der iterative Ansatz gibt mehr Kontrolle über den Inhalt und die Struktur. Man kann jeden Abschnitt einzeln prüfen und anpassen, bevor der nächste generiert wird. Dies führt oft zu einem qualitativ hochwertigeren und kohärenteren Endergebnis.",
+          "title": "Reflexion: Prompt-Qualität",
+          "question": "Warum sollte man KI-Aufgaben immer möglichst klar strukturieren? Was kann sonst passieren?",
+          "expectedAnswer": "Antworten sind sonst zu kurz, zu beliebig oder nicht auf den Punkt.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Fehleranalyse Prompt",
+          "taskDescription": "Zeige an einem Beispiel, wie ein Prompt ohne klare Struktur zu einem schlechten Ergebnis führt – und wie du ihn verbessern würdest.",
+          "evaluationGuidance": "Beispiel für schlechten Prompt und Verbesserung.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -93,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Umgang mit offenen Fragen",
-          "question": "Was sollte man tun, wenn eine Diskussionsfrage für die KI zu offen oder unklar ist?",
+          "title": "Quiz: Iteration",
+          "question": "Was bringt es, einen Text abschnittsweise mit KI zu schreiben?",
           "options": [
-            "Die Frage einfach ignorieren.",
-            "Die Frage in einen gut definierten Prompt mit klaren Anweisungen umschreiben.",
-            "Die Frage in Großbuchstaben wiederholen.",
-            "Die KI bitten, die Frage selbst zu interpretieren."
+            "Mehr Kontrolle über Struktur und Qualität",
+            "Der Text wird immer kürzer",
+            "KI vergisst mehr",
+            "Man braucht keinen Prompt mehr"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice: Kurze Texte",
+          "question": "Nenne eine Best Practice, um mit KI kurze, strukturierte Texte zu schreiben.",
+          "expectedAnswer": "Klar sagen, wie viele Abschnitte, was für Beispiele und welche Länge gewünscht sind.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -113,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen strukturierten Essay erstellen",
-          "taskDescription": "Du musst einen kurzen Essay (ca. 200 Wörter) über die ethischen Implikationen von künstlicher Intelligenz schreiben. Erstelle einen einzigen, detaillierten Prompt, der die KI anweist, eine Einleitung, zwei Hauptargumente (z.B. Voreingenommenheit in Algorithmen und Arbeitsplatzverlust) mit Beispielen und einen zusammenfassenden Schluss zu schreiben.",
-          "evaluationGuidance": "1. Fordert der Prompt eine klare Essay-Struktur (Einleitung, Hauptteil, Schluss)? 2. Werden die zu behandelnden Hauptargumente im Prompt vorgegeben? 3. Wird die KI angewiesen, Beispiele zu verwenden? 4. Ist eine ungefähre Längenangabe enthalten? 5. Ist der Prompt präzise genug, um einen gut strukturierten Text zu erzeugen?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Diskussionsprompt",
+          "taskDescription": "Erstelle einen Prompt, mit dem die KI eine Pro-und-Contra-Diskussion zu einem gesellschaftlichen Thema in mehreren Abschnitten schreibt, inkl. Einleitung und Fazit.",
+          "evaluationGuidance": "Prompt muss Abschnitte und Pro/Contra fordern.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie kannst du KI in Zukunft für kurze Essays oder Diskussionsbeiträge sinnvoll einsetzen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

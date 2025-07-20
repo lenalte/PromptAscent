@@ -1,8 +1,7 @@
-
 {
   "id": "lesson32",
-  "title": "Umgang mit langen Inhalten",
-  "description": "Lerne Strategien, um lange Texte effektiv mit KI zu verarbeiten, trotz begrenzter Kontextfenster.",
+  "title": "Umgang mit Long-Form Content",
+  "description": "Lerne Strategien, wie du lange Texte oder Dokumente effizient mit KI-Modellen bearbeitest.",
   "stages": [
     {
       "id": "stage1",
@@ -11,30 +10,39 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Die Herausforderung langer Texte",
-          "content": "Große Sprachmodelle (LLMs) haben eine begrenzte Kontextlänge, d.h. sie können nur eine bestimmte Menge an Text auf einmal verarbeiten. Dies macht die Arbeit mit langen Dokumenten wie Büchern oder umfangreichen Berichten schwierig.",
+          "title": "Kontext-Limitierung",
+          "content": "KI-Modelle können nur eine bestimmte Textmenge auf einmal verarbeiten (Kontext-Limit). Deshalb braucht es Strategien für lange Texte.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Strategie: Chunking",
-          "content": "Eine gängige Methode ist das 'Chunking', bei dem der lange Text in kleinere, überschaubare Abschnitte ('Chunks') aufgeteilt wird. Diese Abschnitte können dann einzeln oder nacheinander verarbeitet werden.",
+          "title": "Strategien",
+          "content": "Typische Strategien: Text vorverarbeiten (kürzen, zusammenfassen), in Chunks aufteilen, Antworten iterativ erzeugen, Post-Processing.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Grund für die Begrenzung",
-          "question": "Warum haben LLMs eine begrenzte Kontextlänge?",
+          "title": "Vorteil von Chunking",
+          "question": "Was bringt das Aufteilen in Chunks?",
           "options": [
-            "Um die Antworten kürzer zu machen.",
-            "Aus rechentechnischen Gründen, da die Komplexität mit der Textlänge stark ansteigt.",
-            "Um die KI dazu zu zwingen, kreativ zu sein.",
-            "Weil lange Texte keine wichtigen Informationen enthalten."
+            "Die KI kann gezielt auf einzelne Abschnitte eingehen.",
+            "Man spart Energie.",
+            "Die KI lernt schneller.",
+            "Es ist nur für Code relevant."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 3,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s1_fr1",
+          "title": "Kontext-Begrenzung",
+          "question": "Warum können große Dokumente nicht einfach direkt in ein Prompt?",
+          "expectedAnswer": "Weil das Kontextfenster der KI begrenzt ist und wichtige Infos sonst abgeschnitten werden.",
+          "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
       ]
@@ -44,21 +52,34 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "freeResponse",
-          "id": "s2_fr1",
-          "title": "Text vorverarbeiten",
-          "question": "Du hast einen 10-seitigen Bericht, möchtest aber nur die Abschnitte über 'Finanzergebnisse' zusammenfassen. Beschreibe, wie du den Text vorverarbeiten würdest, bevor du ihn der KI gibst.",
-          "expectedAnswer": "Ich würde den Bericht zuerst manuell oder mit einer Suchfunktion durchgehen und nur die relevanten Abschnitte zum Thema 'Finanzergebnisse' kopieren. Unnötige Einleitungen, Anhänge oder andere irrelevante Teile würde ich entfernen, um den Input für die KI zu verkürzen und zu fokussieren.",
-          "pointsAwarded": 6,
-          "pointsForIncorrect": 0
+          "type": "informationalSnippet",
+          "id": "s2_info1",
+          "title": "Praktischer Umgang",
+          "content": "Kürze Texte vor, fasse sie zusammen oder teile sie in thematische Blöcke (Chunks), um gezielte Prompts zu stellen.",
+          "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Iterativer Ansatz",
-          "question": "Beschreibe, wie du einen langen Roman kapitelweise zusammenfassen würdest, indem du einen iterativen Ansatz verwendest.",
-          "expectedAnswer": "Ich würde zuerst einen Prompt erstellen, um das erste Kapitel zusammenzufassen. Dann würde ich einen zweiten Prompt erstellen, der die Zusammenfassung des ersten Kapitels als Kontext enthält und die KI bittet, das zweite Kapitel zusammenzufassen und es mit dem ersten in Beziehung zu setzen. Diesen Prozess würde ich für alle Kapitel wiederholen.",
-          "pointsAwarded": 7,
+          "id": "s2_fr1",
+          "title": "Prompt: Chunking",
+          "question": "Schreibe einen Prompt, der die KI bittet, ein langes Dokument in sinnvolle Abschnitte zu unterteilen.",
+          "expectedAnswer": "Prompt fordert explizit Chunking (z.B. 'Teile folgenden Text in Sinnabschnitte und gib sie nummeriert zurück').",
+          "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Zusammenfassen",
+          "question": "Was ist ein typischer Schritt nach dem Chunking?",
+          "options": [
+            "Jeden Abschnitt einzeln zusammenfassen lassen.",
+            "Den Text löschen.",
+            "Die Reihenfolge zufällig ändern.",
+            "Den Text ignorieren."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -70,10 +91,19 @@
         {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Rekursive Zusammenfassung",
-          "taskDescription": "Du hast einen sehr langen wissenschaftlichen Artikel. Beschreibe einen Prozess, wie du eine 'rekursive Zusammenfassung' erstellen könntest. Beginne damit, jeden Absatz einzeln zusammenzufassen. Kombiniere dann diese kurzen Zusammenfassungen und fasse sie erneut zusammen, bis du eine prägnante Gesamtzusammenfassung hast.",
-          "evaluationGuidance": "1. Beschreibt der Benutzer klar den mehrstufigen Prozess der rekursiven Zusammenfassung? 2. Wird der Prozess des Zusammenfassens von Zusammenfassungen deutlich? 3. Ist dieser Ansatz geeignet, um die Kernideen aus einem sehr langen Text zu extrahieren?",
-          "pointsAwarded": 12,
+          "title": "Prompt für iterative Zusammenfassung",
+          "taskDescription": "Schreibe einen Prompt, mit dem die KI mehrere Chunks eines langen Textes nacheinander zusammenfasst und aus den Teilergebnissen eine Gesamtsummary erstellt.",
+          "evaluationGuidance": "Prompt fordert explizit mehrere Zusammenfassungen plus abschließende Gesamtsummary.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt: Post-Processing",
+          "taskDescription": "Formuliere einen Prompt, mit dem die KI einen langen Antworttext kürzt und überflüssige Infos entfernt.",
+          "evaluationGuidance": "Prompt fordert gezielt zur Verdichtung und Entfernung von Redundanzen auf.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -85,9 +115,18 @@
         {
           "type": "freeResponse",
           "id": "s4_fr1",
-          "title": "Informationsverlust",
-          "question": "Was ist das größte Risiko beim 'Chunking' und Zusammenfassen langer Texte und wie kann man es minimieren?",
-          "expectedAnswer": "Das größte Risiko ist der Verlust von wichtigem Kontext oder feinen Nuancen, die sich über mehrere Abschnitte erstrecken. Man kann dies minimieren, indem man die Zusammenfassungen der vorherigen Chunks in den Kontext des nächsten Prompts einfügt oder indem man überlappende Chunks verwendet, um den Zusammenhang zu wahren.",
+          "title": "Grenzen und Tools",
+          "question": "Wann reichen KI-Strategien wie Chunking nicht aus? Was könnte dann helfen?",
+          "expectedAnswer": "Bei extrem langen Texten helfen spezialisierte Tools (z.B. Llama Index, LangChain) oder Modelle mit größerem Kontextfenster.",
+          "pointsAwarded": 8,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Prompt-Verbesserung",
+          "taskDescription": "Beschreibe einen Prompt, bei dem zu viele Infos verloren gehen, und verbessere ihn durch eine bessere Chunking- oder Zusammenfassungsstrategie.",
+          "evaluationGuidance": "Prompt muss explizit auf Chunking oder fokussierte Zusammenfassung eingehen.",
           "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
@@ -100,16 +139,25 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "Moderne Lösungen",
-          "question": "Welche modernen KI-Modelle oder Bibliotheken sind speziell dafür bekannt, längere Kontexte besser zu verarbeiten?",
+          "title": "Quiz: Kontext",
+          "question": "Warum ist Kontextbegrenzung bei LLMs relevant?",
           "options": [
-            "Nur einfache Text-Editoren.",
-            "Ältere Modelle wie GPT-2.",
-            "Neuere Modelle wie GPT-4 und Claude sowie Bibliotheken wie Llama Index oder LangChain.",
-            "Nur Bildgenerierungsmodelle."
+            "Wichtige Infos können sonst verloren gehen.",
+            "Weil LLMs zu schnell antworten.",
+            "Nur für kleine Texte relevant.",
+            "Es ist egal, wie viel Kontext man nutzt."
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "freeResponse",
+          "id": "s5_fr1",
+          "title": "Best Practice",
+          "question": "Nenne eine Best Practice für die Verarbeitung sehr langer Dokumente.",
+          "expectedAnswer": "Text in Abschnitte teilen, diese zusammenfassen und dann eine Gesamtsummary erstellen.",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -120,19 +168,19 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Einen vollständigen Prozess entwerfen",
-          "taskDescription": "Du hast ein 300-seitiges PDF-Handbuch für eine komplexe Software. Entwirf einen vollständigen Prozess, wie du mit KI eine durchsuchbare Wissensdatenbank daraus erstellen würdest. Beschreibe die Schritte: 1. Wie extrahierst du den Text? 2. Wie teilst du ihn in sinnvolle Chunks auf (z.B. nach Kapiteln)? 3. Wie könntest du eine Bibliothek wie Llama Index nutzen, um bei einer Nutzerfrage den relevantesten Chunk zu finden und eine Antwort zu generieren?",
-          "evaluationGuidance": "1. Ist der beschriebene Prozess logisch und vollständig? 2. Wird das Problem des Text-Extrahierens und Chunkings adressiert? 3. Wird die Rolle einer Bibliothek zur Vektorsuche (wie Llama Index) korrekt beschrieben? 4. Ist der resultierende Ansatz eine praktische Lösung für das Problem?",
-          "pointsAwarded": 18,
+          "id": "s6_pt1",
+          "title": "Komplexer Prompt: Multistage-Summary",
+          "taskDescription": "Erstelle einen Prompt, mit dem ein sehr langes Dokument iterativ gechunkt, einzeln zusammengefasst und dann aus allen Teilsummaries eine finale Übersicht geschrieben wird.",
+          "evaluationGuidance": "Prompt fordert explizit Chunking, Teilzusammenfassungen und Synthese zur Endzusammenfassung.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s6_fr_reflect1",
           "title": "Lektionsreflexion",
-          "question": "Was sind deine wichtigsten Erkenntnisse aus dieser Lektion und wie könntest du sie in Zukunft anwenden?",
-          "expectedAnswer": "Persönliche Reflexion des Benutzers",
+          "question": "Wie würdest du diese Techniken auf eigene Projekte übertragen?",
+          "expectedAnswer": "Persönliche Reflexion.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }

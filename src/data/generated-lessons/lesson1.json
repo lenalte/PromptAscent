@@ -1,4 +1,3 @@
-
 {
   "id": "lesson1",
   "title": "Was ist Generative KI?",
@@ -11,38 +10,38 @@
         {
           "type": "informationalSnippet",
           "id": "s1_info1",
-          "title": "Was ist KI?",
-          "content": "Künstliche Intelligenz (KI) ist das Technologiefeld, in dem Maschinen und Systeme entwickelt werden, um Aufgaben auszuführen, die menschenähnliche Intelligenz erfordern, wie Spracherkennung, Entscheidungsfindung und Texterstellung.",
+          "title": "Was ist Künstliche Intelligenz (KI)?",
+          "content": "Künstliche Intelligenz (KI) bezeichnet Technologien, die Maschinen in die Lage versetzen, Aufgaben zu erledigen, die menschliche Intelligenz erfordern – etwa Sprach- oder Bilderkennung, Entscheidungsfindung oder das Lösen komplexer Probleme.",
           "pointsAwarded": 1
         },
         {
           "type": "informationalSnippet",
           "id": "s1_info2",
-          "title": "Was ist Generative KI?",
-          "content": "Generative KI (GenAI) ist ein Teilbereich der KI, der sich darauf konzentriert, neue Inhalte wie Texte, Bilder, Audio und Video zu erstellen, basierend auf Mustern, die sie aus Daten gelernt hat.",
+          "title": "KI im Alltag",
+          "content": "Du begegnest KI in Sprachassistenten wie Siri oder Alexa, bei Empfehlungen auf YouTube, Spotify oder Netflix und in sozialen Medien, wo Algorithmen Inhalte filtern und an deine Interessen anpassen.",
           "pointsAwarded": 1
         },
         {
           "type": "multipleChoice",
           "id": "s1_mcq1",
-          "title": "Schlüsselfunktion der KI",
-          "question": "Welche der folgenden ist eine primäre Fähigkeit der Künstlichen Intelligenz?",
+          "title": "KI im Alltag erkennen",
+          "question": "In welchem dieser Fälle ist KI typischerweise NICHT beteiligt?",
           "options": [
-            "Aufgaben ausführen, die menschenähnliche Intelligenz erfordern.",
-            "Nur große Datenmengen speichern.",
-            "Radiosignale senden.",
-            "Computerhardware herstellen."
+            "Spotify schlägt dir neue Musik vor.",
+            "Dein Smartphone erkennt dein Gesicht beim Entsperren.",
+            "Du speicherst ein Word-Dokument auf deinem Computer.",
+            "YouTube empfiehlt dir ein neues Video."
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 2,
           "pointsAwarded": 3,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s1_fr1",
-          "title": "Definiere Generative KI",
-          "question": "Was ist in deinen eigenen Worten der Hauptunterschied zwischen allgemeiner KI und Generativer KI?",
-          "expectedAnswer": "Allgemeine KI führt Aufgaben aus, die Intelligenz erfordern, während sich Generative KI speziell darauf konzentriert, neue, originelle Inhalte wie Text oder Bilder auf der Grundlage dessen zu erstellen, was sie gelernt hat.",
+          "title": "KI vs. klassische Software",
+          "question": "Nenne einen Unterschied zwischen KI und klassischer Software.",
+          "expectedAnswer": "Klassische Software arbeitet nach festen Regeln, während KI aus Daten lernen und sich an neue Situationen anpassen kann.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         }
@@ -62,26 +61,32 @@
         {
           "type": "informationalSnippet",
           "id": "s2_info1",
-          "title": "Praxisbeispiel: Sprachassistenten",
-          "content": "Sprachassistenten wie Siri, Alexa und Google Assistant verwenden KI, um deine Sprachbefehle zu verstehen und angemessen zu reagieren. Dies ist ein Beispiel dafür, wie KI Informationen interpretiert.",
+          "title": "Wie KI lernt",
+          "content": "Die meisten KI-Systeme nutzen maschinelles Lernen (ML), um aus großen Datenmengen Muster zu erkennen. Mit mehr Daten werden sie immer besser darin, Aufgaben zu lösen.",
           "pointsAwarded": 1
         },
         {
           "type": "freeResponse",
           "id": "s2_fr1",
-          "title": "Anwendung von Generativer KI",
-          "question": "Nenne ein Beispiel für ein im Text erwähntes reales Generatives KI-Tool und beschreibe, was es erstellt.",
-          "expectedAnswer": "ChatGPT erstellt menschenähnlichen Text, DALL-E erstellt Bilder aus Textbeschreibungen, oder GitHub Copilot erstellt Code-Schnipsel.",
+          "title": "Vergleich: Lernen bei Mensch & Maschine",
+          "question": "Inwiefern ist das Lernen bei Maschinen dem menschlichen Lernen ähnlich? Nenne eine Gemeinsamkeit.",
+          "expectedAnswer": "Beides basiert auf Erfahrungen: Menschen und Maschinen lernen durch wiederholtes Üben und indem sie Muster erkennen.",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
-          "type": "freeResponse",
-          "id": "s2_fr2",
-          "title": "Die Rolle der Trainingsdaten",
-          "question": "Warum sind Trainingsdaten für das Lernen einer KI wichtig? Verwende das Beispiel einer KI, die lernt, Tiere zu erkennen.",
-          "expectedAnswer": "Trainingsdaten sind entscheidend, damit die KI Muster lernen kann. Indem man einer KI Tausende von beschrifteten Tierbildern (z.B. 'Katze', 'Hund') zeigt, lernt sie, Merkmale wie Form, Größe und Fell zu identifizieren, um bei neuen Bildern genaue Vorhersagen zu treffen.",
-          "pointsAwarded": 7,
+          "type": "multipleChoice",
+          "id": "s2_mcq1",
+          "title": "Maschinelles Lernen vs. klassische Programmierung",
+          "question": "Was unterscheidet maschinelles Lernen (ML) grundlegend von klassischer Programmierung?",
+          "options": [
+            "Beim ML erkennt die Maschine selbstständig Muster in Daten.",
+            "ML funktioniert nur mit Bildern.",
+            "Klassische Programmierung nutzt immer das Internet.",
+            "ML-Programme werden nie getestet."
+          ],
+          "correctOptionIndex": 0,
+          "pointsAwarded": 3,
           "pointsForIncorrect": 0
         }
       ]
@@ -91,12 +96,28 @@
       "title": "Stage 3: Variieren",
       "items": [
         {
+          "type": "informationalSnippet",
+          "id": "s3_info1",
+          "title": "Deep Learning kurz erklärt",
+          "content": "Deep Learning ist eine spezielle Form des maschinellen Lernens, bei der sogenannte neuronale Netze mit vielen Schichten besonders komplexe Muster erkennen können – zum Beispiel in Bildern oder Sprache.",
+          "pointsAwarded": 1
+        },
+        {
           "type": "promptingTask",
           "id": "s3_pt1",
-          "title": "Erstelle einen Prompt für ein Bild",
-          "taskDescription": "Du möchtest eine generative KI wie DALL-E verwenden, um ein Bild zu erstellen. Schreibe einen Prompt, um ein Bild einer futuristischen Stadt zu generieren.",
-          "evaluationGuidance": "1. Gibt der Prompt klar das Motiv an (eine futuristische Stadt)? 2. Enthält er mindestens zwei beschreibende Details (z.B. 'fliegende Autos', 'glänzende Wolkenkratzer', 'Neonlichter')? 3. Ist der Prompt prägnant und für eine KI leicht verständlich?",
-          "pointsAwarded": 10,
+          "title": "Prompt schreiben: Bildbeschreibung",
+          "taskDescription": "Du möchtest, dass eine KI ein Bild beschreibt, damit es für Blinde zugänglich ist. Schreibe einen Prompt, der die KI anweist, das Bild möglichst klar, sachlich und in maximal 40 Wörtern zu beschreiben.",
+          "evaluationGuidance": "Der Prompt sollte enthalten: Aufforderung zur Beschreibung, Begrenzung auf 40 Wörter, Klarheit/Sachlichkeit.",
+          "pointsAwarded": 7,
+          "pointsForIncorrect": 0
+        },
+        {
+          "type": "promptingTask",
+          "id": "s3_pt2",
+          "title": "Prompt verbessern",
+          "taskDescription": "Ein Nutzer gibt folgenden Prompt ein: 'Beschreibe das Bild.' Was ist daran verbesserungswürdig? Schreibe einen verbesserten Prompt.",
+          "evaluationGuidance": "Die Verbesserung sollte konkreter sein (z.B. Erwähnung von Zielgruppe, Länge, Klarheit, was beschrieben werden soll).",
+          "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
       ]
@@ -106,21 +127,21 @@
       "title": "Stage 4: Reflektieren",
       "items": [
         {
-          "type": "promptingTask",
-          "id": "s4_pt_error1",
-          "title": "Analysiere einen fehlerhaften Prompt",
-          "taskDescription": "Ein Benutzer gibt einer generativen KI den Prompt: 'Schreibe eine Geschichte.' Dieser Prompt ist zu vage. Identifiziere, warum er fehlerhaft ist, und schlage eine verbesserte Version vor, die zu einer besseren Geschichte führen würde.",
-          "evaluationGuidance": "1. Erkennt der Benutzer den Fehler korrekt (Ungenauigkeit)? 2. Fügt die vorgeschlagene Verbesserung spezifische Elemente wie Genre, Charakter oder Handlung hinzu? 3. Ist der verbesserte Prompt klar und für eine KI umsetzbar?",
-          "pointsAwarded": 12,
+          "type": "freeResponse",
+          "id": "s4_fr1",
+          "title": "Analyse eines Prompts",
+          "question": "Der Prompt 'Schreibe einen Text.' wird einer KI gegeben. Was sind die Schwächen dieses Prompts?",
+          "expectedAnswer": "Der Prompt ist zu allgemein, es fehlen Hinweise zum Thema, zur Textlänge und zum Stil. Die KI weiß nicht, worauf sie achten soll.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         },
         {
-          "type": "freeResponse",
-          "id": "s4_fr1",
-          "title": "Häufige Fallstricke",
-          "question": "Was ist laut der Lektion eine häufige Falle beim Umgang mit KI, insbesondere in Bezug auf ihr Wissen?",
-          "expectedAnswer": "Eine häufige Falle ist die Annahme, dass die KI über Echtzeitwissen verfügt. KI-Systeme werden mit Vergangenheitsdaten trainiert und wissen nichts über aktuelle Ereignisse, es sei denn, sie sind speziell für den Zugriff auf das Internet ausgelegt.",
-          "pointsAwarded": 6,
+          "type": "promptingTask",
+          "id": "s4_pt1",
+          "title": "Bewerte einen Prompt",
+          "taskDescription": "Beurteile den Prompt: 'Erkläre Klimawandel.' Was würdest du verbessern, damit die KI zielgerichteter antwortet?",
+          "evaluationGuidance": "Die Verbesserung sollte konkretisieren, für wen die Erklärung ist (z.B. für Kinder, für Experten), evtl. Länge oder Schwerpunkte benennen.",
+          "pointsAwarded": 8,
           "pointsForIncorrect": 0
         }
       ]
@@ -139,24 +160,24 @@
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",
-          "title": "KI-Lernprozess",
-          "question": "Was ist der korrekte vierstufige Lernprozess für eine KI?",
+          "title": "Generative KI",
+          "question": "Was ist das Besondere an generativer KI?",
           "options": [
-            "Training, Datenerfassung, Inferenz, Bewertung.",
-            "Datenerfassung, Modelltraining, Bewertung und Abstimmung, Inferenz.",
-            "Inferenz, Bewertung, Datenerfassung, Training.",
-            "Bewertung, Inferenz, Training, Datenerfassung."
+            "Sie kann neue Inhalte wie Texte, Bilder oder Musik erzeugen.",
+            "Sie kann nur bestehende Daten analysieren.",
+            "Sie funktioniert nur mit Zahlen.",
+            "Sie kann keine Muster erkennen."
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
         },
         {
           "type": "freeResponse",
           "id": "s5_fr1",
-          "title": "Fasse Deep Learning zusammen",
-          "question": "Fasse kurz zusammen, was Deep Learning ist und welche Art von Strukturen es verwendet.",
-          "expectedAnswer": "Deep Learning ist ein Teilbereich des maschinellen Lernens, der neuronale Netze mit mehreren Schichten (tiefe neuronale Netze) verwendet, um aus komplexen Datenmustern zu lernen. Diese Schichten ermöglichen es dem Modell, Informationen sequenziell zu verarbeiten, um Entscheidungen zu treffen.",
+          "title": "Generative KI erklären",
+          "question": "Erkläre in 1-2 Sätzen, was generative KI ist und nenne eine typische Anwendung.",
+          "expectedAnswer": "Generative KI kann neue Inhalte erzeugen, z.B. Texte, Bilder oder Musik. Ein Beispiel ist ChatGPT, das Texte generiert.",
           "pointsAwarded": 7,
           "pointsForIncorrect": 0
         }
@@ -168,11 +189,11 @@
       "items": [
         {
           "type": "promptingTask",
-          "id": "s6_pt_complex1",
-          "title": "Komplexe Prompterstellung",
-          "taskDescription": "Du bist ein Lehrer, der ein einfaches Quiz über KI für seine Schüler erstellen möchte. Schreibe einen Prompt für eine Generative KI, der sie anweist, als Quizersteller zu fungieren. Der Prompt sollte das Thema (Generative KI), die Anzahl der Fragen (3), das Frageformat (Multiple Choice) und die Zielgruppe (Mittelschüler) angeben.",
-          "evaluationGuidance": "1. Weist der Prompt der KI klar eine Rolle zu (Quizersteller)? 2. Gibt er das Thema, die Anzahl der Fragen und das Format an? 3. Wird die Zielgruppe klar erwähnt? 4. Ist der Prompt so strukturiert, dass eine KI die Anweisungen leicht befolgen kann?",
-          "pointsAwarded": 20,
+          "id": "s6_pt1",
+          "title": "Komplexe Prompt-Aufgabe",
+          "taskDescription": "Stell dir vor, du möchtest eine KI bitten, eine E-Mail für dein Team zu schreiben. Die E-Mail soll die wichtigsten Aufgaben für nächste Woche zusammenfassen, freundlich formuliert sein und maximal 120 Wörter umfassen. Schreibe einen vollständigen Prompt, der diese Anforderungen klar beschreibt.",
+          "evaluationGuidance": "Der Prompt sollte die Aufgaben zusammenfassen, einen freundlichen Ton erwähnen und die Längenbegrenzung klar angeben.",
+          "pointsAwarded": 12,
           "pointsForIncorrect": 0
         },
         {
