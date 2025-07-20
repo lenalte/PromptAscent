@@ -370,6 +370,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
                                         AGB
                                     </a>
+                                    <a href="/legal/impressum" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
+                                        Impressum
+                                    </a>
                                 </div>
                                 {isAuthenticated && (
                                     <div className="pt-3 flex flex-col gap-2">
