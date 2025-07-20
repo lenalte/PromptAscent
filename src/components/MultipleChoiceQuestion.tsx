@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { CheckIcon } from '@/components/icons/CheckIcon';
+import { CloseIcon } from '@/components/icons/closeIcon';
 
 interface MultipleChoiceQuestionProps {
   question: string;
@@ -105,7 +106,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                   {option}
                 </Label>
                 {hasAttempted && index === correctOptionIndex && <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400" />}
-                {hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && <XCircle className="h-5 w-5 text-destructive dark:text-red-400" />}
+                {hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && <CloseIcon className="h-5 w-5 text-destructive dark:text-red-400" />}
               </div>
             ))}
           </RadioGroup>
