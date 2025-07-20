@@ -41,7 +41,6 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
 }) => {
   const [selectedValue, setSelectedValue] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
   
   const handleSubmit = useCallback(async () => {
     if (isReadOnly || !selectedValue) return;
@@ -49,34 +48,20 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
     startTransition(async () => {
       try {
         const answerIndex = parseInt(selectedValue, 10);
-        // Call the anonymous save function, which no longer needs a userId
         await saveLikertScaleAnswer({ 
             lessonId: lessonId, 
             questionId: id, 
             answer: answerIndex 
         });
         
-        // This type of question is always "correct" for progression, but points are only awarded once.
         onAnswerSubmit(true, pointsAwarded, id, answerIndex);
-        
-        toast({
-            title: "Feedback gespeichert",
-            description: "Danke für deine ehrliche Antwort!",
-            className: "bg-green-100 border-green-400"
-        });
 
       } catch (error) {
         console.error('Likert scale submission error:', error);
-        toast({
-            title: "Fehler",
-            description: "Deine Antwort konnte nicht gespeichert werden. Bitte versuche es erneut.",
-            variant: "destructive"
-        });
-        // We still mark as complete to avoid blocking the user
         onAnswerSubmit(true, 0, id.toString(),  parseInt(selectedValue, 10));
       }
     });
-  }, [isReadOnly, selectedValue, id, lessonId, onAnswerSubmit, pointsAwarded, toast]);
+  }, [isReadOnly, selectedValue, id, lessonId, onAnswerSubmit, pointsAwarded]);
 
   const isComponentReadOnly = isReadOnly;
 
