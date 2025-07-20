@@ -249,7 +249,7 @@ export default function AuthForm() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username" className="text-white">Username</Label>
                     <FormControl>
                       <Input id="username" placeholder="dein_username" {...field} disabled={isLoading} />
                     </FormControl>
