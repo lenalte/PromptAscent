@@ -76,14 +76,14 @@ h6 {
     --foreground: 263, 100%, 50%;
     /* Dark Warm Gray/Brown */
 
-    --card: 48 100% 95%;
+    --card: 263 100% 20%;
     /* White cards for contrast */
     --card-foreground: 156 8% 25%;
     /* Match main foreground */
 
     --popover: 0 0% 100%;
     /* White popovers */
-    --popover-foreground: 156 8% 25%;
+    --popover-foreground: 0 0% 100%;
     /* Match main foreground */
 
     --primary: 263 100% 100%;
@@ -160,15 +160,15 @@ h6 {
     --card-foreground: 0 0% 98%;
 
     --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover-foreground: 0 0% 100%;
 
     --primary: 0 90% 19%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 0 79% 28%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 264 100% 90%;
 
-    --muted: 0 0% 14.9%;
+    --muted: 156 8% 25%;
     --muted-foreground: 0 0% 63.9%;
 
     --accent: 30 95% 55%;
