@@ -4,7 +4,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue, getGeneratedLessonById, type LessonStage, type StageItemStatus, type LessonItem } from '@/data/lessons';
-import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send, RefreshCw } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -600,7 +600,7 @@ function HomePageContent() {
           visible: true,
           onClick: handleRestartStage,
           text: 'Stufe wiederholen',
-          icon: <RefreshCw className="h-5 w-5" />,
+          icon: <RepeatIcon className="h-5 w-5" />,
           disabled: isSubmitting,
         };
       }
@@ -946,5 +946,3 @@ function HomePageContent() {
 export default function Home() {
   return <HomePageContent />;
 }
-
-
