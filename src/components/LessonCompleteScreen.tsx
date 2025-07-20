@@ -9,9 +9,10 @@ import { LeaderboardIcon } from './icons/LeaderboardIcon';
 
 interface LessonCompleteScreenProps {
   onGoHome: () => void;
+  onGoToNextLesson?: () => void;
 }
 
-export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGoHome }) => {
+export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGoHome, onGoToNextLesson }) => {
   const { isLoadingProgress: isContextLoading, userProgress } = useUserProgress();
   const totalPoints = userProgress?.totalPoints ?? 0;
 
@@ -29,7 +30,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
       <CardContent className="space-y-4">
         <div className="flex items-center justify-center space-x-2 pt-4">
           <p className="text-xl font-semibold text-foreground dark:text-card-foreground">
-            Gesamtpunktestand: <span className="font-bold text-primary">{totalPoints}</span>
+            Gesamtpunktestand: <span className="font-bold text-foreground">{totalPoints}</span>
           </p>
         </div>
       </CardContent>

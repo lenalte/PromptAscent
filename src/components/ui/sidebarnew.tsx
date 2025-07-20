@@ -364,10 +364,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <>
                                 <div className="flex flex-col gap-2">
                                     <a href="/legal/datenschutz" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                        <BookOpen className="mr-3 ml-1 h-5 w-5" /> Datenschutz
+                                        Datenschutz
                                     </a>
                                     <a href="/legal/agb" target="_blank" rel="noopener noreferrer" className="w-full flex items-center p-2 rounded-lg hover:bg-[var(--sidebar-accent)] text-white">
-                                        <Award className="mr-3 ml-1 h-5 w-5" /> AGB
+                                        AGB
                                     </a>
                                 </div>
                                 {isAuthenticated && (
