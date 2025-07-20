@@ -3,13 +3,16 @@
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Medal, BadgeCheck, HomeIcon, Trophy } from 'lucide-react';
+import { HomeIcon, Medal, Trophy } from 'lucide-react';
+import Image from 'next/image';
+
 
 interface LevelCompleteScreenProps {
   onGoHome: () => void;
   levelTitle: string;
   badgeName: string;
   badgeIcon?: React.ReactNode; // Optional: für eigene Badges statt Standard-Icon
+  badgeImageUrl?: string; // Add imageUrl prop
 }
 
 export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
@@ -17,6 +20,7 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
   levelTitle,
   badgeName,
   badgeIcon,
+  badgeImageUrl,
 }) => {
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-yellow-500 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20 animate-in fade-in">
@@ -29,7 +33,16 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-col items-center justify-center pt-4">
-        {badgeIcon ? (
+        {badgeImageUrl ? (
+            <Image
+                src={badgeImageUrl}
+                alt={badgeName}
+                width={128}
+                height={128}
+                className="drop-shadow-lg"
+                data-ai-hint="level badge"
+            />
+          ) : badgeIcon ? (
             <span className="mb-2 drop-shadow-lg">{badgeIcon}</span>
           ) : (
             <span className="mb-2">🏅</span>

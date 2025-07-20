@@ -19,6 +19,7 @@ import { LockClosedIcon } from './icons/lock_closed';
 import { BADGES, getBadgeById, type Badge } from '@/data/badges';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { trackEvent } from "@/lib/gtagHelper";
+import Image from 'next/image';
 
 
 interface InventoryProps {
@@ -225,7 +226,13 @@ const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, sidebarWidth, se
                             <TooltipTrigger>
                               <div className={cn("aspect-square bg-[hsl(var(--muted))] rounded-lg flex items-center justify-center p-4", !badge.unlocked && "opacity-50")}>
                                 {badge.unlocked ? (
-                                    <badge.icon className="h-16 w-16 text-accent" />
+                                    <Image
+                                        src={badge.imageUrl}
+                                        alt={badge.name}
+                                        width={64}
+                                        height={64}
+                                        data-ai-hint="level badge"
+                                    />
                                 ) : (
                                     <LockClosedIcon className="h-16 w-16 text-[hsl(var(--foreground))]" />
                                 )}
