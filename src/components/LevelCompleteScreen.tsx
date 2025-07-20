@@ -4,8 +4,9 @@
 import type React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { HomeIcon, Medal, Trophy } from 'lucide-react';
+import { HomeIcon, Trophy } from 'lucide-react';
 import Image from 'next/image';
+import { LeaderboardIcon } from './icons/LeaderboardIcon';
 
 
 interface LevelCompleteScreenProps {
@@ -24,11 +25,11 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
   badgeImageUrl,
 }) => {
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-yellow-500 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20 animate-in fade-in">
+    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-accent animate-in fade-in">
       <CardHeader className="items-center">
-        <Medal className="h-20 w-20 text-yellow-500 mb-4 animate-bounce" />
-        <CardTitle className="text-3xl font-bold text-yellow-800 dark:text-yellow-200">Level abgeschlossen!</CardTitle>
-        <CardDescription className="text-yellow-700 dark:text-yellow-300 mt-2">
+        <LeaderboardIcon className="h-20 w-20 text-accent mb-4 animate-bounce" />
+        <CardTitle className="text-3xl font-bold text-accent">Level abgeschlossen!</CardTitle>
+        <CardDescription className="text-accent/80 mt-2">
           Wow, du hast das Level <span className="font-bold">{levelTitle}</span> gemeistert!
         </CardDescription>
       </CardHeader>
@@ -48,13 +49,13 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
           ) : (
             <span className="mb-2">🏅</span>
           )}
-          <div className="mt-2 text-lg font-semibold text-foreground dark:text-card-foreground">
+          <div className="mt-2 text-lg font-semibold text-accent/90">
             Du hast das <span className="font-bold">{badgeName}</span>-Badge erhalten!
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <Trophy className="h-8 w-8 mr-2 text-yellow-500" />
-          <span className="text-base text-yellow-900 dark:text-yellow-200 font-medium">
+          <Trophy className="h-8 w-8 mr-2 text-accent" />
+          <span className="text-base text-accent/80 font-medium">
             Weiter so – das nächste Level wartet schon auf dich!
           </span>
         </div>
