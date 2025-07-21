@@ -6,8 +6,9 @@ import { useUserProgress } from '@/context/UserProgressContext';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import BirdsBackground from '../BirdsBackground';
+import { Suspense } from 'react';
 
-export default function AuthRedirect({ children }: { children: React.ReactNode }) {
+function AuthRedirectInner({ children }: { children: React.ReactNode }) {
     const { isLoadingAuth, currentUser } = useUserProgress();
     const router = useRouter();
     const pathname = usePathname();
@@ -35,6 +36,14 @@ export default function AuthRedirect({ children }: { children: React.ReactNode }
             </div>
         );
     }
-    
+
     return <>{children}</>;
+}
+
+export default function AuthRedirect({ children }: { children: React.ReactNode }) {
+    return (
+        <Suspense fallback={null}>
+            <AuthRedirectInner>{children}</AuthRedirectInner>
+        </Suspense>
+    );
 }

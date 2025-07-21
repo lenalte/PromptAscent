@@ -1,8 +1,3 @@
-
-import { EightbitButton } from '@/components/ui/eightbit-button';
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
-
 export default function DatenschutzPage() {
   return (
     <div className="container mx-auto py-12 px-4 max-w-4xl text-white">
@@ -51,7 +46,7 @@ export default function DatenschutzPage() {
         <p>
           Beim Besuch der Plattform werden Cookies und ähnliche Technologien eingesetzt, um den technischen Betrieb zu gewährleisten (z. B. Session-Cookies) und – <strong>nur mit Ihrer Einwilligung</strong> – zur anonymisierten Auswertung des Nutzerverhaltens (Google Analytics). Beim ersten Besuch wird Ihnen ein Cookie-Banner angezeigt, mit dem Sie Ihre Einwilligung erteilen oder verweigern können. Sie können Ihre Entscheidung jederzeit in den Cookie-Einstellungen widerrufen.
         </p>
-        
+
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">5. Hosting und Drittanbieter</h2>
@@ -80,42 +75,42 @@ export default function DatenschutzPage() {
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">6. Rechtsgrundlage der Verarbeitung</h2>
         <p>Die Verarbeitung Ihrer Daten erfolgt auf Basis von <strong>Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)</strong>.</p>
         <p>Sie nehmen freiwillig an der Plattform teil und können Ihre Einwilligung jederzeit widerrufen.</p>
-        
+
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">7. Speicherdauer</h2>
         <ul className="list-disc list-inside space-y-1">
-            <li><strong>Personenbezogene Daten (z. B. E-Mail, Nutzername, Fortschritt):</strong> werden <strong>nach Abschluss der Bachelorarbeit (spätestens 3 Monate nach Beginn der Erhebung)</strong> vollständig gelöscht.</li>
-            <li><strong>Prompt-Eingaben und Freitextantworten:</strong> werden <strong>nicht dauerhaft gespeichert</strong>.</li>
-            <li><strong>Anonyme Umfrage-Antworten:</strong> werden <strong>unverknüpft zum Nutzerkonto</strong> gespeichert und nach Abschluss der Auswertung gelöscht.</li>
-            <li>Eine <strong>Weitergabe an Dritte</strong> erfolgt nicht.</li>
+          <li><strong>Personenbezogene Daten (z. B. E-Mail, Nutzername, Fortschritt):</strong> werden <strong>nach Abschluss der Bachelorarbeit (spätestens 3 Monate nach Beginn der Erhebung)</strong> vollständig gelöscht.</li>
+          <li><strong>Prompt-Eingaben und Freitextantworten:</strong> werden <strong>nicht dauerhaft gespeichert</strong>.</li>
+          <li><strong>Anonyme Umfrage-Antworten:</strong> werden <strong>unverknüpft zum Nutzerkonto</strong> gespeichert und nach Abschluss der Auswertung gelöscht.</li>
+          <li>Eine <strong>Weitergabe an Dritte</strong> erfolgt nicht.</li>
         </ul>
 
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">8. Empfänger der Daten / Datenübermittlung</h2>
         <p>Die Verarbeitung erfolgt auf Servern von Google (Firebase, Gemini, Analytics), die auch in den USA stehen können. Die Übermittlung erfolgt auf Grundlage der EU-Standardvertragsklauseln.</p>
-        
+
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">9. Ihre Rechte</h2>
         <p>Sie haben gemäß DSGVO folgende Rechte:</p>
         <ul className="list-disc list-inside space-y-1">
-            <li><strong>Auskunft</strong> über Ihre gespeicherten Daten (Art. 15 DSGVO)</li>
-            <li><strong>Berichtigung</strong> unrichtiger Daten (Art. 16 DSGVO)</li>
-            <li><strong>Löschung</strong> („Recht auf Vergessenwerden“, Art. 17 DSGVO)</li>
-            <li><strong>Einschränkung der Verarbeitung</strong> (Art. 18 DSGVO)</li>
-            <li><strong>Widerspruch</strong> gegen die Verarbeitung (Art. 21 DSGVO)</li>
-            <li><strong>Datenübertragbarkeit</strong> (Art. 20 DSGVO)</li>
-            <li><strong>Beschwerde</strong> bei einer Datenschutzaufsichtsbehörde</li>
+          <li><strong>Auskunft</strong> über Ihre gespeicherten Daten (Art. 15 DSGVO)</li>
+          <li><strong>Berichtigung</strong> unrichtiger Daten (Art. 16 DSGVO)</li>
+          <li><strong>Löschung</strong> („Recht auf Vergessenwerden“, Art. 17 DSGVO)</li>
+          <li><strong>Einschränkung der Verarbeitung</strong> (Art. 18 DSGVO)</li>
+          <li><strong>Widerspruch</strong> gegen die Verarbeitung (Art. 21 DSGVO)</li>
+          <li><strong>Datenübertragbarkeit</strong> (Art. 20 DSGVO)</li>
+          <li><strong>Beschwerde</strong> bei einer Datenschutzaufsichtsbehörde</li>
         </ul>
 
         <hr className="my-6 border-border" />
-        
+
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">10. Widerruf der Einwilligung</h2>
         <p>Sie können Ihre Einwilligung zur Datenverarbeitung jederzeit mit Wirkung für die Zukunft widerrufen.</p>
         <p>Bitte kontaktieren Sie dazu den Verantwortlichen (siehe oben).</p>
-        
+
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">11. Kontakt</h2>

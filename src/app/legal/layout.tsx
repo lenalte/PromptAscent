@@ -1,8 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
-import { EightbitButton } from '@/components/ui/eightbit-button';
-import BirdsBackground from '@/components/BirdsBackground';
 
 export const metadata: Metadata = {
   title: 'Rechtliches - Prompt Ascent',
@@ -16,7 +12,6 @@ export default function LegalLayout({
 }>) {
   return (
     <div className="relative flex flex-col min-h-screen bg-background p-4">
-      <BirdsBackground />
       <div className="w-full z-10 pt-8">
         {children}
       </div>

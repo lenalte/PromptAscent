@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue, getGeneratedLessonById, type LessonStage, type StageItemStatus, type LessonItem } from '@/data/lessons';
 import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
@@ -83,7 +82,6 @@ function HomePageContent() {
   const [currentOverallLevel, setCurrentOverallLevel] = useState<OverallLevel | null>(null);
   const [overallLevelProgressPercentage, setOverallLevelProgressPercentage] = useState(0);
   const [isStartingLesson, setIsStartingLesson] = useState(false);
-  const router = useRouter();
 
   const [bossChallengeInfo, setBossChallengeInfo] = useState<{ lessonId: string, stageId: string, canSkip: boolean } | null>(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
