@@ -18,6 +18,7 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { AvatarSelector } from "@/components/AvatarSelector";
 import type { AvatarId } from "@/data/avatars";
+import { Suspense } from "react";
 
 const emailSchema = z.object({
   email: z.string().email({ message: "Ungültige E-Mail-Adresse." }),
@@ -31,7 +32,7 @@ type EmailFormValues = z.infer<typeof emailSchema>;
 type ProfileFormValues = z.infer<typeof profileSchema>;
 type Step = "email" | "waitingLink" | "profile" | "done";
 
-export default function AuthForm() {
+function AuthFormInner() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<Step>("email");
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
@@ -290,7 +291,7 @@ export default function AuthForm() {
 
         {step === "waitingLink" && (
           <div className="flex flex-col items-center py-8">
-            <Loader2 className="mr-2 h-8 w-8 animate-spin" />       
+            <Loader2 className="mr-2 h-8 w-8 animate-spin" />
           </div>
         )}
 
@@ -311,5 +312,13 @@ export default function AuthForm() {
         )}
       </CardFooter>
     </Card>
+  );
+}
+
+export default function RegistrationForm() {
+  return (
+    <Suspense fallback={null}>
+      <AuthFormInner />
+    </Suspense>
   );
 }

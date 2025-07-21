@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserProgress } from '@/services/userProgressService';
+import { Suspense } from 'react';
 
 type StageCompleteInfo = {
     renderType: 'StageCompleteScreen';
@@ -52,7 +53,7 @@ type LessonItemWithRenderType = LessonItem & { renderType: 'LessonItem'; key: st
 type ContentQueueItem = LessonItemWithRenderType | StageCompleteInfo | LessonCompleteInfo;
 
 
-export default function LessonPage() {
+function LessonPageInner() {
     const params = useParams();
     const router = useRouter();
     const { toast } = useToast();
@@ -62,7 +63,7 @@ export default function LessonPage() {
 
     const [lessonData, setLessonData] = useState<Lesson | null>(null);
     const [isLoadingLesson, setIsLoadingLesson] = useState(true);
-    
+
     const [contentQueue, setContentQueue] = useState<ContentQueueItem[]>([]);
     const [activeContentIndex, setActiveContentIndex] = useState(0);
 
@@ -72,7 +73,7 @@ export default function LessonPage() {
     const [errorLoadingLesson, setErrorLoadingLesson] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isProcessing = useRef(false);
-    
+
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const currentStageIndex = useMemo(() => userProgress?.lessonStageProgress?.[lessonId]?.currentStageIndex ?? 0, [userProgress, lessonId]);
@@ -119,12 +120,12 @@ export default function LessonPage() {
                     setPointsThisStageSession(0);
                 } else {
                     const newQueue: ContentQueueItem[] = [];
-                    
+
                     for (let i = 0; i < lessonProg.currentStageIndex; i++) {
                         const stage = loadedLesson.stages[i];
                         const pastStageProg = lessonProg.stages[stage.id];
                         newQueue.push(...stage.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
-                        
+
                         let stagePoints = pastStageProg?.pointsEarned;
                         if (typeof stagePoints !== 'number') {
                             stagePoints = 0;
@@ -146,17 +147,17 @@ export default function LessonPage() {
                             activeBoosterMultiplier: null,
                             stageItemAttempts: pastStageProg?.items || {},
                             stageItems: stage.items as LessonItem[],
-                            onNextStage: () => {}, 
+                            onNextStage: () => { },
                             onGoHome: handleGoHome,
                             isLastStage: i === 5,
                             stageStatus: pastStageProg?.status || 'completed-good',
-                            onRestart: () => {}, // Placeholder for past stages
+                            onRestart: () => { }, // Placeholder for past stages
                         });
                     }
-                    
+
                     const currentStageData = loadedLesson.stages[lessonProg.currentStageIndex];
                     const currentStageProgress = lessonProg.stages[currentStageData.id];
-                    
+
                     if (currentStageProgress?.status === 'failed-stage') {
                         const completionCard: StageCompleteInfo = {
                             renderType: 'StageCompleteScreen',
@@ -167,7 +168,7 @@ export default function LessonPage() {
                             activeBoosterMultiplier: null,
                             stageItemAttempts: currentStageProgress.items,
                             stageItems: currentStageData.items as LessonItem[],
-                            onNextStage: () => {}, // Should not be called
+                            onNextStage: () => { }, // Should not be called
                             onGoHome: handleGoHome,
                             isLastStage: currentStageIndex === 5,
                             stageStatus: 'failed-stage',
@@ -175,23 +176,23 @@ export default function LessonPage() {
                         };
                         newQueue.push(completionCard);
                         setContentQueue(newQueue);
-                        setActiveContentIndex(newQueue.length -1);
+                        setActiveContentIndex(newQueue.length - 1);
                         setIsLoadingLesson(false); // Manually set loading to false here
                         return; // Stop processing further for this load
                     }
 
 
                     let activeItemIndex = 0;
-                    if(currentStageProgress?.items){
+                    if (currentStageProgress?.items) {
                         const firstIncompleteItemIndex = currentStageData.items.findIndex(item => {
                             const status = currentStageProgress.items[item.id];
                             return !status || status.correct !== true;
                         });
                         activeItemIndex = firstIncompleteItemIndex !== -1 ? firstIncompleteItemIndex : currentStageData.items.length;
                     }
-                    
+
                     newQueue.push(...currentStageData.items.map(item => ({ ...item, renderType: 'LessonItem' as const, key: item.id })));
-                    
+
                     if (userProgress?.completedLessons.includes(lessonId)) {
                         newQueue.push({ renderType: 'LessonCompleteScreen', key: `lesson-complete-${lessonId}`, onGoHome: handleGoHome, onGoToNextLesson: handleGoHome });
                     }
@@ -199,7 +200,7 @@ export default function LessonPage() {
                     setContentQueue(newQueue);
                     setActiveContentIndex(newQueue.length - currentStageData.items.length + activeItemIndex);
                     setStageItemAttempts(currentStageProgress?.items || {});
-                    setPointsThisStageSession(0); 
+                    setPointsThisStageSession(0);
                 }
 
             } catch (err) {
@@ -221,9 +222,9 @@ export default function LessonPage() {
             const isNowCorrect = wasCorrectBefore || isCorrect;
 
             if (isCorrect && !wasCorrectBefore) {
-                 setPointsThisStageSession(p => p + pointsChange);
+                setPointsThisStageSession(p => p + pointsChange);
             }
-            
+
             return {
                 ...prev,
                 [itemId]: {
@@ -235,7 +236,7 @@ export default function LessonPage() {
     }, []);
 
     const activeContent = contentQueue.length > activeContentIndex ? contentQueue[activeContentIndex] : null;
-    
+
     useEffect(() => {
         if (activeContent?.renderType === 'LessonItem' && activeContent.type === 'informationalSnippet') {
             const hasBeenAttempted = !!stageItemAttempts[activeContent.id];
@@ -280,18 +281,18 @@ export default function LessonPage() {
 
     const handleProceed = useCallback(async () => {
         if (isProcessing.current || !currentStage || !activeContent) return;
-    
+
         isProcessing.current = true;
         setIsSubmitting(true);
-    
+
         try {
             const itemToProcess = activeContent;
-    
+
             if (itemToProcess.renderType === 'StageCompleteScreen' || itemToProcess.renderType === 'LessonCompleteScreen') {
                 setActiveContentIndex(prev => prev + 1);
                 return;
             }
-            
+
             const currentStageItemIds = new Set(lessonData?.stages[currentStageIndex].items.map(i => i.id));
             let isLastItemInCurrentStage = true;
             for (let i = activeContentIndex + 1; i < contentQueue.length; i++) {
@@ -311,7 +312,7 @@ export default function LessonPage() {
                     pointsThisStageSession,
                     currentStage.items as LessonItem[]
                 );
-                
+
                 if (!stageResult || !stageResult.updatedProgress) {
                     toast({
                         title: "Error",
@@ -324,10 +325,10 @@ export default function LessonPage() {
                 }
 
                 const basePoints = stageResult.basePointsAdded;
-                
+
                 const finalStageStatus = stageResult.updatedProgress.lessonStageProgress?.[lessonId]?.stages?.[currentStage.id]?.status ?? 'completed-good';
-                
-                 const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
+
+                const activeBoosterMultiplier = (userProgress?.activeBooster && Date.now() < userProgress.activeBooster.expiresAt)
                     ? userProgress.activeBooster.multiplier
                     : null;
 
@@ -346,13 +347,13 @@ export default function LessonPage() {
                     stageStatus: finalStageStatus,
                     onRestart: handleRestartStage,
                 };
-                
+
                 if (finalStageStatus === 'failed-stage') {
                     const currentStageItemIdsSet = new Set(currentStage.items.map(i => i.id));
                     const firstItemOfStageIndex = contentQueue.findIndex(c => c.renderType === 'LessonItem' && currentStageItemIdsSet.has(c.id));
-                    
+
                     if (firstItemOfStageIndex !== -1) {
-                         setContentQueue(prev => {
+                        setContentQueue(prev => {
                             const queueBeforeCurrentStage = prev.slice(0, firstItemOfStageIndex);
                             return [...queueBeforeCurrentStage, completionCard];
                         });
@@ -372,13 +373,13 @@ export default function LessonPage() {
             } else {
                 setActiveContentIndex(prev => prev + 1);
             }
-    
+
         } catch (error) {
             console.error("Error in handleProceed: ", error);
             toast({
-               title: "Error",
-               description: "An error occurred while proceeding to the next step.",
-               variant: "destructive"
+                title: "Error",
+                description: "An error occurred while proceeding to the next step.",
+                variant: "destructive"
             });
         } finally {
             isProcessing.current = false;
@@ -411,16 +412,16 @@ export default function LessonPage() {
         return lessonData.stages.map((stage, index) => {
             const stageInfo = lessonProg.stages[stage.id];
             let bgColor = 'bg-muted';
-            
+
             if (index < lessonProg.currentStageIndex || stageInfo?.status?.startsWith('completed')) {
                 if (stageInfo?.status === 'completed-perfect') { bgColor = 'bg-green-500'; }
                 else if (stageInfo?.status === 'completed-good') { bgColor = 'bg-yellow-500'; }
                 else if (stageInfo?.status === 'failed-stage') { bgColor = 'bg-red-500'; }
                 else { bgColor = 'bg-gray-300'; }
             } else if (index === lessonProg.currentStageIndex) {
-                 bgColor = 'bg-blue-500 animate-pulse';
+                bgColor = 'bg-blue-500 animate-pulse';
             }
-            
+
             return (
                 <div key={stage.id} className={`flex-1 h-3 rounded ${bgColor} mx-0.5 flex items-center justify-center`}>
                 </div>
@@ -433,7 +434,7 @@ export default function LessonPage() {
         if (!activeContent) {
             return { visible: false };
         }
-        
+
         if (activeContent.renderType === 'LessonCompleteScreen') {
             return {
                 visible: true,
@@ -471,19 +472,19 @@ export default function LessonPage() {
             const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
 
             if (isAnsweredCorrectly || item.type === 'informationalSnippet' || maxAttemptsReached) {
-              return {
-                  visible: true,
-                  onClick: handleProceed,
-                  text: 'Nächste',
-                  icon: <ArrowRight className="h-5 w-5" />,
-                  disabled: isSubmitting,
-              };
+                return {
+                    visible: true,
+                    onClick: handleProceed,
+                    text: 'Nächste',
+                    icon: <ArrowRight className="h-5 w-5" />,
+                    disabled: isSubmitting,
+                };
             }
         }
 
         return { visible: false };
     };
-    
+
     const buttonConfig = getButtonConfig();
 
     if (isLoadingLesson || (isContextLoading && !currentUser && !userProgress)) {
@@ -533,14 +534,14 @@ export default function LessonPage() {
     // Determine if we should only show the failed screen.
     const activeContentItem = contentQueue[activeContentIndex];
     const showOnlyFailedScreen = activeContentItem?.renderType === 'StageCompleteScreen' && activeContentItem.stageStatus === 'failed-stage';
-    
+
     return (
         <main className="container mx-auto py-8 px-4 flex flex-col min-h-screen items-center space-y-8">
             <div className="w-full max-w-3xl flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                     <Link href="/" passHref legacyBehavior>
                         <EightbitButton as="a" aria-label="Back to Lessons" className="p-2 h-10 w-10 flex items-center justify-center">
-                           <HomeIcon className="h-5 w-5" />
+                            <HomeIcon className="h-5 w-5" />
                         </EightbitButton>
                     </Link>
                     <h1 className="text-3xl font-bold text-primary">{lessonData.title}</h1>
@@ -560,11 +561,11 @@ export default function LessonPage() {
             <Card className="bg-card/50 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl">
                 <CardContent className="p-0">
                     <div className="space-y-8">
-                       
+
                         {contentQueue.map((content, index) => {
                             // If we are only showing the failed screen, hide everything that comes before it.
                             if (showOnlyFailedScreen && index < activeContentIndex) {
-                              return null;
+                                return null;
                             }
                             // And hide everything that comes after it.
                             if (index > activeContentIndex) {
@@ -572,11 +573,11 @@ export default function LessonPage() {
                             }
 
                             const isReadOnly = index < activeContentIndex;
-                            
+
                             return (
-                                <div key={content.key} ref={el => { if(el) itemRefs.current[index] = el; }}>
+                                <div key={content.key} ref={el => { if (el) itemRefs.current[index] = el; }}>
                                     {(() => {
-                                         if (content.renderType === 'LessonItem') {
+                                        if (content.renderType === 'LessonItem') {
                                             const item = content;
                                             const itemStatus = stageItemAttempts[item.id];
                                             const hasSubmittedCorrectly = itemStatus?.correct === true;
@@ -624,12 +625,12 @@ export default function LessonPage() {
                 <div className="fixed bottom-8 right-8 z-50">
                     <EightbitButton onClick={buttonConfig.onClick} className="text-lg font-semibold" disabled={buttonConfig.disabled}>
                         {isSubmitting ? (
-                           <Loader2 className="h-6 w-6 animate-spin" />
+                            <Loader2 className="h-6 w-6 animate-spin" />
                         ) : (
-                           <>
-                             {buttonConfig.text}
-                             <span className="ml-2">{buttonConfig.icon}</span>
-                           </>
+                            <>
+                                {buttonConfig.text}
+                                <span className="ml-2">{buttonConfig.icon}</span>
+                            </>
                         )}
                     </EightbitButton>
                 </div>
@@ -638,5 +639,12 @@ export default function LessonPage() {
     );
 }
 
-    
+export default function LessonPage() {
+    return (
+        <Suspense fallback={null}>
+            <LessonPageInner />
+        </Suspense>
+    );
+}
+
 

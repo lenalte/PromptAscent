@@ -9,8 +9,9 @@ import { getAuth, updateProfile } from "firebase/auth";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Suspense } from 'react';
 
-export default function AvatarSelection() {
+function AvatarSelectionInner() {
   const [selectedAvatarId, setSelectedAvatarId] = useState<AvatarId | null>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -61,39 +62,48 @@ export default function AvatarSelection() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-    <Card className="w-full max-w-lg">
-  <CardHeader>
-    <CardTitle className="text-2xl">Choose Your Avatar</CardTitle>
-    <CardDescription>
-      {'Schritt 2: Wähle Deinen Avatar aus den Optionen aus.'}
-    </CardDescription>
-  </CardHeader>
-  
-  <CardContent>
-    <div className="space-y-4">
-      <div className="grid grid-cols-4 gap-4 justify-items-center pt-2">
-        {AVATARS.map((avatar) => (
-          <button
-            key={avatar.id}
-            type="button"
-            onClick={() => handleAvatarSelection(avatar.id)}
-            className={`p-2 rounded-full transition-all duration-200 ${selectedAvatarId === avatar.id ? 'ring-2 ring-primary ring-offset-2 bg-primary/20' : 'hover:bg-muted'}`}
-          >
-            <AvatarDisplay avatarId={avatar.id} className="h-16 w-16" />
-            <span className="sr-only">{avatar.name}</span>
-          </button>
-        ))}
-      </div>
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl">Choose Your Avatar</CardTitle>
+          <CardDescription>
+            {'Schritt 2: Wähle Deinen Avatar aus den Optionen aus.'}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 gap-4 justify-items-center pt-2">
+              {AVATARS.map((avatar) => (
+                <button
+                  key={avatar.id}
+                  type="button"
+                  onClick={() => handleAvatarSelection(avatar.id)}
+                  className={`p-2 rounded-full transition-all duration-200 ${selectedAvatarId === avatar.id ? 'ring-2 ring-primary ring-offset-2 bg-primary/20' : 'hover:bg-muted'}`}
+                >
+                  <AvatarDisplay avatarId={avatar.id} className="h-16 w-16" />
+                  <span className="sr-only">{avatar.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col space-y-2">
+          <EightbitButton onClick={handleSaveAvatar} className="w-full">
+            Avatar speichern
+          </EightbitButton>
+        </CardFooter>
+      </Card>
     </div>
-  </CardContent>
-  
-  <CardFooter className="flex flex-col space-y-2">
-    <EightbitButton onClick={handleSaveAvatar} className="w-full">
-      Avatar speichern
-    </EightbitButton>
-  </CardFooter>
-</Card>
-</div>
+
+  );
+}
+
+export default function AvatarSelectionPage() {
+  return (
+    <Suspense fallback={null}>
+      <AvatarSelectionInner />
+    </Suspense>
 
   );
 }

@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import { UserProgressProvider } from '@/context/UserProgressContext';
 import { JetBrains_Mono } from 'next/font/google';
-import AuthRedirect from '@/components/auth/AuthRedirect'; // Import the new component
-import GoogleAnalytics from '@/components/GoogleAnalytics';
-import CookieBanner from '@/components/CookieBanner';
+import ClientRoot from "@/components/ClientRoot";
 
 const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
@@ -18,23 +14,13 @@ export const metadata: Metadata = {
   description: 'Interaktive Lektionen und KI-gestützte Werkzeuge, um das Prompt Engineering zu meistern, mit stufenbasiertem Fortschritt und Feedback.',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de">
-      <GoogleAnalytics />
       <body className={`${jetBrainsMono.variable} antialiased bg-background text-foreground`}>
-      
-        <UserProgressProvider>
-          <AuthRedirect>
-            {children}
-          </AuthRedirect>
-          <Toaster />
-        </UserProgressProvider>
-        <CookieBanner />
+        <ClientRoot>
+          {children}
+        </ClientRoot>
       </body>
     </html>
   );

@@ -8,8 +8,8 @@
  * - ValidateUserAnswerOutput - The output type for the validateUserAnswer function.
  */
 
-import {ai} from '@/ai/ai-instance';
-import {z} from 'genkit';
+import { ai } from '@/ai/ai-instance';
+import { z } from 'genkit';
 
 const ValidateUserAnswerInputSchema = z.object({
   userAnswer: z.string().describe('The user\s answer to the question.'),
@@ -64,6 +64,12 @@ const validateUserAnswerFlow = ai.defineFlow(
     outputSchema: ValidateUserAnswerOutputSchema,
   },
   async (input) => {
+    console.log(
+      "[PROD DEBUG] Gemini API Key:",
+      process.env.GOOGLE_GENAI_API_KEY
+        ? `Present (${process.env.GOOGLE_GENAI_API_KEY.length} Zeichen)`
+        : "Missing/Empty"
+    );
     const MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 1000;
 
@@ -80,9 +86,9 @@ const validateUserAnswerFlow = ai.defineFlow(
 
         // Check for non-retryable quota errors
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
-            throw new Error('API-Kontingent überschritten. Bitte versuchen Sie es später erneut.');
+          throw new Error('API-Kontingent überschritten. Bitte versuchen Sie es später erneut.');
         }
-        
+
         if (attempt === MAX_RETRIES) {
           throw new Error(`Failed to validate answer after ${MAX_RETRIES} attempts: ${errorMessage}`);
         }

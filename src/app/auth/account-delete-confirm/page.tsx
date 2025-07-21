@@ -5,10 +5,12 @@ import { getAuth, isSignInWithEmailLink, signInWithEmailLink, deleteUser } from 
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { deleteUserDocument } from "@/services/userProgressService"; // Import the server action
+import { Suspense } from "react";
 
-export default function AccountDeleteConfirmPage() {
+function AccountDeleteConfirmPageInner() {
+
   const router = useRouter();
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   useEffect(() => {
     const auth = getAuth();
@@ -62,5 +64,13 @@ export default function AccountDeleteConfirmPage() {
       <h1 className="text-2xl font-bold mb-4">Account löschen</h1>
       <p>Dein Account wird jetzt gelöscht, falls die Bestätigung erfolgreich war...</p>
     </div>
+  );
+}
+
+export default function AccountDeleteConfirmPage() {
+  return (
+    <Suspense fallback={null}>
+      <AccountDeleteConfirmPageInner />
+    </Suspense>
   );
 }

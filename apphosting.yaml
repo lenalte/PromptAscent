@@ -1,0 +1,46 @@
+runConfig:
+  minInstances: 0
+
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyC17tAbZosMY2RGvSXNnf1szLs4yKicASo
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: prompt-ascent.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: prompt-ascent
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: prompt-ascent.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: 1044356241859
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:1044356241859:web:0a867dae0267fad80ec576
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-TTE37ZF0WK
+    availability:
+      - BUILD
+      - RUNTIME
+
+secrets:
+  - variable: GOOGLE_GENAI_API_KEY
+    secret: projects/1044356241859/secrets/GOOGLE_GENAI_API_KEY/versions/latest
+    availability:
+      - BUILD
+      - RUNTIME

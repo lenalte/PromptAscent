@@ -1,4 +1,6 @@
 // Code aus Quelle: https://codepen.io/Maximuz/pen/BdqXXN 
+"use client";
+
 import { ArrowRight } from "lucide-react";
 import React from "react";
 
