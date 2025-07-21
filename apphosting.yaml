@@ -37,8 +37,6 @@ env:
     availability:
       - BUILD
       - RUNTIME
-
-secrets:
   - variable: GOOGLE_GENAI_API_KEY
     secret: projects/1044356241859/secrets/GOOGLE_GENAI_API_KEY/versions/latest
     availability:
