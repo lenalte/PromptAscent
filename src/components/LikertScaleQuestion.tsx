@@ -70,7 +70,7 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
         <CardDescription className="text-accent flex items-center">
           <StarIcon className="mr-3 h-5 w-5" /> {title}
         </CardDescription>
-        <CardTitle className="text-accent pt-2">{question}</CardTitle>
+        <CardTitle className="text-xl text-accent pt-2">{question}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

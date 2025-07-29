@@ -101,7 +101,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-purple-800 dark:text-purple-300 flex items-center">
+        <CardTitle className="text-xl text-purple-800 dark:text-purple-300 flex items-center">
           {taskDescription}
         </CardTitle>
         {/* <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription> */}

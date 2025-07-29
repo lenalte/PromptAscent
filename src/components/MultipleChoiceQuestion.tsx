@@ -75,7 +75,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-white">{question}</CardTitle>
+        <CardTitle className="text-xl text-white">{question}</CardTitle>
         {/* <CardDescription>{question}</CardDescription> */}
       </CardHeader>
       <CardContent>
@@ -96,7 +96,20 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                 !hasAttempted && "hover:bg-muted/50",
                 !isComponentReadOnly && "cursor-pointer"
               )}>
-                <RadioGroupItem value={index.toString()} id={`${id}-option-${index}`} disabled={isComponentReadOnly} />
+                <RadioGroupItem
+                  value={index.toString()}
+                  id={`${id}-option-${index}`}
+                  disabled={isComponentReadOnly}
+                  className={cn(
+                    // Standard-Design
+                    "border border-white text-white",
+                    // Korrekte Antwort: grüner Radiobutton (dunkel/hell je nach Theme)
+                    hasAttempted && index === correctOptionIndex && "border-green-500 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 dark:border-green-700",
+                    // Falsche Antwort: roter Radiobutton
+                    hasAttempted && index !== correctOptionIndex && parseInt(submittedValue ?? '-1') === index && "border-destructive bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 dark:border-red-700"
+                  )}
+                />
+
                 <Label htmlFor={`${id}-option-${index}`} className={cn(
                   "font-normal flex-1 text-white",
                   !isComponentReadOnly ? "cursor-pointer" : "cursor-default",

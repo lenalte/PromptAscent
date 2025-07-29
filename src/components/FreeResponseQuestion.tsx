@@ -95,7 +95,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-white">{question}</CardTitle>
+        <CardTitle className="text-xl text-white">{question}</CardTitle>
         {/* <CardDescription>{question}</CardDescription> */}
       </CardHeader>
       <CardContent>
