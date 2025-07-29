@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue, getGeneratedLessonById, type LessonStage, type StageItemStatus, type LessonItem } from '@/data/lessons';
-import { ArrowRight, Loader2, LogIn, UserPlus, BrainCircuit, HomeIcon, AlertCircle, Trophy, Send } from 'lucide-react';
+import { ArrowRight, Loader2, BrainCircuit, Trophy } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
 import Sidebar from '@/components/ui/sidebarnew';
@@ -21,7 +21,6 @@ import { LightbulbIcon } from '@/components/icons/LightbulbIcon';
 import { RepeatIcon } from '@/components/icons/RepeatIcon';
 import { PassIcon } from '@/components/icons/PassIcon';
 import { CheckIcon } from '@/components/icons/CheckIcon';
-import Link from 'next/link';
 import BossChallengeDialog from '@/components/BossChallengeDialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -34,17 +33,13 @@ import { LikertScaleQuestion } from '@/components/LikertScaleQuestion'; // Impor
 import { PointsDisplay } from '@/components/PointsDisplay';
 import { LessonCompleteScreen } from '@/components/LessonCompleteScreen';
 import { StageCompleteScreen } from '@/components/StageCompleteScreen';
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { BossIcon } from '@/components/icons/BossIcon';
 import { ArrowIcon } from '@/components/icons/ArrowIcon';
 import Inventory from '@/components/Inventory';
 import { LevelCompleteScreen } from "@/components/LevelCompleteScreen";
-import { BADGES, getBadgeById } from "@/data/badges";
+import { BADGES } from "@/data/badges";
 import { trackEvent } from '@/lib/gtagHelper';
-import Image from 'next/image';
 
 
 
@@ -710,53 +705,40 @@ function HomePageContent() {
           <Card className="bg-card/80 backdrop-blur-sm p-4 md:p-6 border-border/50 w-full max-w-3xl mx-auto">
             <CardContent className="p-0">
               <div className="space-y-8">
-                {showLevelCompleteScreen ? (
-                  <LevelCompleteScreen
-                    onGoHome={handleLevelCompleteScreenClose}
-                    levelTitle={currentOverallLevel?.title ?? ""}
-                    badgeName={levelBadge?.name ?? ""}
-                    badgeImageUrl={levelBadge?.imageUrl}
-                  />
-                ) : isLessonFullyCompleted ? (
-                  <LessonCompleteScreen
-                    onGoHome={handleGoToOverviewAfterLessonCompletion}
-                    onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
-                  />
-                ) : (
-                  contentQueue.map((content, index) => {
-                    // If we are only showing the failed screen, hide everything that comes before it.
-                    if (showOnlyFailedScreen && index < activeContentIndex) {
-                      return null;
-                    }
-                    // And hide everything that comes after it.
-                    if (index > activeContentIndex) return null;
 
-                    const isReadOnly = index < activeContentIndex;
-                    const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
-                    const hasSubmittedCorrectly = itemStatus?.correct === true;
-                    const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
+                {contentQueue.map((content, index) => {
+                  // If we are only showing the failed screen, hide everything that comes before it.
+                  if (showOnlyFailedScreen && index < activeContentIndex) {
+                    return null;
+                  }
+                  // And hide everything that comes after it.
+                  if (index > activeContentIndex) return null;
 
-                    return (
-                      <div key={content.key} ref={el => { if (el) itemRefs.current[index] = el; }}>
-                        {content.renderType === 'LessonItem' && (() => {
-                          const { key, ...rest } = content;
-                          switch (content.type) {
-                            case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-                            case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-                            case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
-                            case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
-                            case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
-                            default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
-                          }
-                        })()}
-                        {content.renderType === 'StageCompleteScreen' && (() => {
-                          const { key, ...rest } = content;
-                          return <StageCompleteScreen key={key} {...rest} />;
-                        })()}
-                      </div>
-                    );
-                  })
-                )}
+                  const isReadOnly = index < activeContentIndex;
+                  const itemStatus = content.renderType === 'LessonItem' ? stageItemAttempts[content.id] : undefined;
+                  const hasSubmittedCorrectly = itemStatus?.correct === true;
+                  const maxAttemptsReached = (itemStatus?.attempts ?? 0) >= 3;
+
+                  return (
+                    <div key={content.key} ref={el => { if (el) itemRefs.current[index] = el; }}>
+                      {content.renderType === 'LessonItem' && (() => {
+                        const { key, ...rest } = content;
+                        switch (content.type) {
+                          case 'freeResponse': return <FreeResponseQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                          case 'multipleChoice': return <MultipleChoiceQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                          case 'informationalSnippet': return <InformationalSnippet key={key} {...rest} isReadOnly={isReadOnly} />;
+                          case 'promptingTask': return <PromptingTask key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly || maxAttemptsReached} onAnswerSubmit={handleAnswerSubmit} />;
+                          case 'likertScale': return <LikertScaleQuestion key={key} {...rest} isReadOnly={isReadOnly || hasSubmittedCorrectly} onAnswerSubmit={handleAnswerSubmit} lessonId={selectedLesson!.id} />;
+                          default: return <div key={`error-${index}`}>Error: Unknown item type.</div>;
+                        }
+                      })()}
+                      {content.renderType === 'StageCompleteScreen' && (() => {
+                        const { key, ...rest } = content;
+                        return <StageCompleteScreen key={key} {...rest} />;
+                      })()}
+                    </div>
+                  );
+                })}
               </div>
 
             </CardContent>
@@ -769,6 +751,20 @@ function HomePageContent() {
               {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <> <span className="mr-2">{buttonConfig.icon}</span> {buttonConfig.text} </>}
             </EightbitButton>
           </div>
+        )}
+        {showLevelCompleteScreen && (
+          <LevelCompleteScreen
+            onGoHome={handleLevelCompleteScreenClose}
+            levelTitle={currentOverallLevel?.title ?? ""}
+            badgeName={levelBadge?.name ?? ""}
+            badgeImageUrl={levelBadge?.imageUrl}
+          />
+        )}
+        {isLessonFullyCompleted && (
+          <LessonCompleteScreen
+            onGoHome={handleGoToOverviewAfterLessonCompletion}
+            onGoToNextLesson={nextLessonId ? handleGoToNextLesson : undefined}
+          />
         )}
       </div>
     );

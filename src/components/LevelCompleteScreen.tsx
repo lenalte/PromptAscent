@@ -1,20 +1,17 @@
-
 "use client";
 
 import type React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { HomeIcon, Trophy } from 'lucide-react';
 import Image from 'next/image';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';
-
+import BirdsBackground from './BirdsBackground';
 
 interface LevelCompleteScreenProps {
   onGoHome: () => void;
   levelTitle: string;
   badgeName: string;
   badgeIcon?: React.ReactNode; // Optional: für eigene Badges statt Standard-Icon
-  badgeImageUrl?: string; // Add imageUrl prop
+  badgeImageUrl?: string;
 }
 
 export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
@@ -25,45 +22,44 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
   badgeImageUrl,
 }) => {
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg text-center border-accent animate-in fade-in">
-      <CardHeader className="items-center">
-        <LeaderboardIcon className="h-20 w-20 text-accent mb-4 animate-bounce" />
-        <CardTitle className="text-3xl font-bold text-accent">Level abgeschlossen!</CardTitle>
-        <CardDescription className="text-accent/80 mt-2">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      <BirdsBackground />
+
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <LeaderboardIcon className="h-20 w-20 text-accent mb-6 animate-bounce" />
+        <h2 className="text-4xl font-bold text-accent mb-3">Level abgeschlossen!</h2>
+        <p className="text-xl text-white mb-8 text-center max-w-xl mx-auto">
           Wow, du hast das Level <span className="font-bold">{levelTitle}</span> gemeistert!
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex flex-col items-center justify-center pt-4">
-        {badgeImageUrl ? (
+        </p>
+        <div className="flex flex-col items-center justify-center mb-8">
+          {badgeImageUrl ? (
             <Image
-                src={badgeImageUrl}
-                alt={badgeName}
-                width={250}
-                height={250}
-                className="drop-shadow-lg"
-                data-ai-hint="level badge"
+              src={badgeImageUrl}
+              alt={badgeName}
+              width={180}
+              height={180}
+              className="drop-shadow-lg mb-3"
+              data-ai-hint="level badge"
             />
           ) : badgeIcon ? (
-            <span className="mb-2 drop-shadow-lg">{badgeIcon}</span>
+            <span className="mb-3 drop-shadow-lg">{badgeIcon}</span>
           ) : (
-            <span className="mb-2">🏅</span>
+            <span className="mb-3 text-6xl">🏅</span>
           )}
-          <div className="mt-2 text-lg font-semibold text-accent/90">
+          <div className="mt-4 text-lg font-semibold text-accent/90">
             Du hast das <span className="font-bold">{badgeName}</span>-Badge erhalten!
           </div>
-        </div>
-        <div className="flex justify-center items-center">
-          <span className="text-base text-accent/80 font-medium">
-            Weiter so – das nächste Level wartet schon auf dich!
+          <span className="text-base text-accent/80 font-medium mb-4 mt-1">
+            Deine Prompts könnten sogar R2-D2 zum Reden bringen. Möge die KI stets mit dir sein!
           </span>
         </div>
-      </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row justify-center pt-6 space-y-2 sm:space-y-0 sm:space-x-4">
-        <EightbitButton onClick={onGoHome}>
+
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <EightbitButton onClick={onGoHome} className="text-lg">
             Zurück zur Übersicht
-        </EightbitButton>
-      </CardFooter>
-    </Card>
+          </EightbitButton>
+        </div>
+      </div>
+    </div>
   );
 };
