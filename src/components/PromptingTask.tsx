@@ -69,7 +69,7 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         if (!result.isCorrect) {
           triggerPulsate();
         }
-        
+
       } catch (error) {
         console.error('Prompt evaluation error:', error);
         const errorResult: EvaluatePromptOutput = {
@@ -102,79 +102,79 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-purple-800 dark:text-purple-300 flex items-center">
-          {title}
+          {taskDescription}
         </CardTitle>
-        <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription>
+        {/* <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor={`pt-${id}`} className="text-purple-800 dark:text-purple-300">Dein Prompt</Label>
-              <Textarea
-                id={`pt-${id}`}
-                placeholder="Schreibe deinen Prompt hier, um die Aufgabe zu lösen..."
-                className={cn(
-                  "resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400",
-                  hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive",
-                  pulsate && "animate-pulse-destructive"
-                )}
-                rows={6}
-                value={userPrompt}
-                onChange={(e) => setUserPrompt(e.target.value)}
-                aria-describedby={evaluationResult ? "feedback-alert" : undefined}
-                disabled={isComponentReadOnly || isPending}
-              />
-              <p className="text-sm text-purple-600 dark:text-purple-500">
-                Erstelle einen Prompt basierend auf der Aufgabenbeschreibung oben. Mindestens 10 Zeichen.
-              </p>
+          <div className="space-y-2">
+            {/* <Label htmlFor={`pt-${id}`} className="text-purple-800 dark:text-purple-300">Dein Prompt:</Label> */}
+            <Textarea
+              id={`pt-${id}`}
+              placeholder="Schreibe deinen Prompt hier, um die Aufgabe zu lösen..."
+              className={cn(
+                "resize-y min-h-[120px] bg-white dark:bg-background focus:border-purple-500 dark:focus:border-purple-400",
+                hasSubmittedAndIsIncorrect && canAttempt && "ring-2 ring-destructive",
+                pulsate && "animate-pulse-destructive"
+              )}
+              rows={6}
+              value={userPrompt}
+              onChange={(e) => setUserPrompt(e.target.value)}
+              aria-describedby={evaluationResult ? "feedback-alert" : undefined}
+              disabled={isComponentReadOnly || isPending}
+            />
+            <p className="text-sm text-purple-600 dark:text-purple-500">
+              Erstelle einen Prompt basierend auf der Aufgabenbeschreibung oben. Mindestens 10 Zeichen.
+            </p>
+          </div>
+
+          {isPending && (
+            <div className="flex items-center space-x-2 text-muted-foreground">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Bewerte...</span>
             </div>
+          )}
 
-            {isPending && (
-                <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                    <span>Bewerte...</span>
-                </div>
-            )}
-
-            {evaluationResult && (
-              <Alert
-                id="feedback-alert"
-                variant={evaluationResult.isCorrect ? 'default' : 'destructive'}
-                className={cn(
-                  "transition-opacity duration-300 ease-in-out",
-                  evaluationResult.isCorrect ? "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700" : "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700"
-                )}
-              >
-                {evaluationResult.isCorrect ? (
-                  <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
-                ) : (
-                  <CloseIcon className="h-4 w-4 text-destructive dark:text-red-400" />
-                )}
-                <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
-                  {evaluationResult.isCorrect ? `Effektiver Prompt! +${awardedPoints} Punkte` : 'Verbesserungswürdig'}
-                </AlertTitle>
-                <AlertDescription className={cn("space-y-2", evaluationResult.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
-                  <div>Punktzahl: {evaluationResult.score}/100</div>
-                  <Progress
-                    value={evaluationResult.score}
-                    className={cn(
-                      "w-full h-2",
-                      evaluationResult.score >= 70 ? "[&>*]:bg-green-500 dark:[&>*]:bg-green-400" : 
-                      evaluationResult.score >= 40 ? "[&>*]:bg-yellow-500 dark:[&>*]:bg-yellow-400" : 
-                      "[&>*]:bg-red-500 dark:[&>*]:bg-red-400"
-                    )}
-                  />
-                  <p className="pt-2 whitespace-pre-line">{evaluationResult.explanation}</p>
-                   {!evaluationResult.isCorrect && canAttempt && (
-                    <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
+          {evaluationResult && (
+            <Alert
+              id="feedback-alert"
+              variant={evaluationResult.isCorrect ? 'default' : 'destructive'}
+              className={cn(
+                "transition-opacity duration-300 ease-in-out",
+                evaluationResult.isCorrect ? "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700" : "border-destructive bg-red-50 dark:bg-red-900/20 dark:border-red-700"
+              )}
+            >
+              {evaluationResult.isCorrect ? (
+                <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+              ) : (
+                <CloseIcon className="h-4 w-4 text-destructive dark:text-red-400" />
+              )}
+              <AlertTitle className={cn(evaluationResult.isCorrect ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300")}>
+                {evaluationResult.isCorrect ? `Effektiver Prompt! +${awardedPoints} Punkte` : 'Verbesserungswürdig'}
+              </AlertTitle>
+              <AlertDescription className={cn("space-y-2", evaluationResult.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
+                <div>Punktzahl: {evaluationResult.score}/100</div>
+                <Progress
+                  value={evaluationResult.score}
+                  className={cn(
+                    "w-full h-2",
+                    evaluationResult.score >= 70 ? "[&>*]:bg-green-500 dark:[&>*]:bg-green-400" :
+                      evaluationResult.score >= 40 ? "[&>*]:bg-yellow-500 dark:[&>*]:bg-yellow-400" :
+                        "[&>*]:bg-red-500 dark:[&>*]:bg-red-400"
                   )}
-                </AlertDescription>
-              </Alert>
-            )}
-            <div className="text-sm text-purple-700 dark:text-purple-400 mt-4 p-3 border border-purple-200 dark:border-purple-700 rounded-md bg-purple-100/50 dark:bg-purple-900/30">
-              <h4 className="font-semibold mb-1 text-purple-800 dark:text-purple-300">Bewertungsleitfaden:</h4>
-              <p className="whitespace-pre-line">{evaluationGuidance}</p>
-            </div>
+                />
+                <p className="pt-2 whitespace-pre-line">{evaluationResult.explanation}</p>
+                {!evaluationResult.isCorrect && canAttempt && (
+                  <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="text-sm text-purple-700 dark:text-purple-400 mt-4 p-3 border border-purple-200 dark:border-purple-700 rounded-md bg-purple-100/50 dark:bg-purple-900/30">
+            <h4 className="font-semibold mb-1 text-purple-800 dark:text-purple-300">Bewertungsleitfaden:</h4>
+            <p className="whitespace-pre-line">{evaluationGuidance}</p>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 pt-4">

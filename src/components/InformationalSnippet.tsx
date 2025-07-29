@@ -29,9 +29,9 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
         </CardTitle>
         <CardDescription className="text-blue-700 dark:text-blue-300 pt-2 whitespace-pre-line">{content}</CardDescription>
       </CardHeader>
-      <CardFooter className="flex justify-start text-xs text-blue-600 dark:text-blue-500 pt-4">
+      {/* <CardFooter className="flex justify-start text-xs text-blue-600 dark:text-blue-500 pt-4">
         <p>Points for reading: +{pointsAwarded}</p>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 };

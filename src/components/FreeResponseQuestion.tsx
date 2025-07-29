@@ -62,12 +62,12 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
         setResult(validation);
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
-        
+
         const awardedPointsForAttempt = validation.isValid ? Math.max(0, pointsAwarded - attempts) : 0;
         onAnswerSubmit(validation.isValid, awardedPointsForAttempt, id.toString());
 
         if (!validation.isValid) {
-            triggerPulsate();
+          triggerPulsate();
         }
 
       } catch (error) {
@@ -95,13 +95,13 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-white">{title}</CardTitle>
-        <CardDescription>{question}</CardDescription>
+        <CardTitle className="text-white">{question}</CardTitle>
+        {/* <CardDescription>{question}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor={`frq-${id}`} className="text-white">Deine Antwort</Label>
+            {/* <Label htmlFor={`frq-${id}`} className="text-white">Deine Antwort:</Label> */}
             <Textarea
               id={`frq-${id}`}
               placeholder="Gib hier deine Antwort ein..."
@@ -144,7 +144,7 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
               </AlertTitle>
               <AlertDescription className={cn(result.isValid ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400")}>
                 {result.feedback}
-                 {!result.isValid && canAttempt && (
+                {!result.isValid && canAttempt && (
                   <p className="mt-2 font-semibold">Versuche es direkt nochmal!</p>
                 )}
                 {!result.isValid && !canAttempt && expectedAnswer && (

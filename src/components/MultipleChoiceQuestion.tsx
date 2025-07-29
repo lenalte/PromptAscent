@@ -45,7 +45,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
   const handleSubmit = useCallback(() => {
     if (isReadOnly || !canAttempt || selectedValue === undefined) return;
-    
+
     setSubmittedValue(selectedValue);
     const selectedIndex = parseInt(selectedValue, 10);
     const correct = selectedIndex === correctOptionIndex;
@@ -56,7 +56,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
     const awardedPointsForAttempt = correct ? Math.max(0, pointsAwarded - attempts) : 0;
     onAnswerSubmit(correct, awardedPointsForAttempt, id.toString());
-    
+
   }, [isReadOnly, canAttempt, selectedValue, correctOptionIndex, onAnswerSubmit, pointsAwarded, id, attempts]);
 
   useEffect(() => {
@@ -75,8 +75,8 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   return (
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
-        <CardTitle className="text-white">{title}</CardTitle>
-        <CardDescription>{question}</CardDescription>
+        <CardTitle className="text-white">{question}</CardTitle>
+        {/* <CardDescription>{question}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
