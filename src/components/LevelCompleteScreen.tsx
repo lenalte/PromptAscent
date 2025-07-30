@@ -4,7 +4,7 @@ import type React from 'react';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import Image from 'next/image';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';
-import BirdsBackground from './BirdsBackground';
+import FireworkBackground from './FireworkBackground';
 
 interface LevelCompleteScreenProps {
   onGoHome: () => void;
@@ -23,7 +23,7 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
 }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <BirdsBackground />
+      <FireworkBackground />
 
       <div className="w-full h-full flex flex-col items-center justify-center">
         <LeaderboardIcon className="h-20 w-20 text-accent mb-6 animate-bounce" />

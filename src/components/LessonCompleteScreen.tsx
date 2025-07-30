@@ -6,7 +6,7 @@ import { EightbitButton } from '@/components/ui/eightbit-button';
 import { useUserProgress } from '@/context/UserProgressContext';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';
 import { PointsIcon } from './icons/PointsIcon';
-import BirdsBackground from './BirdsBackground';
+import FireworkBackground from './FireworkBackground';
 
 interface LessonCompleteScreenProps {
   onGoHome: () => void;
@@ -19,7 +19,7 @@ export const LessonCompleteScreen: React.FC<LessonCompleteScreenProps> = ({ onGo
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <BirdsBackground />
+      <FireworkBackground />
       {/* Das komplette Overlay ist jetzt ein bunter Verlauf */}
       <div className="w-full h-full flex flex-col items-center justify-center">
 
