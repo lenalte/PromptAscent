@@ -52,9 +52,9 @@ const FireworkBackground = () => {
                 this.lifespan -= 4;
             };
             this.show = function (p: any) {
-                p.stroke(this.color[0], this.color[1], this.color[2], this.lifespan);
-                p.strokeWeight(4);
-                p.point(this.pos.x, this.pos.y);
+                p.noStroke();
+                p.fill(this.color[0], this.color[1], this.color[2], this.lifespan);
+                p.rect(this.pos.x, this.pos.y, 5, 5); // 6x6 Pixel-Kästchen (passt du einfach an)
             };
             this.done = function () {
                 return this.lifespan < 0;
@@ -68,7 +68,7 @@ const FireworkBackground = () => {
                 p.width / 2,
                 p.height,
                 this.color,
-                p.createVector(p.random(-3, 3), p.random(-12, -8))
+                p.createVector(p.random(-3, 3), p.random(-18, -8))
             );
 
             this.exploded = false;
@@ -135,7 +135,7 @@ const FireworkBackground = () => {
                     // Schwarz mit trail (leicht durchsichtig)
                     p.background(0, 0, 0, 100);
 
-                    if (p.frameCount % 30 === 0) {
+                    if (p.frameCount % 40 === 0) {
                         fireworks.push(new (Firework as any)(p));
                     }
 
