@@ -250,7 +250,7 @@ function AuthFormInner() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor="username" className="text-white">Username</Label>
+                    <Label htmlFor="username" className="text-white">Username:</Label>
                     <FormControl>
                       <Input id="username" placeholder="dein_username" {...field} disabled={isLoading} />
                     </FormControl>
@@ -273,7 +273,7 @@ function AuthFormInner() {
                 name="avatarId"
                 render={({ field }) => (
                   <FormItem>
-                    <Label className="text-white">Avatar</Label>
+                    {/* <Label className="text-white">Avatar</Label> */}
                     <AvatarSelector
                       value={field.value as AvatarId}
                       onChange={field.onChange}
