@@ -52,13 +52,6 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "likertScale",
-          "id": "s2_likert2",
-          "title": "Feedback zur Lernkurve",
-          "question": "Die Plattform motiviert mich, Fortschritte zu machen und besser zu werden.",
-          "pointsAwarded": 1
-        },
-        {
           "type": "informationalSnippet",
           "id": "s2_info1",
           "title": "Warum ist Prompt Engineering wichtig?",
@@ -150,13 +143,6 @@
       "id": "stage5",
       "title": "Stage 5: Wiederholen",
       "items": [
-        {
-          "type": "likertScale",
-          "id": "s5_likert2",
-          "title": "Feedback zur Gamification",
-          "question": "Die Aufgaben fesseln mein ganze Aufmerksamkeit.",
-          "pointsAwarded": 1
-        },
         {
           "type": "multipleChoice",
           "id": "s5_mcq1",

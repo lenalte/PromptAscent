@@ -8,13 +8,6 @@
       "title": "Stage 1: Verstehen",
       "items": [
         {
-          "type": "likertScale",
-          "id": "s1_likert3",
-          "title": "Feedback zur Struktur",
-          "question": "Das Leaderboard motiviert mich dazu, Erster sein zu wollen.",
-          "pointsAwarded": 1
-        },
-        {
           "type": "informationalSnippet",
           "id": "s1_info1",
           "title": "Bausteine eines Prompts",
@@ -126,13 +119,6 @@
       "id": "stage4",
       "title": "Stage 4: Reflektieren",
       "items": [
-        {
-          "type": "likertScale",
-          "id": "s4_likert3",
-          "title": "Feedback zur Schwierigkeit",
-          "question": "Die Plattform gibt mir das Gefühl neues zu entdecken.",
-          "pointsAwarded": 1
-        },
         {
           "type": "freeResponse",
           "id": "s4_fr1",
