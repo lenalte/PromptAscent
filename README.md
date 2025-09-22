@@ -56,4 +56,3 @@ Weitere Informationen zu den verwendeten Technologien finden sich in den folgend
 - [Genkit Documentation](https://firebase.google.com/docs/genkit) - Erfahre mehr über Genkit-Abläufe und KI-Integration.
 - [Firebase Documentation](https://firebase.google.com/docs) - Erfahre mehr über Firebase-Dienste.
 - [Shadcn/ui Documentation](https://ui.shadcn.com/docs) - Erfahre mehr über die verwendeten UI-Komponenten.
-```
