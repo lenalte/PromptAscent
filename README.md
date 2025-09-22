@@ -64,7 +64,7 @@ Um mit dem Entwicklungsserver zu beginnen:
 
 Die Lektionsinhalte liegen in /src/data/generated-lessons (Jede lesson als JSON-Datei).
 
-**Grundstruktur einer Lektion:**
+### Grundstruktur einer Lektion:
 ```bash
 {
   "id": "lesson1",
