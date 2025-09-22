@@ -87,7 +87,8 @@ Die Lektionsinhalte liegen in /src/data/generated-lessons (Jede lesson als JSON-
 
 Achtung: Strukturänderungen sollten zu den Komponenten passen, sonst laufen Tasks ins Leere.
 
-**Aufgabentypen (Items)**
+### Aufgabentypen (Items)
+
 Jedes Item hat mindestens:
 - type – Typ der Aufgabe
 - id – eindeutig innerhalb der Lektion
@@ -154,7 +155,8 @@ Jedes Item hat mindestens:
     **Pflichtfelder:** taskDescription, evaluationGuidance
     → Bewertung erfolgt serverseitig über Genkit/Gemini anhand deiner Guidance.
 
-**Neue Lektion anlegen**
+### Neue Lektion anlegen
+
 - Datei kopieren: lesson1.json → lesson2.json
 - id, title, description anpassen
 - Stages & Items eintragen (IDs ohne Kollision)
