@@ -14,7 +14,7 @@ Diese Next.js-Anwendung hilft Nutzenden dabei, durch ein strukturiertes, stufenb
 ## Systemarchitektur (Überblick)
 
 <p align="center">
-  <img src="./docs/Systemarchitektur_Ueberblick.png" alt="Systemarchitektur Prompt Ascent" width="900">
+  <img src="./docs/Systemarchitektur_Überblick.png" alt="Systemarchitektur Prompt Ascent" width="900">
 </p>
 
 **Kurz erklärt:** Next.js (App Router) rendert UI & Server Actions. Fortschritt liegt in Firestore, Auth via E-Mail-Link.  
