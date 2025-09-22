@@ -85,7 +85,7 @@ Die Lektionsinhalte liegen in /src/data/generated-lessons (Jede lesson als JSON-
 
 Änderungen lokal machen, beim nächsten Deploy werden die neuen Inhalte ausgespielt.
 
-Achtung: Strukturänderungen sollten zu den Komponenten passen, sonst laufen Tasks ins Leere.
+> **Achtung:** Strukturänderungen sollten zu den Komponenten passen, sonst laufen Tasks ins Leere.
 
 ### Aufgabentypen (Items)
 
@@ -106,7 +106,7 @@ Jedes Item hat mindestens:
       "pointsAwarded": 1
     }
     ```
-    **Pflichtfelder:** title, content, pointsAwarded
+    > **Pflichtfelder:** title, content, pointsAwarded
 2. **Multiple Choice (multipleChoice)**
     ```bash
     {
@@ -125,7 +125,7 @@ Jedes Item hat mindestens:
       "pointsForIncorrect": 0
     }
     ```
-    **Pflichtfelder:** question, options[] (≥2), correctOptionIndex (Index in options)
+    > **Pflichtfelder:** question, options[] (≥2), correctOptionIndex (Index in options)
 3. **Freitextfrage (freeResponse)**
     ```bash
     {
@@ -138,7 +138,7 @@ Jedes Item hat mindestens:
       "pointsForIncorrect": 0
     }
     ```
-    **Pflichtfelder:** question, expectedAnswer
+    > **Pflichtfelder:** question, expectedAnswer
     → Die App nutzt Genkit/Gemini, um Antworten gegen expectedAnswer zu bewerten.
 5. **Prompting-Aufgabe (promptingTask)**
     ```bash
@@ -152,7 +152,7 @@ Jedes Item hat mindestens:
       "pointsForIncorrect": 0
     }
     ```
-    **Pflichtfelder:** taskDescription, evaluationGuidance
+    > **Pflichtfelder:** taskDescription, evaluationGuidance
     → Bewertung erfolgt serverseitig über Genkit/Gemini anhand deiner Guidance.
 
 ### Neue Lektion anlegen
