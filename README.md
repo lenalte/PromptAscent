@@ -1,26 +1,26 @@
 
 # Prompt Ascent
 
-This Next.js application helps users learn and practice prompt engineering skills through a structured, stage-based learning system.
+Diese Next.js-Anwendung hilft Nutzenden dabei, durch ein strukturiertes, stufenbasiertes Lernsystem Kenntnisse im Bereich Prompt Engineering zu erwerben und zu üben.
 
 ## Features
 
-- **Stage-Based Learning:** Each lesson is divided into 6 distinct stages: Verstehen (Understand), Anwenden (Apply), Variieren (Vary), Reflektieren (Reflect), Wiederholen (Repeat), and Anwenden & Reflektieren (Apply & Reflect).
-- **Interactive Tasks:** Engage with various task types including informational snippets, multiple-choice questions, free-response validation, and prompt evaluation.
-- **AI-Powered Feedback:** Get instant feedback and hints for free-response questions and prompt submissions, powered by AI.
-- **Progress Tracking:** User progress is tracked per lesson and per stage, with visual indicators for stage completion status.
-- **Points System:** Earn points for completing tasks and stages.
+- **Stufenbasiertes Lernen:** Jede Lektion ist in 6 verschiedene Stufen unterteilt: Verstehen, Anwenden, Variieren, Reflektieren, Wiederholen und Meistern.
+- **Interaktive Aufgaben:** Bearbeite verschiedene Aufgabentypen, darunter Informationsschnipsel, Multiple-Choice-Fragen, Freitext-Validierung und sofortige Bewertung.
+- **KI-gestütztes Feedback:** Erhalte sofortiges Feedback und Hinweise zu Freitextfragen und sofortigen Einreichungen, unterstützt durch KI.
+- **Fortschrittsverfolgung:** Der Fortschritt der Benutzer wird pro Lektion und pro Stufe verfolgt, mit visuellen Indikatoren für den Status der Stufenabschlüsse.
+- **Punktesystem:** Sammle Punkte für das Abschließen von Aufgaben und Stufen.
 
 ## Getting Started
 
-To get started with the development server:
+Um mit dem Entwicklungsserver zu beginnen:
 
-1.  **Install dependencies:**
+1.  **Installiere Abhängigkeiten:**
     ```bash
     npm install
     ```
-2.  **Set up Environment Variables:**
-    Copy the `.env.example` file (if one exists) to a new file named `.env` and fill in your Firebase and Google AI API keys:
+2.  **Umgebungsvariablen einrichten:**
+    Kopiere die `.env.example` Datei in eine neue Datei namens `.env` und befülle sie mit deinen Firebase und Goolge AI API keys:
     ```env
     NEXT_PUBLIC_FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="YOUR_FIREBASE_AUTH_DOMAIN"
@@ -32,30 +32,28 @@ To get started with the development server:
 
     GOOGLE_GENAI_API_KEY="YOUR_GOOGLE_AI_API_KEY"
     ```
-3.  **Run the development server:**
+3.  **Entwicklungsserver ausführen:**
     ```bash
     npm run dev
     ```
 
-Open [http://localhost:9002](http://localhost:9002) (or your specified port) with your browser to see the result.
+Öffne [http://localhost:9002](http://localhost:9002) (oder den entsprechenden angegebenen Port) im Browser um die Anwendung zu sehen.
 
-You can start editing the main page by modifying `src/app/page.tsx`.
-
-## Key Technologies
+## Zentrale Technologien
 
 - [Next.js](https://nextjs.org/) - React Framework
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Shadcn/ui](https://ui.shadcn.com/) - Re-usable components built using Radix UI and Tailwind CSS.
-- [Genkit](https://firebase.google.com/docs/genkit) - AI integration framework (used for lesson generation, prompt validation, and evaluation).
-- [Firebase](https://firebase.google.com/) - Backend services (Authentication, Firestore for user progress).
+- [Shadcn/ui](https://ui.shadcn.com/) - Wiederverwendbare Komponenten, die mit Radix UI und Tailwind CSS erstellt wurden.
+- [Genkit](https://firebase.google.com/docs/genkit) - KI-Integrationsframework (wird für die Validierung von Prompts, sowie Freitextantworten und zur Bewertung dieser verwendet).
+- [Firebase](https://firebase.google.com/) - Backend-Dienste (Authentifizierung, Firestore für den Benutzerfortschritt).
 - [TypeScript](https://www.typescriptlang.org/)
 
-## Learn More
+## Weitere Informationen
 
-To learn more about the technologies used, take a look at the following resources:
+Weitere Informationen zu den verwendeten Technologien finden sich in den folgenden Ressourcen:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Genkit Documentation](https://firebase.google.com/docs/genkit) - learn about Genkit flows and AI integration.
-- [Firebase Documentation](https://firebase.google.com/docs) - learn about Firebase services.
-- [Shadcn/ui Documentation](https://ui.shadcn.com/docs) - learn about the UI components used.
+- [Next.js Documentation](https://nextjs.org/docs) - Erfahre mehr über die Funktionen und die API von Next.js.
+- [Genkit Documentation](https://firebase.google.com/docs/genkit) - Erfahre mehr über Genkit-Abläufe und KI-Integration.
+- [Firebase Documentation](https://firebase.google.com/docs) - Erfahre mehr über Firebase-Dienste.
+- [Shadcn/ui Documentation](https://ui.shadcn.com/docs) - Erfahre mehr über die verwendeten UI-Komponenten.
 ```
