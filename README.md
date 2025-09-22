@@ -69,6 +69,22 @@ Um mit dem Entwicklungsserver zu beginnen:
 4. **Rollback falls nötig**
     Firebase Console → App Hosting → Deployments → „Rollback“.
 
+## Rechtliches (AGB, Datenschutz, Impressum)
+
+Dieses Repo enthält Platzhalter-Seiten, die **vor einem Produktivbetrieb zwingend** angepasst werden müssen:
+
+- **AGB:** `src/app/legal/agb/page.tsx`
+- **Datenschutz:** `src/app/legal/datenschutz/page.tsx`
+- **Impressum:** `src/app/legal/impressum/page.tsx`
+
+**To-do vor Livegang**
+- Inhalte durch **eigene, rechtssichere Texte** ersetzen (Land/Region beachten).
+- **Kontaktangaben, Verantwortliche, Anschrift** prüfen/anpassen.
+- **Cookie/Consent** in `src/components/CookieBanner.tsx` konfigurieren (z. B. Google Analytics nur nach Einwilligung) und Text anpassen.
+
+> **Hinweis:** Die mitgelieferten Texte sind Beispiele/Platzhalter und stellen **keine Rechtsberatung** dar.
+
+
 ## Inhalte anpassen (Lektionen)
 
 Die Lektionsinhalte liegen in /src/data/generated-lessons (Jede lesson als JSON-Datei).
