@@ -11,12 +11,12 @@ export default function DatenschutzPage() {
 
         <hr className="my-6 border-border" />
 
-        <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">1. Verantwortlicher</h2>
+        <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">1. Verantwortliche:r</h2>
         <p>Verantwortlich im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:</p>
         <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
-          Lena Ertl<br />
+          Vorname und Nachname des/der Verantwortlichen<br />
           Hochschule für angewandte Wissenschaften München<br />
-          E-Mail: lertl@hm.edu
+          E-Mail
         </blockquote>
 
         <hr className="my-6 border-border" />
@@ -36,7 +36,6 @@ export default function DatenschutzPage() {
           <li><strong>Nutzungsverhalten:</strong> z. B. gelöste Aufgaben, Fortschritt (Levels, Stages, Lessons), Klicks auf Buttons, Zeitpunkte.</li>
           <li><strong>Prompt-Eingaben:</strong> werden ausschließlich zur automatisierten Bewertung an Google Gemini (Vertex AI) gesendet und <strong>nicht dauerhaft gespeichert</strong>.</li>
           <li><strong>Antworten auf Freitextaufgaben & Prompting-Aufgaben:</strong> werden <strong>nicht dauerhaft gespeichert</strong>, sondern ausschließlich zur Bewertung mit Gemini genutzt.</li>
-          <li><strong>Antworten auf Umfragen (Likert-Skalen):</strong> werden <strong>anonymisiert</strong> gespeichert und <strong>können nicht mit Ihrem Nutzerkonto verknüpft werden</strong>.</li>
           <li><strong>Analyse-Daten via Google Analytics:</strong> zur Auswertung der Nutzung der Plattform.</li>
         </ul>
 
@@ -117,7 +116,7 @@ export default function DatenschutzPage() {
         <p>Bei Fragen zum Datenschutz, zum Widerruf der Einwilligung oder zur Wahrnehmung Ihrer Rechte schreiben Sie bitte an:</p>
         <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
           Hochschule für angewandte Wissenschaften München<br />
-          E-Mail: lertl@hm.edu
+          E-Mail
         </blockquote>
       </div>
     </div>

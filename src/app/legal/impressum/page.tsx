@@ -5,27 +5,27 @@ export default function ImpressumPage() {
       <h1 className="text-4xl font-bold mb-4 text-primary">Impressum</h1>
 
       <div className="space-y-6 text-base">
-        <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">Anbieter:</h2>
+        <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">Anbieter:in:</h2>
         <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
-          Lena Ertl<br />
-          Römerstr. 2<br />
-          82216 Maisach<br />
+          Vorname und Nachname des/der Verantwortlichen<br />
+          Straße<br />
+          Ort<br />
           Deutschland
         </blockquote>
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">Kontakt:</h2>
         <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
-          E-Mail: lertl@hm.edu
+          E-Mail
         </blockquote>
 
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">Verantwortlich für den Inhalt:</h2>
         <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
-          Lena Ertl<br />
+          Vorname und Nachname des/der Verantwortlichen<br />
           Anschrift wie oben
         </blockquote>
-        
+
         <hr className="my-6 border-border" />
 
         <h2 className="text-2xl font-semibold mt-6 mb-2 text-primary">Haftungsausschluss:</h2>

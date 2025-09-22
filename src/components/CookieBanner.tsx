@@ -8,7 +8,7 @@ import Image from 'next/image';
 type Consent = 'granted' | 'denied';
 
 export default function CookieBanner() {
-    const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [consent, setConsent] = useState<Consent | null>(null);
 
   useEffect(() => {
@@ -59,12 +59,12 @@ export default function CookieBanner() {
           Bitte akzeptiere meine Cookies
         </h2>
         <p className="text-background">
-        Um meine Lernplattform im Rahmen meiner Bachelorarbeit zu evaluieren, sammle ich mithilfe von Google Analytics anonyme Nutzungsdaten (z.B. wie oft Levels abgeschlossen werden oder welche Buttons geklickt werden).  
-          Deine Daten werden <b>nicht</b> für Werbung oder kommerzielle Zwecke genutzt. Die Erhebung dient allein der Forschung und der Evaluation dieser Lernplattform.
+          Zur Verbesserung dieser Website verwenden wir Google Analytics, um anonyme Nutzungsdaten zu erheben.
+          Deine Daten werden nicht für Werbung oder Profilbildung genutzt. Die Auswertung dient ausschließlich der Optimierung der Anwendung.
         </p>
         <p className="text-background">
-        Bitte unterstütze mich, indem du der Nutzung dieser Cookies zustimmst.
-        Mehr Infos findest du {' '}
+          Bitte unterstütze mich, indem du der Nutzung dieser Cookies zustimmst.
+          Mehr Infos findest du {' '}
           <Link href="/legal/datenschutz" className="underline text-sky-800 hover:text-sky-500">
             hier
           </Link>{' '}

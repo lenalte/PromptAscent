@@ -52,13 +52,6 @@
       "title": "Stage 2: Anwenden",
       "items": [
         {
-          "type": "likertScale",
-          "id": "s2_likert1",
-          "title": "Feedback Frage 1/6",
-          "question": "Die Plattform gibt mir nützliches Feedback, damit ich mich verbessern kann.",
-          "pointsAwarded": 1
-        },
-        {
           "type": "informationalSnippet",
           "id": "s2_info1",
           "title": "Wie KI lernt",
@@ -151,13 +144,6 @@
       "title": "Stage 5: Wiederholen",
       "items": [
         {
-          "type": "likertScale",
-          "id": "s5_likert1",
-          "title": "Feedback Frage 2/6",
-          "question": "Die Aufgaben fordern mich heraus.",
-          "pointsAwarded": 1
-        },
-        {
           "type": "multipleChoice",
           "id": "s5_mcq1",
           "title": "Generative KI",
@@ -204,34 +190,6 @@
           "expectedAnswer": "Persönliche Reflexion des Benutzers",
           "pointsAwarded": 5,
           "pointsForIncorrect": 0
-        },
-        {
-          "type": "likertScale",
-          "id": "s2_likert2",
-          "title": "Feedback Frage 3/6",
-          "question": "Die Plattform motiviert mich, Fortschritte zu machen und besser zu werden.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "likertScale",
-          "id": "s5_likert2",
-          "title": "Feedback Frage 4/6",
-          "question": "Die Aufgaben fesseln meine ganze Aufmerksamkeit.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "likertScale",
-          "id": "s1_likert3",
-          "title": "Feedback Frage 5/6",
-          "question": "Das Leaderboard motiviert mich dazu, Erster sein zu wollen.",
-          "pointsAwarded": 1
-        },
-        {
-          "type": "likertScale",
-          "id": "s4_likert3",
-          "title": "Feedback Frage 6/6",
-          "question": "Die Plattform gibt mir das Gefühl neues zu entdecken.",
-          "pointsAwarded": 1
         }
       ]
     }
