@@ -11,6 +11,15 @@ Diese Next.js-Anwendung hilft Nutzenden dabei, durch ein strukturiertes, stufenb
 - **Fortschrittsverfolgung:** Der Fortschritt der Benutzer wird pro Lektion und pro Stufe verfolgt, mit visuellen Indikatoren für den Status der Stufenabschlüsse.
 - **Punktesystem:** Sammle Punkte für das Abschließen von Aufgaben und Stufen.
 
+## Systemarchitektur (Überblick)
+
+<p align="center">
+  <img src="./docs/Systemarchitektur_Ueberblick.png" alt="Systemarchitektur Prompt Ascent" width="900">
+</p>
+
+**Kurz erklärt:** Next.js (App Router) rendert UI & Server Actions. Fortschritt liegt in Firestore, Auth via E-Mail-Link.  
+KI-Bewertungen laufen serverseitig über Genkit → Gemini (API-Key per Secret Manager). Bereitstellung über Firebase App Hosting.
+
 ## Erste Schritte (lokal)
 
 Um mit dem Entwicklungsserver zu beginnen:
