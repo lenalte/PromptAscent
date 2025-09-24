@@ -15,4 +15,3 @@ export const Loader: React.FC<LoaderProps> = ({ className, size = 16 }) => {
     />
   );
 };
-```

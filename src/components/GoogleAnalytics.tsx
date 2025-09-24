@@ -1,4 +1,3 @@
-// components/GoogleAnalytics.tsx
 'use client';
 
 import { useEffect } from 'react';

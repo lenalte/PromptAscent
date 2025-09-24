@@ -18,7 +18,7 @@ interface BossChallengeDialogProps {
   onSkip: () => void;
   lessonId: string;
   stageId: string;
-  canSkip: boolean; // New prop to control skip button
+  canSkip: boolean; // prop to control skip button
 }
 
 const BossChallengeDialog: React.FC<BossChallengeDialogProps> = ({ isOpen, onClose, onSkip, lessonId, stageId, canSkip }) => {

@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { cn } from "@/lib/utils";
-import { AVATARS, getAvatar, type AvatarId } from '@/data/avatars';
+import { getAvatar, type AvatarId } from '@/data/avatars';
 
 interface AvatarDisplayProps extends React.SVGProps<SVGSVGElement> {
   avatarId?: AvatarId | string | null;

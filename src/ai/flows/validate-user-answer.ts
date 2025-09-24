@@ -32,25 +32,25 @@ const validateUserAnswerPrompt = ai.definePrompt({
   name: 'validateUserAnswerPrompt',
   input: {
     schema: z.object({
-      userAnswer: z.string().describe('The user\s answer to the question.'),
-      expectedAnswer: z.string().describe('The expected answer to the question.'),
-      question: z.string().describe('The question that the user is answering.'),
+      userAnswer: z.string().describe('Die Antwort des Nutzers auf die Frage.'),
+      expectedAnswer: z.string().describe('Die erwartete Antwort auf die Frage.'),
+      question: z.string().describe('Die Frage, die der Nutzer beantwortet.'),
     }),
   },
   output: {
     schema: z.object({
-      isValid: z.boolean().describe('Whether the user answer is valid or not.'),
-      feedback: z.string().describe('Feedback to the user about their answer, including hints if the answer is incorrect.'),
+      isValid: z.boolean().describe('Ob die Antwort des Nutzers gültig ist oder nicht.'),
+      feedback: z.string().describe('Feedback für den Nutzer zu seiner Antwort, einschließlich Hinweisen, falls die Antwort falsch ist.'),
     }),
   },
-  prompt: `You are an expert educator providing feedback on student answers to questions.
+  prompt: `Du bist ein erfahrener Pädagoge, der Feedback zu den Antworten von Lernenden gibt. Die Antwort muss auf Deutsch sein.
 
-  Based on the question, the expected answer, and the student's answer, determine if the student's answer is valid.
-  If the answer is not valid, provide feedback to the student to help them improve their answer. Include hints if necessary.
+  Beurteile anhand der Frage, der erwarteten Antwort und der Antwort des Lernenden, ob die Antwort des Lernenden gültig ist.
+  Wenn die Antwort nicht gültig ist, gib dem Lernenden Feedback, um ihm zu helfen, seine Antwort zu verbessern. Gib bei Bedarf Hinweise.
 
-  Question: {{{question}}}
-  Expected Answer: {{{expectedAnswer}}}
-  Student's Answer: {{{userAnswer}}}
+  Frage: {{{question}}}
+  Erwartete Antwort: {{{expectedAnswer}}}
+  Antwort des Lernenden: {{{userAnswer}}}
 
   isValid: {{isValid}}
   feedback: {{feedback}}

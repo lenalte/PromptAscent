@@ -1,3 +1,4 @@
+// Wurde nur zu Evaluationszwecken erstellt
 "use client";
 
 import type React from 'react';
@@ -74,7 +75,6 @@ export const LikertScaleQuestion: React.FC<LikertScaleQuestionProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {/* <Label className="text-accent">Deine Einschätzung:</Label> */}
           <RadioGroup
             onValueChange={setSelectedValue}
             value={selectedValue}

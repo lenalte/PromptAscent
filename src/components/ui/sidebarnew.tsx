@@ -1,27 +1,15 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import Link from 'next/link'; // Import Link
+import { useState, useEffect } from "react";
+import Link from 'next/link';
 import { getAvailableLessons, type Lesson } from '@/data/lessons';
 import { getLeaderboardData } from '@/services/userProgressService';
 import type { LeaderboardEntry } from '@/services/userProgressService';
-import { BookOpen, ChevronDown, ChevronUp, Loader2, UserCircle, UserPlus, Award, Crown, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { useUserProgress } from "@/context/UserProgressContext"; // Import useUserProgress
+import { useUserProgress } from "@/context/UserProgressContext";
 import { useToast } from "@/hooks/use-toast";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { EightbitButton } from './eightbit-button';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { LockClosedIcon } from "@/components/icons/lock_closed";
 import { LockOpenIcon } from "@/components/icons/lock_open";
@@ -29,10 +17,8 @@ import { LeaderboardIcon } from "@/components/icons/LeaderboardIcon";
 import { LogoutIcon } from "@/components/icons/LogoutIcon";
 import { LoginIcon } from "@/components/icons/LoginIcon";
 import { PointsIcon } from '@/components/icons/PointsIcon';
-import { ProfilIcon } from "../icons/ProfilIcon";
 import { SimpleArrowDownIcon } from "../icons/simpleArrow_down";
 import { SimpleArrowUpIcon } from "../icons/simpleArrow_up";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DeleteAccountDialogButton } from "@/components/auth/DeleteAccountDialogButton";
 import { trackEvent } from "@/lib/gtagHelper";
 import { SettingsIcon } from "../icons/SettingsIcon";
@@ -207,7 +193,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     >
                         <SettingsIcon className={cn(
                             "h-5 w-5 shrink-0 text-white",
-                             activeCategory === 'einstellungen' && isContentOpen ? "opacity-100" : "opacity-70"
+                            activeCategory === 'einstellungen' && isContentOpen ? "opacity-100" : "opacity-70"
                         )} />
                     </button>
                 </div>

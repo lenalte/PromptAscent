@@ -85,7 +85,6 @@ const BirdsBackground = () => {
 
                 p.setup = function () {
                     const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-                    /* p.background(255); */
                     // Farben aus CSS-Variablen holen
                     backgroundColor = getCssVariableColor('--background');
                     birdColor = '#D0B3FF'; // Changed to specific color

@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { CheckIcon } from '@/components/icons/CheckIcon';
 import { CloseIcon } from '@/components/icons/closeIcon';
@@ -96,12 +95,10 @@ export const FreeResponseQuestion: React.FC<FreeResponseQuestionProps> = ({
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-xl text-white">{question}</CardTitle>
-        {/* <CardDescription>{question}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div className="space-y-2">
-            {/* <Label htmlFor={`frq-${id}`} className="text-white">Deine Antwort:</Label> */}
             <Textarea
               id={`frq-${id}`}
               placeholder="Gib hier deine Antwort ein..."

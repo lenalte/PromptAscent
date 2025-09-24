@@ -10,7 +10,7 @@ interface LevelCompleteScreenProps {
   onGoHome: () => void;
   levelTitle: string;
   badgeName: string;
-  badgeIcon?: React.ReactNode; // Optional: für eigene Badges statt Standard-Icon
+  badgeIcon?: React.ReactNode;
   badgeImageUrl?: string;
 }
 

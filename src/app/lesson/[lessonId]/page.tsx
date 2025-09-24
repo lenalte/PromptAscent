@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React from 'react';
@@ -15,14 +13,11 @@ import { LessonCompleteScreen } from '@/components/LessonCompleteScreen';
 import { StageCompleteScreen } from '@/components/StageCompleteScreen';
 import { Separator } from '@/components/ui/separator';
 import { EightbitButton } from '@/components/ui/eightbit-button';
-import { Progress } from "@/components/ui/progress";
 import { useUserProgress } from '@/context/UserProgressContext';
-import { getGeneratedLessonById, type Lesson, type LessonStage, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
-import { BrainCircuit, HomeIcon, Loader2, AlertCircle, ArrowRight, Trophy, RefreshCw } from 'lucide-react';
+import { getGeneratedLessonById, type Lesson, type StageItemStatus, type LessonItem, type StageStatusValue } from '@/data/lessons';
+import { BrainCircuit, HomeIcon, Loader2, ArrowRight, Trophy, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
-import { getUserProgress } from '@/services/userProgressService';
 import { Suspense } from 'react';
 
 type StageCompleteInfo = {

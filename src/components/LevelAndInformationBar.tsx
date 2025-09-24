@@ -33,7 +33,7 @@ const LevelAndInformationBar: React.FC<LevelAndInformationBarProps> = ({ current
             if (remaining <= 0) {
                 setTimeLeft('');
                 clearInterval(intervalId);
-                // Optional: Force a re-fetch of user progress to clear the booster from the backend view
+
             } else {
                 const minutes = Math.floor(remaining / 1000 / 60);
                 const seconds = Math.floor((remaining / 1000) % 60);

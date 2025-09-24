@@ -1,9 +1,8 @@
-
 'use client';
 
 import type React from 'react';
 import { createContext, useState, useContext, useEffect, useCallback, type ReactNode, useMemo } from 'react';
-import { type User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { type User, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth, db } from '../lib/firebase/index';
 import {
   getUserProgress,
@@ -59,64 +58,64 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   useEffect(() => {
     const fetchUserProgressData = async (user: User) => {
-        if (!db) {
-            console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
-            setIsLoadingProgress(false);
-            return;
-        }
-        setIsLoadingProgress(true);
-        try {
-            let progress = await getUserProgress(user.uid);
-            if (!progress) {
-                console.log(`[UserProgressContext] No progress found for ${user.uid}, creating new document.`);
-                // Pass username and avatarId from Auth user if available
-                progress = await createUserProgressDocument(user.uid, {
-                    username: user.displayName ?? undefined,
-                    avatarId: (user.photoURL as AvatarId) ?? undefined,
-                });
-            } else if (user.displayName && !progress.username) {
-                console.log(`[UserProgressContext] Progress found but no username, updating for ${user.uid}.`);
-                await updateUserDocument(user.uid, { username: user.displayName });
-                progress.username = user.displayName;
-            }
-            setUserProgress(progress);
-        } catch (error) {
-            console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${user.uid}:`, error);
-            setUserProgress(null);
-        } finally {
-            setIsLoadingProgress(false);
-        }
-    };
-      
-    if (!auth) {
-        console.error("[UserProgressContext] Firebase Auth instance is not available. Auth operations will fail.");
-        setIsLoadingAuth(false);
+      if (!db) {
+        console.error("[UserProgressContext] Firestore (db) is not available for fetchUserProgressData. Aborting.");
+        setIsLoadingProgress(false);
         return;
+      }
+      setIsLoadingProgress(true);
+      try {
+        let progress = await getUserProgress(user.uid);
+        if (!progress) {
+          console.log(`[UserProgressContext] No progress found for ${user.uid}, creating new document.`);
+          // Pass username and avatarId from Auth user if available
+          progress = await createUserProgressDocument(user.uid, {
+            username: user.displayName ?? undefined,
+            avatarId: (user.photoURL as AvatarId) ?? undefined,
+          });
+        } else if (user.displayName && !progress.username) {
+          console.log(`[UserProgressContext] Progress found but no username, updating for ${user.uid}.`);
+          await updateUserDocument(user.uid, { username: user.displayName });
+          progress.username = user.displayName;
+        }
+        setUserProgress(progress);
+      } catch (error) {
+        console.error(`[UserProgressContext] Error fetching/creating user progress for UID ${user.uid}:`, error);
+        setUserProgress(null);
+      } finally {
+        setIsLoadingProgress(false);
+      }
+    };
+
+    if (!auth) {
+      console.error("[UserProgressContext] Firebase Auth instance is not available. Auth operations will fail.");
+      setIsLoadingAuth(false);
+      return;
     }
 
     setPersistence(auth, browserLocalPersistence)
       .then(() => {
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        setIsLoadingAuth(true);
-        if (user) {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+          setIsLoadingAuth(true);
+          if (user) {
             setCurrentUser(user);
             await fetchUserProgressData(user);
-        } else {
+          } else {
             setCurrentUser(null);
             setUserProgress(null);
-        }
-        setIsLoadingAuth(false);
-    });
+          }
+          setIsLoadingAuth(false);
+        });
 
-    return () => {
-        unsubscribe();
-    };
-  })
-  .catch((err) => {
-    console.error("[UserProgressContext] Fehler bei setPersistence:", err);
-  });
-  }, []); 
+        return () => {
+          unsubscribe();
+        };
+      })
+      .catch((err) => {
+        console.error("[UserProgressContext] Fehler bei setPersistence:", err);
+      });
+  }, []);
 
 
   const completeStageAndProceed = useCallback(async (
@@ -129,12 +128,12 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
   ): Promise<{ nextLessonIdIfAny: string | null; updatedProgress: UserProgressData | null; pointsAdded: number; basePointsAdded: number }> => {
     if (!currentUser || !db) {
       console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - no current user or db unavailable.");
-      if(!db) console.error("[UserProgressContext] Firestore (db) is not available.");
+      if (!db) console.error("[UserProgressContext] Firestore (db) is not available.");
       return { nextLessonIdIfAny: null, updatedProgress: null, pointsAdded: 0, basePointsAdded: 0 };
     }
     if (!userProgress) {
-        console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - userProgress not loaded for user", currentUser.uid);
-        return { nextLessonIdIfAny: null, updatedProgress: null, pointsAdded: 0, basePointsAdded: 0 };
+      console.error("[UserProgressContext] completeStageAndProceed: Cannot complete - userProgress not loaded for user", currentUser.uid);
+      return { nextLessonIdIfAny: null, updatedProgress: null, pointsAdded: 0, basePointsAdded: 0 };
     }
 
     setIsLoadingProgress(true);
@@ -167,9 +166,9 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     setIsLoadingAuth(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
+
       await updateProfile(userCredential.user, { displayName: username, photoURL: avatarId });
-      
+
       // THIS IS THE CRUCIAL PART: Create the user document in Firestore after registration
       await createUserProgressDocument(userCredential.user.uid, { username, avatarId });
 
@@ -186,7 +185,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       }
       return { user: null, error: errorMessage };
     } finally {
-        setIsLoadingAuth(false);
+      setIsLoadingAuth(false);
     }
   }, []);
 
@@ -209,7 +208,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       }
       return { user: null, error: errorMessage };
     } finally {
-        setIsLoadingAuth(false);
+      setIsLoadingAuth(false);
     }
   }, []);
 
@@ -245,13 +244,13 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (!currentUser) {
       return { success: false, error: "No user is currently logged in." };
     }
-    
+
     // The order is important: first delete dependent data, then the user.
     try {
       // 1. Delete Firestore document
       await deleteUserDocument(currentUser.uid);
       console.log(`[UserProgressContext] Successfully deleted Firestore data for UID: ${currentUser.uid}`);
-      
+
       // 2. Delete Firebase Auth user
       await deleteUser(currentUser);
       console.log(`[UserProgressContext] Successfully deleted Firebase Auth user for UID: ${currentUser.uid}`);
@@ -259,7 +258,7 @@ export const UserProgressProvider: React.FC<{ children: ReactNode }> = ({ childr
       return { success: true };
     } catch (error: any) {
       console.error(`[UserProgressContext] Error deleting account for UID: ${currentUser.uid}:`, error);
-      
+
       // Handle common error where user needs to re-authenticate
       if (error.code === 'auth/requires-recent-login') {
         return { success: false, error: "Diese Aktion ist sensibel und erfordert eine kürzliche Anmeldung. Bitte logge dich erneut ein, bevor du deinen Account löschst." };

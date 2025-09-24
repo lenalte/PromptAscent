@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { EightbitButton } from '@/components/ui/eightbit-button';
 import { useUserProgress } from '@/context/UserProgressContext';
 import { LeaderboardIcon } from './icons/LeaderboardIcon';

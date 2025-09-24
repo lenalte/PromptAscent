@@ -1,9 +1,8 @@
-
 'use server';
 
 import fs from 'fs/promises';
 import path from 'path';
-import type { Lesson, LessonItem, LessonStage } from '@/ai/schemas/lesson-schemas'; // Import types from Zod schemas
+import type { Lesson, LessonItem } from '@/ai/schemas/lesson-schemas'; // Import types from Zod schemas
 
 // Re-export types for use in components
 export type { Lesson, LessonItem, LessonStage, FreeResponseLessonItem, MultipleChoiceLessonItem, InformationalSnippetLessonItem, PromptingTaskLessonItem } from '@/ai/schemas/lesson-schemas';
@@ -36,7 +35,7 @@ async function getLessonManifest(): Promise<LessonManifestEntry[]> {
     const manifest = JSON.parse(manifestContent) as LessonManifestEntry[];
     console.log(`[SERVER LOG] [getLessonManifest] Successfully parsed lesson manifest. Number of entries: ${manifest.length}`);
     if (manifest.length === 0) {
-        console.warn("[SERVER LOG] [getLessonManifest] WARNING: Parsed manifest is empty.");
+      console.warn("[SERVER LOG] [getLessonManifest] WARNING: Parsed manifest is empty.");
     }
     return manifest;
   } catch (error) {
@@ -78,7 +77,7 @@ export async function getGeneratedLessonById(lessonId: string): Promise<Lesson |
   } catch (error: any) {
     console.error(`[SERVER LOG] [Lesson: ${lessonId}] Error reading lesson file:`, error);
     if (error.code === 'ENOENT') {
-        throw new Error(`Lesson content for ${lessonId} not found. Pre-generation is required.`);
+      throw new Error(`Lesson content for ${lessonId} not found. Pre-generation is required.`);
     }
     throw error;
   }

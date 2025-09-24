@@ -38,6 +38,7 @@ export const PromptingTaskLessonItemSchema = BaseLessonItemSchema.extend({
 });
 export type PromptingTaskLessonItem = z.infer<typeof PromptingTaskLessonItemSchema>;
 
+// LikertScale nur für Evaluationszwecke erstellt
 export const LikertScaleLessonItemSchema = BaseLessonItemSchema.extend({
   type: z.enum(['likertScale']).describe("The type of the lesson item."),
   question: z.string().describe('The Likert scale question for the user.'),
@@ -72,10 +73,10 @@ export type Lesson = z.infer<typeof LessonSchema>;
 
 // Helper types for UserProgress, not part of AI generation schema
 export type StageItemStatus = {
-    attempts: number;
-    correct: boolean | null; // null if not yet attempted, true if correct, false if incorrect on last attempt
-    points?: number; // Added to store points calculated on submission
-    answer?: number; // For Likert scale answer
+  attempts: number;
+  correct: boolean | null; // null if not yet attempted, true if correct, false if incorrect on last attempt
+  points?: number; // Added to store points calculated on submission
+  // answer?: number; // For Likert scale answer
 };
 
 export type StageStatusValue = 'locked' | 'unlocked' | 'in-progress' | 'completed-perfect' | 'completed-good' | 'failed-stage';

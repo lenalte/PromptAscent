@@ -64,17 +64,6 @@ const FireworkBackground = () => {
         function Firework(this: any, p: any) {
             this.color = [p.random(100, 255), p.random(100, 255), p.random(100, 255)];
 
-            /* const palette = [
-                [249, 252, 23],   // #F9FC17
-                [0, 255, 106],    // #00FF6A
-                [98, 0, 255],     // #6200FF
-                [224, 204, 255],  // #E0CCFF
-                [251, 84, 84]     // #FB5454
-            ];
-
-            const colorIdx = Math.floor(p.random(palette.length));
-            this.color = palette[colorIdx]; */
-
             this.firework = new (Particle as any)(
                 p.width / 2,
                 p.height,
@@ -129,7 +118,7 @@ const FireworkBackground = () => {
 
                 p.setup = function () {
                     const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-                    p.colorMode(p.RGB, 255, 255, 255, 255); // <--- das ist wichtig!
+                    p.colorMode(p.RGB, 255, 255, 255, 255);
                     p.background(20, 0, 51);
 
                     if (containerRef.current) {

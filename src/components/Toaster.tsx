@@ -2,8 +2,6 @@
 
 import { ToastProvider, ToastViewport } from "./ui/toast";
 
-// Du kannst ggf. noch weitere Toast-Komponenten importieren und hier verwenden
-
 export default function Toaster() {
     return (
         <ToastProvider>

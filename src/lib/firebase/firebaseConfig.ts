@@ -1,4 +1,3 @@
-// src/lib/firebase/firebaseConfig.ts
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -12,7 +11,6 @@ export const firebaseConfig = {
 // Helper function to check if essential Firebase config values are present
 export function isFirebaseConfigured(): boolean {
   // Check for the most critical Firebase config values.
-  // Adjust this list if your app has other "must-have" Firebase features.
   return !!(
     firebaseConfig.apiKey &&
     firebaseConfig.authDomain &&

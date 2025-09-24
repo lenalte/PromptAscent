@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { EightbitButton } from './ui/eightbit-button';
 import Image from 'next/image';
 
 type Consent = 'granted' | 'denied';

@@ -2,11 +2,11 @@
 'use server';
 
 import { db } from '@/lib/firebase/index';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, deleteDoc, type FieldValue, addDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, writeBatch, collection, query, orderBy, getDocs, deleteDoc, addDoc } from 'firebase/firestore';
 import { getAvailableLessons, getQuestionsForBossChallenge, getGeneratedLessonById, type Lesson, type StageProgress, type StageItemStatus, type LessonItem, type BossQuestion } from '@/data/lessons';
-import { getRandomBoss, getBossById, type Boss } from '@/data/boss-data';
+import { getRandomBoss } from '@/data/boss-data';
 import type { AvatarId } from '@/data/avatars';
-import { LEVELS, getLevelForLessonId } from '@/data/level-structure';
+import { getLevelForLessonId } from '@/data/level-structure';
 import { BADGES } from '@/data/badges';
 
 
@@ -52,7 +52,7 @@ const LIKERT_ANSWERS_COLLECTION = 'likertScaleAnswers';
 function createDefaultLessonProgress(isFirstLesson: boolean): { currentStageIndex: number; stages: { [stageId: string]: StageProgress } } {
   const stagesProgress: { [stageId: string]: StageProgress } = {};
   // Boss only appears from stage 2 (index 1) to 6 (index 5) to ensure there's at least one previous stage for questions.
-  const bossStageIndex = 1 + Math.floor(Math.random() * 5); 
+  const bossStageIndex = 1 + Math.floor(Math.random() * 5);
 
   for (let i = 0; i < 6; i++) {
     const stageId = `stage${i + 1}`;
@@ -99,18 +99,18 @@ export async function getUserProgress(userId: string): Promise<UserProgressData 
         const rawExpiresAt = rawBooster.expiresAt;
         // Check if it's a Firestore Timestamp object and convert it, otherwise assume it's a number
         const expiresAtMillis = typeof rawExpiresAt?.toMillis === 'function' ? rawExpiresAt.toMillis() : rawExpiresAt;
-        
+
         if (typeof expiresAtMillis === 'number') {
-            activeBooster = {
-                multiplier: rawBooster.multiplier,
-                expiresAt: expiresAtMillis,
-            };
+          activeBooster = {
+            multiplier: rawBooster.multiplier,
+            expiresAt: expiresAtMillis,
+          };
         }
       }
 
       let lessonStageProgress = data.lessonStageProgress || {};
       const currentLesson = data.currentLessonId || defaultLessonId;
-      
+
       if (!lessonStageProgress[currentLesson]) {
         console.warn(`[UserProgress] Progress for lesson ${currentLesson} not found for user ${userId}. Creating in-memory placeholder.`);
         lessonStageProgress[currentLesson] = createDefaultLessonProgress(currentLesson === defaultLessonId);
@@ -148,9 +148,9 @@ export async function createUserProgressDocument(userId: string, initialData?: P
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const defaultLessonId = "lesson1";
-    
+
     const initialLessonStageProgress: UserProgressData['lessonStageProgress'] = {
-        [defaultLessonId]: createDefaultLessonProgress(true) // Ensure lesson1 progress is created
+      [defaultLessonId]: createDefaultLessonProgress(true) // Ensure lesson1 progress is created
     };
 
     const dataToSet: UserProgressData = {
@@ -166,7 +166,7 @@ export async function createUserProgressDocument(userId: string, initialData?: P
       lessonStageProgress: initialLessonStageProgress,
       knowledgeGaps: [],
     };
-    
+
     // Create a version of the data for Firestore, excluding userId and handling potential undefined values.
     const { userId: _, ...firestoreData } = dataToSet;
 
@@ -200,10 +200,10 @@ export async function updateUserDocument(userId: string, dataToUpdate: Partial<O
 
     const cleanDataToUpdate: { [key: string]: any } = { ...dataToUpdate };
     if ('username' in cleanDataToUpdate && cleanDataToUpdate.username === undefined) {
-       delete cleanDataToUpdate.username;
+      delete cleanDataToUpdate.username;
     }
-     if ('avatarId' in cleanDataToUpdate && cleanDataToUpdate.avatarId === undefined) {
-       delete cleanDataToUpdate.avatarId;
+    if ('avatarId' in cleanDataToUpdate && cleanDataToUpdate.avatarId === undefined) {
+      delete cleanDataToUpdate.avatarId;
     }
 
     await updateDoc(userDocRef, cleanDataToUpdate);
@@ -227,7 +227,7 @@ export async function completeStageInFirestore(
     console.error("[userProgressService.completeStageInFirestore] Firestore (db) is not available.");
     throw new Error("Firestore not initialized");
   }
-  
+
   const userDocRef = doc(db, USERS_COLLECTION, userId);
   const batch = writeBatch(db);
 
@@ -241,15 +241,15 @@ export async function completeStageInFirestore(
     const stageProgressBefore = userProgressBefore?.lessonStageProgress?.[lessonId]?.stages?.[completedStageId];
     let serverCalculatedBasePointsDelta = 0;
     for (const item of stageItems) {
-        const statusAfter = stageItemsWithStatus[item.id];
-        const statusBefore = stageProgressBefore?.items?.[item.id];
+      const statusAfter = stageItemsWithStatus[item.id];
+      const statusBefore = stageProgressBefore?.items?.[item.id];
 
-        const wasCorrectBefore = statusBefore?.correct === true;
-        const isCorrectAfter = statusAfter?.correct === true;
+      const wasCorrectBefore = statusBefore?.correct === true;
+      const isCorrectAfter = statusAfter?.correct === true;
 
-        if (isCorrectAfter && !wasCorrectBefore) {
-            serverCalculatedBasePointsDelta += statusAfter.points || 0;
-        }
+      if (isCorrectAfter && !wasCorrectBefore) {
+        serverCalculatedBasePointsDelta += statusAfter.points || 0;
+      }
     }
     console.log(`[UserProgress] Completing stage ${completedStageId}. Server calculated base points delta: ${serverCalculatedBasePointsDelta}`);
 
@@ -262,14 +262,14 @@ export async function completeStageInFirestore(
 
     for (const item of stageItems) {
       const itemResult = stageItemsWithStatus[item.id];
-      if (!itemResult) { 
+      if (!itemResult) {
         console.warn(`[UserProgress] Item ${item.id} missing in stageItemsWithStatus for stage ${completedStageId}`);
         allPerfect = false;
         continue;
       }
       if (item.type !== 'informationalSnippet' && item.type !== 'likertScale' && itemResult.correct === false && (itemResult.attempts ?? 0) >= 3) {
         anyFailedMaxAttempts = true;
-        break; 
+        break;
       }
       if (item.type !== 'informationalSnippet' && item.type !== 'likertScale' && (itemResult.correct === false || (itemResult.attempts ?? 0) > 1)) {
         allPerfect = false;
@@ -297,7 +297,7 @@ export async function completeStageInFirestore(
       [`lessonStageProgress.${lessonId}.stages.${completedStageId}.pointsEarned`]: previousStagePoints + serverCalculatedBasePointsDelta, // Cumulative
       totalPoints: currentTotalPoints + finalPointsToAdd,
     };
-    
+
     console.log(`[UserProgress] Stage ${completedStageId} status: ${stageStatus}. Points added to total: ${finalPointsToAdd}. New total (pending commit): ${currentTotalPoints + finalPointsToAdd}`);
 
     let nextLessonIdIfAny: string | null = null;
@@ -317,7 +317,7 @@ export async function completeStageInFirestore(
         // Badge Award Logic
         const currentLevel = getLevelForLessonId(lessonId);
         if (currentLevel) {
-          const isLevelComplete = currentLevel.lessonIds.every(lId => 
+          const isLevelComplete = currentLevel.lessonIds.every(lId =>
             userProgressBefore.completedLessons.includes(lId) || lId === lessonId
           );
           if (isLevelComplete) {
@@ -407,11 +407,11 @@ export async function populateBossChallengeQuestions(
   if (questions.length === 0) {
     console.warn("[getQuestionsForBossChallenge] No questions could be fetched for the boss. Passing boss by default.");
     const updates: { [key: string]: any } = {
-        [`lessonStageProgress.${lessonId}.stages.${stageId}.bossDefeated`]: true,
-        [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'passed',
+      [`lessonStageProgress.${lessonId}.stages.${stageId}.bossDefeated`]: true,
+      [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'passed',
     };
     await updateUserDocument(userId, updates);
-    return { questions: [], challenge: {...challenge, status: 'passed', bossDefeated: true }};
+    return { questions: [], challenge: { ...challenge, status: 'passed', bossDefeated: true } };
   }
 
   const questionIds = questions.map(q => ({ lessonId: q.lessonId, itemId: q.item.id }));
@@ -427,7 +427,7 @@ export async function populateBossChallengeQuestions(
   };
 
   await updateUserDocument(userId, updates);
-  
+
   const updatedProgress = await getUserProgress(userId);
   const updatedChallenge = updatedProgress!.lessonStageProgress[lessonId].stages[stageId].bossChallenge;
 
@@ -458,34 +458,34 @@ export async function resolveBossChallenge(
     [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: finalStatus,
     [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.questionStatus`]: finalQuestionStatus,
   };
-  
+
   if (finalStatus === 'passed') {
     // 1. Calculate performance
     let laterTryCorrect = 0;
     const questionStatuses = Object.values(finalQuestionStatus);
     for (const status of questionStatuses) {
-        if (status.correct && status.attempts > 1) {
-            laterTryCorrect++;
-        }
+      if (status.correct && status.attempts > 1) {
+        laterTryCorrect++;
+      }
     }
 
     // 2. Determine booster
     let boosterMultiplier: number | null = null;
     if (laterTryCorrect === 0) {
-        boosterMultiplier = 3; // Perfect
+      boosterMultiplier = 3; // Perfect
     } else if (laterTryCorrect === 1) {
-        boosterMultiplier = 2; // Good
+      boosterMultiplier = 2; // Good
     } else {
-        boosterMultiplier = 1.5; // Okay
+      boosterMultiplier = 1.5; // Okay
     }
 
     // 3. Set booster in updates
     if (boosterMultiplier) {
-        updates.activeBooster = {
-            multiplier: boosterMultiplier,
-            expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
-        };
-        console.log(`[UserProgress] Awarded ${boosterMultiplier}x booster to user ${userId}.`);
+      updates.activeBooster = {
+        multiplier: boosterMultiplier,
+        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+      };
+      console.log(`[UserProgress] Awarded ${boosterMultiplier}x booster to user ${userId}.`);
     }
   } else {
     // Mark failed questions as knowledge gaps
@@ -542,7 +542,7 @@ export async function restartStageInFirestore(
 
     const updatedProgress = await getUserProgress(userId);
     if (!updatedProgress) {
-        throw new Error("Failed to fetch user progress after restarting stage.");
+      throw new Error("Failed to fetch user progress after restarting stage.");
     }
     return updatedProgress;
 
@@ -599,20 +599,20 @@ export async function deleteUserDocument(userId: string): Promise<void> {
 }
 
 export async function skipBossChallenge(userId: string, lessonId: string, stageId: string): Promise<UserProgressData> {
-    if (!db) {
-        console.error("[userProgressService.skipBossChallenge] Firestore (db) is not available.");
-        throw new Error("Firestore not initialized");
-    }
-    const userDocRef = doc(db, USERS_COLLECTION, userId);
-    const updates = {
-        [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'skipped',
-    };
-    await updateDoc(userDocRef, updates);
-    const updatedProgress = await getUserProgress(userId);
-    if (!updatedProgress) {
-        throw new Error("Failed to fetch user progress after skipping boss challenge.");
-    }
-    return updatedProgress;
+  if (!db) {
+    console.error("[userProgressService.skipBossChallenge] Firestore (db) is not available.");
+    throw new Error("Firestore not initialized");
+  }
+  const userDocRef = doc(db, USERS_COLLECTION, userId);
+  const updates = {
+    [`lessonStageProgress.${lessonId}.stages.${stageId}.bossChallenge.status`]: 'skipped',
+  };
+  await updateDoc(userDocRef, updates);
+  const updatedProgress = await getUserProgress(userId);
+  if (!updatedProgress) {
+    throw new Error("Failed to fetch user progress after skipping boss challenge.");
+  }
+  return updatedProgress;
 }
 
 
@@ -637,4 +637,4 @@ export async function saveLikertScaleAnswer(answerData: { lessonId: string; ques
   }
 }
 
-    
+

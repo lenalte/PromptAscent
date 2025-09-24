@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
-import { getAvailableLessons, type Lesson, type StageProgress, type StageStatusValue, getGeneratedLessonById, type LessonStage, type StageItemStatus, type LessonItem } from '@/data/lessons';
+import { getAvailableLessons, type Lesson, type StageStatusValue, getGeneratedLessonById, type StageItemStatus, type LessonItem } from '@/data/lessons';
 import { ArrowRight, Loader2, BrainCircuit, Trophy } from 'lucide-react';
 import { useUserProgress } from '@/context/UserProgressContext';
 import ProgressBar from '@/components/ui/progressbar'; // Overall game progress
@@ -29,8 +29,7 @@ import { FreeResponseQuestion } from '@/components/FreeResponseQuestion';
 import { MultipleChoiceQuestion } from '@/components/MultipleChoiceQuestion';
 import { InformationalSnippet } from '@/components/InformationalSnippet';
 import { PromptingTask } from '@/components/PromptingTask';
-import { LikertScaleQuestion } from '@/components/LikertScaleQuestion'; // Import new component
-import { PointsDisplay } from '@/components/PointsDisplay';
+import { LikertScaleQuestion } from '@/components/LikertScaleQuestion';
 import { LessonCompleteScreen } from '@/components/LessonCompleteScreen';
 import { StageCompleteScreen } from '@/components/StageCompleteScreen';
 import { Card, CardContent } from "@/components/ui/card";
@@ -690,8 +689,6 @@ function HomePageContent() {
               trackEvent({
                 action: "Lesson_Exited",
                 category: "Lesson",
-                // Falls du Infos hast, z.B. Label: `LessonID: ${selectedLesson.id}`
-                // label: `LessonID: ${selectedLesson.id}`,
                 label: "Lesson beendet",
               });
               handleExitLesson();

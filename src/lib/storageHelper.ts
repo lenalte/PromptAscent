@@ -1,4 +1,3 @@
-// lib/storageHelper.ts
 import "client-only";
 
 /**

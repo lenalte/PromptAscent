@@ -5,12 +5,11 @@ import type React from 'react';
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import { evaluatePrompt, type EvaluatePromptOutput } from '@/ai/flows/evaluate-prompt';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, FilePenLine } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
 import { CheckIcon } from '@/components/icons/CheckIcon';
 import { CloseIcon } from '@/components/icons/closeIcon';
@@ -30,7 +29,6 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
   evaluationGuidance,
   pointsAwarded,
   onAnswerSubmit,
-  title,
   id,
   isReadOnly = false,
 }) => {
@@ -104,12 +102,10 @@ export const PromptingTask: React.FC<PromptingTaskProps> = ({
         <CardTitle className="text-xl text-purple-800 dark:text-purple-300 flex items-center">
           {taskDescription}
         </CardTitle>
-        {/* <CardDescription className="text-purple-700 dark:text-purple-400 pt-2 whitespace-pre-line">{taskDescription}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div className="space-y-2">
-            {/* <Label htmlFor={`pt-${id}`} className="text-purple-800 dark:text-purple-300">Dein Prompt:</Label> */}
             <Textarea
               id={`pt-${id}`}
               placeholder="Schreibe deinen Prompt hier, um die Aufgabe zu lösen..."

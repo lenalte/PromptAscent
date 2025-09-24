@@ -2,9 +2,8 @@
 "use client";
 
 import type React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useEffect } from 'react';
 import { InfoIcon } from './icons/InfoIcon';
 
 interface InformationalSnippetProps {
@@ -18,7 +17,6 @@ interface InformationalSnippetProps {
 export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
   title,
   content,
-  pointsAwarded,
   isReadOnly = false,
 }) => {
   return (
@@ -29,9 +27,6 @@ export const InformationalSnippet: React.FC<InformationalSnippetProps> = ({
         </CardTitle>
         <CardDescription className="text-blue-700 dark:text-blue-300 pt-2 whitespace-pre-line">{content}</CardDescription>
       </CardHeader>
-      {/* <CardFooter className="flex justify-start text-xs text-blue-600 dark:text-blue-500 pt-4">
-        <p>Points for reading: +{pointsAwarded}</p>
-      </CardFooter> */}
     </Card>
   );
 };

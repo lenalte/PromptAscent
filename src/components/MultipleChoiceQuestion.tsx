@@ -1,12 +1,10 @@
-
 "use client";
 
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from './ui/label';
 import { EightbitButton } from './ui/eightbit-button';
@@ -76,7 +74,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
     <Card className={cn("w-full max-w-3xl mx-auto shadow-lg rounded-lg", isComponentReadOnly && "bg-muted/50")}>
       <CardHeader>
         <CardTitle className="text-xl text-white">{question}</CardTitle>
-        {/* <CardDescription>{question}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -101,7 +98,6 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                   id={`${id}-option-${index}`}
                   disabled={isComponentReadOnly}
                   className={cn(
-                    // Standard-Design
                     "border border-white text-white",
                     // Korrekte Antwort: grüner Radiobutton (dunkel/hell je nach Theme)
                     hasAttempted && index === correctOptionIndex && "border-green-500 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 dark:border-green-700",

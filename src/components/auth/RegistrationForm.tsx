@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, browserLocalPersistence, setPersistence, updateProfile } from "firebase/auth";
@@ -307,7 +306,6 @@ function AuthFormInner() {
       <CardFooter>
         {step === "email" && (
           <div className="text-center text-sm">
-            {/* Platz für weitere Links */}
           </div>
         )}
       </CardFooter>

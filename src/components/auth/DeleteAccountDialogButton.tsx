@@ -27,7 +27,7 @@ export function DeleteAccountDialogButton() {
     setIsSending(true);
     try {
       const actionCodeSettings = {
-        url: window.location.origin + "/auth/account-delete-confirm", // Passe den Pfad ggf. an!
+        url: window.location.origin + "/auth/account-delete-confirm",
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);

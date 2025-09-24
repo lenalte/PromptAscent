@@ -36,7 +36,7 @@ function AccountDeleteConfirmPageInner() {
               title: "Account gelöscht",
               description: "Dein Account und alle zugehörigen Daten wurden erfolgreich gelöscht.",
             });
-            router.push("/"); // oder z.B. /goodbye
+            router.push("/");
           } catch (error: any) {
             console.error(`Error deleting account for user ${userId}:`, error);
             toast({

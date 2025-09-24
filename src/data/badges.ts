@@ -1,12 +1,8 @@
-import type { LucideIcon } from 'lucide-react';
-import { Award, Star, Medal } from 'lucide-react';
-
-
 export interface Badge {
   id: string;
   name: string;
   description: string;
-  imageUrl: string; // Changed from icon to imageUrl
+  imageUrl: string;
   levelId: string; // The level required to unlock this badge
 }
 
