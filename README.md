@@ -11,11 +11,8 @@ Diese Next.js-Anwendung hilft Nutzenden dabei, durch ein strukturiertes, stufenb
 - **Fortschrittsverfolgung:** Der Fortschritt der Benutzer wird pro Lektion und pro Stufe verfolgt, mit visuellen Indikatoren für den Status der Stufenabschlüsse.
 - **Punktesystem:** Sammle Punkte für das Abschließen von Aufgaben und Stufen.
 
-<video src="https://raw.githubusercontent.com/lenalte/PromptAscent/main/public/assets/PromptAscentFilm.mp4"
-       controls
-       playsinline
-       style="max-width:100%; height:auto;">
-</video>
+[![Demo ansehen](public/assets/thumbnail.png)](https://raw.githubusercontent.com/lenalte/PromptAscent/main/public/assets/PromptAscentFilm.mp4)
+
 Music by <a href="https://pixabay.com/de/users/kontraa-24653570/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=110235">Kontraa Music</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=110235">Pixabay</a>
 
 ## Systemarchitektur (Überblick)
