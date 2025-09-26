@@ -73,6 +73,11 @@ Um mit dem Entwicklungsserver zu beginnen:
 4. **Rollback falls nötig**
     Firebase Console → App Hosting → Deployments → „Rollback“.
 
+**Siehe auch**
+- Firebase App Hosting: https://firebase.google.com/docs/app-hosting
+- Secrets & env (App Hosting): https://firebase.google.com/docs/app-hosting/configure
+- Secret Manager (GCP): https://cloud.google.com/secret-manager/docs
+
 ## Rechtliches (AGB, Datenschutz, Impressum)
 
 Dieses Repo enthält Platzhalter-Seiten, die **vor einem Produktivbetrieb zwingend** angepasst werden müssen:
@@ -183,6 +188,19 @@ Jedes Item hat mindestens:
     ```
     > **Pflichtfelder:** taskDescription, evaluationGuidance
     → Bewertung erfolgt serverseitig über Genkit/Gemini anhand deiner Guidance.
+
+6. **Likert-Umfrage (likertScale)**
+    > Für weitere User Tests im Likert Scale Format zwischen Aufgaben einsetzen.
+    ```bash
+    {
+    "type": "likertScale",
+    "id": "s5_likert1",
+    "title": "Feedback Frage",
+    "question": "Die Aufgaben fordern mich heraus.",
+    "pointsAwarded": 1
+    }
+    ```
+
 
 ### Neue Lektion anlegen
 
