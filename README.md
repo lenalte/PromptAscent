@@ -1,6 +1,6 @@
 
 # Prompt Ascent
-<a href="https://github.com/lenalte/PromptAscent">PromptAscent</a> by <a href="https://github.com/lenalte">Lena Ertl</a> is marked <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/zero.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+<a href="https://github.com/lenalte/PromptAscent">PromptAscent</a> by <a href="https://github.com/lenalte">Lena Ertl</a> is marked <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 0,5em;max-height:0,5em;margin-left: .1em;"><img src="https://mirrors.creativecommons.org/presskit/icons/zero.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
 
 Diese Next.js-Anwendung hilft Nutzenden dabei, durch ein strukturiertes, stufenbasiertes Lernsystem Kenntnisse im Bereich Prompt Engineering zu erwerben und zu üben. Die Lerninhalte basieren auf dem [Prompt Engineering Guide von Learn Prompting](https://learnprompting.org/docs/introduction).
 
